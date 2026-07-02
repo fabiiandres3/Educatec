@@ -8,6 +8,7 @@ urlpatterns = [
     path('paneles/', include('apps.paneles.urls')),
     path('', include('apps.clases.urls')),
     path('', include('apps.tareas.urls')),
-    path('', include('apps.cursos.urls'))
+    path('', include('apps.cursos.urls')),
+    path('', include('apps.docente.urls')),
 ]
 

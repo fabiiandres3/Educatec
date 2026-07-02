@@ -312,7 +312,7 @@
         <a href="{#}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_estudiantes' %}active{% endif %}">
             <i class="fas fa-user-graduate"></i> Estudiantes
         </a>
-        <a href="{#}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_docentes' %}active{% endif %}">
+        <a href="{% url 'listar_docentes' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_docentes' %}active{% endif %}">
             <i class="fas fa-chalkboard-teacher"></i> Docentes
         </a>
         <a href="{% url 'listar_tareas' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_tareas' %}active{% endif %}">

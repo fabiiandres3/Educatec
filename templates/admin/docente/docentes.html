@@ -1,0 +1,61 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Docentes{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Docentes Registrados</h2>
+
+        <a href="{% url 'seleccionar_usuario_docente' %}" class="btn btn-success">
+            Nuevo Docente
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th width="180">Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for docente in docentes %}
+            <tr>
+                <td>{{ docente.username }}</td>
+                <td>{{ docente.first_name }}</td>
+                <td>{{ docente.last_name }}</td>
+                <td>{{ docente.email }}</td>
+                <td>{{ docente.rol.nombre }}</td>
+
+                <td>
+                    <a href="{% url 'editar_docente' docente.id %}" class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+
+                    <a href="{% url 'eliminar_docente' docente.id %}" class="btn btn-danger btn-sm">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">
+                    No hay docentes registrados.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
