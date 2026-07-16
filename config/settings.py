@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'apps.administrador',
+    'apps.alumnos',
     'apps.user',
     'apps.paneles',
     'embed_video',

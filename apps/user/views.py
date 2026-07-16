@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from apps.user.models import Usuario, Roles
-from apps.user.forms import UsuarioForm, LoginForm
+from apps.user.forms import RegistrarForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
@@ -24,43 +25,33 @@ def secundaria(request):
 
 def Registrar_usuario(request):
     if request.method == "POST":
-        form = UsuarioForm(request.POST)
+        form = RegistrarForm(request.POST)
 
         if form.is_valid():
-            username = form.cleaned_data["username"]
-            first_name = form.cleaned_data["first_name"]
-            last_name = form.cleaned_data["last_name"]
-            email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
+            password2 = form.cleaned_data["password2"]
 
-            if Usuario.objects.filter(email=email).exists():
-                form.add_error("email", "Ya existe un usuario con este correo.")
-                return render(request, "login/registrar_usuario.html", {"form": form})
+            if password != password2:
+                form.add_error("password2", "Las contraseñas no coinciden.")
+                return render(request, "user/registrar.html", {"form": form})
 
-            if Usuario.objects.filter(username=username).exists():
-                form.add_error("username", "Este usuario ya existe.")
-                return render(request, "login/registrar_usuario.html", {"form": form})
+            usuario = form.save(commit=False)
 
-            # Obtener el rol "usuario"
-            rol_usuario = Roles.objects.get(nombre="usuario")
+            # Username automático usando el correo
+            usuario.username = usuario.email
 
-            user = Usuario(
-                username=username,
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                rol=rol_usuario,
-            )
+            # Encriptar contraseña
+            usuario.set_password(password)
 
-            user.set_password(password)
-            user.save()
+            usuario.save()
 
-            return redirect("login")
+            messages.success(request, "Usuario registrado correctamente.")
+            return redirect("iniciar_sesion")
 
     else:
-        form = UsuarioForm()
+        form = RegistrarForm()
 
-    return render(request, "login/registrar_usuario.html", {"form": form})
+    return render(request, "user/registrar.html", {"form": form})
 
 
 def iniciar_sesion(request):
@@ -71,26 +62,17 @@ def iniciar_sesion(request):
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
 
-            user = authenticate(request, username=username, password=password)
+            usuario = authenticate(
+                request,
+                username=username,
+                password=password
+            )
 
-            if user is not None:
-                login(request, user)
-
-                # Verificar el rol del usuario
-                if user.rol:
-                    rol = user.rol.nombre.lower()
-
-                    if rol == "usuario":
-                        return redirect("verificacion")
-
-                    elif rol in ["docente", "administrador"]:
-                        return redirect("dashboard")  # Nombre de la URL del panel docente
-
-                # Si no tiene rol asignado
-                return redirect("login")
-
+            if usuario is not None:
+                login(request, usuario)
+                return redirect("index")
             else:
-                form.add_error(None, "Nombre de usuario o contraseña incorrectos.")
+                messages.error(request, "Usuario o contraseña incorrectos.")
 
     else:
         form = LoginForm()

@@ -15,14 +15,23 @@ class Roles(models.Model):
 
 
 class Usuario(AbstractUser):
-    email = models.EmailField(unique=True)
+    
+    rol = models.ForeignKey(Roles,on_delete=models.SET_NULL, blank=True, null=True)
+    first_name = models.CharField("Nombre", max_length=100)
 
-    rol = models.ForeignKey(
-        Roles,
-        on_delete=models.CASCADE,null=True,blank=True)
+    last_name = models.CharField("Apellido", max_length=100)
+
+    email = models.EmailField("Correo electrónico")
+
+    password = models.CharField("Contraseña", max_length=100)
+
+    password2 = models.CharField("Confirmar contraseña", max_length=100)
 
     class Meta:
         verbose_name = "Usuario"
         verbose_name_plural = "Usuarios"
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
 

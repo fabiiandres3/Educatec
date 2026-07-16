@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between mb-3">
         <h2>Docentes Registrados</h2>
 
-        <a href="{% url 'seleccionar_usuario_docente' %}" class="btn btn-success">
+        <a href="#" class="btn btn-success">
             Nuevo Docente
         </a>
     </div>
@@ -17,6 +17,7 @@
     <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
+                <th>ID</th>
                 <th>Usuario</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
@@ -29,6 +30,7 @@
         <tbody>
             {% for docente in docentes %}
             <tr>
+                <td>{{ docente.id }}</td>
                 <td>{{ docente.username }}</td>
                 <td>{{ docente.first_name }}</td>
                 <td>{{ docente.last_name }}</td>
