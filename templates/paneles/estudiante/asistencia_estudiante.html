@@ -49,23 +49,19 @@
     <table style="width:100%; border-collapse:collapse;">
         <thead style="background:#f4f7fc;">
             <tr>
+                <th style="padding:15px; text-align:left; color:#081b3a;">Curso</th>
+                <th style="padding:15px; text-align:left; color:#081b3a;">Nombre y apellido</th>
+                <th style="padding:15px; text-align:left; color:#081b3a;">Materia</th>
                 <th style="padding:15px; text-align:left; color:#081b3a;">Fecha</th>
                 <th style="padding:15px; text-align:center; color:#081b3a;">Estado</th>
             </tr>
         </thead>
         <tbody>
-            {% for asis in asistencias %}
+            {% for alumno in alumnos %}
             <tr style="border-bottom:1px solid #e5e7eb;">
-                <td style="padding:15px;">{{ asis.fecha|date:"d \d\e F \d\e Y" }}</td>
-                <td style="padding:15px; text-align:center;">
-                    <span style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600;
-                        background:{% if asis.estado == 'presente' %}#d1fae5{% elif asis.estado == 'tardanza' %}#fef3c7{% else %}#fee2e2{% endif %};
-                        color:{% if asis.estado == 'presente' %}#065f46{% elif asis.estado == 'tardanza' %}#92400e{% else %}#991b1b{% endif %};">
-                        {% if asis.estado == 'presente' %}✅ Presente
-                        {% elif asis.estado == 'tardanza' %}⏰ Tardanza
-                        {% else %}❌ Ausente{% endif %}
-                    </span>
-                </td>
+                <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.first_name }} {{ last_name }}</th>
+                <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.first_name }} {{ last_name }}</th>
+                <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.first_name }} {{ last_name }}</th>
             </tr>
             {% empty %}
             <tr><td colspan="2" style="text-align:center; padding:30px; color:#64748b;">No hay registros de asistencia.</td></tr>
