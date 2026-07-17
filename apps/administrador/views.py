@@ -51,3 +51,44 @@ def Eliminar_docente(request, docente_id):
             "docente": docente,
         },
     )
+
+
+def Listar_usuarios(request):
+    usuarios = Usuario.objects.filter(rol__nombre="usuario")
+
+    return render(request, "admin/usuarios/usuarios.html", {"usuarios": usuarios})
+
+
+def Editar_usuario(request, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+
+    if request.method == "POST":
+        usuario_form = EditarUsuarioForm(request.POST, instance=usuario)
+
+        if usuario_form.is_valid():
+            usuario_form.save()
+            return redirect("listar_docentes")
+    else:
+        usuario_form = EditarUsuarioForm(instance=usuario)
+
+    return render(request,"admin/docente/editar_docente.html",
+        {
+            "usuario_form": usuario_form,
+        },
+    )
+
+
+def Eliminar_usuario(request, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+
+    if request.method == "POST":
+        usuario.delete()
+        return redirect("listar_usuario")
+
+    return render(
+        request,
+        "admin/docente/eliminar_docente.html",
+        {
+            "usuario": usuario,
+        },
+    )

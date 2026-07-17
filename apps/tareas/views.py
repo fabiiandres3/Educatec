@@ -1,6 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
-# from .decorators import requiere_login, requiere_rol
 from urllib.parse import urlparse, parse_qs
 from django.db import transaction
 from .models import Tareas, Imagen, ArchivoTarea, Video, RespuestaAlumno, Calificacion
@@ -121,44 +119,25 @@ def Detalle_tarea(request, tarea_id):
 
     tarea = get_object_or_404(Tareas, id=tarea_id)
 
-
     if request.method == "POST":
-
         Respuesta_alumno(request, tarea)
-
-        nota = calcular_nota_final(
-            request.user,
-            tarea
-        )
-
-        Calificacion.objects.update_or_create(
-            alumno=request.user,
-            tarea=tarea,
-            defaults={
-                "nota": nota
-            }
-        )
-
         return redirect("listar_tareas")
-
 
     preguntas = tarea.preguntas.all()
 
-
     for pregunta in preguntas:
-
         pregunta.respondida = RespuestaAlumno.objects.filter(
             alumno=request.user,
             pregunta=pregunta
         ).exists()
 
-
-    # AQUÍ CALCULAS LA NOTA PARA MOSTRARLA
-    nota = calcular_nota_final(
-        request.user,
-        tarea
-    )
-
+    try:
+        nota = Calificacion.objects.get(
+            alumno=request.user,
+            tarea=tarea
+        ).nota
+    except Calificacion.DoesNotExist:
+        nota = 0.0
 
     return render(
         request,
@@ -166,6 +145,6 @@ def Detalle_tarea(request, tarea_id):
         {
             "tarea": tarea,
             "preguntas": preguntas,
-            "nota": nota
-        }
+            "nota": nota,
+        },
     )

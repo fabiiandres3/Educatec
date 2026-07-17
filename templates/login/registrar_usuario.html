@@ -20,30 +20,15 @@
               <h3>Crear Cuenta</h3>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">{{ form.first_name.label }}</label>
-                {{ form.first_name }}
-            </div>
+            <form action="{% url 'registrar_usuario' %}" method="POST">
+              {% csrf_token %}
 
-            <div class="mb-3">
-                <label class="form-label">{{ form.last_name.label }}</label>
-                {{ form.last_name }}
-            </div>
+              {{ form.as_p }}
 
-            <div class="mb-3">
-                <label class="form-label">{{ form.email.label }}</label>
-                {{ form.email }}
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">{{ form.password.label }}</label>
-                {{ form.password }}
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">{{ form.password2.label }}</label>
-                {{ form.password2 }}
-            </div>
+              <button type="submit" class="btn btn-success">
+                  Enviar
+              </button>
+          </form>
           </div>
         </div>
       </div>

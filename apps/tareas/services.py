@@ -1,6 +1,7 @@
 from .models import Pregunta, OpcionesRespuesta, RespuestaCorrecta, RespuestaAlumno
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
+from .models import Calificacion
 
 
 def Crear_preguntas(request, tarea):
@@ -82,28 +83,42 @@ def Respuesta_alumno(request, tarea):
                     nota_obtenida=0,
                 )
 
-            if opcion.es_correcta:
-                respuesta.nota_obtenida = pregunta.puntaje
-            else:
-                respuesta.nota_obtenida = 0
+                if opcion.es_correcta:
+                    respuesta.nota_obtenida = pregunta.puntaje
+                else:
+                    respuesta.nota_obtenida = 0
 
-            respuesta.save()
+                respuesta.save()
 
         indice += 1
 
+    # Guardar la nota final
+    nota = calcular_nota_final(request.user, tarea)
+
+    calificacion, creada = Calificacion.objects.get_or_create(
+        alumno=request.user,
+        tarea=tarea,
+        defaults={"nota": nota},
+    )
+
 
 def calcular_nota_final(alumno, tarea):
-
     respuestas = RespuestaAlumno.objects.filter(alumno=alumno, pregunta__tarea=tarea)
+
+    if not respuestas.exists():
+        return 0.0
+
+    # Si hay preguntas abiertas sin calificar, no mostrar nota aún
+    if respuestas.filter(pregunta__tipo="texto", calificada=False).exists():
+        return 0.0
 
     puntos_obtenidos = respuestas.aggregate(total=Sum("nota_obtenida"))["total"] or 0
 
     puntos_totales = tarea.preguntas.aggregate(total=Sum("puntaje"))["total"] or 0
 
     if puntos_totales == 0:
-        return 1.0
+        return 0.0
 
-    # escala de 1.0 a 5.0
     nota = (float(puntos_obtenidos) / float(puntos_totales)) * 4 + 1
 
     return round(nota, 2)

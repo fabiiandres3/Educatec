@@ -105,6 +105,7 @@ class RespuestaAlumno(models.Model):
     es_correcta = models.BooleanField(default=False)
 
     nota_obtenida = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    calificada = models.BooleanField(default=False)
 
 
 class Calificacion(models.Model):

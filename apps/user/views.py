@@ -28,56 +28,70 @@ def Registrar_usuario(request):
         form = RegistrarForm(request.POST)
 
         if form.is_valid():
+            username = form.cleaned_data["username"]
+            email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
             password2 = form.cleaned_data["password2"]
 
             if password != password2:
                 form.add_error("password2", "Las contraseñas no coinciden.")
-                return render(request, "user/registrar.html", {"form": form})
+                return render(request, "login/registrar_usuario.html", {"form": form})
+
+            if Usuario.objects.filter(username=username).exists():
+                form.add_error("username", "Este nombre de usuario ya existe.")
+                return render(request, "login/registrar_usuario.html", {"form": form})
+
+            if Usuario.objects.filter(email=email).exists():
+                form.add_error("email", "Este correo ya está registrado.")
+                return render(request, "login/registrar_usuario.html", {"form": form})
+
+            try:
+                rol_usuario = Roles.objects.get(nombre__iexact="usuario")
+            except Roles.DoesNotExist:
+                form.add_error(None, "No existe el rol 'usuario'.")
+                return render(request, "login/registrar_usuario.html", {"form": form})
 
             usuario = form.save(commit=False)
-
-            # Username automático usando el correo
-            usuario.username = usuario.email
-
-            # Encriptar contraseña
+            usuario.username = username
+            usuario.email = email
+            usuario.rol = rol_usuario
             usuario.set_password(password)
-
             usuario.save()
 
             messages.success(request, "Usuario registrado correctamente.")
-            return redirect("iniciar_sesion")
+            return redirect("verificacion")
 
     else:
         form = RegistrarForm()
 
-    return render(request, "user/registrar.html", {"form": form})
-
+    return render(request, "login/registrar_usuario.html", {"form": form})
 
 def iniciar_sesion(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
+    if request.user.is_authenticated:
+        return redirect("index")
 
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
+    form = LoginForm(request.POST or None)
 
-            usuario = authenticate(
-                request,
-                username=username,
-                password=password
-            )
+    if request.method == "POST" and form.is_valid():
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password"]
 
-            if usuario is not None:
-                login(request, usuario)
-                return redirect("index")
-            else:
-                messages.error(request, "Usuario o contraseña incorrectos.")
+        usuario = authenticate(
+            request=request,
+            username=username,
+            password=password
+        )
 
-    else:
-        form = LoginForm()
+        if usuario is not None:
+            login(request, usuario)
+            messages.success(request, "Bienvenido.")
+            return redirect("index")
 
-    return render(request, "login/login.html", {"form": form})
+        messages.error(request, "Usuario o contraseña incorrectos.")
+
+    return render(request, "login/login.html", {
+        "form": form
+    })
 
 
 def cerrar_sesion(request):
@@ -86,8 +100,7 @@ def cerrar_sesion(request):
 
 
 def verificacion(request):
-    if request.user.is_authenticated:
-        return render(request, "login/verificacion.html")
+    return render(request, "login/verificacion.html")
     
 def dashboard(request):
     return render(request, "admin/dashboard.html")

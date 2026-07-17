@@ -1,0 +1,38 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Editar Docente{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Editar Usuario</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for campo in usuario_form %}
+        <div class="mb-3">
+            <label class="form-label">{{ campo.label }}</label>
+
+            {{ campo }}
+
+            {% for error in campo.errors %}
+                <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-warning">
+            Actualizar
+        </button>
+
+        <a href="{% url 'listar_usuarios' %}" class="btn btn-secondary">
+            Cancelar
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

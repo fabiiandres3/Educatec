@@ -1,0 +1,31 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Eliminar Alumno{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="text-black">Eliminar Alumno</h2>
+
+    <div class="alert alert-danger">
+        ¿Está seguro de eliminar al docente
+        <strong>{{ docente.first_name }} {{ docente.last_name }}</strong>?
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button type="submit" class="btn btn-danger">
+            Sí, eliminar
+        </button>
+
+        <a href="{% url 'listar_alumno' %}" class="btn btn-secondary">
+            Cancelar
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

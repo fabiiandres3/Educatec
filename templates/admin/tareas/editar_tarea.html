@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Editar tarea</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ tarea_form.as_p }}
+
+        <hr>
+
+        <h4>Imágenes actuales</h4>
+
+        {% for imagen in imagenes %}
+            <div class="mb-2">
+
+                <img src="{{ imagen.imagen.url }}"
+                     width="150">
+
+                <label>
+                    <input type="checkbox"
+                           name="eliminar_imagenes"
+                           value="{{ imagen.id }}">
+                    Eliminar
+                </label>
+
+            </div>
+        {% endfor %}
+
+        <input type="file"
+               name="imagenes"
+               multiple
+               class="form-control">
+
+        <hr>
+
+        <h4>Archivos actuales</h4>
+
+        {% for archivo in archivos %}
+            <div>
+
+                {{ archivo.archivo.name }}
+
+                <label>
+                    <input type="checkbox"
+                           name="eliminar_archivos"
+                           value="{{ archivo.id }}">
+                    Eliminar
+                </label>
+
+            </div>
+        {% endfor %}
+
+        <input type="file"
+               name="archivos"
+               multiple
+               class="form-control">
+
+        <hr>
+
+        <h4>Videos actuales</h4>
+
+        {% for video in videos %}
+            <div>
+
+                {{ video.video }}
+
+                <label>
+                    <input type="checkbox"
+                           name="eliminar_videos"
+                           value="{{ video.id }}">
+                    Eliminar
+                </label>
+
+            </div>
+        {% endfor %}
+
+        <hr>
+
+        <h4>Preguntas</h4>
+
+        {% for pregunta in tarea.pregunta_set.all %}
+
+            <div class="card mb-3">
+
+                <div class="card-body">
+
+                    <input type="text"
+                           class="form-control mb-2"
+                           value="{{ pregunta.descripcion }}"
+                           readonly>
+
+                    <input type="number"
+                           class="form-control mb-2"
+                           value="{{ pregunta.puntaje }}"
+                           readonly>
+
+                    {% if pregunta.tipo == 'texto' %}
+
+                        {% for respuesta in pregunta.respuestacorrecta_set.all %}
+
+                            <input type="text"
+                                   class="form-control"
+                                   value="{{ respuesta.respuesta }}"
+                                   readonly>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                    {% if pregunta.tipo == 'opcion' %}
+
+                        {% for opcion in pregunta.opcionesrespuesta_set.all %}
+
+                            <div class="form-check">
+
+                                <input type="radio"
+                                       {% if opcion.es_correcta %}checked{% endif %}
+                                       disabled>
+
+                                <label>
+
+                                    {{ opcion.opcion }}
+
+                                </label>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+        <button type="submit"
+                class="btn btn-primary">
+
+            Guardar cambios
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

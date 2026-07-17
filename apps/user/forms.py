@@ -8,10 +8,10 @@ class RegistrarForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = [
+            "username",
+            "email",
             "first_name",
             "last_name",
-            "email",
-            "password"
         ]
 
 class EditarUsuarioForm(forms.ModelForm):
@@ -25,16 +25,6 @@ class EditarUsuarioForm(forms.ModelForm):
         ]
 
 class LoginForm(forms.Form):
-    username = forms.CharField(
-        label="Usuario",
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Ingrese su usuario"}
-        ),
-    )
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
 
-    password = forms.CharField(
-        label="Contraseña",
-        widget=forms.PasswordInput(
-            attrs={"class": "form-control", "placeholder": "Ingrese su contraseña"}
-        ),
-    )
