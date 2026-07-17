@@ -1,6 +1,7 @@
 from django.db import models
 from apps.user.models import Usuario
 from apps.cursos.models import Cursos
+from apps.clases.models import Clases
 
 class Alumnos(models.Model):
     usuario = models.OneToOneField(
@@ -11,6 +12,7 @@ class Alumnos(models.Model):
 
     codigo = models.CharField(max_length=20, unique=True, blank=True, null=True)
     curso = models.ForeignKey(Cursos, on_delete=models.SET_NULL, blank=True, null=True)
+    clase = models.ForeignKey(Clases, on_delete=models.SET_NULL, blank=True, null=True)
     fecha_nacimiento = models.DateField(blank=True, null=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     direccion = models.TextField(blank=True, null=True)

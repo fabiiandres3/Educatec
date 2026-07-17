@@ -59,8 +59,9 @@
         <tbody>
             {% for alumno in alumnos %}
             <tr style="border-bottom:1px solid #e5e7eb;">
-                <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.first_name }} {{ last_name }}</th>
-                <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.first_name }} {{ last_name }}</th>
+                <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.curso__nombre }}</th>
+                <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.usuario__first_name }} {{ alumno.usuario__last_name }}</th>
+                <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.clase__titulo }}</th>
                 <th style="padding:15px; text-align:left; color:#081b3a;">{{ alumno.first_name }} {{ last_name }}</th>
             </tr>
             {% empty %}
