@@ -13,4 +13,10 @@ urlpatterns = [
     path("cerrar/sesion/", views.cerrar_sesion, name="cerrar_sesion"),
     path('verificacion/', views.verificacion, name='verificacion'),
     path('dashboard/', views.dashboard, name='dashboard'),
+
+
+    #ADMINISTRADOR
+    path('listar_usuarios/', views.Listar_usuarios, name='listar_usuarios'),
+    path('editar_usuario/<int:usuario_id>/', views.Editar_usuario, name='editar_usuario'),
+    path('eliminar_usuario/<int:usuario_id>/', views.Eliminar_usuario, name='eliminar_usuario'),
 ]
