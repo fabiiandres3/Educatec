@@ -7,12 +7,12 @@ urlpatterns = [
     path('primaria/', views.primaria, name='primaria'),
     path('secundaria/', views.secundaria, name='secundaria'),
 
-    #De aqui para lante LOGICA
+    #LOGIN del proyecto
     path('registrar_usuario/', views.Registrar_usuario, name='registrar_usuario'),
     path('login/', views.iniciar_sesion, name='login'),
     path("cerrar/sesion/", views.cerrar_sesion, name="cerrar_sesion"),
     path('verificacion/', views.verificacion, name='verificacion'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/', views.dashboard, name='dashboard_administrador'),
 
 
     #ADMINISTRADOR

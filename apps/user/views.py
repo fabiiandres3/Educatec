@@ -3,6 +3,7 @@ from django.contrib import messages
 from apps.user.models import Usuario, Roles
 from apps.user.forms import RegistrarForm, LoginForm, EditarUsuarioForm
 from django.contrib.auth import authenticate, login, logout
+from apps.user import decorators
 
 # Create your views here.
 
@@ -66,7 +67,9 @@ def Registrar_usuario(request):
 
     return render(request, "login/registrar_usuario.html", {"form": form})
 
+
 def iniciar_sesion(request):
+
     if request.user.is_authenticated:
         return redirect("index")
 
@@ -76,22 +79,18 @@ def iniciar_sesion(request):
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
 
-        usuario = authenticate(
-            request=request,
-            username=username,
-            password=password
-        )
+        usuario = authenticate(request=request, username=username, password=password)
 
         if usuario is not None:
             login(request, usuario)
+
             messages.success(request, "Bienvenido.")
+
             return redirect("index")
 
         messages.error(request, "Usuario o contraseña incorrectos.")
 
-    return render(request, "login/login.html", {
-        "form": form
-    })
+    return render(request, "login/login.html", {"form": form})
 
 
 def cerrar_sesion(request):
@@ -101,10 +100,16 @@ def cerrar_sesion(request):
 
 def verificacion(request):
     return render(request, "login/verificacion.html")
-    
+
+
+@decorators.redireccionar_por_rol
+def index(request):
+    pass
+
+
+@decorators.rol_requerido("administrador")
 def dashboard(request):
     return render(request, "admin/dashboard.html")
-
 
 
 #####             ADMINISTRADOR               #####################
@@ -128,7 +133,9 @@ def Editar_usuario(request, usuario_id):
     else:
         usuario_form = EditarUsuarioForm(instance=usuario)
 
-    return render(request,"admin/docente/editar_docente.html",
+    return render(
+        request,
+        "admin/docente/editar_docente.html",
         {
             "usuario_form": usuario_form,
         },
@@ -149,4 +156,3 @@ def Eliminar_usuario(request, usuario_id):
             "usuario": usuario,
         },
     )
-
