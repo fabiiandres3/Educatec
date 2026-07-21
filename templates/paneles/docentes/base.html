@@ -21,19 +21,19 @@
             <span>Educatec</span>
         </div>
         <ul class="menu">
-            <li class="{% block active_inicio %}{% endblock %}" onclick="window.location='{% url 'dashboard_profesor' %}'">
+            <li class="{% block active_inicio %}{% endblock %}" onclick="window.location='{% url 'dashboard_docente' %}'">
                 <i class="fa-solid fa-house"></i> Inicio
             </li>
-            <li class="{% block active_cursos %}{% endblock %}" onclick="window.location='{% url 'cursos_profesor' %}'">
+            <li class="{% block active_cursos %}{% endblock %}" onclick="window.location='{% url 'cursos_docente' %}'">
                 <i class="fa-solid fa-school"></i> Mis Grados
             </li>
-            <li class="{% block active_calificaciones %}{% endblock %}" onclick="window.location='{% url 'calificaciones_profesor' %}'">
+            <li class="{% block active_calificaciones %}{% endblock %}" onclick="window.location='{% url 'calificaciones_docente' %}'">
                 <i class="fa-solid fa-chart-column"></i> Calificaciones
             </li>
-            <li class="{% block active_asistencia %}{% endblock %}" onclick="window.location='{% url 'asistencia_profesor' %}'">
+            <li class="{% block active_asistencia %}{% endblock %}" onclick="window.location='{% url 'asistencia_docente' %}'">
                 <i class="fa-solid fa-calendar-check"></i> Asistencia
             </li>
-            <li class="{% block active_configuracion %}{% endblock %}" onclick="window.location='{% url 'configuracion_profesor' %}'">
+            <li class="{% block active_configuracion %}{% endblock %}" onclick="window.location='{% url 'configuracion_deocente' %}'">
                 <i class="fa-solid fa-gear"></i> Configuración
             </li>
             <li id="logoutBtn">
@@ -50,7 +50,7 @@
     </main>
 </div>
 
-<script src="{% static 'js/paneles/dashboard_profesor.js' %}"></script>
+<script src="{% static 'js/paneles/dashboard_docente.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -69,7 +69,7 @@ def rol_requerido(*roles_permitidos):
                 return redirect("panel_alumno")
 
             elif rol == "usuario":
-                return redirect("panel_usuario")"""
+                return redirect("verificacion")"""
 
             return redirect("login")
 

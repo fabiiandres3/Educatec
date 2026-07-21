@@ -1,4 +1,4 @@
-{% extends 'paneles/profesor/base.html' %}
+{% extends 'paneles/docentes/base.html' %}
 {% block title %}Panel Docente{% endblock %}
 {% block active_inicio %}active{% endblock %}
 {% block search_placeholder %}Buscar estudiante...{% endblock %}
@@ -109,8 +109,8 @@
     <div class="right-panel">
         <div class="section-card">
             <h4>Acciones Rápidas</h4>
-            <button class="action-btn" onclick="window.location='{% url 'calificaciones_profesor' %}'">📊 Calificaciones</button>
-            <button class="action-btn" onclick="window.location='{% url 'asistencia_profesor' %}'">✅ Registrar Asistencia</button>
+            <button class="action-btn" onclick="window.location='{% url 'calificaciones_docente' %}'">📊 Calificaciones</button>
+            <button class="action-btn" onclick="window.location='{% url 'asistencia_docente' %}'">✅ Registrar Asistencia</button>
         </div>
         <div class="section-card">
             <h4>Mis Materias</h4>

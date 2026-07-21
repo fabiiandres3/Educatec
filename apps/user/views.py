@@ -7,7 +7,9 @@ from apps.user import decorators
 
 # Create your views here.
 
+###################  INDEX  ####################
 
+@decorators.redireccionar_por_rol
 def index(request):
     return render(request, "index.html")
 
@@ -22,6 +24,10 @@ def primaria(request):
 
 def secundaria(request):
     return render(request, "programas/secundaria.html")
+
+
+
+###################  LOGIN  ####################
 
 
 def Registrar_usuario(request):
@@ -93,34 +99,32 @@ def iniciar_sesion(request):
     return render(request, "login/login.html", {"form": form})
 
 
+@decorators.rol_requerido("administrador")
 def cerrar_sesion(request):
     logout(request)
     return redirect("index")
 
-
+@decorators.rol_requerido("usuario")
 def verificacion(request):
     return render(request, "login/verificacion.html")
 
 
-@decorators.redireccionar_por_rol
-def index(request):
-    pass
 
+
+###################  DASHBOARD ADMINISTRADOR  ######################
 
 @decorators.rol_requerido("administrador")
 def dashboard(request):
     return render(request, "admin/dashboard.html")
 
 
-#####             ADMINISTRADOR               #####################
-
-
+@decorators.rol_requerido("administrador")
 def Listar_usuarios(request):
     usuarios = Usuario.objects.filter(rol__nombre="usuario")
 
     return render(request, "admin/usuarios/usuarios.html", {"usuarios": usuarios})
 
-
+@decorators.rol_requerido("administrador")
 def Editar_usuario(request, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
 
@@ -141,7 +145,7 @@ def Editar_usuario(request, usuario_id):
         },
     )
 
-
+@decorators.rol_requerido("administrador")
 def Eliminar_usuario(request, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
 

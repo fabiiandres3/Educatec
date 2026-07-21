@@ -1,41 +1,40 @@
 from django.shortcuts import render
 from .selectors import obtener_alumnos_asistencia
 
-# ─────────────────────────────────────────
-# PROFESOR
-# ─────────────────────────────────────────
+###################  DASHBOARD DOCENTE  ######################
+
+#@decorators.rol_requerido("docentes")
+def dashboard_docente(request):
+    return render(request, "paneles/docentes/dashboard_docente.html")
 
 
-def dashboard_profesor(request):
-    return render(request, "paneles/profesor/dashboard_profesor.html")
+def cursos_docente(request):
+    return render(request, "paneles/docentes/cursos_profesor.html")
 
 
-def cursos_profesor(request):
-    return render(request, "paneles/profesor/cursos_profesor.html")
+def calificaciones_docente(request):
+
+    return render(request, "paneles/docentes/calificaciones_docente.html")
 
 
-def calificaciones_profesor(request):
-
-    return render(request, "paneles/profesor/calificaciones_profesor.html")
-
-
-def asistencia_profesor(request):
+def asistencia_docente(request):
     return render(
         request,
-        'paneles/profesor/asistencia_profesor.html'
+        'paneles/docentes/asistencia_docente.html'
     )
 
 
 def historial_asistencia(request):
-    return render(request, "paneles/profesor/historial_asistencia.html")
+    return render(request, "paneles/docentes/historial_asistencia.html")
 
 
 def guardar_asistencia(request):
-    return render(request, "paneles/profesor/guardar_asistencia.html")
+    return render(request, "paneles/docentes"
+    "/guardar_asistencia.html")
 
 
-def configuracion_profesor(request):
-    return render(request, "paneles/profesor/configuracion_profesor.html")
+def configuracion_docente(request):
+    return render(request, "paneles/docentes/configuracion_docente.html")
 
 
 # ─────────────────────────────────────────
