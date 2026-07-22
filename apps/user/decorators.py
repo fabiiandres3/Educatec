@@ -1,40 +1,38 @@
 from functools import wraps
+
 from django.shortcuts import redirect
 
 
-def redireccionar_por_rol(view_func):
+# =========================================================
+# OBTENER EL PANEL SEGÚN EL ROL
+# =========================================================
 
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
+def obtener_panel_por_rol(rol):
 
-        # Verificar autenticación
-        if not request.user.is_authenticated:
-            return redirect("login")
+    rol = rol.lower().strip()
 
-        # Verificar que tenga rol
-        if not request.user.rol:
-            return redirect("login")
+    if rol == "administrador":
 
-        # Obtener rol
-        rol = request.user.rol.nombre.lower()
+        return "dashboard_administrador"
 
-        # Redireccionar según el rol
-        if rol == "administrador":
-            return redirect("dashboard_administrador")
+    elif rol == "docente":
 
-        """elif rol == "docente":
-            return redirect("panel_docente")
+        return "dashboard_docente"
 
-        elif rol == "alumno":
-            return redirect("panel_alumno")
+    elif rol == "alumno":
 
-        elif rol == "usuario":
-            return redirect("panel_usuario")"""
+        return "dashboard_alumno"
 
-        return redirect("login")
+    elif rol == "usuario":
 
-    return wrapper
+        return "verificacion"
 
+    return "index"
+
+
+# =========================================================
+# DECORADOR PARA PROTEGER VISTAS SEGÚN ROL
+# =========================================================
 
 def rol_requerido(*roles_permitidos):
 
@@ -43,36 +41,74 @@ def rol_requerido(*roles_permitidos):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
 
-            # Usuario no autenticado
+            # =================================================
+            # 1. USUARIO NO AUTENTICADO
+            # =================================================
+
             if not request.user.is_authenticated:
+
                 return redirect("login")
 
-            # Usuario sin rol
+
+            # =================================================
+            # 2. USUARIO SIN ROL
+            # =================================================
+
             if not request.user.rol:
+
                 return redirect("login")
 
-            # Obtener rol
-            rol = request.user.rol.nombre.lower()
 
-            # Verificar permiso
-            if rol in roles_permitidos:
-                return view_func(request, *args, **kwargs)
+            # =================================================
+            # 3. OBTENER ROL DEL USUARIO
+            # =================================================
 
-            # Si no tiene permiso, devolverlo a su panel
-            if rol == "administrador":
-                return redirect("dashboard_administrador")
+            rol_usuario = (
+                request.user.rol.nombre
+                .lower()
+                .strip()
+            )
 
-            """elif rol == "docente":
-                return redirect("panel_docente")
 
-            elif rol == "alumno":
-                return redirect("panel_alumno")
+            # =================================================
+            # 4. NORMALIZAR ROLES PERMITIDOS
+            # =================================================
 
-            elif rol == "usuario":
-                return redirect("verificacion")"""
+            roles_normalizados = [
 
-            return redirect("login")
+                rol.lower().strip()
+
+                for rol in roles_permitidos
+
+            ]
+
+
+            # =================================================
+            # 5. VERIFICAR SI TIENE PERMISO
+            # =================================================
+
+            if rol_usuario in roles_normalizados:
+
+                return view_func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+
+
+            # =================================================
+            # 6. NO TIENE PERMISO
+            # ENVIAR A SU PROPIO PANEL
+            # =================================================
+
+            return redirect(
+                obtener_panel_por_rol(
+                    rol_usuario
+                )
+            )
+
 
         return wrapper
+
 
     return decorador

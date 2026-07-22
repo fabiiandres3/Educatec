@@ -1,66 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cuenta en Verificación</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-
-<div class="container mt-5">
-
-    <div class="card shadow border-0">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="card shadow border-0">
         <div class="card-body text-center p-5">
+          <h1 class="mb-4">Bienvenido {{ request.user.nombre }}</h1>
 
-            <h1 class="mb-4">
-                Bienvenido {{ request.user.nombre }}
-            </h1>
+          <div class="alert alert-warning">
+            <h4>Cuenta en verificación</h4>
 
-            <div class="alert alert-warning">
+            <p class="mb-0">Tu cuenta fue creada correctamente.</p>
+          </div>
 
-                <h4>Cuenta en verificación</h4>
+          <p class="mt-3">Un administrador debe revisar tu solicitud y asignarte un rol dentro de la plataforma.</p>
 
-                <p class="mb-0">
-                    Tu cuenta fue creada correctamente.
-                </p>
+          <ul class="list-group mt-4">
+            <li class="list-group-item">Estudiante</li>
 
-            </div>
+            <li class="list-group-item">Profesor</li>
+          </ul>
 
-            <p class="mt-3">
-                Un administrador debe revisar tu solicitud y asignarte un rol dentro de la plataforma.
-            </p>
+          <p class="mt-4 text-muted">Cuando tu cuenta sea aprobada podrás acceder a todas las funciones del sistema.</p>
 
-            <ul class="list-group mt-4">
-
-                <li class="list-group-item">
-                    Estudiante
-                </li>
-
-                <li class="list-group-item">
-                    Profesor
-                </li>
-
-            </ul>
-
-            <p class="mt-4 text-muted">
-                Cuando tu cuenta sea aprobada podrás acceder a todas las funciones del sistema.
-            </p>
-
-            <a href="{% url 'cerrar_sesion' %}"
-            class="btn btn-danger mt-3">
-
-                Cerrar sesión
-
-            </a>
-
+          <a href="{% url 'cerrar_sesion' %}" class="btn btn-danger">Cerrar sesión</a>
         </div>
-
+      </div>
     </div>
-
-</div>
-
-</body>
+  </body>
 </html>

@@ -43,7 +43,7 @@ def configuracion_docente(request):
 
 
 def dashboard_estudiante(request):
-    return render(request, "paneles/estudiante/dashboard_estudiante.html")
+    return render(request, "paneles/alumnos/dashboard_estudiante.html")
 
 
 def materias_estudiante(request):
