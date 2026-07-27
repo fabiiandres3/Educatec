@@ -1,7 +1,7 @@
 {% extends 'paneles/docentes/base.html' %}
 {% block title %}Panel Docente{% endblock %}
 {% block active_inicio %}active{% endblock %}
-{% block search_placeholder %}Buscar estudiante...{% endblock %}
+{% block search_placeholder %}Buscar alumnos...{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -16,7 +16,7 @@
 {% block content %}
 <div class="topbar">
     <div class="welcome">
-        <h2>Bienvenido, {{ profesor.nombre }}</h2>
+        <h2>Bienvenido, {{ docente.nombre }}</h2>
         <p>Resumen de tu actividad académica</p>
     </div>
     <div class="user-area">
@@ -25,10 +25,10 @@
             <span class="notification-count">{{ mensajes_no_leidos|default:"0" }}</span>
         </div>
         <div class="profile">
-            <img src="https://i.pravatar.cc/120?img=3" alt="Profesor Avatar" class="profile-img">
+            <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
             <div>
-                <strong>{{ profesor.nombre }}</strong>
-                <small>Profesor</small>
+                <strong>{{ docente.nombre }}</strong>
+                <small>docente</small>
             </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
 <div class="stats">
     <div class="stat-card">
         <div class="icon blue"><i class="fa-solid fa-user-graduate"></i></div>
-        <h3>{{ total_estudiantes|default:"0" }}</h3><p>Estudiantes</p>
+        <h3>{{ total_alumnoss|default:"0" }}</h3><p>alumnoss</p>
     </div>
     <div class="stat-card">
         <div class="icon green"><i class="fa-solid fa-check"></i></div>

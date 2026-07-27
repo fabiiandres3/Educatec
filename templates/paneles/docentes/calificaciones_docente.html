@@ -1,8 +1,8 @@
-{% extends 'paneles/profesor/base.html' %}
+{% extends 'paneles/docentes/base.html' %}
 {% load dict_extras %}
 {% block title %}Calificaciones{% endblock %}
 {% block active_calificaciones %}active{% endblock %}
-{% block search_placeholder %}Buscar estudiante...{% endblock %}
+{% block search_placeholder %}Buscar alumnos...{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -151,7 +151,7 @@
 <div class="topbar">
     <div class="welcome">
         <h2>Calificaciones</h2>
-        <p>Registra y gestiona las notas de tus estudiantes</p>
+        <p>Registra y gestiona las notas de tus alumnoss</p>
     </div>
     <div class="user-area">
         <div class="notification">
@@ -159,10 +159,10 @@
             <span class="notification-count">0</span>
         </div>
         <div class="profile">
-            <img src="https://i.pravatar.cc/120?img=3" alt="Profesor Avatar" class="profile-img">
+            <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
             <div>
-                <strong>{{ profesor.nombre }}</strong>
-                <small>Profesor</small>
+                <strong>{{ docente.nombre }}</strong>
+                <small>docente</small>
             </div>
         </div>
     </div>
@@ -254,7 +254,7 @@
     <table>
         <thead>
             <tr>
-                <th>Estudiante</th>
+                <th>alumnos</th>
                 <th>Tarea</th>
                 <th>Parcial</th>
                 <th>Examen</th>
@@ -264,10 +264,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for estudiante in estudiantes %}
-            {% with cal=calificaciones_map|get_item:estudiante.id %}
-            <tr data-id="{{ estudiante.id }}">
-                <td>{{ estudiante.nombre }}</td>
+            {% for alumnos in alumnoss %}
+            {% with cal=calificaciones_map|get_item:alumnos.id %}
+            <tr data-id="{{ alumnos.id }}">
+                <td>{{ alumnos.nombre }}</td>
                 <td>
                     <input class="inp-tarea"
                            type="number"
@@ -299,7 +299,7 @@
                 </td>
                 <td>
                     <button class="btn-save-row btn-guardar"
-                            data-estudiante="{{ estudiante.id }}"
+                            data-alumnos="{{ alumnos.id }}"
                             data-curso="{{ curso_sel.id }}"
                             data-materia="{{ materia_sel.id }}">
                         <i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -310,7 +310,7 @@
             {% empty %}
             <tr>
                 <td colspan="7" style="text-align:center;color:#6b7280;">
-                    No hay estudiantes en este grado.
+                    No hay alumnoss en este grado.
                 </td>
             </tr>
             {% endfor %}
@@ -354,7 +354,7 @@ document.querySelectorAll('tr[data-id]').forEach(fila => {
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
 
         const body = new URLSearchParams({
-            estudiante_id: btn.dataset.estudiante,
+            alumnos_id: btn.dataset.alumnos,
             curso_id:      btn.dataset.curso,
             materia_id:    btn.dataset.materia,
             tarea:         tarea.value,

@@ -57,39 +57,39 @@ urlpatterns = [
     # =========================================================
 
     path(
-        "dashboard_alumno/",
-        views.dashboard_estudiante,
-        name="dashboard_alumno"
+        "dashboard_alumnos/",
+        views.dashboard_alumnos,
+        name="dashboard_alumnos"
     ),
 
     path(
-        "dashboard_alumno/materias/",
-        views.materias_estudiante,
-        name="materias_alumno"
+        "dashboard_alumnos/materias/",
+        views.materias_alumnos,
+        name="materias_alumnos"
     ),
 
     path(
-        "dashboard_alumno/calificaciones/",
-        views.calificaciones_estudiante,
-        name="calificaciones_alumno"
+        "dashboard_alumnos/calificaciones/",
+        views.calificaciones_alumnos,
+        name="calificaciones_alumnos"
     ),
 
     path(
-        "dashboard_alumno/asistencia/",
-        views.asistencia_estudiante,
-        name="asistencia_alumno"
+        "dashboard_alumnos/asistencia/",
+        views.asistencia_alumnos,
+        name="asistencia_alumnos"
     ),
 
     path(
-        "dashboard_alumno/logros/",
-        views.logros_estudiante,
-        name="logros_alumno"
+        "dashboard_alumnos/logros/",
+        views.logros_alumnos,
+        name="logros_alumnos"
     ),
 
     path(
-        "dashboard_alumno/configuracion/",
-        views.configuracion_estudiante,
-        name="configuracion_alumno"
+        "dashboard_alumnos/configuracion/",
+        views.configuracion_alumnos,
+        name="configuracion_alumnos"
     ),
 
 ]

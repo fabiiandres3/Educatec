@@ -1,4 +1,4 @@
-{% extends 'paneles/profesor/base.html' %}
+{% extends 'paneles/docentes/base.html' %}
 {% block title %}Configuración{% endblock %}
 {% block active_configuracion %}active{% endblock %}
 
@@ -29,10 +29,10 @@
       <span class="notification-count">0</span>
     </div>
     <div class="profile">
-      <img src="https://i.pravatar.cc/120?img=3" alt="Profesor Avatar" class="profile-img">
+      <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
       <div>
-        <strong>{{ profesor.nombre }}</strong>
-        <small>Profesor</small>
+        <strong>{{ docente.nombre }}</strong>
+        <small>docente</small>
       </div>
     </div>
   </div>
@@ -48,17 +48,17 @@
       <div class="config-group">
         <label>Nombre Completo</label>
         <input type="text" name="nombre" class="config-input"
-               value="{{ profesor.nombre|default:'' }}">
+               value="{{ docente.nombre|default:'' }}">
       </div>
       <div class="config-group">
         <label>Correo Electrónico</label>
         <input type="email" name="correo" class="config-input"
-               value="{{ profesor.correo|default:'' }}">
+               value="{{ docente.correo|default:'' }}">
       </div>
       <div class="config-group">
         <label>Teléfono</label>
         <input type="text" name="telefono" class="config-input"
-               value="{{ profesor.usuario.telefono|default:'' }}">
+               value="{{ docente.usuario.telefono|default:'' }}">
       </div>
       <div class="config-group">
         <label>Materias Asignadas</label>

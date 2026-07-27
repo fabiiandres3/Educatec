@@ -95,11 +95,7 @@ urlpatterns = [
     # ADMINISTRADOR
     # =========================================================
 
-    path(
-        "dashboard_administrador/",
-        views.dashboard,
-        name="dashboard_administrador"
-    ),
+    path("dashboard_administrador/", views.dashboard, name="dashboard_administrador"),
 
     path(
         "listar_usuarios/",

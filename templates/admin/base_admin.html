@@ -301,7 +301,7 @@
 
     <nav class="sidebar-nav">
         <div class="nav-section">Principal</div>
-        <a href="{#}" class="nav-link-admin {% if request.resolver_match.url_name == 'panel_admin' %}active{% endif %}">
+        <a href="{% url 'dashboard_administrador' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'panel_admin' %}active{% endif %}">
             <i class="fas fa-chart-pie"></i> Dashboard
         </a>
 
@@ -309,8 +309,8 @@
         <a href="{% url 'listar_usuarios' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_usuarios' %}active{% endif %}">
             <i class="fas fa-users"></i> Usuarios
         </a>
-        <a href="{% url 'listar_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_estudiantes' %}active{% endif %}">
-            <i class="fas fa-user-graduate"></i> Estudiantes
+        <a href="{% url 'listar_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_alumnoss' %}active{% endif %}">
+            <i class="fas fa-user-graduate"></i> alumnoss
         </a>
         <a href="{% url 'listar_docentes' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_docentes' %}active{% endif %}">
             <i class="fas fa-chalkboard-teacher"></i> Docentes

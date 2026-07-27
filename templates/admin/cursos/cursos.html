@@ -1,23 +1,48 @@
 {% extends 'admin/base_admin.html' %}
 
-{% block title %}Cursos{% endblock %}
+{% block title %}
+  Cursos
+{% endblock %}
 
 {% block content %}
-<h1 style="color: #333;">Cursos</h1>
+  <h1 style="color: #333;">Cursos</h1>
 
-<a href="{% url 'crear_curso' %}" class="btn btn-primary mb-3">Crear Curso</a>
-<p style="color: #666;">Lista de cursos disponibles.</p>
-{% if cursos %}
+  <a href="{% url 'crear_curso' %}" class="btn btn-primary mb-3">Crear Curso</a>
+  <p style="color: #666;">Lista de cursos disponibles.</p>
+  {% if cursos %}
     <ul>
-        {% for curso in cursos %}
-            <li class="pe-3 mt-3">
-                <strong class="form-label" style="color: #333;"> {{ curso.nombre }}</strong>
-                <a href="{% url 'editar_curso' curso.id %}" class="btn btn-sm btn-secondary">Editar</a>
-                <a href="{% url 'eliminar_curso' curso.id %}" class="btn btn-sm btn-danger">Eliminar</a>
-            </li>
-        {% endfor %}
+      {% for curso in cursos %}
+        <li class="pe-3 mt-3">
+          <strong class="form-label" style="color: #333;">{{ curso.nombre }}</strong>
+          <a href="{% url 'editar_curso' curso.id %}" class="btn btn-sm btn-secondary">Editar</a>
+          <a href="{% url 'eliminar_curso' curso.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+        </li>
+      {% endfor %}
     </ul>
-{% else %}
+  {% else %}
     <p style="color: #666;">No hay cursos disponibles.</p>
-{% endif %}
+  {% endif %}
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Curso</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for alumno in alumnos %}
+        <tr>
+          <td>{{ alumno.usuario.first_name }}</td>
+
+          <td>{{ alumno }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="2">No hay alumnos registrados.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

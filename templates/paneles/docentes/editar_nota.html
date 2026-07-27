@@ -1,4 +1,4 @@
-{% extends 'paneles/profesor/base.html' %}
+{% extends 'paneles/docente/base.html' %}
 
 {% block title %}Editar Nota{% endblock %}
 {% block active_calificaciones %}active{% endblock %}
@@ -17,8 +17,8 @@
     <form method="POST">
         {% csrf_token %}
         <div style="margin-bottom:15px;">
-            <label style="font-size:13px; color:#6b7280; margin-bottom:5px; display:block;">Estudiante</label>
-            {{ form.estudiante }}
+            <label style="font-size:13px; color:#6b7280; margin-bottom:5px; display:block;">alumnos</label>
+            {{ form.alumnos }}
         </div>
         <div style="margin-bottom:15px;">
             <label style="font-size:13px; color:#6b7280; margin-bottom:5px; display:block;">Materia</label>
@@ -30,7 +30,7 @@
         </div>
         <div style="display:flex; gap:10px;">
             <button type="submit" class="btn-save">Actualizar Nota</button>
-            <a href="{% url 'calificaciones_profesor' %}"
+            <a href="{% url 'calificaciones_docente' %}"
                style="background:#f3f4f6; color:#081b3a; border:none; padding:12px 20px; border-radius:10px; text-decoration:none; display:inline-block;">
                Cancelar
             </a>

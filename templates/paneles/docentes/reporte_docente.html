@@ -1,8 +1,8 @@
-{% extends 'paneles/profesor/base.html' %}
+{% extends 'paneles/docente/base.html' %}
 {% load dict_extras %}
 {% block title %}Reporte de Notas{% endblock %}
 {% block active_calificaciones %}active{% endblock %}
-{% block search_placeholder %}Buscar estudiante...{% endblock %}
+{% block search_placeholder %}Buscar alumnos...{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -102,7 +102,7 @@
 <div class="stats">
     <div class="stat-card">
         <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
-        <div><h3>{{ total_estudiantes }}</h3><p>Estudiantes</p></div>
+        <div><h3>{{ total_alumnoss }}</h3><p>alumnoss</p></div>
     </div>
     <div class="stat-card">
         <div class="stat-icon green"><i class="fa-solid fa-chart-line"></i></div>
@@ -200,7 +200,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Estudiante</th>
+                <th>alumnos</th>
                 <th>Grado</th>
                 <th>Materia</th>
                 <th style="text-align:center">Tarea</th>
@@ -214,8 +214,8 @@
             {% for cal in calificaciones %}
             <tr>
                 <td style="color:#94a3b8; font-size:12px;">{{ forloop.counter }}</td>
-                <td class="nombre-cell">{{ cal.estudiante.nombre }}</td>
-                <td class="num-cell">{{ cal.estudiante.curso.nombre }}</td>
+                <td class="nombre-cell">{{ cal.alumnos.nombre }}</td>
+                <td class="num-cell">{{ cal.alumnos.curso.nombre }}</td>
                 <td class="num-cell">{{ cal.materia.nombre }}</td>
                 <td class="num-cell" style="text-align:center">{{ cal.tarea }}</td>
                 <td class="num-cell" style="text-align:center">{{ cal.parcial }}</td>

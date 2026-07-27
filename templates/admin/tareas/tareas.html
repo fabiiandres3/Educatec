@@ -36,7 +36,7 @@
                 <td style="color:#64748b;">{{ tarea.docente }}</td>
                 <td style="color:#64748b;">{{ tarea.fecha_entrega|date:"d/m/Y" }}</td>
                 <td><span class="badge-rol badge-{{ t.estado }}">{{ t.get_estado_display }}</span></td>
-                <td style="color:#94a3b8;">{{ t.entregas }}/{{ t.total_estudiantes }}</td>
+                <td style="color:#94a3b8;">{{ t.entregas }}/{{ t.total_alumnoss }}</td>
                 <td>
 
                     <a href="{% url 'detalle_tarea' tarea.id %}"

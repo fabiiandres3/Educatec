@@ -1,7 +1,7 @@
-{% extends 'paneles/profesor/base.html' %}
+{% extends 'paneles/docente/base.html' %}
 {% block title %}Historial de Asistencia{% endblock %}
 {% block active_asistencia %}active{% endblock %}
-{% block search_placeholder %}Buscar estudiante...{% endblock %}
+{% block search_placeholder %}Buscar alumnos...{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -122,7 +122,7 @@
 <div class="section-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <h4 style="margin:0;"><i class="fa-solid fa-clock-rotate-left" style="color:#006eff;margin-right:8px;"></i>Historial de Asistencia</h4>
-        <a href="{% url 'asistencia_profesor' %}" class="btn-volver">
+        <a href="{% url 'asistencia_docente' %}" class="btn-volver">
             <i class="fa-solid fa-arrow-left"></i> Volver
         </a>
     </div>
@@ -179,7 +179,7 @@
     <div class="header-card">
         <div>
             <h4 style="margin:0;">{{ curso_sel.nombre }} — {{ fecha_sel }}</h4>
-            <small style="color:#6b7280;">{{ filas|length }} estudiante{{ filas|length|pluralize }}</small>
+            <small style="color:#6b7280;">{{ filas|length }} alumnos{{ filas|length|pluralize }}</small>
         </div>
     </div>
 
@@ -187,7 +187,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Estudiante</th>
+                <th>alumnos</th>
                 <th>Estado actual</th>
                 <th>Editar</th>
                 <th>Eliminar</th>
@@ -197,7 +197,7 @@
             {% for fila in filas %}
             <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ fila.estudiante.nombre }}</td>
+                <td>{{ fila.alumnos.nombre }}</td>
                 <td>
                     {% if fila.asistencia %}
                         <span class="badge-estado badge-{{ fila.asistencia.estado }}">
@@ -217,7 +217,7 @@
                             <option value="ausente"  {% if fila.asistencia and fila.asistencia.estado == 'ausente'  %}selected{% endif %}>❌ Ausente</option>
                         </select>
                         <button class="btn-guardar-hist"
-                        data-estudiante="{{ fila.estudiante.id }}"
+                        data-alumnos="{{ fila.alumnos.id }}"
                         data-fecha="{{ fecha_sel|date:'Y-m-d' }}">
                             <i class="fa-solid fa-floppy-disk"></i> Guardar
                         </button>
@@ -225,7 +225,7 @@
                 </td>
                 <td>
                     <button class="btn-delete-row btn-eliminar-asis"
-                            data-estudiante="{{ fila.estudiante.id }}"
+                            data-alumnos="{{ fila.alumnos.id }}"
                             data-fecha="{{ fecha_sel|date:'Y-m-d' }}"
                             {% if not fila.asistencia %}disabled title="Sin registro"{% endif %}>
                         <i class="fa-solid fa-trash"></i>
@@ -235,7 +235,7 @@
             {% empty %}
             <tr>
                 <td colspan="5" style="text-align:center;color:#6b7280;padding:30px;">
-                    No hay estudiantes en este grado.
+                    No hay alumnoss en este grado.
                 </td>
             </tr>
             {% endfor %}
@@ -284,7 +284,7 @@ document.querySelectorAll('.btn-guardar-hist').forEach(btn => {
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
         const body = new URLSearchParams({
-            estudiante_id: btn.dataset.estudiante,
+            alumnos_id: btn.dataset.alumnos,
             fecha:         btn.dataset.fecha,
             estado:        estado,
         });
@@ -330,13 +330,13 @@ document.querySelectorAll('.btn-guardar-hist').forEach(btn => {
 // Eliminar asistencia
 document.querySelectorAll('.btn-eliminar-asis').forEach(btn => {
     btn.addEventListener('click', async function() {
-        if (!confirm('¿Eliminar el registro de asistencia de este estudiante?')) return;
+        if (!confirm('¿Eliminar el registro de asistencia de este alumnos?')) return;
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
         const body = new URLSearchParams({
-            estudiante_id: btn.dataset.estudiante,
+            alumnos_id: btn.dataset.alumnos,
             fecha:         btn.dataset.fecha,
         });
 

@@ -1,8 +1,8 @@
-{% extends 'paneles/profesor/base.html' %}
+{% extends 'paneles/docentes/base.html' %}
 {% load dict_extras %}
 {% block title %}Asistencia{% endblock %}
 {% block active_asistencia %}active{% endblock %}
-{% block search_placeholder %}Buscar estudiante...{% endblock %}
+{% block search_placeholder %}Buscar alumnos...{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -106,7 +106,7 @@
 <div class="topbar">
     <div class="welcome">
         <h2>Registro de Asistencia</h2>
-        <p>Panel Profesor — Año 20151515</p>
+        <p>Panel docente — Año 20151515</p>
     </div>
     <div class="user-area">
         <div class="notification">
@@ -114,10 +114,10 @@
             <span class="notification-count">0</span>
         </div>
         <div class="profile">
-            <img src="https://i.pravatar.cc/120?img=3" alt="Profesor Avatar" class="profile-img">
+            <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
             <div>
-                <strong>{{ profesor.nombre }}</strong>
-                <small>Profesor</small>
+                <strong>{{ docente.nombre }}</strong>
+                <small>docente</small>
             </div>
         </div>
     </div>
@@ -126,7 +126,7 @@
 <div class="stats">
     <div class="stat-card">
         <div class="icon blue"><i class="fa-solid fa-users"></i></div>
-        <h3>{{ total }}</h3><p>Estudiantes</p>
+        <h3>{{ total }}</h3><p>alumnoss</p>
     </div>
     <div class="stat-card">
         <div class="icon green"><i class="fa-solid fa-user-check"></i></div>
@@ -229,24 +229,24 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Estudiante</th>
+                <th>alumnos</th>
                 <th>Estado</th>
                 <th>Acción</th>
             </tr>
         </thead>
         <tbody>
-            {% for estudiante in estudiantes %}
-            <tr data-estudiante="{{ estudiante.id }}"
+            {% for alumnos in alumnoss %}
+            <tr data-alumnos="{{ alumnos.id }}"
                 data-curso="{{ curso_sel.id }}"
                 data-fecha="{{ fecha_sel|date:'Y-m-d' }}">
                 <td>{{ forloop.counter }}</td>
-                <td>{{ estudiante.nombre }}</td>
+                <td>{{ alumnos.nombre }}</td>
                 <td>
                     <div class="select-wrap">
                         <select class="sel-estado">
-                            <option value="presente" {% if asistencias_map|get_item:estudiante.id == 'presente' %}selected{% endif %}>✅ Presente</option>
-                            <option value="tardanza" {% if asistencias_map|get_item:estudiante.id == 'tardanza' %}selected{% endif %}>⏰ Tardanza</option>
-                            <option value="ausente"  {% if asistencias_map|get_item:estudiante.id == 'ausente'  %}selected{% endif %}>❌ Ausente</option>
+                            <option value="presente" {% if asistencias_map|get_item:alumnos.id == 'presente' %}selected{% endif %}>✅ Presente</option>
+                            <option value="tardanza" {% if asistencias_map|get_item:alumnos.id == 'tardanza' %}selected{% endif %}>⏰ Tardanza</option>
+                            <option value="ausente"  {% if asistencias_map|get_item:alumnos.id == 'ausente'  %}selected{% endif %}>❌ Ausente</option>
                         </select>
                         <i class="fa-solid fa-chevron-down"></i>
                     </div>
@@ -260,7 +260,7 @@
             {% empty %}
             <tr>
                 <td colspan="4" style="text-align:center;color:#6b7280;">
-                    No hay estudiantes en este grado.
+                    No hay alumnoss en este grado.
                 </td>
             </tr>
             {% endfor %}
@@ -311,7 +311,7 @@ document.getElementById('btnNextDay').addEventListener('click', () => {
     goToDate(d.toISOString().split('T')[0]);
 });
 
-document.querySelectorAll('tr[data-estudiante]').forEach(fila => {
+document.querySelectorAll('tr[data-alumnos]').forEach(fila => {
     fila.querySelector('.btn-guardar-asistencia').addEventListener('click', async function () {
         const btn    = this;
         const estado = fila.querySelector('.sel-estado').value;
@@ -320,7 +320,7 @@ document.querySelectorAll('tr[data-estudiante]').forEach(fila => {
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
 
         const body = new URLSearchParams({
-            estudiante_id: fila.dataset.estudiante,
+            alumnos_id: fila.dataset.alumnos,
             fecha:         fila.dataset.fecha,
             estado:        estado,
             curso_id:      fila.dataset.curso,

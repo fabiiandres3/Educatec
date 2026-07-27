@@ -1,4 +1,4 @@
-{% extends 'paneles/estudiante/base.html' %}
+{% extends 'paneles/alumnos/base.html' %}
 {% block title %}Mis Logros{% endblock %}
 {% block active_logros %}active{% endblock %}
 
@@ -18,7 +18,7 @@
 <div class="topbar">
     <div class="welcome">
         <h2>Mis Logros 🏆</h2>
-        <p>{{ estudiante.curso }} — Tu progreso académico</p>
+        <p>{{ alumnos.curso }} — Tu progreso académico</p>
     </div>
     <div class="user-area">
         <div class="notification">
@@ -28,8 +28,8 @@
         <div class="profile">
             <img src="https://i.pravatar.cc/120?img=12" alt="Alumno">
             <div>
-                <strong>{{ estudiante.nombre }}</strong>
-                <small>{{ estudiante.curso }}</small>
+                <strong>{{ alumnos.nombre }}</strong>
+                <small>{{ alumnos.curso }}</small>
             </div>
         </div>
     </div>
@@ -74,7 +74,7 @@
 <div class="logro-card">
     <div class="logro-icon" style="background:#fef3c7; color:#92400e;">⭐</div>
     <div style="flex:1;">
-        <strong>Estudiante Destacado</strong>
+        <strong>alumnos Destacado</strong>
         <p style="color:#64748b; margin:0; font-size:.9rem;">Promedio superior a 4.5</p>
         <div class="progreso-bar"><div class="progreso-fill" style="width:{{ promedio|floatformat:0 }}0%;background:#f59e0b;"></div></div>
         <small style="color:#f59e0b;">Promedio: {{ promedio }} / 5.0</small>
@@ -123,7 +123,7 @@
 <div class="logro-card bloqueado">
     <div class="logro-icon">⭐</div>
     <div style="flex:1;">
-        <strong>Estudiante Destacado</strong>
+        <strong>alumnos Destacado</strong>
         <p style="color:#64748b; margin:0; font-size:.9rem;">Alcanza un promedio de 4.5 o más</p>
         <div class="progreso-bar"><div class="progreso-fill" style="width:{% if promedio %}{{ promedio|floatformat:0 }}0{% else %}0{% endif %}%;"></div></div>
         <small>{{ promedio }} / 4.5 requerido</small>

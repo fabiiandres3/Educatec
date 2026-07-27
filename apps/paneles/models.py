@@ -5,7 +5,7 @@
 # 1290 de 2009: Superior / Alto / Básico / Bajo, y 4 períodos
 # académicos por año escolar).
 #
-# NO hay sistema de roles ni de login: Profesor y Estudiante son
+# NO hay sistema de roles ni de login: docente y alumnos son
 # simples registros de datos que administra quien tenga acceso al
 # admin de Django (o a las vistas que construyas). No dependen de
 # ningún modelo de Usuario ni de auth.
@@ -56,9 +56,9 @@ class Curso(models.Model):
     anio_escolar = models.PositiveIntegerField(help_text='Ej: 2026')
 
     # Director de grupo (opcional). Se define más abajo, por eso el
-    # string 'Profesor' en lugar de la clase directamente.
+    # string 'docente' en lugar de la clase directamente.
     director_grupo = models.ForeignKey(
-        'Profesor', on_delete=models.SET_NULL,
+        'docente', on_delete=models.SET_NULL,
         null=True, blank=True, related_name='cursos_dirigidos'
     )
 
@@ -116,11 +116,11 @@ class Materia(models.Model):
 
 
 # ---------------------------------------------------------------------------
-# PROFESOR
+# docente
 # ---------------------------------------------------------------------------
-class Profesor(models.Model):
+class docente(models.Model):
     """
-    Registro de datos del profesor. Sin login: no está ligado a
+    Registro de datos del docente. Sin login: no está ligado a
     ningún modelo de usuario/autenticación.
     """
 
@@ -154,17 +154,17 @@ class Profesor(models.Model):
         return self.nombre
 
     class Meta:
-        verbose_name = 'Profesor'
-        verbose_name_plural = 'Profesores'
+        verbose_name = 'docente'
+        verbose_name_plural = 'docentees'
         ordering = ['apellidos', 'nombres']
 
 
 # ---------------------------------------------------------------------------
-# ESTUDIANTE
+# alumnos
 # ---------------------------------------------------------------------------
-class Estudiante(models.Model):
+class alumnos(models.Model):
     """
-    Registro de datos del estudiante. Sin login. Incluye datos
+    Registro de datos del alumnos. Sin login. Incluye datos
     básicos del acudiente porque en Colombia siempre se requieren
     para el boletín / reportes / citaciones.
     """
@@ -185,7 +185,7 @@ class Estudiante(models.Model):
     fecha_nacimiento = models.DateField(null=True, blank=True)
 
     curso = models.ForeignKey(
-        Curso, on_delete=models.CASCADE, related_name='estudiantes'
+        Curso, on_delete=models.CASCADE, related_name='alumnoss'
     )
 
     # Datos básicos del acudiente
@@ -198,30 +198,30 @@ class Estudiante(models.Model):
 
     @property
     def nombre(self):
-        """Nombre completo, usado en todos los templates como estudiante.nombre."""
+        """Nombre completo, usado en todos los templates como alumnos.nombre."""
         return f"{self.nombres} {self.apellidos}"
 
     def __str__(self):
         return f"{self.nombre} - {self.curso.nombre}"
 
     class Meta:
-        verbose_name = 'Estudiante'
-        verbose_name_plural = 'Estudiantes'
+        verbose_name = 'alumnos'
+        verbose_name_plural = 'alumnoss'
         ordering = ['apellidos', 'nombres']
 
 
 # ---------------------------------------------------------------------------
-# ASIGNACIÓN PROFESOR (profesor + materia + curso)
+# ASIGNACIÓN docente (docente + materia + curso)
 # ---------------------------------------------------------------------------
-class AsignacionProfesor(models.Model):
+class Asignaciondocente(models.Model):
     """
-    Un profesor dicta una materia en un curso específico. Es la
+    Un docente dicta una materia en un curso específico. Es la
     tabla puente que usan Calificacion, Asistencia y Tarea para
     saber "quién enseña qué, a quién".
     """
 
-    profesor = models.ForeignKey(
-        Profesor, on_delete=models.CASCADE, related_name='asignaciones'
+    docente = models.ForeignKey(
+        docente, on_delete=models.CASCADE, related_name='asignaciones'
     )
     materia = models.ForeignKey(
         Materia, on_delete=models.CASCADE, related_name='asignaciones'
@@ -231,12 +231,12 @@ class AsignacionProfesor(models.Model):
     )
 
     def __str__(self):
-        return f"{self.profesor} — {self.materia} — {self.curso}"
+        return f"{self.docente} — {self.materia} — {self.curso}"
 
     class Meta:
-        verbose_name = 'Asignación de Profesor'
-        verbose_name_plural = 'Asignaciones de Profesores'
-        unique_together = ('profesor', 'materia', 'curso')
+        verbose_name = 'Asignación de docente'
+        verbose_name_plural = 'Asignaciones de docentees'
+        unique_together = ('docente', 'materia', 'curso')
 
 
 # ---------------------------------------------------------------------------
@@ -276,7 +276,7 @@ class PeriodoAcademico(models.Model):
 # ---------------------------------------------------------------------------
 class Calificacion(models.Model):
     """
-    Nota de un estudiante en una asignación (profesor+materia+curso)
+    Nota de un alumnos en una asignación (docente+materia+curso)
     durante un período. Escala colombiana estándar: 1.0 a 5.0.
     El promedio determina el desempeño según el Decreto 1290:
         >= 4.5  Superior
@@ -287,11 +287,11 @@ class Calificacion(models.Model):
 
     NOTA_VALIDATORS = [MinValueValidator(0.0), MaxValueValidator(5.0)]
 
-    estudiante = models.ForeignKey(
-        Estudiante, on_delete=models.CASCADE, related_name='calificaciones'
+    alumnos = models.ForeignKey(
+        alumnos, on_delete=models.CASCADE, related_name='calificaciones'
     )
     asignacion = models.ForeignKey(
-        AsignacionProfesor, on_delete=models.CASCADE, related_name='calificaciones'
+        Asignaciondocente, on_delete=models.CASCADE, related_name='calificaciones'
     )
     periodo = models.ForeignKey(
         PeriodoAcademico, on_delete=models.SET_NULL,
@@ -332,20 +332,20 @@ class Calificacion(models.Model):
         return self.asignacion.materia
 
     @property
-    def profesor(self):
-        return self.asignacion.profesor
+    def docente(self):
+        return self.asignacion.docente
 
     @property
     def curso(self):
         return self.asignacion.curso
 
     def __str__(self):
-        return f"{self.estudiante} — {self.materia}: {self.promedio} ({self.desempeno})"
+        return f"{self.alumnos} — {self.materia}: {self.promedio} ({self.desempeno})"
 
     class Meta:
         verbose_name = 'Calificación'
         verbose_name_plural = 'Calificaciones'
-        unique_together = ('estudiante', 'asignacion', 'periodo')
+        unique_together = ('alumnos', 'asignacion', 'periodo')
 
 
 # ---------------------------------------------------------------------------
@@ -353,7 +353,7 @@ class Calificacion(models.Model):
 # ---------------------------------------------------------------------------
 class Asistencia(models.Model):
     """
-    Registro diario de asistencia de un estudiante. 'asignacion' es
+    Registro diario de asistencia de un alumnos. 'asignacion' es
     opcional porque muchos colegios registran la asistencia general
     del curso en la jornada, sin discriminar por materia.
     """
@@ -365,11 +365,11 @@ class Asistencia(models.Model):
         ('excusa', 'Ausencia Justificada'),
     ]
 
-    estudiante = models.ForeignKey(
-        Estudiante, on_delete=models.CASCADE, related_name='asistencias'
+    alumnos = models.ForeignKey(
+        alumnos, on_delete=models.CASCADE, related_name='asistencias'
     )
     asignacion = models.ForeignKey(
-        AsignacionProfesor, on_delete=models.CASCADE,
+        Asignaciondocente, on_delete=models.CASCADE,
         null=True, blank=True, related_name='asistencias'
     )
     fecha = models.DateField()
@@ -377,12 +377,12 @@ class Asistencia(models.Model):
     observacion = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f"{self.estudiante} — {self.fecha}: {self.get_estado_display()}"
+        return f"{self.alumnos} — {self.fecha}: {self.get_estado_display()}"
 
     class Meta:
         verbose_name = 'Asistencia'
         verbose_name_plural = 'Asistencias'
-        unique_together = ('estudiante', 'asignacion', 'fecha')
+        unique_together = ('alumnos', 'asignacion', 'fecha')
         ordering = ['-fecha']
 
 
@@ -391,7 +391,7 @@ class Asistencia(models.Model):
 # ---------------------------------------------------------------------------
 class Tarea(models.Model):
     """
-    Tarea/actividad asignada por un profesor a un curso, dentro de
+    Tarea/actividad asignada por un docente a un curso, dentro de
     una materia y período. Distinta de una "Calificación": aquí solo
     se controla el enunciado y el estado de entrega, no la nota.
     """
@@ -406,7 +406,7 @@ class Tarea(models.Model):
     descripcion = models.TextField(blank=True)
 
     asignacion = models.ForeignKey(
-        AsignacionProfesor, on_delete=models.CASCADE, related_name='tareas'
+        Asignaciondocente, on_delete=models.CASCADE, related_name='tareas'
     )
     periodo = models.ForeignKey(
         PeriodoAcademico, on_delete=models.SET_NULL,
@@ -418,7 +418,7 @@ class Tarea(models.Model):
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
 
     entregas = models.PositiveIntegerField(default=0)
-    total_estudiantes = models.PositiveIntegerField(default=0)
+    total_alumnoss = models.PositiveIntegerField(default=0)
 
     @property
     def materia(self):
@@ -429,8 +429,8 @@ class Tarea(models.Model):
         return self.asignacion.curso
 
     @property
-    def profesor(self):
-        return self.asignacion.profesor
+    def docente(self):
+        return self.asignacion.docente
 
     def __str__(self):
         return f"{self.titulo} — {self.curso}"

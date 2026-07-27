@@ -13,10 +13,7 @@ urlpatterns = [
     # ADMINISTRADOR DE DJANGO
     # =========================================================
 
-    path(
-        "admin/",
-        admin.site.urls
-    ),
+    path("admin/", admin.site.urls),
 
 
     # =========================================================
@@ -32,10 +29,12 @@ urlpatterns = [
     # - Dashboard administrador
     # - Gestión de usuarios
 
-    path(
-        "",
-        include("apps.user.urls")
-    ),
+    path("", include("apps.alumnos.urls")),
+    path("", include("apps.clases.urls")),
+    path("", include("apps.cursos.urls")),
+    path("", include("apps.docentes.urls")),
+    path("", include("apps.tareas.urls")),
+    path("", include("apps.user.urls")),
 
 
     # =========================================================
@@ -48,20 +47,14 @@ urlpatterns = [
     # - Vistas de docente
     # - Vistas de alumno
 
-    path(
-        "",
-        include("apps.paneles.urls")
-    ),
+    path("", include("apps.paneles.urls")),
 
 
     # =========================================================
     # DJANGO ALLAUTH / GOOGLE
     # =========================================================
 
-    path(
-        "accounts/",
-        include("allauth.urls")
-    ),
+    path("accounts/", include("allauth.urls")),
 
 
     # =========================================================
@@ -71,9 +64,7 @@ urlpatterns = [
     # Paso 1:
     # Usuario introduce su correo electrónico.
 
-    path(
-        "password_reset/",
-        auth_views.PasswordResetView.as_view(
+    path("password_reset/", auth_views.PasswordResetView.as_view(
 
             template_name=(
                 "login/password_reset.html"
@@ -101,9 +92,7 @@ urlpatterns = [
     # Se informa al usuario que se envió
     # el correo de recuperación.
 
-    path(
-        "password_reset/done/",
-        auth_views.PasswordResetDoneView.as_view(
+    path("password_reset/done/", auth_views.PasswordResetDoneView.as_view(
 
             template_name=(
                 "login/password_reset_done.html"

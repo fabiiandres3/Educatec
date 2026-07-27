@@ -9,7 +9,7 @@ def dashboard_docente(request):
 
 
 def cursos_docente(request):
-    return render(request, "paneles/docentes/cursos_profesor.html")
+    return render(request, "paneles/docentes/cursos_docente.html")
 
 
 def calificaciones_docente(request):
@@ -38,35 +38,35 @@ def configuracion_docente(request):
 
 
 # ─────────────────────────────────────────
-# ESTUDIANTE
+# alumnos
 # ─────────────────────────────────────────
 
 
-def dashboard_estudiante(request):
-    return render(request, "paneles/alumnos/dashboard_estudiante.html")
+def dashboard_alumnos(request):
+    return render(request, "paneles/alumnos/dashboard_alumnos.html")
 
 
-def materias_estudiante(request):
-    return render(request, "paneles/estudiante/materias_estudiante.html")
+def materias_alumnos(request):
+    return render(request, "paneles/alumnos/materias_alumnos.html")
 
 
-def calificaciones_estudiante(request):
-    return render(request, "paneles/estudiante/calificaciones_estudiante.html")
+def calificaciones_alumnos(request):
+    return render(request, "paneles/alumnos/calificaciones_alumnos.html")
 
 
-def asistencia_estudiante(request):
+def asistencia_alumnos(request):
     alumnos = obtener_alumnos_asistencia()
 
-    return render(request, "paneles/estudiante/asistencia_estudiante.html", 
+    return render(request, "paneles/alumnos/asistencia_alumnos.html", 
                   
         {
             'alumnos': alumnos
         })
 
 
-def logros_estudiante(request):
-    return render(request, "paneles/estudiante/logros_estudiante.html")
+def logros_alumnos(request):
+    return render(request, "paneles/alumnos/logros_alumnos.html")
 
 
-def configuracion_estudiante(request):
-    return render(request, "paneles/estudiante/configuracion_estudiante.html")
+def configuracion_alumnos(request):
+    return render(request, "paneles/alumnos/configuracion_alumnos.html")

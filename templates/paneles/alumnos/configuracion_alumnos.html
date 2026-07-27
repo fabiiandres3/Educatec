@@ -1,4 +1,4 @@
-{% extends 'paneles/estudiante/base.html' %}
+{% extends 'paneles/alumnos/base.html' %}
 {% block title %}Configuración{% endblock %}
 {% block active_configuracion %}active{% endblock %}
 
@@ -16,8 +16,8 @@
         <div class="profile">
             <img src="https://i.pravatar.cc/120?img=12" alt="Alumno">
             <div>
-                <strong>{{ estudiante.nombre }}</strong>
-                <small>{{ estudiante.curso }}</small>
+                <strong>{{ alumnos.nombre }}</strong>
+                <small>{{ alumnos.curso }}</small>
             </div>
         </div>
     </div>
@@ -30,22 +30,22 @@
         <h3 style="margin-bottom:20px;">Mi Perfil</h3>
         <div style="text-align:center; margin-bottom:25px;">
             <img src="https://i.pravatar.cc/120?img=12" style="width:90px;height:90px;border-radius:50%;border:4px solid #006eff;">
-            <h4 style="margin-top:10px;">{{ estudiante.nombre }}</h4>
-            <small style="color:#64748b;">{{ estudiante.curso }}</small>
+            <h4 style="margin-top:10px;">{{ alumnos.nombre }}</h4>
+            <small style="color:#64748b;">{{ alumnos.curso }}</small>
         </div>
         <div style="margin-bottom:15px;">
             <label style="font-size:13px; color:#64748b; display:block; margin-bottom:5px;">Nombre Completo</label>
-            <input type="text" value="{{ estudiante.nombre }}" readonly
+            <input type="text" value="{{ alumnos.nombre }}" readonly
                 style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;outline:none;">
         </div>
         <div style="margin-bottom:15px;">
             <label style="font-size:13px; color:#64748b; display:block; margin-bottom:5px;">Correo Institucional</label>
-            <input type="email" value="{{ estudiante.correo }}" readonly
+            <input type="email" value="{{ alumnos.correo }}" readonly
                 style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;outline:none;">
         </div>
         <div style="margin-bottom:20px;">
             <label style="font-size:13px; color:#64748b; display:block; margin-bottom:5px;">Curso</label>
-            <input type="text" value="{{ estudiante.curso }}" readonly
+            <input type="text" value="{{ alumnos.curso }}" readonly
                 style="width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;outline:none;">
         </div>
     </div>
@@ -60,7 +60,7 @@
                 </div>
                 <div style="display:flex;justify-content:space-between;padding:12px;background:#f8fafc;border-radius:12px;">
                     <span style="color:#64748b;">Grado</span>
-                    <strong>{{ estudiante.curso }}</strong>
+                    <strong>{{ alumnos.curso }}</strong>
                 </div>
                 <div style="display:flex;justify-content:space-between;padding:12px;background:#f8fafc;border-radius:12px;">
                     <span style="color:#64748b;">Año Escolar</span>

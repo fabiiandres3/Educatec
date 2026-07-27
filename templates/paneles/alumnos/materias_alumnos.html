@@ -1,4 +1,4 @@
-{% extends 'paneles/estudiante/base.html' %}
+{% extends 'paneles/alumnos/base.html' %}
 {% block title %}Mis Materias{% endblock %}
 {% block active_materias %}active{% endblock %}
 
@@ -6,7 +6,7 @@
 <div class="topbar">
     <div class="welcome">
         <h2>Mis Materias</h2>
-        <p>{{ estudiante.curso }} — Año 2026</p>
+        <p>{{ alumnos.curso }} — Año 2026</p>
     </div>
     <div class="user-area">
         <div class="notification">
@@ -16,8 +16,8 @@
         <div class="profile">
             <img src="https://i.pravatar.cc/120?img=12" alt="Alumno">
             <div>
-                <strong>{{ estudiante.nombre }}</strong>
-                <small>{{ estudiante.curso }}</small>
+                <strong>{{ alumnos.nombre }}</strong>
+                <small>{{ alumnos.curso }}</small>
             </div>
         </div>
     </div>

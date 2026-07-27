@@ -1,4 +1,4 @@
-{% extends 'paneles/profesor/base.html' %}
+{% extends 'paneles/docentes/base.html' %}
 {% block title %}Mis Grados{% endblock %}
 {% block active_cursos %}active{% endblock %}
 
@@ -6,7 +6,7 @@
 <div class="topbar">
   <div class="welcome">
     <h2>Mis Grados</h2>
-    <p>Grados y estudiantes a tu cargo</p>
+    <p>Grados y alumnoss a tu cargo</p>
   </div>
   <div class="user-area">
     <div class="notification">
@@ -14,10 +14,10 @@
       <span class="notification-count">0</span>
     </div>
     <div class="profile">
-      <img src="https://i.pravatar.cc/120?img=3" alt="Profesor Avatar" class="profile-img">
+      <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
       <div>
-        <strong>{{ profesor.nombre }}</strong>
-        <small>Profesor</small>
+        <strong>{{ docente.nombre }}</strong>
+        <small>docente</small>
       </div>
     </div>
   </div>
@@ -31,7 +31,7 @@
   </div>
   <div class="stat-card">
     <div class="icon green"><i class="fa-solid fa-users"></i></div>
-    <h3>{{ total_estudiantes }}</h3><p>Estudiantes</p>
+    <h3>{{ total_alumnoss }}</h3><p>alumnoss</p>
   </div>
   <div class="stat-card">
     <div class="icon orange"><i class="fa-solid fa-chart-line"></i></div>
@@ -49,7 +49,7 @@
     <thead>
       <tr>
         <th>Grado</th>
-        <th>Estudiantes</th>
+        <th>alumnoss</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -57,13 +57,13 @@
       {% for curso in cursos %}
       <tr>
         <td><strong>{{ curso.nombre }}</strong></td>
-        <td>{{ curso.estudiantes.count }}</td>
+        <td>{{ curso.alumnoss.count }}</td>
         <td style="display:flex;gap:8px;">
-          <a href="{% url 'calificaciones_profesor' %}?curso={{ curso.id }}"
+          <a href="{% url 'calificaciones_docente' %}?curso={{ curso.id }}"
              class="btn-save" style="font-size:13px;padding:7px 14px;">
             <i class="fa-solid fa-star-half-stroke"></i> Calificaciones
           </a>
-          <a href="{% url 'asistencia_profesor' %}?curso={{ curso.id }}"
+          <a href="{% url 'asistencia_docente' %}?curso={{ curso.id }}"
              class="btn-save" style="font-size:13px;padding:7px 14px;">
             <i class="fa-solid fa-clipboard-check"></i> Asistencia
           </a>
