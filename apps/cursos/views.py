@@ -1,95 +1,249 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+
 from apps.user.models import Usuario
+from apps.alumnos.models import Alumnos
+
 from .forms import CursosForm
 from .models import Cursos
-from apps.alumnos.models import Alumnos
-from .filter import obtener_alumnos
-
-# Create your views here.
 
 
-def Listar_cursos(request):
+# ==========================================
+# LISTAR CURSOS + ALUMNOS
+# URL: /listar_cursos/
+# ==========================================
+
+def listar_cursos(request):
+
+    # Obtener todos los cursos
     cursos = Cursos.objects.all()
-    return render(request, 'admin/cursos/cursos.html', {'cursos': cursos})
 
-def Crear_curso(request):
-    if request.method == 'POST':
-        form = CursosForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_cursos')
-    else:
-        form = CursosForm()
-    return render(request, 'admin/cursos/crear_curso.html', {'form': form})
+    # Obtener todos los alumnos
+    alumnos = Alumnos.objects.select_related(
+        "usuario",
+        "curso",
+        "clase"
+    ).all()
 
-def Editar_curso(request, curso_id):
-    curso = get_object_or_404(Cursos, id=curso_id)
-
-    if request.method == 'POST':
-        form = CursosForm(request.POST, instance=curso)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_cursos')
-    else:
-        form = CursosForm(instance=curso)
-
-    return render(request, 'admin/cursos/editar_curso.html', {'form': form, 'curso':curso})
-
-def Eliminar_curso(request, curso_id):
-    curso = get_object_or_404(Cursos, id=curso_id)
-    curso.delete()
-    return redirect('listar_cursos')
-
-
-def listar_alumnos(request):
-
-    #alumnos = obtener_alumnos()
-    alumnos = Alumnos.objecta.all()
+    # Mostrar información en consola para comprobar
+    print("===================================")
+    print("CANTIDAD DE CURSOS:", cursos.count())
+    print("CANTIDAD DE ALUMNOS:", alumnos.count())
+    print("ALUMNOS:", list(alumnos))
+    print("===================================")
 
     return render(
         request,
         "admin/cursos/cursos.html",
         {
-            "alumnos": alumnos
+            "cursos": cursos,
+            "alumnos": alumnos,
         }
     )
 
 
-def asignar_alumno_curso(request, alumno_id, curso_id):
+# ==========================================
+# LISTAR SOLO ALUMNOS
+# URL: /listar_alumnos/
+# ==========================================
 
-    alumno = get_object_or_404(Usuario, id=alumno_id)
-    curso = get_object_or_404(Cursos, id=curso_id)
+def listar_alumnos(request):
 
-    # Verificar si ya tiene curso
-    if alumno.curso is not None:
-        messages.error(
-            request,
-            'Este alumno ya está asignado a un curso.'
+    alumnos = Alumnos.objects.select_related(
+        "usuario",
+        "curso",
+        "clase"
+    ).all()
+
+    print("===================================")
+    print("CANTIDAD DE ALUMNOS:", alumnos.count())
+    print("ALUMNOS:", list(alumnos))
+    print("===================================")
+
+    return render(
+        request,
+        "admin/cursos/cursos.html",
+        {
+            "alumnos": alumnos,
+        }
+    )
+
+
+# ==========================================
+# CREAR CURSO
+# ==========================================
+
+def Crear_curso(request):
+
+    if request.method == "POST":
+
+        form = CursosForm(
+            request.POST,
+            request.FILES
         )
-        return redirect('listar_alumnos')
 
-    # Contar alumnos del curso
-    cantidad_alumnos = Usuario.objects.filter(
-        curso=curso,
-        rol__nombre='alumno'
-    ).count()
+        if form.is_valid():
 
-    # Límite máximo
-    if cantidad_alumnos >= 32:
-        messages.error(
-            request,
-            'No se puede asignar el alumno. El curso ya tiene 32 alumnos.'
+            form.save()
+
+            messages.success(
+                request,
+                "Curso creado correctamente."
+            )
+
+            return redirect("listar_cursos")
+
+    else:
+
+        form = CursosForm()
+
+    return render(
+        request,
+        "admin/cursos/crear_curso.html",
+        {
+            "form": form
+        }
+    )
+
+
+# ==========================================
+# EDITAR CURSO
+# ==========================================
+
+def Editar_curso(request, curso_id):
+
+    curso = get_object_or_404(
+        Cursos,
+        id=curso_id
+    )
+
+    if request.method == "POST":
+
+        form = CursosForm(
+            request.POST,
+            request.FILES,
+            instance=curso
         )
-        return redirect('listar_alumnos')
 
-    # Asignar
-    alumno.curso = curso
-    alumno.save()
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Curso actualizado correctamente."
+            )
+
+            return redirect("listar_cursos")
+
+    else:
+
+        form = CursosForm(
+            instance=curso
+        )
+
+    return render(
+        request,
+        "admin/cursos/editar_curso.html",
+        {
+            "form": form,
+            "curso": curso
+        }
+    )
+
+
+# ==========================================
+# ELIMINAR CURSO
+# ==========================================
+
+def Eliminar_curso(request, curso_id):
+
+    curso = get_object_or_404(
+        Cursos,
+        id=curso_id
+    )
+
+    curso.delete()
 
     messages.success(
         request,
-        'Alumno asignado correctamente.'
+        "Curso eliminado correctamente."
     )
 
-    return redirect('listar_alumnos')
+    return redirect("listar_cursos")
+
+
+# ==========================================
+# ASIGNAR ALUMNO A CURSO
+# ==========================================
+
+def asignar_alumno_curso(
+    request,
+    alumno_id,
+    curso_id
+):
+
+    alumno = get_object_or_404(
+        Usuario,
+        id=alumno_id
+    )
+
+    curso = get_object_or_404(
+        Cursos,
+        id=curso_id
+    )
+
+    # --------------------------------------
+    # Verificar si ya tiene curso
+    # --------------------------------------
+
+    if alumno.curso is not None:
+
+        messages.error(
+            request,
+            "Este alumno ya está asignado a un curso."
+        )
+
+        return redirect("listar_cursos")
+
+
+    # --------------------------------------
+    # Contar alumnos del curso
+    # --------------------------------------
+
+    cantidad_alumnos = Usuario.objects.filter(
+        curso=curso,
+        rol__nombre="alumno"
+    ).count()
+
+
+    # --------------------------------------
+    # Verificar límite de 32 alumnos
+    # --------------------------------------
+
+    if cantidad_alumnos >= 32:
+
+        messages.error(
+            request,
+            "No se puede asignar el alumno. "
+            "El curso ya tiene 32 alumnos."
+        )
+
+        return redirect("listar_cursos")
+
+
+    # --------------------------------------
+    # Asignar curso al alumno
+    # --------------------------------------
+
+    alumno.curso = curso
+
+    alumno.save()
+
+
+    messages.success(
+        request,
+        "Alumno asignado correctamente."
+    )
+
+    return redirect("listar_cursos")

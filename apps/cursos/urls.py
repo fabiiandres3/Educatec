@@ -1,9 +1,72 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
-    path('listar_cursos/', views.Listar_cursos, name='listar_cursos'),
-    path('crear_curso/', views.Crear_curso, name='crear_curso'),
-    path('editar_curso/<int:curso_id>/', views.Editar_curso, name='editar_curso'),
-    path('eliminar_curso/<int:curso_id>/', views.Eliminar_curso, name='eliminar_curso')
+
+    # ==========================================
+    # CURSOS + ALUMNOS
+    # ==========================================
+
+    path(
+        "listar_cursos/",
+        views.listar_cursos,
+        name="listar_cursos"
+    ),
+
+
+    # ==========================================
+    # SOLO ALUMNOS
+    # ==========================================
+
+    path(
+        "listar_alumnos/",
+        views.listar_alumnos,
+        name="listar_alumnos"
+    ),
+
+
+    # ==========================================
+    # CREAR CURSO
+    # ==========================================
+
+    path(
+        "crear_curso/",
+        views.Crear_curso,
+        name="crear_curso"
+    ),
+
+
+    # ==========================================
+    # EDITAR CURSO
+    # ==========================================
+
+    path(
+        "editar_curso/<int:curso_id>/",
+        views.Editar_curso,
+        name="editar_curso"
+    ),
+
+
+    # ==========================================
+    # ELIMINAR CURSO
+    # ==========================================
+
+    path(
+        "eliminar_curso/<int:curso_id>/",
+        views.Eliminar_curso,
+        name="eliminar_curso"
+    ),
+
+
+    # ==========================================
+    # ASIGNAR ALUMNO A CURSO
+    # ==========================================
+
+    path(
+        "asignar_alumno/<int:alumno_id>/<int:curso_id>/",
+        views.asignar_alumno_curso,
+        name="asignar_alumno_curso"
+    ),
+
 ]
