@@ -1,37 +1,201 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cuenta en Verificación</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="container mt-5">
-      <div class="card shadow border-0">
-        <div class="card-body text-center p-5">
-          <h1 class="mb-4">Bienvenido {{ request.user.nombre }}</h1>
+<head>
 
-          <div class="alert alert-warning">
-            <h4>Cuenta en verificación</h4>
+    <meta charset="UTF-8">
 
-            <p class="mb-0">Tu cuenta fue creada correctamente.</p>
-          </div>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-          <p class="mt-3">Un administrador debe revisar tu solicitud y asignarte un rol dentro de la plataforma.</p>
+    <title>Cuenta en verificación | Educatec</title>
 
-          <ul class="list-group mt-4">
-            <li class="list-group-item">alumnos</li>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
-            <li class="list-group-item">docente</li>
-          </ul>
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8f9fa, #e9f2ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
 
-          <p class="mt-4 text-muted">Cuando tu cuenta sea aprobada podrás acceder a todas las funciones del sistema.</p>
+        .verification-card {
+            width: 100%;
+            max-width: 520px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px 35px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
 
-          <a href="{% url 'cerrar_sesion' %}" class="btn btn-danger">Cerrar sesión</a>
+        .verification-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+        }
+
+        .verification-card h1 {
+            color: #111111;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .verification-card .main-text {
+            color: #6c757d;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .verification-alert {
+            background: #fff3cd;
+            border: 1px solid #ffecb5;
+            border-radius: 12px;
+            padding: 18px;
+            color: #664d03;
+            text-align: left;
+        }
+
+        .verification-alert h4 {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .roles-title {
+            color: #212529;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        .list-group {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .list-group-item {
+            border-color: #dee2e6;
+            padding: 12px;
+            color: #212529;
+        }
+
+        .verification-info {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .btn-logout {
+            background: #212529;
+            border: none;
+            color: #ffffff;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #000000;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 576px) {
+            .verification-card {
+                padding: 32px 22px;
+            }
+
+            .verification-card h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="verification-card">
+
+        <div class="verification-icon">
+            ⏳
         </div>
-      </div>
+
+        <h1>
+            Cuenta en verificación
+        </h1>
+
+        <p class="main-text">
+            Tu cuenta fue creada correctamente.
+        </p>
+
+        <div class="verification-alert">
+
+            <h4>
+                Cuenta en verificación
+            </h4>
+
+            <p class="mb-0">
+                Un administrador debe revisar tu solicitud
+                y asignarte un rol dentro de la plataforma.
+            </p>
+
+        </div>
+
+        <div class="roles-title">
+            Roles disponibles
+        </div>
+
+        <ul class="list-group">
+
+            <li class="list-group-item">
+                👨‍🎓 Alumnos
+            </li>
+
+            <li class="list-group-item">
+                👨‍🏫 Docente
+            </li>
+
+        </ul>
+
+        <p class="verification-info">
+            Cuando tu cuenta sea aprobada podrás acceder
+            a todas las funciones del sistema.
+        </p>
+
+        <a
+            href="{% url 'cerrar_sesion' %}"
+            class="btn btn-logout"
+        >
+            Cerrar sesión
+        </a>
+
     </div>
-  </body>
+
+</body>
+
 </html>

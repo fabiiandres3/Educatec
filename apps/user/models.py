@@ -22,11 +22,15 @@ class Usuario(AbstractUser):
     )
 
     first_name = models.CharField(
-        max_length=100
+        max_length=100,
+        blank=True,
+        null=True
     )
 
     last_name = models.CharField(
-        max_length=100
+        max_length=100,
+        blank=True,
+        null=True
     )
 
     email = models.EmailField(
