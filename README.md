@@ -37,7 +37,7 @@ Si existe el archivo requirements.txt:
 pip install -r requirements.txt
 ```
 
-O instalar manualmente:
+O instalar manualmente.:
 
 ```bash
 pip install django
