@@ -1,0 +1,90 @@
+<div class="table-responsive">
+
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Código</th>
+                <th>Curso</th>
+                <th>Clase</th>
+                <th>Teléfono</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+
+        <tbody id="listaAlumnos">
+
+            {% for alumno in alumnos %}
+
+                <tr data-curso="{{ alumno.curso.id }}">
+
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>
+                        {% if alumno.usuario.get_full_name %}
+                            {{ alumno.usuario.get_full_name }}
+                        {% else %}
+                            {{ alumno.usuario.username }}
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ alumno.usuario.username }}
+                    </td>
+
+                    <td>
+                        {{ alumno.codigo }}
+                    </td>
+
+                    <td>
+                        {% if alumno.curso %}
+                            {{ alumno.curso.nombre }}
+                        {% else %}
+                            Sin curso
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if alumno.clase %}
+                            {{ alumno.clase.titulo }}
+                        {% else %}
+                            Sin clase
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ alumno.telefono|default:"Sin teléfono" }}
+                    </td>
+
+                    <td>
+                        {% if alumno.activo %}
+                            <span class="badge bg-success">
+                                Activo
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                Inactivo
+                            </span>
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="8" class="text-center">
+                        No hay alumnos registrados.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>

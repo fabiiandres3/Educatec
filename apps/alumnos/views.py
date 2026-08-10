@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from apps.user.models import Usuario
 from apps.alumnos.models import Alumnos
@@ -14,22 +15,79 @@ def Listar_alumnos(request):
 
 
 def Editar_alumno(request, alumno_id):
-    alumno = get_object_or_404(Alumnos, usuario_id=alumno_id)
+
+    alumno = get_object_or_404(
+        Alumnos,
+        usuario_id=alumno_id
+    )
+
     usuario = alumno.usuario
 
     if request.method == "POST":
-        usuario_form = EditarUsuarioForm(request.POST, instance=usuario)
-        alumno_form = AlumnoForm(request.POST, instance=alumno)
+
+        usuario_form = EditarUsuarioForm(
+            request.POST,
+            instance=usuario
+        )
+
+        alumno_form = AlumnoForm(
+            request.POST,
+            instance=alumno
+        )
 
         if usuario_form.is_valid() and alumno_form.is_valid():
+
+            nuevo_curso = alumno_form.cleaned_data.get("curso")
+
+            # Verificar si se está asignando un curso
+            if nuevo_curso:
+
+                cantidad_alumnos = Alumnos.objects.filter(
+                    curso=nuevo_curso
+                ).exclude(
+                    pk=alumno.pk
+                ).count()
+
+                if cantidad_alumnos >= 3:
+
+                    messages.error(
+                        request,
+                        f"El curso {nuevo_curso.nombre} ya alcanzó "
+                        "el límite máximo de 32 alumnos."
+                    )
+
+                    return render(
+                        request,
+                        "admin/alumnos/editar_alumno.html",
+                        {
+                            "usuario_form": usuario_form,
+                            "alumno_form": alumno_form,
+                        },
+                    )
+
             usuario_form.save()
             alumno_form.save()
-            return redirect("listar_alumnos")
-    else:
-        usuario_form = EditarUsuarioForm(instance=usuario)
-        alumno_form = AlumnoForm(instance=alumno)
 
-    return render(request,"admin/alumnos/editar_alumno.html",
+            messages.success(
+                request,
+                "Alumno actualizado correctamente."
+            )
+
+            return redirect("listar_alumnos")
+
+    else:
+
+        usuario_form = EditarUsuarioForm(
+            instance=usuario
+        )
+
+        alumno_form = AlumnoForm(
+            instance=alumno
+        )
+
+    return render(
+        request,
+        "admin/alumnos/editar_alumno.html",
         {
             "usuario_form": usuario_form,
             "alumno_form": alumno_form,

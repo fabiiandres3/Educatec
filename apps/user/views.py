@@ -96,7 +96,7 @@ def redireccionar_por_rol(request):
     # -----------------------------------------------------
 
     elif rol == "alumno":
-        return redirect("dashboard_alumno")
+        return redirect("dashboard_alumnos")
 
     # -----------------------------------------------------
     # Usuario normal
@@ -457,7 +457,7 @@ def cerrar_sesion(request):
 # =========================================================
 
 
-@decorators.rol_requerido("usuario")
+#@decorators.rol_requerido("usuario")
 def verificacion(request):
 
     return render(request, "login/verificacion.html")

@@ -310,7 +310,7 @@
             <i class="fas fa-users"></i> Usuarios
         </a>
         <a href="{% url 'listar_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_alumnoss' %}active{% endif %}">
-            <i class="fas fa-user-graduate"></i> alumnoss
+            <i class="fas fa-user-graduate"></i> alumnos
         </a>
         <a href="{% url 'listar_docentes' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_docentes' %}active{% endif %}">
             <i class="fas fa-chalkboard-teacher"></i> Docentes
@@ -331,13 +331,13 @@
         <a href="/admin/" class="nav-link-admin">
             <i class="fas fa-cog"></i> Django Admin
         </a>
-    </nav>
 
-    <div class="sidebar-footer">
+        <div class="sidebar-footer">
         <a href="{% url 'cerrar_sesion' %}">
             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
         </a>
     </div>
+    </nav>
 </aside>
 
 <!-- MAIN -->
@@ -353,7 +353,26 @@
     </div>
 
     <div class="page-body">
-        {% block content %}{% endblock %}
+        {% block content %}
+            {% if messages %}
+                {% for message in messages %}
+
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                        role="alert">
+
+                        {{ message }}
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+        {% endblock %}
     </div>
 </div>
 

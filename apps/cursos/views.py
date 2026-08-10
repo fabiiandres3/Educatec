@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Count
 from django.contrib import messages
 
 from apps.user.models import Usuario
@@ -15,22 +16,14 @@ from .models import Cursos
 
 def listar_cursos(request):
 
-    # Obtener todos los cursos
-    cursos = Cursos.objects.all()
+    cursos = Cursos.objects.annotate(
+    cantidad_alumnos=Count("alumnos"))
 
-    # Obtener todos los alumnos
     alumnos = Alumnos.objects.select_related(
         "usuario",
         "curso",
         "clase"
     ).all()
-
-    # Mostrar información en consola para comprobar
-    print("===================================")
-    print("CANTIDAD DE CURSOS:", cursos.count())
-    print("CANTIDAD DE ALUMNOS:", alumnos.count())
-    print("ALUMNOS:", list(alumnos))
-    print("===================================")
 
     return render(
         request,
@@ -55,11 +48,6 @@ def listar_alumnos(request):
         "clase"
     ).all()
 
-    print("===================================")
-    print("CANTIDAD DE ALUMNOS:", alumnos.count())
-    print("ALUMNOS:", list(alumnos))
-    print("===================================")
-
     return render(
         request,
         "admin/cursos/cursos.html",
@@ -77,19 +65,13 @@ def Crear_curso(request):
 
     if request.method == "POST":
 
-        form = CursosForm(
-            request.POST,
-            request.FILES
-        )
+        form = CursosForm(request.POST, request.FILES)
 
         if form.is_valid():
 
             form.save()
 
-            messages.success(
-                request,
-                "Curso creado correctamente."
-            )
+            messages.success(request, "Curso creado correctamente.")
 
             return redirect("listar_cursos")
 
@@ -98,8 +80,7 @@ def Crear_curso(request):
         form = CursosForm()
 
     return render(
-        request,
-        "admin/cursos/crear_curso.html",
+        request,"admin/cursos/crear_curso.html",
         {
             "form": form
         }
@@ -112,10 +93,7 @@ def Crear_curso(request):
 
 def Editar_curso(request, curso_id):
 
-    curso = get_object_or_404(
-        Cursos,
-        id=curso_id
-    )
+    curso = get_object_or_404(Cursos, id=curso_id)
 
     if request.method == "POST":
 
@@ -176,6 +154,33 @@ def Eliminar_curso(request, curso_id):
 # ==========================================
 # ASIGNAR ALUMNO A CURSO
 # ==========================================
+
+
+def filtrar_alumnos(request):
+
+    curso_id = request.GET.get("curso_id")
+
+    print("CURSO RECIBIDO:", curso_id)
+
+    alumnos = Alumnos.objects.select_related(
+        "usuario",
+        "curso",
+        "clase"
+    ).all()
+
+    if curso_id:
+        alumnos = alumnos.filter(
+            curso_id=curso_id
+        )
+
+    return render(
+        request,
+        "admin/cursos/partials/tabla_alumnos.html",
+        {
+            "alumnos": alumnos
+        }
+    )
+
 
 def asignar_alumno_curso(
     request,

@@ -58,6 +58,12 @@ urlpatterns = [
         name="eliminar_curso"
     ),
 
+    path(
+        "filtrar-alumnos/",
+        views.filtrar_alumnos,
+        name="filtrar_alumnos"
+    ),
+
 
     # ==========================================
     # ASIGNAR ALUMNO A CURSO

@@ -1,49 +1,50 @@
 {% extends 'admin/base_admin.html' %}
 
-{% block title %}Editar Alumno{% endblock %}
+{% block title %}
+Editar Alumno
+{% endblock %}
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container">
 
-    <h2 class="text-black">Editar Alumno</h2>
+<h1>Editar Alumno</h1>
 
-    <form method="post">
-        {% csrf_token %}
+{% if messages %}
 
-        {% for campo in usuario_form %}
-        <div class="mb-3">
-            <label class="form-label">{{ campo.label }}</label>
+    {% for message in messages %}
 
-            {{ campo }}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+             role="alert">
 
-            {% for error in campo.errors %}
-                <div class="text-danger">{{ error }}</div>
-            {% endfor %}
+            <div style="color: #000000">{{ message }}</div>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
         </div>
-        {% endfor %}
 
-        {% for campo in alumno_form %}
-        <div class="mb-3">
-            <label class="form-label">{{ campo.label }}</label>
+    {% endfor %}
 
-            {{ campo }}
+{% endif %}
 
-            {% for error in campo.errors %}
-                <div class="text-danger">{{ error }}</div>
-            {% endfor %}
-        </div>
-        {% endfor %}
 
-        <button type="submit" class="btn btn-warning">
-            Actualizar
-        </button>
+<form method="POST">
 
-        <a href="{% url 'listar_alumnos' %}" class="btn btn-secondary">
-            Cancelar
-        </a>
+    {% csrf_token %}
 
-    </form>
+    {{ usuario_form.as_p }}
+
+    {{ alumno_form.as_p }}
+
+    <button type="submit" class="btn btn-primary">
+        Guardar cambios
+    </button>
+
+</form>
+
 
 </div>
 

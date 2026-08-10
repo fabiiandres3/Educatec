@@ -1,421 +1,178 @@
 {% extends 'admin/base_admin.html' %}
 
+{% load static %}
 
 {% block title %}
-    Cursos
+Cursos
 {% endblock %}
-
 
 {% block content %}
 
+<link rel="stylesheet" href="{% static 'css/cursos/cursos.css' %}">
+
 <div class="container-fluid">
 
+```
+<!-- ========================================== -->
+<!-- ENCABEZADO -->
+<!-- ========================================== -->
 
-    <!-- ========================================== -->
-    <!-- ENCABEZADO -->
-    <!-- ========================================== -->
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 style="color: #333;">
+            Cursos
+        </h1>
 
-        <div>
-
-            <h1 style="color: #333;">
-                Cursos
-            </h1>
-
-            <p style="color: #666;">
-                Lista de cursos disponibles.
-            </p>
-
-        </div>
-
-
-        <div>
-
-            <a href="{% url 'crear_curso' %}"
-               class="btn btn-primary">
-
-                <i class="fa-solid fa-plus"></i>
-
-                Crear Curso
-
-            </a>
-
-        </div>
-
+        <p style="color: #666;">
+            Lista de cursos disponibles.
+        </p>
     </div>
 
+    <div>
+        <a href="{% url 'crear_curso' %}"
+           class="btn btn-primary">
 
+            <i class="fa-solid fa-plus"></i>
+            Crear Curso
 
-    <!-- ========================================== -->
-    <!-- LISTA DE CURSOS -->
-    <!-- ========================================== -->
-
-    <div class="card mb-5">
-
-        <div class="card-header">
-
-            <h5 class="mb-0">
-                Cursos disponibles
-            </h5>
-
-        </div>
-
-
-        <div class="card-body">
-
-            {% if cursos %}
-
-                <div class="table-responsive">
-
-                    <table class="table table-hover align-middle">
-
-                        <thead class="table-light">
-
-                            <tr>
-
-                                <th>
-                                    #
-                                </th>
-
-                                <th>
-                                    Nombre
-                                </th>
-
-                                <th>
-                                    Acciones
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            {% for curso in cursos %}
-
-                            <tr>
-
-                                <td>
-                                    {{ forloop.counter }}
-                                </td>
-
-
-                                <td>
-
-                                    <strong>
-                                        {{ curso.nombre }}
-                                    </strong>
-
-                                </td>
-
-
-                                <td>
-
-                                    <a href="{% url 'editar_curso' curso.id %}"
-                                       class="btn btn-sm btn-secondary">
-
-                                        <i class="fa-solid fa-pen"></i>
-
-                                        Editar
-
-                                    </a>
-
-
-                                    <a href="{% url 'eliminar_curso' curso.id %}"
-                                       class="btn btn-sm btn-danger">
-
-                                        <i class="fa-solid fa-trash"></i>
-
-                                        Eliminar
-
-                                    </a>
-
-                                </td>
-
-                            </tr>
-
-                            {% endfor %}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-            {% else %}
-
-                <div class="alert alert-info">
-
-                    No hay cursos disponibles.
-
-                </div>
-
-            {% endif %}
-
-        </div>
-
+        </a>
     </div>
-
-
-
-    <!-- ========================================== -->
-    <!-- LISTA DE ALUMNOS -->
-    <!-- ========================================== -->
-
-    <div class="card">
-
-        <div class="card-header">
-
-            <h5 class="mb-0">
-                Alumnos registrados
-            </h5>
-
-        </div>
-
-
-        <div class="card-body">
-
-            {% if alumnos %}
-
-                <div class="table-responsive">
-
-                    <table class="table table-hover align-middle">
-
-                        <thead class="table-light">
-
-                            <tr>
-
-                                <th>
-                                    #
-                                </th>
-
-                                <th>
-                                    Nombre
-                                </th>
-
-                                <th>
-                                    Usuario
-                                </th>
-
-                                <th>
-                                    Código
-                                </th>
-
-                                <th>
-                                    Curso
-                                </th>
-
-                                <th>
-                                    Clase
-                                </th>
-
-                                <th>
-                                    Teléfono
-                                </th>
-
-                                <th>
-                                    Estado
-                                </th>
-
-                                <th>
-                                    Acciones
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            {% for alumno in alumnos %}
-
-                            <tr>
-
-                                <!-- Número -->
-
-                                <td>
-
-                                    {{ forloop.counter }}
-
-                                </td>
-
-
-                                <!-- Nombre -->
-
-                                <td>
-
-                                    {% if alumno.usuario.get_full_name %}
-
-                                        {{ alumno.usuario.get_full_name }}
-
-                                    {% else %}
-
-                                        Sin nombre
-
-                                    {% endif %}
-
-                                </td>
-
-
-                                <!-- Usuario -->
-
-                                <td>
-
-                                    {{ alumno.usuario.username }}
-
-                                </td>
-
-
-                                <!-- Código -->
-
-                                <td>
-
-                                    {{ alumno.codigo|default:"Sin código" }}
-
-                                </td>
-
-
-                                <!-- Curso -->
-
-                                <td>
-
-                                    {% if alumno.curso %}
-
-                                        {{ alumno.curso.nombre }}
-
-                                    {% else %}
-
-                                        <span class="text-muted">
-                                            Sin curso
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-
-                                <!-- Clase -->
-
-                                <td>
-
-                                    {% if alumno.clase %}
-
-                                        {{ alumno.clase.nombre }}
-
-                                    {% else %}
-
-                                        <span class="text-muted">
-                                            Sin clase
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-
-                                <!-- Teléfono -->
-
-                                <td>
-
-                                    {{ alumno.telefono|default:"Sin teléfono" }}
-
-                                </td>
-
-
-                                <!-- Estado -->
-
-                                <td>
-
-                                    {% if alumno.activo %}
-
-                                        <span class="badge bg-success">
-                                            Activo
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="badge bg-danger">
-                                            Inactivo
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-
-                                <!-- Acciones -->
-
-                                <td>
-
-                                    <a href="#"
-                                       class="btn btn-sm btn-primary">
-
-                                        <i class="fa-solid fa-eye"></i>
-
-                                    </a>
-
-
-                                    <a href="#"
-                                       class="btn btn-sm btn-warning">
-
-                                        <i class="fa-solid fa-pen"></i>
-
-                                    </a>
-
-
-                                    <a href="#"
-                                       class="btn btn-sm btn-danger">
-
-                                        <i class="fa-solid fa-trash"></i>
-
-                                    </a>
-
-                                </td>
-
-                            </tr>
-
-
-                            {% empty %}
-
-                            <tr>
-
-                                <td colspan="9"
-                                    class="text-center">
-
-                                    No hay alumnos registrados.
-
-                                </td>
-
-                            </tr>
-
-                            {% endfor %}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-            {% else %}
-
-                <div class="alert alert-info">
-
-                    No hay alumnos registrados.
-
-                </div>
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
 
 </div>
+
+
+<!-- ========================================== -->
+<!-- LISTA DE CURSOS -->
+<!-- ========================================== -->
+
+<div class="card mb-5">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Cursos disponibles
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if cursos %}
+
+            <div class="cursos-container">
+
+                {% for curso in cursos %}
+
+                    <div class="curso-card">
+
+                        <div class="curso-card-header">
+
+                            <h3>
+                                {{ curso.nombre }}
+                            </h3>
+
+                        </div>
+
+                        <div class="curso-card-body">
+
+                            <p>
+                                <strong>Alumnos:</strong>
+                                {{ curso.cantidad_alumnos }}/32
+                            </p>
+
+                        </div>
+
+                        <div class="curso-card-actions">
+
+                            <a href="{% url 'editar_curso' curso.id %}"
+                               class="btn btn-sm btn-warning">
+
+                                <i class="fa-solid fa-pen"></i>
+
+                            </a>
+
+                            <a href="{% url 'eliminar_curso' curso.id %}"
+                               class="btn btn-sm btn-danger">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-info mb-0">
+                No hay cursos disponibles.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- LISTA DE ALUMNOS -->
+<!-- ========================================== -->
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+            Alumnos registrados
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <!-- FILTRO -->
+
+        <div class="mb-4">
+
+            <label for="filtroCurso" class="form-label">
+                Filtrar alumnos por curso
+            </label>
+
+            <select id="filtroCurso" class="form-select">
+
+                <option value="">
+                    Todos los cursos
+                </option>
+
+                {% for curso in cursos %}
+
+                    <option value="{{ curso.id }}">
+                        {{ curso.nombre }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <!-- TABLA -->
+
+        {% include 'admin/cursos/partials/tabla_alumnos.html' %}
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<script src="{% static 'js/cursos/cursos.js' %}"></script>
 
 {% endblock %}
