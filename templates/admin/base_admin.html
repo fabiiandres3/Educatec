@@ -319,6 +319,13 @@
             <i class="fas fa-tasks"></i> Tareas
         </a>
 
+        <a href="{% url 'listar_eventos' %}"
+   class="nav-link-admin {% if request.resolver_match.url_name == 'listar_eventos' %}active{% endif %}">
+
+    <i class="fas fa-calendar-alt"></i> Eventos
+
+</a>
+
         <a href="{% url 'clases' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'admin_materias' %}active{% endif %}">
             <i class="fas fa-book"></i> Clases
         </a>

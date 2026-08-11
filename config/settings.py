@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     'apps.tareas',
     'apps.docentes',
     'apps.asistencia',
+    "apps.eventos",
+    
 ]
 # =========================================================
 # DJANGO SITES
