@@ -1,127 +1,888 @@
 {% extends 'paneles/docentes/base.html' %}
+
 {% block title %}Panel Docente{% endblock %}
+
 {% block active_inicio %}active{% endblock %}
+
 {% block search_placeholder %}Buscar alumnos...{% endblock %}
 
+
 {% block extra_css %}
+
 <style>
-    .dashboard-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start;}
-    .right-panel{display:flex;flex-direction:column;gap:20px;}
-    .action-btn{display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;margin-bottom:8px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;color:#081b3a;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:background .2s,border-color .2s;box-sizing:border-box;}
-    .action-btn:hover{background:#eef4ff;border-color:#006eff;color:#006eff;}
-    .action-btn:last-child{margin-bottom:0;}
+
+    /* =========================================================
+       DASHBOARD
+    ========================================================= */
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .right-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+
+    /* =========================================================
+       ACCIONES RÁPIDAS
+    ========================================================= */
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 11px 16px;
+        margin-bottom: 8px;
+
+        background: #f8fafc;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 12px;
+
+        color: #081b3a;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: inherit;
+
+        cursor: pointer;
+        transition: background .2s, border-color .2s, color .2s;
+
+        box-sizing: border-box;
+    }
+
+    .action-btn:hover {
+        background: #eef4ff;
+        border-color: #006eff;
+        color: #006eff;
+    }
+
+    .action-btn:last-child {
+        margin-bottom: 0;
+    }
+
+
+    /* =========================================================
+       EVENTOS
+    ========================================================= */
+
+    .eventos-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+    .eventos-header h4 {
+        margin: 0;
+    }
+
+    .btn-ver-eventos {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+
+        padding: 9px 14px;
+
+        background: #006eff;
+        color: white;
+
+        border: none;
+        border-radius: 9px;
+
+        text-decoration: none;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        transition: background .2s, transform .2s;
+    }
+
+    .btn-ver-eventos:hover {
+        background: #0056cc;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+
+    .eventos-grid {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(250px, 1fr)
+        );
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+
+    .evento-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #ffffff;
+
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .evento-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
+    }
+
+
+    .evento-imagen {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+    }
+
+
+    .evento-contenido {
+        padding: 15px;
+    }
+
+
+    .evento-titulo {
+        font-size: 16px;
+        font-weight: 700;
+        color: #081b3a;
+        margin-bottom: 8px;
+    }
+
+
+    .evento-info {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+
+
+    .evento-descripcion {
+        font-size: 13px;
+        color: #475569;
+        line-height: 1.5;
+        margin-top: 10px;
+    }
+
+
+    .evento-tipo {
+        display: inline-block;
+
+        padding: 4px 9px;
+
+        border-radius: 20px;
+
+        background: #eef4ff;
+        color: #006eff;
+
+        font-size: 11px;
+        font-weight: 600;
+
+        margin-top: 5px;
+    }
+
+
+    .evento-video {
+        margin-top: 10px;
+    }
+
+
+    .evento-video a {
+        font-size: 13px;
+        text-decoration: none;
+        color: #006eff;
+        font-weight: 600;
+    }
+
+
+    .sin-eventos {
+        color: #6b7280;
+        padding: 15px 0;
+        margin: 0;
+    }
+
+
+    /* =========================================================
+       GRADOS
+    ========================================================= */
+
+    .grados {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .grado {
+        padding: 9px 15px;
+
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+
+        background: #f8fafc;
+        color: #081b3a;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: background .2s, border-color .2s, color .2s;
+    }
+
+    .grado:hover,
+    .grado.active {
+        background: #eef4ff;
+        border-color: #006eff;
+        color: #006eff;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 900px) {
+
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+        .eventos-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .eventos-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
 </style>
+
 {% endblock %}
 
+
 {% block content %}
+
+
+<!-- =========================================================
+     ENCABEZADO
+========================================================= -->
+
 <div class="topbar">
+
     <div class="welcome">
-        <h2>Bienvenido, {{ docente.nombre }}</h2>
-        <p>Resumen de tu actividad académica</p>
+
+        <h2>
+            Bienvenido, {{ docente.nombre }}
+        </h2>
+
+        <p>
+            Resumen de tu actividad académica
+        </p>
+
     </div>
+
+
     <div class="user-area">
+
         <div class="notification">
+
             <i class="fa-solid fa-bell"></i>
-            <span class="notification-count">{{ mensajes_no_leidos|default:"0" }}</span>
+
+            <span class="notification-count">
+                {{ mensajes_no_leidos|default:"0" }}
+            </span>
+
         </div>
+
+
         <div class="profile">
-            <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
+
+            <img
+                src="https://i.pravatar.cc/120?img=3"
+                alt="Docente Avatar"
+                class="profile-img"
+            >
+
             <div>
-                <strong>{{ docente.nombre }}</strong>
-                <small>docente</small>
+
+                <strong>
+                    {{ docente.nombre }}
+                </strong>
+
+                <small>
+                    Docente
+                </small>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
+
+
 <br>
 
+
+<!-- =========================================================
+     ESTADÍSTICAS
+========================================================= -->
+
 <div class="stats">
+
+
+    <!-- ALUMNOS -->
+
     <div class="stat-card">
-        <div class="icon blue"><i class="fa-solid fa-user-graduate"></i></div>
-        <h3>{{ total_alumnoss|default:"0" }}</h3><p>alumnoss</p>
+
+        <div class="icon blue">
+            <i class="fa-solid fa-user-graduate"></i>
+        </div>
+
+        <h3>
+            {{ total_alumnoss|default:"0" }}
+        </h3>
+
+        <p>
+            Alumnos
+        </p>
+
     </div>
+
+
+    <!-- ASISTENCIA -->
+
     <div class="stat-card">
-        <div class="icon green"><i class="fa-solid fa-check"></i></div>
-        <h3>{{ porcentaje_asistencia|default:"—" }}%</h3><p>Asistencia</p>
+
+        <div class="icon green">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <h3>
+            {{ porcentaje_asistencia|default:"—" }}%
+        </h3>
+
+        <p>
+            Asistencia
+        </p>
+
     </div>
+
+
+    <!-- TAREAS -->
+
     <div class="stat-card">
-        <div class="icon orange"><i class="fa-solid fa-book-open"></i></div>
-        <h3>{{ total_tareas|default:"0" }}</h3><p>Tareas</p>
+
+        <div class="icon orange">
+            <i class="fa-solid fa-book-open"></i>
+        </div>
+
+        <h3>
+            {{ total_tareas|default:"0" }}
+        </h3>
+
+        <p>
+            Tareas
+        </p>
+
     </div>
+
+
+    <!-- PROMEDIO -->
+
     <div class="stat-card">
-        <div class="icon purple"><i class="fa-solid fa-chart-line"></i></div>
-        <h3>{{ promedio|default:"—" }}</h3><p>Promedio</p>
+
+        <div class="icon purple">
+            <i class="fa-solid fa-chart-line"></i>
+        </div>
+
+        <h3>
+            {{ promedio|default:"—" }}
+        </h3>
+
+        <p>
+            Promedio
+        </p>
+
     </div>
+
 </div>
+
+
+<!-- =========================================================
+     MIS GRADOS
+========================================================= -->
 
 <div class="section-card">
-    <h4>Mis Grados</h4>
+
+    <h4>
+        Mis Grados
+    </h4>
+
+
     <div class="grados">
+
         {% for curso in cursos %}
-            <button class="grado {% if forloop.first %}active{% endif %}">{{ curso.nombre }}</button>
+
+            <button
+                type="button"
+                class="grado {% if forloop.first %}active{% endif %}"
+            >
+                {{ curso.nombre }}
+            </button>
+
         {% empty %}
-            <p style="color:#6b7280;">No hay grados asignados aún.</p>
+
+            <p style="color:#6b7280;">
+                No hay grados asignados aún.
+            </p>
+
         {% endfor %}
+
     </div>
+
 </div>
+
+
+<!-- =========================================================
+     PRÓXIMOS EVENTOS
+========================================================= -->
+
+<div class="section-card">
+
+
+    <div class="eventos-header">
+
+        <div>
+
+            <h4>
+                📢 Próximos eventos
+            </h4>
+
+        </div>
+
+
+        <!-- BOTÓN VER TODOS -->
+
+        <a
+            href="{% url 'eventos_docente' %}"
+            class="btn-ver-eventos"
+        >
+
+            <i class="fa-solid fa-calendar-days"></i>
+
+            Ver todos los eventos
+
+        </a>
+
+    </div>
+
+
+    {% if eventos %}
+
+
+        <div class="eventos-grid">
+
+
+            {% for evento in eventos %}
+
+                {% if forloop.counter <= 3 %}
+
+                    <div class="evento-card">
+
+
+                        <!-- IMAGEN -->
+
+                        {% if evento.imagen %}
+
+                            <img
+                                src="{{ evento.imagen.url }}"
+                                alt="{{ evento.titulo }}"
+                                class="evento-imagen"
+                            >
+
+                        {% endif %}
+
+
+                        <div class="evento-contenido">
+
+
+                            <!-- TÍTULO -->
+
+                            <div class="evento-titulo">
+
+                                📢 {{ evento.titulo }}
+
+                            </div>
+
+
+                            <!-- FECHA -->
+
+                            <div class="evento-info">
+
+                                📅
+                                {{ evento.fecha|date:"d/m/Y" }}
+
+                                {% if evento.hora %}
+
+                                    · 🕐
+                                    {{ evento.hora|time:"H:i" }}
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- TIPO -->
+
+                            <span class="evento-tipo">
+
+                                {{ evento.get_tipo_display }}
+
+                            </span>
+
+
+                            <!-- DESCRIPCIÓN -->
+
+                            {% if evento.descripcion %}
+
+                                <div class="evento-descripcion">
+
+                                    {{ evento.descripcion }}
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- VIDEO -->
+
+                            {% if evento.video %}
+
+                                <div class="evento-video">
+
+                                    🎥
+
+                                    <a
+                                        href="{{ evento.video }}"
+                                        target="_blank"
+                                        rel="noopener"
+                                    >
+                                        Ver video
+                                    </a>
+
+                                </div>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+
+        </div>
+
+
+    {% else %}
+
+        <p class="sin-eventos">
+
+            No hay eventos próximos.
+
+        </p>
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- =========================================================
+     TAREAS + PANEL DERECHO
+========================================================= -->
 
 <div class="dashboard-grid">
+
+
+    <!-- =====================================================
+         PRÓXIMAS TAREAS
+    ====================================================== -->
+
     <div class="section-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <h4>Próximas Tareas</h4>
+
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:10px;
+            "
+        >
+
+            <h4>
+                Próximas Tareas
+            </h4>
+
         </div>
+
+
         <table>
+
             <thead>
+
                 <tr>
-                    <th>Tarea</th>
-                    <th>Grado</th>
-                    <th>Materia</th>
-                    <th>Fecha límite</th>
-                    <th>Estado</th>
+
+                    <th>
+                        Tarea
+                    </th>
+
+                    <th>
+                        Grado
+                    </th>
+
+                    <th>
+                        Materia
+                    </th>
+
+                    <th>
+                        Fecha límite
+                    </th>
+
+                    <th>
+                        Estado
+                    </th>
+
                 </tr>
+
             </thead>
+
+
             <tbody>
+
+
                 {% for tarea in tareas_recientes %}
-                <tr>
-                    <td>{{ tarea.titulo }}</td>
-                    <td>{{ tarea.curso }}</td>
-                    <td>{{ tarea.materia }}</td>
-                    <td>{{ tarea.fecha_limite }}</td>
-                    <td>
-                        <span style="padding:4px 10px;border-radius:20px;font-size:12px;
-                            background:{% if tarea.estado == 'entregada' %}#d1fae5{% elif tarea.estado == 'vencida' %}#fee2e2{% else %}#fff3cd{% endif %};
-                            color:{% if tarea.estado == 'entregada' %}#065f46{% elif tarea.estado == 'vencida' %}#991b1b{% else %}#b45309{% endif %};">
-                            {{ tarea.get_estado_display }}
-                        </span>
-                    </td>
-                </tr>
+
+                    <tr>
+
+
+                        <td>
+                            {{ tarea.titulo }}
+                        </td>
+
+
+                        <td>
+                            {{ tarea.curso }}
+                        </td>
+
+
+                        <td>
+                            {{ tarea.materia }}
+                        </td>
+
+
+                        <td>
+                            {{ tarea.fecha_limite }}
+                        </td>
+
+
+                        <td>
+
+
+                            <span
+                                style="
+                                    padding:4px 10px;
+                                    border-radius:20px;
+                                    font-size:12px;
+
+                                    {% if tarea.estado == 'entregada' %}
+
+                                        background:#d1fae5;
+                                        color:#065f46;
+
+                                    {% elif tarea.estado == 'vencida' %}
+
+                                        background:#fee2e2;
+                                        color:#991b1b;
+
+                                    {% else %}
+
+                                        background:#fff3cd;
+                                        color:#b45309;
+
+                                    {% endif %}
+                                "
+                            >
+
+                                {{ tarea.get_estado_display }}
+
+                            </span>
+
+
+                        </td>
+
+
+                    </tr>
+
+
                 {% empty %}
-                <tr>
-                    <td colspan="5" style="text-align:center;color:#6b7280;padding:20px 0;">
-                        No hay tareas registradas.
-                    </td>
-                </tr>
+
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            style="
+                                text-align:center;
+                                color:#6b7280;
+                                padding:20px 0;
+                            "
+                        >
+
+                            No hay tareas registradas.
+
+                        </td>
+
+                    </tr>
+
+
                 {% endfor %}
+
+
             </tbody>
+
         </table>
+
+
     </div>
 
+
+    <!-- =====================================================
+         PANEL DERECHO
+    ====================================================== -->
+
     <div class="right-panel">
+
+
+        <!-- ACCIONES RÁPIDAS -->
+
         <div class="section-card">
-            <h4>Acciones Rápidas</h4>
-            <button class="action-btn" onclick="window.location='{% url 'calificaciones_docente' %}'">📊 Calificaciones</button>
-            <button class="action-btn" onclick="window.location='{% url 'asistencia_docente' %}'">✅ Registrar Asistencia</button>
+
+            <h4>
+                Acciones Rápidas
+            </h4>
+
+
+            <button
+                type="button"
+                class="action-btn"
+                onclick="window.location='{% url 'calificaciones_docente' %}'"
+            >
+
+                <i class="fa-solid fa-chart-column"></i>
+
+                Calificaciones
+
+            </button>
+
+
+            <button
+                type="button"
+                class="action-btn"
+                onclick="window.location='{% url 'asistencia_docente' %}'"
+            >
+
+                <i class="fa-solid fa-calendar-check"></i>
+
+                Registrar Asistencia
+
+            </button>
+
+
+            <button
+                type="button"
+                class="action-btn"
+                onclick="window.location='{% url 'eventos_docente' %}'"
+            >
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                Ver Eventos
+
+            </button>
+
+
         </div>
+
+
+        <!-- MIS MATERIAS -->
+
         <div class="section-card">
-            <h4>Mis Materias</h4>
+
+            <h4>
+                Mis Materias
+            </h4>
+
+
             <ul class="activities">
+
+
                 {% for materia in materias %}
-                    <li>📚 {{ materia.nombre }}</li>
+
+                    <li>
+
+                        <i class="fa-solid fa-book"></i>
+
+                        {{ materia.nombre }}
+
+                    </li>
+
+
                 {% empty %}
-                    <li style="color:#6b7280;">Sin materias asignadas.</li>
+
+
+                    <li style="color:#6b7280;">
+
+                        Sin materias asignadas.
+
+                    </li>
+
+
                 {% endfor %}
+
+
             </ul>
+
         </div>
+
+
     </div>
+
+
 </div>
+
+
 {% endblock %}

@@ -1,141 +1,852 @@
 {% extends 'paneles/alumnos/base.html' %}
-{% block title %}Portal Estudiantil{% endblock %}
-{% block active_inicio %}active{% endblock %}
+
+
+{% block title %}
+    Portal Estudiantil
+{% endblock %}
+
+
+{% block active_inicio %}
+    active
+{% endblock %}
+
 
 {% block content %}
 
-<!-- TOPBAR -->
+
+<!-- =====================================================
+     TOPBAR
+====================================================== -->
+
 <div class="topbar">
+
     <div class="welcome">
-        <h2>Hola, {{ alumnos.nombre }} 👋</h2>
-        <p>Bienvenido nuevamente a Educatec</p>
+
+        <h2>
+            Hola, {{ alumnos.nombre }} 👋
+        </h2>
+
+        <p>
+            Bienvenido nuevamente a Educatec
+        </p>
+
     </div>
+
+
     <div class="user-area">
+
         <div class="notification">
+
             <i class="fa-solid fa-bell"></i>
-            <span class="notification-count">{{ mensajes_sin_leer }}</span>
+
+            <span class="notification-count">
+                {{ mensajes_sin_leer|default:"0" }}
+            </span>
+
         </div>
+
+
         <div class="profile">
-            <img src="https://i.pravatar.cc/120?img=12" alt="Alumno">
+
+            <img
+                src="https://i.pravatar.cc/120?img=12"
+                alt="Alumno"
+            >
+
             <div>
-                <strong>{{ alumnos.nombre }}</strong>
-                <small>{{ alumnos.curso }}</small>
+
+                <strong>
+                    {{ alumnos.nombre }}
+                </strong>
+
+                <small>
+                    {{ alumnos.curso }}
+                </small>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
-<!-- STATS -->
+
+
+<!-- =====================================================
+     ESTADÍSTICAS
+====================================================== -->
+
 <div class="stats">
+
+
+    <!-- PROMEDIO -->
+
     <div class="stat-card">
-        <div class="stat-icon blue"><i class="fa-solid fa-star"></i></div>
-        <div><h3>{{ promedio_general }}</h3><p>Promedio General</p></div>
+
+        <div class="stat-icon blue">
+
+            <i class="fa-solid fa-star"></i>
+
+        </div>
+
+        <div>
+
+            <h3>
+                {{ promedio_general|default:"—" }}
+            </h3>
+
+            <p>
+                Promedio General
+            </p>
+
+        </div>
+
     </div>
+
+
+    <!-- ASISTENCIA -->
+
     <div class="stat-card">
-        <div class="stat-icon green"><i class="fa-solid fa-user-check"></i></div>
-        <div><h3>{{ porcentaje_asistencia }}%</h3><p>Asistencia</p></div>
+
+        <div class="stat-icon green">
+
+            <i class="fa-solid fa-user-check"></i>
+
+        </div>
+
+        <div>
+
+            <h3>
+                {{ porcentaje_asistencia|default:"—" }}%
+            </h3>
+
+            <p>
+                Asistencia
+            </p>
+
+        </div>
+
     </div>
+
+
+    <!-- TAREAS -->
+
     <div class="stat-card">
-        <div class="stat-icon orange"><i class="fa-solid fa-book"></i></div>
-        <div><h3>{{ tareas_pendientes }}</h3><p>Tareas Pendientes</p></div>
+
+        <div class="stat-icon orange">
+
+            <i class="fa-solid fa-book"></i>
+
+        </div>
+
+        <div>
+
+            <h3>
+                {{ tareas_pendientes|default:"0" }}
+            </h3>
+
+            <p>
+                Tareas Pendientes
+            </p>
+
+        </div>
+
     </div>
+
+
+    <!-- LOGROS -->
+
     <div class="stat-card">
-        <div class="stat-icon purple"><i class="fa-solid fa-medal"></i></div>
-        <div><h3>{{ total_logros }}</h3><p>Logros</p></div>
+
+        <div class="stat-icon purple">
+
+            <i class="fa-solid fa-medal"></i>
+
+        </div>
+
+        <div>
+
+            <h3>
+                {{ total_logros|default:"0" }}
+            </h3>
+
+            <p>
+                Logros
+            </p>
+
+        </div>
+
     </div>
+
+
 </div>
 
-<!-- GRID PRINCIPAL -->
+
+
+<!-- =====================================================
+     EVENTOS
+====================================================== -->
+
+<div class="section-card">
+
+
+    <div
+        style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:15px;
+            gap:15px;
+        "
+    >
+
+        <div>
+
+            <h4 style="margin-bottom:5px;">
+                📅 Próximos eventos
+            </h4>
+
+            <p
+                style="
+                    margin:0;
+                    color:#64748b;
+                    font-size:14px;
+                "
+            >
+                Eventos generales y actividades dirigidas a estudiantes.
+            </p>
+
+        </div>
+
+
+        <!-- VER TODOS -->
+
+        <a
+            href="{% url 'eventos_alumnos' %}"
+            style="
+                display:inline-flex;
+                align-items:center;
+                gap:7px;
+                padding:9px 14px;
+                border-radius:10px;
+                background:#006eff;
+                color:white;
+                text-decoration:none;
+                font-size:13px;
+                font-weight:600;
+                white-space:nowrap;
+                transition:.2s;
+            "
+        >
+
+            <i class="fa-solid fa-calendar-days"></i>
+
+            Ver todos los eventos
+
+        </a>
+
+    </div>
+
+
+
+    {% if eventos %}
+
+
+        <!-- SOLO LOS 3 PRÓXIMOS -->
+
+        <div
+            style="
+                display:grid;
+                grid-template-columns:
+                    repeat(
+                        auto-fit,
+                        minmax(240px, 1fr)
+                    );
+                gap:15px;
+            "
+        >
+
+
+            {% for evento in eventos|slice:":3" %}
+
+
+                <div
+                    style="
+                        border:1px solid #e5e7eb;
+                        border-radius:12px;
+                        overflow:hidden;
+                        background:#fff;
+                        transition:.2s;
+                    "
+                >
+
+
+                    <!-- IMAGEN -->
+
+                    {% if evento.imagen %}
+
+                        <img
+                            src="{{ evento.imagen.url }}"
+                            alt="{{ evento.titulo }}"
+                            style="
+                                width:100%;
+                                height:150px;
+                                object-fit:cover;
+                                display:block;
+                            "
+                        >
+
+                    {% endif %}
+
+
+
+                    <!-- CONTENIDO -->
+
+                    <div
+                        style="
+                            padding:15px;
+                        "
+                    >
+
+
+                        <!-- TÍTULO -->
+
+                        <div
+                            style="
+                                font-size:16px;
+                                font-weight:700;
+                                color:#081b3a;
+                                margin-bottom:8px;
+                            "
+                        >
+
+                            {{ evento.titulo }}
+
+                        </div>
+
+
+
+                        <!-- FECHA -->
+
+                        <div
+                            style="
+                                font-size:13px;
+                                color:#64748b;
+                                margin-bottom:8px;
+                            "
+                        >
+
+                            📅
+
+                            {{ evento.fecha|date:"d/m/Y" }}
+
+
+                            {% if evento.hora %}
+
+                                · 🕐
+
+                                {{ evento.hora|time:"H:i" }}
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- TIPO -->
+
+                        <span
+                            style="
+                                display:inline-block;
+                                padding:4px 9px;
+                                border-radius:20px;
+                                background:#eef4ff;
+                                color:#006eff;
+                                font-size:11px;
+                                font-weight:600;
+                            "
+                        >
+
+                            {{ evento.get_tipo_display }}
+
+                        </span>
+
+
+
+                        <!-- DESCRIPCIÓN -->
+
+                        {% if evento.descripcion %}
+
+                            <div
+                                style="
+                                    font-size:13px;
+                                    color:#475569;
+                                    line-height:1.5;
+                                    margin-top:10px;
+                                "
+                            >
+
+                                {{ evento.descripcion|truncatechars:100 }}
+
+                            </div>
+
+                        {% endif %}
+
+
+
+                        <!-- VIDEO -->
+
+                        {% if evento.video %}
+
+                            <div
+                                style="
+                                    margin-top:10px;
+                                "
+                            >
+
+                                🎥
+
+                                <a
+                                    href="{{ evento.video }}"
+                                    target="_blank"
+                                    rel="noopener"
+                                    style="
+                                        color:#006eff;
+                                        text-decoration:none;
+                                        font-size:13px;
+                                        font-weight:600;
+                                    "
+                                >
+
+                                    Ver video
+
+                                </a>
+
+                            </div>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- SIN EVENTOS -->
+
+        <div
+            style="
+                text-align:center;
+                padding:35px 20px;
+                color:#64748b;
+            "
+        >
+
+            <div
+                style="
+                    font-size:40px;
+                    margin-bottom:10px;
+                "
+            >
+                📅
+            </div>
+
+            <h5>
+                No hay eventos próximos
+            </h5>
+
+            <p>
+                Actualmente no hay eventos publicados para estudiantes.
+            </p>
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- =====================================================
+     GRID PRINCIPAL
+====================================================== -->
+
 <div class="dashboard-grid">
 
-    <!-- COLUMNA IZQUIERDA -->
+
+    <!-- =================================================
+         COLUMNA IZQUIERDA
+    ================================================== -->
+
     <div class="main-column">
 
-        <!-- TAREAS -->
+
+        <!-- =================================================
+             TAREAS / CALIFICACIONES
+        ================================================== -->
+
         <div class="section-card">
+
+
             <div class="section-header">
-                <h4>Tareas Pendientes</h4>
+
+                <h4>
+                    Tareas Pendientes
+                </h4>
+
             </div>
+
+
             {% for cal in calificaciones %}
-            <div class="task-card">
-                <div>
-                    <h6>{{ cal.materia }}</h6>
-                    <p>Promedio: {{ cal.promedio }}</p>
+
+
+                <div class="task-card">
+
+
+                    <div>
+
+                        <h6>
+                            {{ cal.materia }}
+                        </h6>
+
+                        <p>
+                            Promedio: {{ cal.promedio }}
+                        </p>
+
+                    </div>
+
+
+                    <span
+                        class="
+                            badge
+                            {% if cal.promedio >= 4.0 %}
+                                success
+                            {% elif cal.promedio >= 3.0 %}
+                                warning
+                            {% else %}
+                                danger
+                            {% endif %}
+                        "
+                    >
+
+                        {{ cal.promedio }}
+
+                    </span>
+
+
                 </div>
-                <span class="badge {% if cal.promedio >= 4.0 %}success{% elif cal.promedio >= 3.0 %}warning{% else %}danger{% endif %}">
-                    {{ cal.promedio }}
-                </span>
-            </div>
+
+
             {% empty %}
-            <div class="task-card">
-                <div><p>No hay calificaciones registradas.</p></div>
-            </div>
+
+
+                <div class="task-card">
+
+                    <div>
+
+                        <p>
+                            No hay calificaciones registradas.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
             {% endfor %}
+
+
         </div>
 
-        <!-- MATERIAS -->
+
+
+        <!-- =================================================
+             MATERIAS
+        ================================================== -->
+
         <div class="section-card">
-            <div class="section-header"><h4>Mis Materias</h4></div>
-            <div class="subjects-grid">
-                {% for cal in calificaciones %}
-                <div class="subject-card">
-                    <i class="fa-solid fa-book-open"></i>
-                    <h6>{{ cal.materia }}</h6>
-                    <span>Promedio: {{ cal.promedio }}</span>
-                </div>
-                {% empty %}
-                <p style="color:#64748b;">No hay materias registradas.</p>
-                {% endfor %}
+
+
+            <div class="section-header">
+
+                <h4>
+                    Mis Materias
+                </h4>
+
             </div>
+
+
+            <div class="subjects-grid">
+
+
+                {% for cal in calificaciones %}
+
+
+                    <div class="subject-card">
+
+
+                        <i class="fa-solid fa-book-open"></i>
+
+
+                        <h6>
+                            {{ cal.materia }}
+                        </h6>
+
+
+                        <span>
+                            Promedio: {{ cal.promedio }}
+                        </span>
+
+
+                    </div>
+
+
+                {% empty %}
+
+
+                    <p style="color:#64748b;">
+
+                        No hay materias registradas.
+
+                    </p>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
         </div>
+
 
     </div>
 
-    <!-- PANEL DERECHO -->
+
+
+    <!-- =================================================
+         PANEL DERECHO
+    ================================================== -->
+
     <div class="side-column">
 
-        <!-- ASISTENCIA -->
+
+        <!-- =================================================
+             ASISTENCIA
+        ================================================== -->
+
         <div class="section-card">
-            <h4>Mi Asistencia</h4>
+
+
+            <h4>
+                Mi Asistencia
+            </h4>
+
+
             <ul class="event-list">
-                <li>✅ Presentes <span>{{ presentes }}</span></li>
-                <li>⏰ Tardanzas <span>{{ tardanzas }}</span></li>
-                <li>❌ Ausentes <span>{{ ausentes }}</span></li>
+
+
+                <li>
+
+                    ✅ Presentes
+
+                    <span>
+                        {{ presentes|default:"0" }}
+                    </span>
+
+                </li>
+
+
+                <li>
+
+                    ⏰ Tardanzas
+
+                    <span>
+                        {{ tardanzas|default:"0" }}
+                    </span>
+
+                </li>
+
+
+                <li>
+
+                    ❌ Ausentes
+
+                    <span>
+                        {{ ausentes|default:"0" }}
+                    </span>
+
+                </li>
+
+
             </ul>
+
+
         </div>
 
-        <!-- MENSAJES RECIENTES -->
+
+
+        <!-- =================================================
+             MENSAJES RECIENTES
+        ================================================== -->
+
         <div class="section-card">
-            <h4>Mensajes Recientes</h4>
+
+
+            <h4>
+                Mensajes Recientes
+            </h4>
+
+
             <ul class="event-list">
+
+
                 {% for msg in mensajes_recientes %}
-                <li>💬 {{ msg.contenido|truncatechars:30 }} <span>{{ msg.fecha|date:"d/m" }}</span></li>
+
+
+                    <li>
+
+                        💬
+
+                        {{ msg.contenido|truncatechars:30 }}
+
+
+                        <span>
+
+                            {{ msg.fecha|date:"d/m" }}
+
+                        </span>
+
+                    </li>
+
+
                 {% empty %}
-                <li>No hay mensajes.</li>
+
+
+                    <li>
+                        No hay mensajes.
+                    </li>
+
+
                 {% endfor %}
+
+
             </ul>
+
+
         </div>
 
-        <!-- LOGROS -->
+
+
+        <!-- =================================================
+             LOGROS
+        ================================================== -->
+
         <div class="section-card">
-            <h4>Mis Logros</h4>
+
+
+            <h4>
+                Mis Logros
+            </h4>
+
+
             {% if porcentaje_asistencia >= 90 %}
-            <div class="achievement">
-                <i class="fa-solid fa-trophy"></i>
-                <div><strong>Excelente Asistencia</strong><p>{{ porcentaje_asistencia }}% de asistencia</p></div>
-            </div>
+
+
+                <div class="achievement">
+
+
+                    <i class="fa-solid fa-trophy"></i>
+
+
+                    <div>
+
+                        <strong>
+                            Excelente Asistencia
+                        </strong>
+
+                        <p>
+                            {{ porcentaje_asistencia }}%
+                            de asistencia
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
             {% endif %}
+
+
+
             {% if promedio_general >= 4.5 %}
-            <div class="achievement">
-                <i class="fa-solid fa-star"></i>
-                <div><strong>Alto Rendimiento</strong><p>Promedio {{ promedio_general }}</p></div>
-            </div>
+
+
+                <div class="achievement">
+
+
+                    <i class="fa-solid fa-star"></i>
+
+
+                    <div>
+
+                        <strong>
+                            Alto Rendimiento
+                        </strong>
+
+                        <p>
+                            Promedio {{ promedio_general }}
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
             {% endif %}
+
+
+
             {% if not porcentaje_asistencia >= 90 and not promedio_general >= 4.5 %}
-            <p style="color:#64748b; margin-top:10px;">¡Sigue esforzándote para ganar logros!</p>
+
+
+                <p
+                    style="
+                        color:#64748b;
+                        margin-top:10px;
+                    "
+                >
+
+                    ¡Sigue esforzándote para ganar logros!
+
+                </p>
+
+
             {% endif %}
+
+
         </div>
+
 
     </div>
+
+
 </div>
+
+
 {% endblock %}

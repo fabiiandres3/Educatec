@@ -1,0 +1,472 @@
+{% extends 'paneles/docentes/base.html' %}
+
+
+{% block title %}
+Eventos
+{% endblock %}
+
+
+{% block active_eventos %}
+active
+{% endblock %}
+
+
+{% block search_placeholder %}
+Buscar eventos...
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* ========================================
+       ENCABEZADO
+    ======================================== */
+
+    .eventos-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .eventos-header h2 {
+        margin: 0;
+        color: #081b3a;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .eventos-header p {
+        margin: 5px 0 0;
+        color: #64748b;
+        font-size: 14px;
+    }
+
+
+    /* ========================================
+       GRID DE EVENTOS
+    ======================================== */
+
+    .eventos-grid {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(280px, 1fr)
+        );
+        gap: 20px;
+    }
+
+
+    /* ========================================
+       TARJETA
+    ======================================== */
+
+    .evento-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        overflow: hidden;
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+    }
+
+    .evento-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+    }
+
+
+    /* ========================================
+       IMAGEN
+    ======================================== */
+
+    .evento-imagen {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+    }
+
+
+    /* ========================================
+       CONTENIDO
+    ======================================== */
+
+    .evento-contenido {
+        padding: 18px;
+    }
+
+
+    /* ========================================
+       TÍTULO
+    ======================================== */
+
+    .evento-titulo {
+        font-size: 18px;
+        font-weight: 700;
+        color: #081b3a;
+        margin-bottom: 10px;
+    }
+
+
+    /* ========================================
+       FECHA Y HORA
+    ======================================== */
+
+    .evento-info {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+
+    /* ========================================
+       ETIQUETA TIPO
+    ======================================== */
+
+    .evento-tipo {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #eef4ff;
+        color: #006eff;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+
+    /* ========================================
+       ETIQUETA PÚBLICO
+    ======================================== */
+
+    .evento-publico {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 5px;
+        margin-bottom: 10px;
+    }
+
+
+    /* ========================================
+       DESCRIPCIÓN
+    ======================================== */
+
+    .evento-descripcion {
+        color: #475569;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 10px;
+    }
+
+
+    /* ========================================
+       VIDEO
+    ======================================== */
+
+    .evento-video {
+        margin-top: 15px;
+    }
+
+    .evento-video a {
+        text-decoration: none;
+        color: #006eff;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .evento-video a:hover {
+        text-decoration: underline;
+    }
+
+
+    /* ========================================
+       SIN EVENTOS
+    ======================================== */
+
+    .sin-eventos {
+        text-align: center;
+        padding: 50px 20px;
+        color: #64748b;
+    }
+
+    .sin-eventos-icono {
+        font-size: 45px;
+        margin-bottom: 15px;
+    }
+
+    .sin-eventos h4 {
+        color: #334155;
+        margin-bottom: 8px;
+    }
+
+    .sin-eventos p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+
+    /* ========================================
+       RESPONSIVE
+    ======================================== */
+
+    @media (max-width: 768px) {
+
+        .eventos-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .evento-imagen {
+            height: 200px;
+        }
+
+        .eventos-header {
+            align-items: flex-start;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<!-- ========================================
+     ENCABEZADO DE LA PÁGINA
+======================================== -->
+
+<div class="topbar">
+
+    <div class="welcome">
+
+        <h2>
+            Eventos
+        </h2>
+
+        <p>
+            Consulta los próximos eventos de Educatec
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- ========================================
+     CONTENEDOR DE EVENTOS
+======================================== -->
+
+<div class="section-card">
+
+
+    <!-- ENCABEZADO -->
+
+    <div class="eventos-header">
+
+        <div>
+
+            <h2>
+                📅 Próximos eventos
+            </h2>
+
+            <p>
+                Eventos dirigidos a docentes y eventos generales.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ====================================
+         SI EXISTEN EVENTOS
+    ===================================== -->
+
+    {% if eventos %}
+
+        <div class="eventos-grid">
+
+
+            {% for evento in eventos %}
+
+                <div class="evento-card">
+
+
+                    <!-- ====================================
+                         IMAGEN DEL EVENTO
+                    ===================================== -->
+
+                    {% if evento.imagen %}
+
+                        <img
+                            src="{{ evento.imagen.url }}"
+                            alt="{{ evento.titulo }}"
+                            class="evento-imagen"
+                        >
+
+                    {% endif %}
+
+
+
+                    <!-- ====================================
+                         CONTENIDO
+                    ===================================== -->
+
+                    <div class="evento-contenido">
+
+
+                        <!-- TÍTULO -->
+
+                        <div class="evento-titulo">
+
+                            {{ evento.titulo }}
+
+                        </div>
+
+
+
+                        <!-- FECHA Y HORA -->
+
+                        <div class="evento-info">
+
+                            📅
+
+                            {{ evento.fecha|date:"d/m/Y" }}
+
+                            {% if evento.hora %}
+
+                                · 🕐
+
+                                {{ evento.hora|time:"H:i" }}
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- TIPO -->
+
+                        {% if evento.tipo %}
+
+                            <span class="evento-tipo">
+
+                                {{ evento.get_tipo_display }}
+
+                            </span>
+
+                        {% endif %}
+
+
+
+                        <!-- PÚBLICO -->
+
+                        {% if evento.publico %}
+
+                            <span class="evento-publico">
+
+                                {{ evento.get_publico_display }}
+
+                            </span>
+
+                        {% endif %}
+
+
+
+                        <!-- DESCRIPCIÓN -->
+
+                        {% if evento.descripcion %}
+
+                            <div class="evento-descripcion">
+
+                                {{ evento.descripcion }}
+
+                            </div>
+
+                        {% endif %}
+
+
+
+                        <!-- VIDEO -->
+
+                        {% if evento.video %}
+
+                            <div class="evento-video">
+
+                                🎥
+
+                                <a
+                                    href="{{ evento.video }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+
+                                    Ver video
+
+                                </a>
+
+                            </div>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+
+    <!-- ====================================
+         SI NO EXISTEN EVENTOS
+    ===================================== -->
+
+    {% else %}
+
+        <div class="sin-eventos">
+
+            <div class="sin-eventos-icono">
+
+                📅
+
+            </div>
+
+            <h4>
+
+                No hay eventos disponibles
+
+            </h4>
+
+            <p>
+
+                Actualmente no hay eventos publicados para docentes.
+
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+
+{% endblock %}

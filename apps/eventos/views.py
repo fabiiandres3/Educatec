@@ -8,7 +8,10 @@ from .models import Evento
 @login_required
 def listar_eventos(request):
 
-    eventos = Evento.objects.all().order_by("fecha", "hora")
+    eventos = Evento.objects.all().order_by(
+        "fecha",
+        "hora"
+    )
 
     return render(
         request,
@@ -24,7 +27,10 @@ def crear_evento(request):
 
     if request.method == "POST":
 
-        form = EventoForm(request.POST, request.FILES)
+        form = EventoForm(
+            request.POST,
+            request.FILES
+        )
 
         if form.is_valid():
 
@@ -41,5 +47,45 @@ def crear_evento(request):
         "admin/eventos/form_evento.html",
         {
             "form": form,
+        }
+    )
+
+
+@login_required
+def eventos_docente(request):
+
+    eventos = Evento.objects.filter(
+        publicado=True,
+        publico__in=["todos", "docentes"]
+    ).order_by(
+        "fecha",
+        "hora"
+    )
+
+    return render(
+        request,
+        "admin/eventos/eventos_docente.html",
+        {
+            "eventos": eventos,
+        }
+    )
+
+
+@login_required
+def eventos_alumnos(request):
+
+    eventos = Evento.objects.filter(
+        publicado=True,
+        publico__in=["todos", "alumnos"]
+    ).order_by(
+        "fecha",
+        "hora"
+    )
+
+    return render(
+        request,
+        "admin/eventos/eventos_alumnos.html",
+        {
+            "eventos": eventos,
         }
     )

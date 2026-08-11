@@ -4,6 +4,7 @@ from django.db import transaction
 from .models import Tareas, Imagen, ArchivoTarea, Video, RespuestaAlumno, Calificacion
 from .forms import TareasForm
 from .services import Crear_preguntas, Respuesta_alumno, calcular_nota_final
+from apps.eventos.models import Evento
 
 # Create your views here.
 
@@ -43,8 +44,20 @@ def Crear_tarea(request):
 
     else:
         tarea_form = TareasForm()
+        
+        eventos = Evento.objects.filter(
+            publicado=True
+            ).order_by("fecha", "hora")
 
-    return render(request, "admin/tareas/crear_tarea.html", {"tarea_form": tarea_form})
+    return render(
+    request,
+    "admin/tareas/crear_tarea.html",
+    {
+        "tarea_form": tarea_form,
+        "eventos": eventos,
+    },
+)
+
 
 
 def Editar_tarea(request, tarea_id):

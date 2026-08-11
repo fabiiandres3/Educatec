@@ -1,63 +1,406 @@
 {% extends 'admin/base_admin.html' %}
 {% load static %}
+
 {% block title %}Crear Tarea{% endblock %}
 
 {% block content %}
-    <h2>Crear Tarea</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ tarea_form.as_p }}
-        <hr>
 
-                <h5>Imágenes</h5>
+<h2>Crear Tarea</h2>
 
-                <div id="imagenes-container">
-                    <input type="file" name="imagenes" class="form-control mb-2">
+<form method="post" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    {{ tarea_form.non_field_errors }}
+
+
+    <!-- TÍTULO -->
+
+    <div class="mb-3">
+
+        {{ tarea_form.titulo.label_tag }}
+
+        {{ tarea_form.titulo }}
+
+        {% if tarea_form.titulo.errors %}
+            <div class="text-danger">
+                {{ tarea_form.titulo.errors }}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- DESCRIPCIÓN -->
+
+    <div class="mb-3">
+
+        {{ tarea_form.descripcion.label_tag }}
+
+        {{ tarea_form.descripcion }}
+
+        {% if tarea_form.descripcion.errors %}
+            <div class="text-danger">
+                {{ tarea_form.descripcion.errors }}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- FECHA DE ENTREGA -->
+
+    <div class="mb-3">
+
+        {{ tarea_form.fecha_entrega.label_tag }}
+
+        {{ tarea_form.fecha_entrega }}
+
+        {% if tarea_form.fecha_entrega.errors %}
+            <div class="text-danger">
+                {{ tarea_form.fecha_entrega.errors }}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- EVENTOS DE LA FECHA SELECCIONADA -->
+    <!-- ====================================== -->
+
+    <div
+        id="eventos-fecha-container"
+        style="
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+        "
+    >
+
+        <div
+            style="
+                font-weight: 700;
+                color: #9a3412;
+                margin-bottom: 12px;
+            "
+        >
+            📢 Eventos programados para esta fecha
+        </div>
+
+
+        {% for evento in eventos %}
+
+            <div
+                class="evento-fecha-item"
+                data-fecha="{{ evento.fecha|date:'Y-m-d' }}"
+                style="
+                    display: none;
+                    background: white;
+                    border: 1px solid #fed7aa;
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin-bottom: 8px;
+                "
+            >
+
+                <div
+                    style="
+                        font-weight: 700;
+                        color: #1e293b;
+                    "
+                >
+                    📢 {{ evento.titulo }}
                 </div>
 
-                <button type="button" class="btn btn-outline-primary btn-sm mb-3" onclick="agregarImagen()">
-                    + Agregar imagen
-                </button>
 
-                <hr>
+                <div
+                    style="
+                        font-size: 13px;
+                        color: #64748b;
+                        margin-top: 4px;
+                    "
+                >
 
-                <h5>Archivos</h5>
+                    {{ evento.get_tipo_display }}
 
-                <div id="archivos-container">
-                    <input type="file" name="archivos" class="form-control mb-2">
+                    {% if evento.hora %}
+                        · {{ evento.hora|time:"H:i" }}
+                    {% endif %}
+
                 </div>
 
-                <button type="button" class="btn btn-outline-primary btn-sm mb-3" onclick="agregarArchivo()">
-                    + Agregar archivo
-                </button>
 
-                <hr>
+                {% if evento.descripcion %}
 
-                <h5>Videos (YouTube, Vimeo, etc.)</h5>
+                    <div
+                        style="
+                            font-size: 13px;
+                            color: #475569;
+                            margin-top: 6px;
+                        "
+                    >
+                        {{ evento.descripcion }}
+                    </div>
 
-                <div id="videos-container">
-                    <input type="url" name="videos" class="form-control mb-2"
-                        placeholder="https://youtube.com/watch?v=...">
-                </div>
+                {% endif %}
 
-                <button type="button" class="btn btn-outline-primary btn-sm mb-3" onclick="agregarVideo()">
-                    + Agregar video
-                </button>
+            </div>
+
+        {% empty %}
+
+            <!-- No hay eventos publicados -->
+
+        {% endfor %}
+
+    </div>
 
 
-                <div id="preguntas-container"></div>
+    <!-- CLASE -->
 
-                <button type="button" class="btn btn-primary mt-3" onclick="agregarPregunta()">
+    <div class="mb-3">
 
-                    + Agregar pregunta
+        {{ tarea_form.clase.label_tag }}
 
-                </button>
+        {{ tarea_form.clase }}
 
-                <hr>
+        {% if tarea_form.clase.errors %}
+            <div class="text-danger">
+                {{ tarea_form.clase.errors }}
+            </div>
+        {% endif %}
 
-        <button type="submit" class="btn btn-primary">Crear Tarea</button>
-        <a href="{% url 'listar_tareas' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+    </div>
 
-    <script src="{% static 'js/tareas/tareas.js' %}"></script>
+
+    <!-- CURSO -->
+
+    <div class="mb-3">
+
+        {{ tarea_form.curso.label_tag }}
+
+        {{ tarea_form.curso }}
+
+        {% if tarea_form.curso.errors %}
+            <div class="text-danger">
+                {{ tarea_form.curso.errors }}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- ====================================== -->
+    <!-- IMÁGENES -->
+    <!-- ====================================== -->
+
+    <h5>Imágenes</h5>
+
+    <div id="imagenes-container">
+
+        <input
+            type="file"
+            name="imagenes"
+            class="form-control mb-2"
+        >
+
+    </div>
+
+
+    <button
+        type="button"
+        class="btn btn-outline-primary btn-sm mb-3"
+        onclick="agregarImagen()"
+    >
+        + Agregar imagen
+    </button>
+
+
+    <hr>
+
+
+    <!-- ====================================== -->
+    <!-- ARCHIVOS -->
+    <!-- ====================================== -->
+
+    <h5>Archivos</h5>
+
+    <div id="archivos-container">
+
+        <input
+            type="file"
+            name="archivos"
+            class="form-control mb-2"
+        >
+
+    </div>
+
+
+    <button
+        type="button"
+        class="btn btn-outline-primary btn-sm mb-3"
+        onclick="agregarArchivo()"
+    >
+        + Agregar archivo
+    </button>
+
+
+    <hr>
+
+
+    <!-- ====================================== -->
+    <!-- VIDEOS -->
+    <!-- ====================================== -->
+
+    <h5>Videos (YouTube, Vimeo, etc.)</h5>
+
+    <div id="videos-container">
+
+        <input
+            type="url"
+            name="videos"
+            class="form-control mb-2"
+            placeholder="https://youtube.com/watch?v=..."
+        >
+
+    </div>
+
+
+    <button
+        type="button"
+        class="btn btn-outline-primary btn-sm mb-3"
+        onclick="agregarVideo()"
+    >
+        + Agregar video
+    </button>
+
+
+    <!-- ====================================== -->
+    <!-- PREGUNTAS -->
+    <!-- ====================================== -->
+
+    <div id="preguntas-container"></div>
+
+
+    <button
+        type="button"
+        class="btn btn-primary mt-3"
+        onclick="agregarPregunta()"
+    >
+        + Agregar pregunta
+    </button>
+
+
+    <hr>
+
+
+    <!-- ====================================== -->
+    <!-- BOTONES -->
+    <!-- ====================================== -->
+
+    <button
+        type="submit"
+        class="btn btn-primary"
+    >
+        Crear Tarea
+    </button>
+
+
+    <a
+        href="{% url 'listar_tareas' %}"
+        class="btn btn-secondary"
+    >
+        Cancelar
+    </a>
+
+</form>
+
+
+<!-- ====================================== -->
+<!-- JAVASCRIPT EXISTENTE -->
+<!-- ====================================== -->
+
+<script src="{% static 'js/tareas/tareas.js' %}"></script>
+
+
+<!-- ====================================== -->
+<!-- JAVASCRIPT DE EVENTOS -->
+<!-- ====================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const fechaInput =
+        document.getElementById("id_fecha_entrega");
+
+    const contenedor =
+        document.getElementById(
+            "eventos-fecha-container"
+        );
+
+    const eventos =
+        document.querySelectorAll(
+            ".evento-fecha-item"
+        );
+
+
+    if (!fechaInput) {
+        return;
+    }
+
+
+    fechaInput.addEventListener("change", function () {
+
+        const fechaSeleccionada = this.value;
+
+        let hayEventos = false;
+
+
+        eventos.forEach(function (evento) {
+
+            const fechaEvento =
+                evento.dataset.fecha;
+
+
+            if (
+                fechaEvento ===
+                fechaSeleccionada
+            ) {
+
+                evento.style.display = "block";
+
+                hayEventos = true;
+
+            } else {
+
+                evento.style.display = "none";
+
+            }
+
+        });
+
+
+        if (hayEventos) {
+
+            contenedor.style.display = "block";
+
+        } else {
+
+            contenedor.style.display = "none";
+
+        }
+
+    });
+
+});
+
+</script>
+
 {% endblock %}
