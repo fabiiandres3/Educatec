@@ -2,7 +2,7 @@
 {% load dict_extras %}
 {% block title %}Calificaciones{% endblock %}
 {% block active_calificaciones %}active{% endblock %}
-{% block search_placeholder %}Buscar alumnos...{% endblock %}
+{% block search_placeholder %}Buscar alumno...{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -61,7 +61,7 @@
         background: #f8fafc;
         font-family: 'Segoe UI', sans-serif;
         font-size: 14px;
-        color: #081b3a;
+        color: #081b3a; 
         cursor: pointer;
         outline: none;
         min-width: 190px;
@@ -151,7 +151,7 @@
 <div class="topbar">
     <div class="welcome">
         <h2>Calificaciones</h2>
-        <p>Registra y gestiona las notas de tus alumnoss</p>
+        <p>Registra y gestiona las notas de tus alumno</p>
     </div>
     <div class="user-area">
         <div class="notification">
@@ -161,32 +161,13 @@
         <div class="profile">
             <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
             <div>
-                <strong>{{ docente.nombre }}</strong>
+                <strong>{{ docente.usuario.first_name }} {{ docente.usuario.last_name }}</strong>
                 <small>docente</small>
             </div>
         </div>
     </div>
 </div>
 <br>
-
-<div class="stats">
-    <div class="stat-card">
-        <div class="icon blue"><i class="fa-solid fa-chart-bar"></i></div>
-        <h3>{{ total_notas }}</h3><p>Notas Registradas</p>
-    </div>
-    <div class="stat-card">
-        <div class="icon green"><i class="fa-solid fa-chart-line"></i></div>
-        <h3>{{ promedio_general }}</h3><p>Promedio General</p>
-    </div>
-    <div class="stat-card">
-        <div class="icon orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <h3>{{ en_riesgo }}</h3><p>En Riesgo</p>
-    </div>
-    <div class="stat-card">
-        <div class="icon purple"><i class="fa-solid fa-star"></i></div>
-        <h3>{{ destacados }}</h3><p>Destacados</p>
-    </div>
-</div>
 
 <!-- FILTRO -->
 <div class="section-card">
@@ -214,10 +195,9 @@
             <div class="select-wrap">
                 <select name="materia" id="selectMateria">
                     <option value="">Seleccionar materia</option>
-                    {% for materia in materias %}
-                        <option value="{{ materia.id }}"
-                            {% if materia_sel and materia.id == materia_sel.id %}selected{% endif %}>
-                            {{ materia.nombre }}
+                    {% for clase in clases %}
+                        <option value="{{ clase.id }}">
+                            {{ clase.titulo }}
                         </option>
                     {% endfor %}
                 </select>
@@ -228,175 +208,56 @@
         <button type="submit" class="btn-save">Ver Calificaciones</button>
     </form>
 </div>
-
-{% if curso_sel and materia_sel %}
+{% if docente.curso and docente.clase %}
 <div class="section-card">
     <div class="header-card">
-        <h4>{{ curso_sel.nombre }} — {{ materia_sel.nombre }}</h4>
-
-        <!-- BOTONES DE REPORTE -->
-        <div class="acciones-reporte">
-            <a href="{% url 'reporte_notas' %}?curso={{ curso_sel.id }}&materia={{ materia_sel.id }}"
-               class="btn-reporte btn-reporte-ver" target="_blank">
-                <i class="fa-solid fa-chart-bar"></i> Ver Reporte
-            </a>
-            <a href="{% url 'exportar_reporte_pdf' %}?curso={{ curso_sel.id }}&materia={{ materia_sel.id }}"
-               class="btn-reporte btn-reporte-pdf" target="_blank">
-                <i class="fa-solid fa-file-pdf"></i> PDF
-            </a>
-            <a href="{% url 'exportar_reporte_excel' %}?curso={{ curso_sel.id }}&materia={{ materia_sel.id }}"
-               class="btn-reporte btn-reporte-excel">
-                <i class="fa-solid fa-file-excel"></i> Excel
-            </a>
-        </div>
+        <h4>{{ docente.curso.nombre }} — {{ docente.clase.titulo }}</h4>
     </div>
 
+    {% if tareas %}
     <table>
         <thead>
             <tr>
-                <th>alumnos</th>
-                <th>Tarea</th>
-                <th>Parcial</th>
-                <th>Examen</th>
+                <th>alumno</th>
+                {% for tarea in tareas %}
+                <th>{{ tarea.titulo }}</th>
+                {% endfor %}
                 <th>Promedio</th>
                 <th>Desempeño</th>
-                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
-            {% for alumnos in alumnoss %}
-            {% with cal=calificaciones_map|get_item:alumnos.id %}
-            <tr data-id="{{ alumnos.id }}">
-                <td>{{ alumnos.nombre }}</td>
-                <td>
-                    <input class="inp-tarea"
-                           type="number"
-                           value="{{ cal.tarea|default:'0' }}"
-                           min="0" max="5" step="0.1">
-                </td>
-                <td>
-                    <input class="inp-parcial"
-                           type="number"
-                           value="{{ cal.parcial|default:'0' }}"
-                           min="0" max="5" step="0.1">
-                </td>
-                <td>
-                    <input class="inp-examen"
-                           type="number"
-                           value="{{ cal.examen|default:'0' }}"
-                           min="0" max="5" step="0.1">
-                </td>
-                <td class="celda-promedio {% if cal and cal.promedio >= 3.0 %}good{% elif cal %}bad{% endif %}">
-                    {% if cal %}{{ cal.promedio }}{% else %}—{% endif %}
-                </td>
-                <td class="celda-desempeno">
-                    {% if cal %}
-                        {% if cal.promedio >= 4.5 %}<span class="badge-superior">Superior</span>
-                        {% elif cal.promedio >= 4.0 %}<span class="badge-alto">Alto</span>
-                        {% elif cal.promedio >= 3.0 %}<span class="badge-basico">Básico</span>
-                        {% else %}<span class="badge-bajo">Bajo</span>{% endif %}
-                    {% else %}—{% endif %}
-                </td>
-                <td>
-                    <button class="btn-save-row btn-guardar"
-                            data-alumnos="{{ alumnos.id }}"
-                            data-curso="{{ curso_sel.id }}"
-                            data-materia="{{ materia_sel.id }}">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar
-                    </button>
-                </td>
-            </tr>
-            {% endwith %}
-            {% empty %}
+            {% for alumno in alumnos %}
             <tr>
-                <td colspan="7" style="text-align:center;color:#6b7280;">
-                    No hay alumnoss en este grado.
+                <td>{{ alumno.usuario.get_full_name }}</td>
+                {% for fila in alumno.fila_notas %}
+                <td>{{ fila.nota|default:"—" }}</td>
+                {% endfor %}
+                <td>{{ alumno.promedio|default:"—" }}</td>
+                <td>
+                    {% if alumno.promedio %}
+                        {% if alumno.promedio >= 4.5 %}<span class="badge-superior">Superior</span>
+                        {% elif alumno.promedio >= 4.0 %}<span class="badge-alto">Alto</span>
+                        {% elif alumno.promedio >= 3.0 %}<span class="badge-basico">Básico</span>
+                        {% else %}<span class="badge-bajo">Bajo</span>{% endif %}
+                    {% else %}-{% endif %}
                 </td>
             </tr>
+            {% empty %}
+            <tr><td colspan="99" style="text-align:center;color:#6b7280;">No hay alumno en este grado.</td></tr>
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <p style="text-align:center;color:#6b7280;padding:20px;">
+        Aún no has creado tareas para esta clase.
+    </p>
+    {% endif %}
 </div>
-
-<script>
-const CSRF = '{{ csrf_token }}';
-const URL_GUARDAR = '{% url "guardar_nota" %}';
-
-function badgeDesempeno(prom) {
-    if (prom >= 4.5) return '<span class="badge-superior">Superior</span>';
-    if (prom >= 4.0) return '<span class="badge-alto">Alto</span>';
-    if (prom >= 3.0) return '<span class="badge-basico">Básico</span>';
-    return '<span class="badge-bajo">Bajo</span>';
-}
-
-document.querySelectorAll('tr[data-id]').forEach(fila => {
-    const tarea     = fila.querySelector('.inp-tarea');
-    const parcial   = fila.querySelector('.inp-parcial');
-    const examen    = fila.querySelector('.inp-examen');
-    const celdaProm = fila.querySelector('.celda-promedio');
-    const celdaDes  = fila.querySelector('.celda-desempeno');
-
-    function actualizarPromedio() {
-        const t = parseFloat(tarea.value)   || 0;
-        const p = parseFloat(parcial.value) || 0;
-        const e = parseFloat(examen.value)  || 0;
-        const prom = ((t + p + e) / 3).toFixed(2);
-        celdaProm.textContent = prom;
-        celdaProm.className = 'celda-promedio ' + (parseFloat(prom) >= 3.0 ? 'good' : 'bad');
-        celdaDes.innerHTML = badgeDesempeno(parseFloat(prom));
-    }
-
-    [tarea, parcial, examen].forEach(inp => inp.addEventListener('input', actualizarPromedio));
-
-    fila.querySelector('.btn-guardar').addEventListener('click', async function () {
-        const btn = this;
-        btn.classList.add('saving');
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-
-        const body = new URLSearchParams({
-            alumnos_id: btn.dataset.alumnos,
-            curso_id:      btn.dataset.curso,
-            materia_id:    btn.dataset.materia,
-            tarea:         tarea.value,
-            parcial:       parcial.value,
-            examen:        examen.value,
-        });
-
-        try {
-            const res = await fetch(URL_GUARDAR, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': CSRF },
-                body: body,
-            });
-
-            if (res.ok) {
-                btn.classList.remove('saving');
-                btn.classList.add('saved');
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Guardado';
-                setTimeout(() => {
-                    btn.classList.remove('saved');
-                    btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-                }, 2500);
-            } else {
-                throw new Error('Error del servidor');
-            }
-        } catch (err) {
-            btn.classList.remove('saving');
-            btn.classList.add('error');
-            btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Error';
-            setTimeout(() => {
-                btn.classList.remove('error');
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-            }, 3000);
-        }
-    });
-});
-</script>
-
 {% else %}
 <div class="section-card" style="text-align:center;color:#6b7280;padding:40px;">
-    <i class="fa-solid fa-arrow-up" style="font-size:2rem;margin-bottom:10px;display:block;"></i>
-    Selecciona un grado y una materia para ver las calificaciones.
+    <i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;margin-bottom:10px;display:block;"></i>
+    No tienes un grado y materia asignados todavía.
 </div>
 {% endif %}
 {% endblock %}

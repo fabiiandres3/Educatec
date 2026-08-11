@@ -6,7 +6,7 @@
 <div class="topbar">
   <div class="welcome">
     <h2>Mis Grados</h2>
-    <p>Grados y alumnoss a tu cargo</p>
+    <p>Grados y alumno a tu cargo</p>
   </div>
   <div class="user-area">
     <div class="notification">
@@ -16,7 +16,7 @@
     <div class="profile">
       <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
       <div>
-        <strong>{{ docente.nombre }}</strong>
+        <strong>{{ docente.usuario.first_name }} {{ docente.usuario.last_name }}</strong>
         <small>docente</small>
       </div>
     </div>
@@ -27,19 +27,23 @@
 <div class="stats">
   <div class="stat-card">
     <div class="icon blue"><i class="fa-solid fa-school"></i></div>
-    <h3>{{ cursos|length }}</h3><p>Grados</p>
+    <h3>{{ docente.curso|length|default:"0" }}</h3>
+    <p>Grados</p>
   </div>
   <div class="stat-card">
     <div class="icon green"><i class="fa-solid fa-users"></i></div>
-    <h3>{{ total_alumnoss }}</h3><p>alumnoss</p>
+    <h3>{{ total_alumnos }}</h3>
+    <p>alumno</p>
   </div>
   <div class="stat-card">
     <div class="icon orange"><i class="fa-solid fa-chart-line"></i></div>
-    <h3>{{ promedio_general|default:"—" }}</h3><p>Promedio</p>
+    <h3>{{ promedio_general|default:"—" }}</h3>
+    <p>Promedio</p>
   </div>
   <div class="stat-card">
     <div class="icon purple"><i class="fa-solid fa-book"></i></div>
-    <h3>{{ total_materias }}</h3><p>Materias</p>
+    <h3>{{ docente.clase|length|default:"0" }}</h3>
+    <p>Materias</p>
   </div>
 </div>
 
@@ -49,33 +53,35 @@
     <thead>
       <tr>
         <th>Grado</th>
-        <th>alumnoss</th>
+        <th>alumno</th>
         <th>Acciones</th>
+        <th>Materia</th>
       </tr>
     </thead>
     <tbody>
-      {% for curso in cursos %}
+      {% if docente.curso and docente.clase %}
       <tr>
-        <td><strong>{{ curso.nombre }}</strong></td>
-        <td>{{ curso.alumnoss.count }}</td>
+        <td><strong>{{ docente.curso.nombre }}</strong></td>
+        <td>{{ total_alumnos }}</td>
         <td style="display:flex;gap:8px;">
-          <a href="{% url 'calificaciones_docente' %}?curso={{ curso.id }}"
+          <a href="{% url 'calificaciones_docente' %}?curso={{ docente.curso.id }}"
              class="btn-save" style="font-size:13px;padding:7px 14px;">
             <i class="fa-solid fa-star-half-stroke"></i> Calificaciones
           </a>
-          <a href="{% url 'asistencia_docente' %}?curso={{ curso.id }}"
+          <a href="{% url 'asistencia_docente' %}?curso={{ docente.curso.id }}"
              class="btn-save" style="font-size:13px;padding:7px 14px;">
             <i class="fa-solid fa-clipboard-check"></i> Asistencia
           </a>
         </td>
+        <td>{{ docente.clase.titulo }}</td>
       </tr>
-      {% empty %}
+      {% else %}
       <tr>
-        <td colspan="3" style="text-align:center;color:#6b7280;padding:30px 0;">
+        <td colspan="4" style="text-align:center;color:#6b7280;padding:30px 0;">
           No hay grados asignados.
         </td>
       </tr>
-      {% endfor %}
+      {% endif %}
     </tbody>
   </table>
 </div>

@@ -2,7 +2,7 @@
 {% load dict_extras %}
 {% block title %}Asistencia{% endblock %}
 {% block active_asistencia %}active{% endblock %}
-{% block search_placeholder %}Buscar alumnos...{% endblock %}
+{% block search_placeholder %}Buscar alumno...{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -106,7 +106,7 @@
 <div class="topbar">
     <div class="welcome">
         <h2>Registro de Asistencia</h2>
-        <p>Panel docente — Año 20151515</p>
+        <p>Panel docente — Año 2026</p>
     </div>
     <div class="user-area">
         <div class="notification">
@@ -116,7 +116,7 @@
         <div class="profile">
             <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
             <div>
-                <strong>{{ docente.nombre }}</strong>
+                <strong>{{ docente.usuario.first_name }} {{ docente.usuario.last_name }}</strong>
                 <small>docente</small>
             </div>
         </div>
@@ -126,7 +126,7 @@
 <div class="stats">
     <div class="stat-card">
         <div class="icon blue"><i class="fa-solid fa-users"></i></div>
-        <h3>{{ total }}</h3><p>alumnoss</p>
+        <h3>{{ total }}</h3><p>alumno</p>
     </div>
     <div class="stat-card">
         <div class="icon green"><i class="fa-solid fa-user-check"></i></div>
@@ -153,22 +153,6 @@
 
     <form method="GET" class="filtro-form" id="filtroForm">
         <div class="select-group">
-            <label for="selectCurso">Grado</label>
-            <div class="select-wrap">
-                <select name="curso" id="selectCurso" onchange="submitConFecha()">
-                    <option value="">Seleccionar grado</option>
-                    {% for curso in cursos %}
-                        <option value="{{ curso.id }}"
-                            {% if curso_sel and curso.id == curso_sel.id %}selected{% endif %}>
-                            {{ curso.nombre }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <i class="fa-solid fa-chevron-down"></i>
-            </div>
-        </div>
-
-        <div class="select-group">
             <label>Fecha</label>
             <div class="date-nav">
                 <button type="button" class="date-nav-btn" id="btnPrevDay" title="Día anterior">
@@ -176,8 +160,8 @@
                 </button>
 
                 <div class="date-display">
-                    <span class="date-display-main" id="dateLabel">{{ fecha_sel|date:"d M Y" }}</span>
-                    <span class="date-display-sub" id="dateDayName">{{ fecha_sel|date:"l" }}</span>
+                    <span class="date-display-main" id="dateLabel">{{ hoy|date:"d M Y" }}</span>
+                    <span class="date-display-sub" id="dateDayName">{{ hoy|date:"l" }}</span>
                 </div>
 
                 <button type="button" class="date-nav-btn" id="btnNextDay" title="Día siguiente"
@@ -189,7 +173,7 @@
                     <i class="fa-solid fa-calendar"></i>
                     <input type="date" id="datePicker"
                            value="{{ fecha_sel|date:'Y-m-d' }}"
-                           max="{{ fecha_hoy|date:'Y-m-d' }}"
+                           max="{{ hoy|date:'Y-m-d' }}"
                            onchange="goToDate(this.value)">
                 </div>
 
@@ -224,44 +208,29 @@
             <span><span class="dot" style="background:#ef4444"></span> Ausente</span>
         </div>
     </div>
-
     <table>
         <thead>
             <tr>
                 <th>#</th>
-                <th>alumnos</th>
+                <th>alumno</th>
                 <th>Estado</th>
-                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
-            {% for alumnos in alumnoss %}
-            <tr data-alumnos="{{ alumnos.id }}"
-                data-curso="{{ curso_sel.id }}"
-                data-fecha="{{ fecha_sel|date:'Y-m-d' }}">
+            {% for alumno in alumnos %}
+            <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ alumnos.nombre }}</td>
+                <td>{{ alumno.usuario.get_full_name }}</td>
                 <td>
-                    <div class="select-wrap">
-                        <select class="sel-estado">
-                            <option value="presente" {% if asistencias_map|get_item:alumnos.id == 'presente' %}selected{% endif %}>✅ Presente</option>
-                            <option value="tardanza" {% if asistencias_map|get_item:alumnos.id == 'tardanza' %}selected{% endif %}>⏰ Tardanza</option>
-                            <option value="ausente"  {% if asistencias_map|get_item:alumnos.id == 'ausente'  %}selected{% endif %}>❌ Ausente</option>
-                        </select>
-                        <i class="fa-solid fa-chevron-down"></i>
-                    </div>
-                </td>
-                <td>
-                    <button class="btn-save-row btn-guardar-asistencia">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar
-                    </button>
+                    {% if alumno.estado_asistencia == "P" %}<span class="dot" style="background:#10b981"></span> Presente
+                    {% elif alumno.estado_asistencia == "T" %}<span class="dot" style="background:#f59e0b"></span> Tardanza
+                    {% elif alumno.estado_asistencia == "A" %}<span class="dot" style="background:#ef4444"></span> Ausente
+                    {% else %}<span style="color:#9ca3af;">Sin registrar</span>{% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" style="text-align:center;color:#6b7280;">
-                    No hay alumnoss en este grado.
-                </td>
+                <td colspan="3" style="text-align:center;color:#6b7280;">No hay alumno en este grado.</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -273,28 +242,13 @@
     Selecciona un grado para registrar la asistencia.
 </div>
 {% endif %}
-
-<!-- SCRIPT SIEMPRE FUERA DEL IF -->
 <script>
-const CSRF      = '{{ csrf_token }}';
-const URL_ASIST = '{% url "guardar_asistencia" %}';
-const HOY       = '{{ fecha_hoy|date:"Y-m-d" }}';
-
-function submitConFecha() {
-    const hidden = document.getElementById('fechaHidden');
-    if (!hidden.value) hidden.value = HOY;
-    document.getElementById('filtroForm').submit();
-}
+const HOY = '{{ fecha_hoy|date:"Y-m-d" }}';
 
 function goToDate(dateStr) {
     document.getElementById('fechaHidden').value = dateStr;
     document.getElementById('filtroForm').submit();
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    const hidden = document.getElementById('fechaHidden');
-    if (!hidden.value) hidden.value = HOY;
-});
 
 document.getElementById('btnPrevDay').addEventListener('click', () => {
     const value = document.getElementById('fechaHidden').value || HOY;
@@ -310,52 +264,5 @@ document.getElementById('btnNextDay').addEventListener('click', () => {
     d.setDate(d.getDate() + 1);
     goToDate(d.toISOString().split('T')[0]);
 });
-
-document.querySelectorAll('tr[data-alumnos]').forEach(fila => {
-    fila.querySelector('.btn-guardar-asistencia').addEventListener('click', async function () {
-        const btn    = this;
-        const estado = fila.querySelector('.sel-estado').value;
-
-        btn.classList.add('saving');
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-
-        const body = new URLSearchParams({
-            alumnos_id: fila.dataset.alumnos,
-            fecha:         fila.dataset.fecha,
-            estado:        estado,
-            curso_id:      fila.dataset.curso,
-        });
-
-        try {
-            const res = await fetch(URL_ASIST, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': CSRF },
-                body: body,
-            });
-            if (res.ok) {
-                btn.classList.remove('saving');
-                btn.classList.add('saved');
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Guardado';
-                setTimeout(() => {
-                    btn.classList.remove('saved');
-                    btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-                }, 2500);
-            } else {
-                const data = await res.json().catch(() => ({}));
-                console.error('Error servidor:', data);
-                throw new Error();
-            }
-        } catch {
-            btn.classList.remove('saving');
-            btn.classList.add('error');
-            btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Error';
-            setTimeout(() => {
-                btn.classList.remove('error');
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-            }, 3000);
-        }
-    });
-});
 </script>
-
 {% endblock %}
