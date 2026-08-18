@@ -1,0 +1,856 @@
+{% extends "paneles/alumnos/base.html" %}
+
+{% load static %}
+
+{% block title %}
+    {{ tarea.titulo }}
+{% endblock %}
+
+
+{% block content %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/tareas/responder_tarea_alumno.css' %}"
+>
+
+
+<div class="answer-page">
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="task-header">
+
+        <div class="back-section">
+
+            <a
+                href="{% url 'listar_tareas_alumno' %}"
+                class="back-button"
+            >
+                ← Volver a mis tareas
+            </a>
+
+        </div>
+
+
+        <div class="task-header-content">
+
+            <div class="task-label">
+                ACTIVIDAD ACADÉMICA
+            </div>
+
+            <h1>
+                {{ tarea.titulo }}
+            </h1>
+
+            {% if tarea.descripcion %}
+
+                <p class="task-description">
+                    {{ tarea.descripcion }}
+                </p>
+
+            {% else %}
+
+                <p class="task-description">
+                    No hay una descripción para esta actividad.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =================================================
+             INFORMACIÓN DE LA TAREA
+        ================================================== -->
+
+        <div class="task-meta">
+
+            <div class="meta-item">
+
+                <span class="meta-icon">
+                    📚
+                </span>
+
+                <div>
+
+                    <small>
+                        Curso
+                    </small>
+
+                    <strong>
+                        {{ alumno.curso }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="meta-item">
+
+                <span class="meta-icon">
+                    📝
+                </span>
+
+                <div>
+
+                    <small>
+                        Preguntas
+                    </small>
+
+                    <strong>
+                        {{ preguntas|length }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="meta-item">
+
+                <span class="meta-icon">
+                    📅
+                </span>
+
+                <div>
+
+                    <small>
+                        Fecha de entrega
+                    </small>
+
+                    <strong>
+
+                        {% if tarea.fecha_entrega %}
+
+                            {{ tarea.fecha_entrega|date:"d/m/Y" }}
+
+                        {% else %}
+
+                            Sin fecha
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MENSAJES DE DJANGO
+    ====================================================== -->
+
+    {% if messages %}
+
+        <div class="messages-container">
+
+            {% for message in messages %}
+
+                <div class="message message-{{ message.tags }}">
+
+                    {% if message.tags == "success" %}
+                        ✓
+                    {% elif message.tags == "error" %}
+                        !
+                    {% else %}
+                        ℹ
+                    {% endif %}
+
+                    <span>
+                        {{ message }}
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         MATERIAL DE LA TAREA
+    ====================================================== -->
+
+    {% if tarea.imagenes.all or tarea.archivos.all or tarea.video_set.all %}
+
+        <section class="materials-section">
+
+            <div class="section-title">
+
+                <span class="section-title-icon">
+                    📎
+                </span>
+
+                <div>
+
+                    <span class="section-label">
+                        RECURSOS
+                    </span>
+
+                    <h2>
+                        Material de la tarea
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 IMÁGENES
+            ================================================== -->
+
+            {% if tarea.imagenes.all %}
+
+                <div class="material-group">
+
+                    <h3>
+                        Imágenes
+                    </h3>
+
+
+                    <div class="images-grid">
+
+                        {% for imagen in tarea.imagenes.all %}
+
+                            <a
+                                href="{{ imagen.imagen.url }}"
+                                target="_blank"
+                                class="image-item"
+                            >
+
+                                <img
+                                    src="{{ imagen.imagen.url }}"
+                                    alt="Imagen de {{ tarea.titulo }}"
+                                >
+
+                            </a>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 ARCHIVOS
+            ================================================== -->
+
+            {% if tarea.archivos.all %}
+
+                <div class="material-group">
+
+                    <h3>
+                        Archivos
+                    </h3>
+
+
+                    <div class="files-list">
+
+                        {% for archivo in tarea.archivos.all %}
+
+                            <a
+                                href="{{ archivo.archivo.url }}"
+                                target="_blank"
+                                class="file-item"
+                            >
+
+                                <span class="file-icon">
+                                    📄
+                                </span>
+
+
+                                <span class="file-name">
+
+                                    {{ archivo.archivo.name|cut:"archivos/" }}
+
+                                </span>
+
+
+                                <span class="file-arrow">
+                                    ↗
+                                </span>
+
+                            </a>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 VIDEOS
+            ================================================== -->
+
+            {% if tarea.video_set.all %}
+
+                <div class="material-group">
+
+                    <h3>
+                        Videos
+                    </h3>
+
+
+                    <div class="videos-list">
+
+                        {% for video in tarea.video_set.all %}
+
+                            <div class="video-item">
+
+                                {{ video.video }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         PREGUNTAS
+    ====================================================== -->
+
+    <section class="questions-section">
+
+
+        <!-- =================================================
+             ENCABEZADO DE PREGUNTAS
+        ================================================== -->
+
+        <div class="questions-header">
+
+            <div>
+
+                <span class="section-label">
+                    ACTIVIDAD
+                </span>
+
+                <h2>
+                    Responde las preguntas
+                </h2>
+
+                <p>
+                    Responde cada pregunta individualmente.
+                    Una vez enviada una respuesta, no podrás
+                    modificarla.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             LISTA DE PREGUNTAS
+        ================================================== -->
+
+        <div class="questions-list">
+
+
+            {% for item in preguntas %}
+
+                {% with pregunta=item.pregunta %}
+                    {% with respuesta=item.respuesta %}
+
+
+                        <article
+                            class="
+                                question-card
+                                {% if respuesta %}
+                                    question-completed
+                                {% endif %}
+                            "
+                        >
+
+
+                            <!-- =================================
+                                 CABECERA DE PREGUNTA
+                            ================================== -->
+
+                            <div class="question-top">
+
+                                <div class="question-number">
+
+                                    <span class="question-number-circle">
+                                        {{ forloop.counter }}
+                                    </span>
+
+                                    <span>
+                                        Pregunta {{ forloop.counter }}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="question-points">
+
+                                    {{ pregunta.puntaje }}
+
+                                    {% if pregunta.puntaje == 1 %}
+                                        punto
+                                    {% else %}
+                                        puntos
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- =================================
+                                 CONTENIDO DE PREGUNTA
+                            ================================== -->
+
+                            <div class="question-content">
+
+
+                                <h3>
+                                    {{ pregunta.descripcion }}
+                                </h3>
+
+
+
+                                <!-- =================================
+                                     PREGUNTA YA RESPONDIDA
+                                ================================== -->
+
+                                {% if respuesta %}
+
+
+                                    <div class="answered-container">
+
+
+                                        <div class="answered-header">
+
+                                            <div class="answered-icon">
+                                                ✓
+                                            </div>
+
+
+                                            <div>
+
+                                                <strong>
+                                                    Respuesta enviada
+                                                </strong>
+
+                                                <small>
+                                                    Ya respondiste esta pregunta.
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <!-- =================================
+                                             RESPUESTA ABIERTA
+                                        ================================== -->
+
+                                        {% if pregunta.tipo == "texto" %}
+
+                                            <div class="answer-preview">
+
+                                                <div class="answer-preview-label">
+                                                    Tu respuesta
+                                                </div>
+
+
+                                                <div class="student-answer">
+
+                                                    {{ respuesta.respuesta_texto }}
+
+                                                </div>
+
+                                            </div>
+
+                                        {% endif %}
+
+
+
+                                        <!-- =================================
+                                             OPCIÓN MÚLTIPLE
+                                        ================================== -->
+
+                                        {% if pregunta.tipo == "opcion" %}
+
+                                            <div class="answer-preview">
+
+                                                <div class="answer-preview-label">
+                                                    Tu respuesta
+                                                </div>
+
+
+                                                {% if respuesta.opcion_seleccionada %}
+
+                                                    <div class="student-option">
+
+                                                        <span class="selected-option-check">
+                                                            ✓
+                                                        </span>
+
+                                                        <span>
+                                                            {{ respuesta.opcion_seleccionada.opcion }}
+                                                        </span>
+
+                                                    </div>
+
+                                                {% else %}
+
+                                                    <div class="student-answer">
+
+                                                        No se encontró la opción seleccionada.
+
+                                                    </div>
+
+                                                {% endif %}
+
+                                            </div>
+
+                                        {% endif %}
+
+
+
+                                        <!-- =================================
+                                             CALIFICACIÓN
+                                        ================================== -->
+
+                                        {% if respuesta.calificada %}
+
+
+                                            <div class="answer-result">
+
+
+                                                {% if respuesta.es_correcta %}
+
+                                                    <div class="result-icon correct">
+                                                        ✓
+                                                    </div>
+
+
+                                                    <div class="result-information">
+
+                                                        <strong>
+                                                            Respuesta correcta
+                                                        </strong>
+
+                                                        <span>
+                                                            Obtuviste
+                                                            {{ respuesta.nota_obtenida }}
+                                                            puntos.
+                                                        </span>
+
+                                                    </div>
+
+                                                {% else %}
+
+                                                    <div class="result-icon incorrect">
+                                                        ✕
+                                                    </div>
+
+
+                                                    <div class="result-information">
+
+                                                        <strong>
+                                                            Respuesta incorrecta
+                                                        </strong>
+
+                                                        <span>
+                                                            Obtuviste
+                                                            {{ respuesta.nota_obtenida }}
+                                                            puntos.
+                                                        </span>
+
+                                                    </div>
+
+                                                {% endif %}
+
+
+                                            </div>
+
+
+                                        {% else %}
+
+
+                                            <div class="waiting-result">
+
+                                                <span>
+                                                    ⏳
+                                                </span>
+
+                                                <div>
+
+                                                    <strong>
+                                                        Pendiente de calificación
+                                                    </strong>
+
+                                                    <small>
+                                                        El docente todavía no ha
+                                                        calificado esta respuesta.
+                                                    </small>
+
+                                                </div>
+
+                                            </div>
+
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+
+                                <!-- =================================
+                                     PREGUNTA SIN RESPONDER
+                                ================================== -->
+
+                                {% else %}
+
+
+                                    <form
+                                        method="POST"
+                                        class="answer-form"
+                                    >
+
+                                        {% csrf_token %}
+
+
+                                        <!-- =================================
+                                             ID DE LA PREGUNTA
+                                        ================================== -->
+
+                                        <input
+                                            type="hidden"
+                                            name="pregunta_id"
+                                            value="{{ pregunta.id }}"
+                                        >
+
+
+
+                                        <!-- =================================
+                                             RESPUESTA ABIERTA
+                                        ================================== -->
+
+                                        {% if pregunta.tipo == "texto" %}
+
+
+                                            <div class="answer-field">
+
+                                                <label
+                                                    for="respuesta_{{ pregunta.id }}"
+                                                >
+                                                    Escribe tu respuesta
+                                                </label>
+
+
+                                                <textarea
+                                                    id="respuesta_{{ pregunta.id }}"
+                                                    name="respuesta_texto"
+                                                    rows="7"
+                                                    placeholder="Escribe aquí tu respuesta..."
+                                                    required
+                                                ></textarea>
+
+
+                                                <small class="field-help">
+                                                    Revisa tu respuesta antes
+                                                    de enviarla. No podrás
+                                                    modificarla después.
+                                                </small>
+
+                                            </div>
+
+
+                                        {% endif %}
+
+
+
+                                        <!-- =================================
+                                             OPCIÓN MÚLTIPLE
+                                        ================================== -->
+
+                                        {% if pregunta.tipo == "opcion" %}
+
+
+                                            <div class="options-container">
+
+
+                                                <label class="options-label">
+                                                    Selecciona una opción
+                                                </label>
+
+
+                                                <div class="options-list">
+
+
+                                                    {% for opcion in pregunta.opciones.all %}
+
+
+                                                        <label
+                                                            class="option-card"
+                                                        >
+
+
+                                                            <input
+                                                                type="radio"
+                                                                name="opcion_seleccionada"
+                                                                value="{{ opcion.id }}"
+                                                                required
+                                                            >
+
+
+                                                            <span class="option-radio">
+                                                            </span>
+
+
+                                                            <span class="option-text">
+
+                                                                {{ opcion.opcion }}
+
+                                                            </span>
+
+
+                                                        </label>
+
+
+                                                    {% empty %}
+
+
+                                                        <div class="no-options">
+
+                                                            Esta pregunta no tiene
+                                                            opciones disponibles.
+
+                                                        </div>
+
+
+                                                    {% endfor %}
+
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                        {% endif %}
+
+
+
+                                        <!-- =================================
+                                             BOTÓN ENVIAR
+                                        ================================== -->
+
+                                        <div class="answer-submit">
+
+
+                                            <button
+                                                type="submit"
+                                                class="submit-answer"
+                                            >
+
+                                                <span>
+                                                    Enviar respuesta
+                                                </span>
+
+                                                <span class="submit-arrow">
+                                                    →
+                                                </span>
+
+                                            </button>
+
+
+                                        </div>
+
+
+                                    </form>
+
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                        </article>
+
+
+                    {% endwith %}
+                {% endwith %}
+
+
+            {% empty %}
+
+
+                <!-- =============================================
+                     NO HAY PREGUNTAS
+                ============================================== -->
+
+                <div class="no-questions">
+
+
+                    <div class="no-questions-icon">
+                        📝
+                    </div>
+
+
+                    <h3>
+                        Esta tarea no tiene preguntas
+                    </h3>
+
+
+                    <p>
+                        El docente todavía no ha agregado preguntas
+                        a esta actividad.
+                    </p>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}

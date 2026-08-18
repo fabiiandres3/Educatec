@@ -1,0 +1,390 @@
+{% extends "paneles/alumnos/base.html" %}
+
+{% load static %}
+
+
+
+{% block title %}
+    Mis tareas
+{% endblock %}
+
+{% block content %}
+<link
+    rel="stylesheet"
+    href="{% static 'css/tareas/listar_tareas.css' %}"
+>
+
+<div class="student-tasks-page">
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="tasks-header">
+
+        <div class="header-information">
+
+            <span class="header-label">
+                ACTIVIDADES ACADÉMICAS
+            </span>
+
+            <h1>
+                Mis tareas
+            </h1>
+
+            <p>
+                Revisa las actividades asignadas a tu curso
+                y responde cada pregunta.
+            </p>
+
+        </div>
+
+        <div class="course-badge">
+
+            <span>
+                Mi curso
+            </span>
+
+            <strong>
+                {{ curso }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <div class="tasks-toolbar">
+
+        <button
+            type="button"
+            class="filter-button active"
+            data-filter="all"
+        >
+            Todas
+        </button>
+
+        <button
+            type="button"
+            class="filter-button"
+            data-filter="pending"
+        >
+            Pendientes
+        </button>
+
+        <button
+            type="button"
+            class="filter-button"
+            data-filter="completed"
+        >
+            Completadas
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         LISTA DE TAREAS
+    ====================================================== -->
+
+    <div class="tasks-list">
+
+        {% for tarea in tareas %}
+
+            <article
+                class="task-item"
+                data-task
+            >
+
+                <!-- -----------------------------------------
+                     PARTE SUPERIOR
+                ------------------------------------------ -->
+
+                <div class="task-top">
+
+                    <div class="task-subject">
+
+                        <span class="subject-icon">
+                            📚
+                        </span>
+
+                        <span>
+                            {{ tarea.clase|default:"Actividad académica" }}
+                        </span>
+
+                    </div>
+
+                    <span class="task-status pending-status">
+                        Pendiente
+                    </span>
+
+                </div>
+
+
+                <!-- -----------------------------------------
+                     CONTENIDO
+                ------------------------------------------ -->
+
+                <div class="task-content">
+
+                    <h2>
+                        {{ tarea.titulo }}
+                    </h2>
+
+                    {% if tarea.descripcion %}
+
+                        <p>
+                            {{ tarea.descripcion|truncatechars:180 }}
+                        </p>
+
+                    {% else %}
+
+                        <p class="no-description">
+                            Esta tarea no tiene descripción.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- -----------------------------------------
+                     INFORMACIÓN
+                ------------------------------------------ -->
+
+                <div class="task-information">
+
+                    <div class="information-item">
+
+                        <span class="information-icon">
+                            📅
+                        </span>
+
+                        <div>
+
+                            <small>
+                                Fecha de entrega
+                            </small>
+
+                            <strong>
+
+                                {% if tarea.fecha_entrega %}
+
+                                    {{ tarea.fecha_entrega|date:"d M Y" }}
+
+                                {% else %}
+
+                                    Sin fecha
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-icon">
+                            📝
+                        </span>
+
+                        <div>
+
+                            <small>
+                                Actividad
+                            </small>
+
+                            <strong>
+                                {{ tarea.preguntas.count }}
+                                preguntas
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-item">
+
+                        <span class="information-icon">
+                            📖
+                        </span>
+
+                        <div>
+
+                            <small>
+                                Curso
+                            </small>
+
+                            <strong>
+                                {{ curso }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- -----------------------------------------
+                     ACCIÓN
+                ------------------------------------------ -->
+
+                <div class="task-action">
+
+                    <a
+                        href="{% url 'responder_tarea_alumno' tarea.id %}"
+                        class="open-task-button"
+                    >
+
+                        <span>
+                            Ver y responder
+                        </span>
+
+                        <span class="arrow">
+                            →
+                        </span>
+
+                    </a>
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <!-- =============================================
+                 SIN TAREAS
+            ============================================== -->
+
+            <div class="empty-tasks">
+
+                <div class="empty-icon">
+                    📚
+                </div>
+
+                <h2>
+                    No tienes tareas todavía
+                </h2>
+
+                <p>
+                    Cuando un docente asigne una tarea a tu curso,
+                    aparecerá aquí.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT FILTROS
+========================================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const buttons =
+            document.querySelectorAll(
+                ".filter-button"
+            );
+
+        const tasks =
+            document.querySelectorAll(
+                "[data-task]"
+            );
+
+
+        buttons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        buttons.forEach(
+                            function (btn) {
+
+                                btn.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        button.classList.add(
+                            "active"
+                        );
+
+
+                        const filter =
+                            button.dataset.filter;
+
+
+                        tasks.forEach(
+                            function (task) {
+
+                                if (
+                                    filter === "all"
+                                ) {
+
+                                    task.style.display =
+                                        "";
+
+                                    return;
+                                }
+
+
+                                /*
+                                 * Por ahora las tareas
+                                 * empiezan como pendientes.
+                                 *
+                                 * Luego conectamos este
+                                 * estado con RespuestaAlumno.
+                                 */
+
+                                if (
+                                    filter === "pending"
+                                ) {
+
+                                    task.style.display =
+                                        "";
+
+                                } else {
+
+                                    task.style.display =
+                                        "none";
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+{% endblock %}

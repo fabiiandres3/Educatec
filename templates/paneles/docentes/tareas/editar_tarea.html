@@ -1,0 +1,1310 @@
+{% extends 'paneles/docentes/base.html' %}
+{% load static %}
+
+{% block title %}Editar tarea{% endblock %}
+{% block active_tarea %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tareas/crear_tarea.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="create-task-page">
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="page-header">
+
+        <div class="header-left">
+
+            <a
+                href="{% url 'listar_tareas_docentes' %}"
+                class="back-button"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+
+            <div>
+
+                <span class="page-label">
+                    GESTIÓN DE TAREAS
+                </span>
+
+                <h1>
+                    Editar tarea
+                </h1>
+
+                <p>
+                    Modifica la información y las preguntas de la tarea.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MENSAJES
+    ====================================================== -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         ERRORES DEL FORMULARIO
+    ====================================================== -->
+
+    {% if tarea_form.errors %}
+
+        <div class="form-errors">
+
+            <strong>
+                Hay errores en el formulario:
+            </strong>
+
+            {{ tarea_form.errors }}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         FORMULARIO
+    ====================================================== -->
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+        class="task-form"
+    >
+
+        {% csrf_token %}
+
+
+        <!-- =================================================
+             INFORMACIÓN GENERAL
+        ================================================== -->
+
+        <div class="form-card">
+
+            <div class="card-header">
+
+                <div class="card-icon blue">
+
+                    <i class="fa-solid fa-clipboard-list"></i>
+
+                </div>
+
+                <div>
+
+                    <h2>
+                        Información de la tarea
+                    </h2>
+
+                    <p>
+                        Modifica los datos principales de la actividad.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-body">
+
+                <!-- TÍTULO -->
+
+                <div class="form-group full">
+
+                    <label for="titulo">
+                        Título de la tarea
+                        <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        maxlength="100"
+                        value="{{ tarea_form.titulo.value|default:'' }}"
+                        placeholder="Ej: Álgebra: Sistemas de ecuaciones"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- DESCRIPCIÓN -->
+
+                <div class="form-group full">
+
+                    <label for="descripcion">
+                        Descripción
+                    </label>
+
+                    <textarea
+                        id="descripcion"
+                        name="descripcion"
+                        rows="5"
+                        placeholder="Describe las instrucciones de la tarea..."
+                    >{{ tarea_form.descripcion.value|default:'' }}</textarea>
+
+                </div>
+
+
+                <!-- FECHA -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="fecha_entrega">
+                            Fecha límite
+                        </label>
+
+                        <input
+                            type="date"
+                            id="fecha_entrega"
+                            name="fecha_entrega"
+                            value="{{ tarea_form.fecha_entrega.value|date:'Y-m-d' }}"
+                        >
+
+                    </div>
+
+
+                    <!-- CLASE -->
+
+                    <div class="form-group">
+
+                        <label for="clase">
+                            Clase
+                        </label>
+
+                        {{ tarea_form.clase }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CURSO
+        ================================================== -->
+
+        <div class="form-card">
+
+        <div class="card-header">
+
+            <div class="card-icon cyan">
+                <i class="fa-solid fa-school"></i>
+            </div>
+
+            <div>
+                <h2>Curso</h2>
+
+                <p>
+                    Selecciona el curso al que pertenece esta tarea.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="courses-body">
+
+            {% if cursos %}
+
+                <div class="form-group">
+
+                    <label for="curso">
+                        Curso
+                    </label>
+
+                    <select
+                        name="curso"
+                        id="curso"
+                        class="form-control"
+                        required
+                    >
+
+                        <option value="">
+                            -- Selecciona un curso --
+                        </option>
+
+                        {% for curso in cursos %}
+
+                            <option
+                                value="{{ curso.id }}"
+                                {% if curso_actual and curso.id == curso_actual.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ curso }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="course-help">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <span>
+                        Selecciona el curso al que deseas asignar la tarea.
+                    </span>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-courses">
+
+                    <i class="fa-solid fa-school"></i>
+
+                    <strong>
+                        No tienes un curso asignado.
+                    </strong>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+        <!-- =================================================
+             PREGUNTAS
+        ================================================== -->
+
+        <div class="form-card">
+
+            <div class="card-header">
+
+                <div class="card-icon dark">
+
+                    <i class="fa-solid fa-circle-question"></i>
+
+                </div>
+
+                <div>
+
+                    <h2>
+                        Preguntas
+                    </h2>
+
+                    <p>
+                        Modifica las preguntas existentes o agrega nuevas.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="questions-body">
+
+                <div id="questions-container">
+
+
+                    <!-- =====================================
+                         PREGUNTAS EXISTENTES
+                    ====================================== -->
+
+                    {% for pregunta in preguntas %}
+
+                        <div
+                            class="question-card"
+                            data-question-id="{{ pregunta.id }}"
+                        >
+
+                            <!-- HEADER -->
+
+                            <div class="question-header">
+
+                                <h3>
+                                    Pregunta {{ forloop.counter }}
+                                </h3>
+
+                                <button
+                                    type="button"
+                                    class="remove-question"
+                                >
+                                    <i class="fa-solid fa-trash"></i>
+                                    Eliminar
+                                </button>
+
+                            </div>
+
+
+                            <!-- ID DE LA PREGUNTA -->
+
+                            <input
+                                type="hidden"
+                                name="pregunta_id_{{ forloop.counter0 }}"
+                                value="{{ pregunta.id }}"
+                            >
+
+
+                            <!-- ENUNCIADO -->
+
+                            <div class="form-group">
+
+                                <label>
+                                    Enunciado
+                                    <span>*</span>
+                                </label>
+
+                                <textarea
+                                    name="pregunta_{{ forloop.counter0 }}"
+                                    rows="3"
+                                    required
+                                >{{ pregunta.descripcion }}</textarea>
+
+                            </div>
+
+
+                            <!-- TIPO + PUNTAJE -->
+
+                            <div class="form-row">
+
+
+                                <!-- TIPO -->
+
+                                <div class="form-group">
+
+                                    <label>
+                                        Tipo de pregunta
+                                    </label>
+
+                                    <select
+                                        name="tipo_{{ forloop.counter0 }}"
+                                        class="question-type"
+                                    >
+
+                                        <option
+                                            value="texto"
+                                            {% if pregunta.tipo == "texto" %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            Pregunta abierta
+                                        </option>
+
+                                        <option
+                                            value="opcion"
+                                            {% if pregunta.tipo == "opcion" %}
+                                                selected
+                                            {% endif %}
+                                        >
+                                            Opción múltiple
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <!-- PUNTAJE -->
+
+                                <div class="form-group">
+
+                                    <label>
+                                        Puntaje
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        name="puntaje_{{ forloop.counter0 }}"
+                                        value="{{ pregunta.puntaje }}"
+                                        min="0"
+                                        step="0.01"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 RESPUESTA ABIERTA
+                            ================================== -->
+
+                            <div
+                                class="open-answer"
+                                {% if pregunta.tipo != "texto" %}
+                                    style="display: none;"
+                                {% endif %}
+                            >
+
+                                <div class="form-group">
+
+                                    <label>
+                                        Respuesta correcta
+                                    </label>
+
+                                    <textarea
+                                        name="respuesta_correcta_{{ forloop.counter0 }}"
+                                        rows="3"
+                                        placeholder="Escribe la respuesta correcta..."
+                                    >{% if pregunta.respuestacorrecta %}{{ pregunta.respuestacorrecta.respuesta }}{% endif %}</textarea>
+
+                                    <small>
+                                        Respuesta utilizada como referencia
+                                        para la calificación.
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 OPCIÓN MÚLTIPLE
+                            ================================== -->
+
+                            <div
+                                class="multiple-choice"
+                                {% if pregunta.tipo != "opcion" %}
+                                    style="display: none;"
+                                {% endif %}
+                            >
+
+                                <label>
+                                    Opciones de respuesta
+                                </label>
+
+
+                                {% for opcion in pregunta.opciones.all %}
+
+                                    <div class="option-row">
+
+                                        <span>
+                                            {% if forloop.counter == 1 %}
+                                                A
+                                            {% elif forloop.counter == 2 %}
+                                                B
+                                            {% elif forloop.counter == 3 %}
+                                                C
+                                            {% elif forloop.counter == 4 %}
+                                                D
+                                            {% endif %}
+                                        </span>
+
+
+                                        <input
+                                            type="text"
+                                            name="opciones_{{ forloop.parentloop.counter0 }}[]"
+                                            value="{{ opcion.opcion }}"
+                                            placeholder="Opción {{ forloop.counter }}"
+                                        >
+
+
+                                        <input
+                                            type="radio"
+                                            name="correcta_{{ forloop.parentloop.counter0 }}"
+                                            value="{% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% elif forloop.counter == 4 %}D{% endif %}"
+                                            {% if opcion.es_correcta %}
+                                                checked
+                                            {% endif %}
+                                        >
+
+                                    </div>
+
+                                {% endfor %}
+
+
+                                <!-- Si tiene menos de 4 opciones,
+                                     completar las restantes -->
+
+                                {% if pregunta.opciones.count < 4 %}
+
+                                    {% if pregunta.opciones.count == 0 or pregunta.opciones.count == 1 or pregunta.opciones.count == 2 or pregunta.opciones.count == 3 %}
+
+                                        <div class="option-row">
+
+                                            <span>
+                                                {% if pregunta.opciones.count == 0 %}
+                                                    A
+                                                {% elif pregunta.opciones.count == 1 %}
+                                                    B
+                                                {% elif pregunta.opciones.count == 2 %}
+                                                    C
+                                                {% elif pregunta.opciones.count == 3 %}
+                                                    D
+                                                {% endif %}
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                name="opciones_{{ forloop.counter0 }}[]"
+                                                placeholder="Nueva opción"
+                                            >
+
+                                            <input
+                                                type="radio"
+                                                name="correcta_{{ forloop.counter0 }}"
+                                                value="{% if pregunta.opciones.count == 0 %}A{% elif pregunta.opciones.count == 1 %}B{% elif pregunta.opciones.count == 2 %}C{% elif pregunta.opciones.count == 3 %}D{% endif %}"
+                                            >
+
+                                        </div>
+
+                                    {% endif %}
+
+                                {% endif %}
+
+
+                                <small>
+                                    Selecciona la respuesta correcta.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    {% empty %}
+
+                        <div class="empty-questions">
+
+                            <i class="fa-solid fa-circle-question"></i>
+
+                            <strong>
+                                Esta tarea no tiene preguntas.
+                            </strong>
+
+                            <span>
+                                Puedes agregar una usando el botón
+                                de abajo.
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- =====================================
+                     AGREGAR PREGUNTA
+                ====================================== -->
+
+                <div class="question-actions">
+
+                    <button
+                        type="button"
+                        id="add-question"
+                        class="add-question-btn"
+                    >
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        Agregar pregunta
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ARCHIVOS EXISTENTES
+        ================================================== -->
+
+        <div class="form-card">
+
+            <div class="card-header">
+
+                <div class="card-icon blue">
+
+                    <i class="fa-solid fa-paperclip"></i>
+
+                </div>
+
+                <div>
+
+                    <h2>
+                        Material adicional
+                    </h2>
+
+                    <p>
+                        Archivos, imágenes y videos asociados a la tarea.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="files-body">
+
+
+                <!-- =========================================
+                     ARCHIVOS EXISTENTES
+                ========================================== -->
+
+                {% if archivos %}
+
+                    <div class="existing-files">
+
+                        <h3>
+                            Archivos actuales
+                        </h3>
+
+                        {% for archivo in archivos %}
+
+                            <div class="existing-file">
+
+                                <i class="fa-solid fa-file"></i>
+
+                                <a
+                                    href="{{ archivo.archivo.url }}"
+                                    target="_blank"
+                                >
+                                    {{ archivo.archivo.name }}
+                                </a>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =========================================
+                     IMÁGENES EXISTENTES
+                ========================================== -->
+
+                {% if imagenes %}
+
+                    <div class="existing-files">
+
+                        <h3>
+                            Imágenes actuales
+                        </h3>
+
+                        {% for imagen in imagenes %}
+
+                            <div class="existing-file">
+
+                                <i class="fa-regular fa-image"></i>
+
+                                <a
+                                    href="{{ imagen.imagen.url }}"
+                                    target="_blank"
+                                >
+                                    {{ imagen.imagen.name }}
+                                </a>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =========================================
+                     VIDEOS EXISTENTES
+                ========================================== -->
+
+                {% if videos %}
+
+                    <div class="existing-files">
+
+                        <h3>
+                            Videos actuales
+                        </h3>
+
+                        {% for video in videos %}
+
+                            <div class="existing-file">
+
+                                <i class="fa-solid fa-video"></i>
+
+                                <span>
+                                    {{ video.video }}
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =========================================
+                     AGREGAR ARCHIVOS
+                ========================================== -->
+
+                <div class="upload-box">
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    <strong>
+                        Agregar archivos
+                    </strong>
+
+                    <span>
+                        PDF, Word, Excel, etc.
+                    </span>
+
+                    <label class="upload-button">
+
+                        <i class="fa-solid fa-folder-open"></i>
+
+                        Seleccionar archivos
+
+                        <input
+                            type="file"
+                            name="archivos"
+                            multiple
+                        >
+
+                    </label>
+
+                </div>
+
+
+                <!-- =========================================
+                     AGREGAR IMÁGENES
+                ========================================== -->
+
+                <div class="upload-box">
+
+                    <i class="fa-regular fa-image"></i>
+
+                    <strong>
+                        Agregar imágenes
+                    </strong>
+
+                    <span>
+                        JPG, PNG, WEBP
+                    </span>
+
+                    <label class="upload-button">
+
+                        <i class="fa-solid fa-image"></i>
+
+                        Seleccionar imágenes
+
+                        <input
+                            type="file"
+                            name="imagenes"
+                            multiple
+                            accept="image/*"
+                        >
+
+                    </label>
+
+                </div>
+
+
+                <!-- =========================================
+                     AGREGAR VIDEOS
+                ========================================== -->
+
+                <div class="upload-box">
+
+                    <i class="fa-solid fa-video"></i>
+
+                    <strong>
+                        Agregar video
+                    </strong>
+
+                    <span>
+                        Enlace del video
+                    </span>
+
+                    <input
+                        type="url"
+                        name="videos"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             BOTONES
+        ================================================== -->
+
+        <div class="form-actions">
+
+            <a
+                href="{% url 'listar_tareas_docentes' %}"
+                class="cancel-button"
+            >
+                Cancelar
+            </a>
+
+
+            <button
+                type="submit"
+                class="save-button"
+            >
+
+                <i class="fa-solid fa-floppy-disk"></i>
+
+                Guardar cambios
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const container = document.getElementById(
+        "questions-container"
+    );
+
+    const addButton = document.getElementById(
+        "add-question"
+    );
+
+
+    /*
+     * Empezamos después de las preguntas existentes.
+     */
+    let questionIndex = {{ preguntas|length }};
+
+
+    // =====================================================
+    // ACTUALIZAR TIPO DE PREGUNTA
+    // =====================================================
+
+    function configureQuestion(question) {
+
+        const typeSelect = question.querySelector(
+            ".question-type"
+        );
+
+        const openAnswer = question.querySelector(
+            ".open-answer"
+        );
+
+        const multipleChoice = question.querySelector(
+            ".multiple-choice"
+        );
+
+
+        if (!typeSelect) {
+            return;
+        }
+
+
+        typeSelect.addEventListener(
+            "change",
+            function () {
+
+                if (this.value === "opcion") {
+
+                    openAnswer.style.display = "none";
+
+                    multipleChoice.style.display = "block";
+
+                } else {
+
+                    openAnswer.style.display = "block";
+
+                    multipleChoice.style.display = "none";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // ELIMINAR PREGUNTA
+    // =====================================================
+
+    function configureRemoveButton(question) {
+
+        const removeButton = question.querySelector(
+            ".remove-question"
+        );
+
+
+        if (!removeButton) {
+            return;
+        }
+
+
+        removeButton.addEventListener(
+            "click",
+            function () {
+
+                question.remove();
+
+                updateQuestionTitles();
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // ACTUALIZAR NÚMEROS VISUALES
+    // =====================================================
+
+    function updateQuestionTitles() {
+
+        const questions = container.querySelectorAll(
+            ".question-card"
+        );
+
+
+        questions.forEach(
+            function (question, index) {
+
+                const title = question.querySelector(
+                    ".question-header h3"
+                );
+
+
+                if (title) {
+
+                    title.textContent =
+                        "Pregunta " + (index + 1);
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // CREAR NUEVA PREGUNTA
+    // =====================================================
+
+    function addQuestion() {
+
+        const index = questionIndex;
+
+
+        const question = document.createElement(
+            "div"
+        );
+
+        question.classList.add(
+            "question-card"
+        );
+
+
+        question.innerHTML = `
+
+            <div class="question-header">
+
+                <h3>
+                    Pregunta
+                </h3>
+
+                <button
+                    type="button"
+                    class="remove-question"
+                >
+
+                    <i class="fa-solid fa-trash"></i>
+
+                    Eliminar
+
+                </button>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Enunciado
+                    <span>*</span>
+                </label>
+
+                <textarea
+                    name="pregunta_${index}"
+                    rows="3"
+                    placeholder="Escribe el enunciado..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Tipo de pregunta
+                    </label>
+
+                    <select
+                        name="tipo_${index}"
+                        class="question-type"
+                    >
+
+                        <option value="texto">
+                            Pregunta abierta
+                        </option>
+
+                        <option value="opcion">
+                            Opción múltiple
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Puntaje
+                    </label>
+
+                    <input
+                        type="number"
+                        name="puntaje_${index}"
+                        value="1"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- RESPUESTA ABIERTA -->
+
+            <div class="open-answer">
+
+                <div class="form-group">
+
+                    <label>
+                        Respuesta correcta
+                    </label>
+
+                    <textarea
+                        name="respuesta_correcta_${index}"
+                        rows="3"
+                        placeholder="Escribe la respuesta correcta..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <!-- OPCIONES -->
+
+            <div
+                class="multiple-choice"
+                style="display: none;"
+            >
+
+                <label>
+                    Opciones de respuesta
+                </label>
+
+
+                <div class="option-row">
+
+                    <span>A</span>
+
+                    <input
+                        type="text"
+                        name="opciones_${index}[]"
+                        placeholder="Opción A"
+                    >
+
+                    <input
+                        type="radio"
+                        name="correcta_${index}"
+                        value="A"
+                    >
+
+                </div>
+
+
+                <div class="option-row">
+
+                    <span>B</span>
+
+                    <input
+                        type="text"
+                        name="opciones_${index}[]"
+                        placeholder="Opción B"
+                    >
+
+                    <input
+                        type="radio"
+                        name="correcta_${index}"
+                        value="B"
+                    >
+
+                </div>
+
+
+                <div class="option-row">
+
+                    <span>C</span>
+
+                    <input
+                        type="text"
+                        name="opciones_${index}[]"
+                        placeholder="Opción C"
+                    >
+
+                    <input
+                        type="radio"
+                        name="correcta_${index}"
+                        value="C"
+                    >
+
+                </div>
+
+
+                <div class="option-row">
+
+                    <span>D</span>
+
+                    <input
+                        type="text"
+                        name="opciones_${index}[]"
+                        placeholder="Opción D"
+                    >
+
+                    <input
+                        type="radio"
+                        name="correcta_${index}"
+                        value="D"
+                    >
+
+                </div>
+
+
+                <small>
+                    Selecciona la respuesta correcta.
+                </small>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(
+            question
+        );
+
+
+        configureQuestion(
+            question
+        );
+
+        configureRemoveButton(
+            question
+        );
+
+
+        questionIndex++;
+
+        updateQuestionTitles();
+
+    }
+
+
+    // =====================================================
+    // CONFIGURAR PREGUNTAS EXISTENTES
+    // =====================================================
+
+    const existingQuestions =
+        container.querySelectorAll(
+            ".question-card"
+        );
+
+
+    existingQuestions.forEach(
+        function (question) {
+
+            configureQuestion(
+                question
+            );
+
+            configureRemoveButton(
+                question
+            );
+
+        }
+    );
+
+
+    // =====================================================
+    // BOTÓN AGREGAR
+    // =====================================================
+
+    addButton.addEventListener(
+        "click",
+        addQuestion
+    );
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "paneles/docentes/base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Respuestas de la tarea</h1>
+
+    <h2>{{ tarea.titulo }}</h2>
+
+    <p>
+        Selecciona un alumno para ver sus respuestas.
+    </p>
+
+
+    {% for alumno in alumnos %}
+
+        <div class="student-card">
+
+            <div>
+                <h3>
+                    {{ alumno.get_full_name|default:alumno.username }}
+                </h3>
+
+                <p>
+                    {{ alumno.email }}
+                </p>
+            </div>
+
+
+            <a
+                href="{% url 'ver_respuestas' tarea.id alumno.id %}"
+                class="btn-ver-respuestas"
+            >
+                Ver respuestas
+            </a>
+
+        </div>
+
+    {% empty %}
+
+        <div class="empty-state">
+
+            <h3>
+                No hay respuestas todavía
+            </h3>
+
+            <p>
+                Ningún alumno ha respondido esta tarea.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,483 @@
+{% extends 'paneles/docentes/base.html' %}
+{% load static %}
+
+{% block title %}Tareas{% endblock %}
+
+{% block active_tarea %}active{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet"
+      href="{% static 'css/tareas/tareas_docente.css' %}">
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="tasks-page">
+
+    <!-- =========================
+         ENCABEZADO
+    ========================== -->
+
+    <div class="tasks-header">
+
+        <div>
+
+            <h1>Mis tareas</h1>
+
+            <p>
+                Administra y consulta las tareas de tus cursos.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'crear_tarea_docente' %}"
+            class="btn-new-task">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Nueva tarea
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         ESTADÍSTICAS
+    ========================== -->
+
+    <div class="task-stats">
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-list-check"></i>
+
+            </div>
+
+            <div>
+
+                <span class="stat-label">
+                    Total de tareas
+                </span>
+
+                <strong>
+                    {{ total_tareas }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+            </div>
+
+            <div>
+
+                <span class="stat-label">
+                    Tareas activas
+                </span>
+
+                <strong>
+                    {{ total_tareas }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-clock"></i>
+
+            </div>
+
+            <div>
+
+                <span class="stat-label">
+                    Por vencer
+                </span>
+
+                <strong>
+                    {{ total_tareas }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-users"></i>
+
+            </div>
+
+            <div>
+
+                <span class="stat-label">
+                    Estudiantes
+                </span>
+
+                <strong>
+                    {{ total_alumnos }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         FILTROS
+    ========================== -->
+
+    <div class="tasks-toolbar">
+
+
+        <div class="search-task">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="buscarTarea"
+                placeholder="Buscar tarea..."
+            >
+
+        </div>
+
+
+        <select id="filtroEstado">
+
+            <option value="">
+                Todos los estados
+            </option>
+
+            <option value="active">
+                Activas
+            </option>
+
+            <option value="pending">
+                Pendientes
+            </option>
+
+            <option value="finished">
+                Finalizadas
+            </option>
+
+        </select>
+
+
+        <select id="filtroCurso">
+
+            <option value="">
+                Todos los cursos
+            </option>
+
+            {% if docente.curso %}
+
+                <option value="{{ docente.curso.id }}">
+                    {{ docente.curso.nombre }}
+                </option>
+
+            {% endif %}
+
+        </select>
+
+
+    </div>
+
+
+    <!-- =========================
+         LISTA DE TAREAS
+    ========================== -->
+
+    <div class="tasks-container">
+
+
+        {% for tarea in tareas %}
+
+
+        <div class="task-card">
+
+
+            <div class="task-main">
+
+
+                <!-- TÍTULO -->
+
+                <div class="task-title-row">
+
+                    <div>
+
+                        <h3>
+
+                            {{ tarea.titulo }}
+
+                        </h3>
+
+
+                        <span class="task-course">
+
+                            <i class="fa-solid fa-school"></i>
+
+                            {% if tarea.curso %}
+
+                                {{ tarea.curso.nombre }}
+
+                            {% else %}
+
+                                Sin curso
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- ESTADO -->
+
+                    {% if tarea.fecha_entrega %}
+
+                        <span class="task-status status-active">
+                            Activa
+                        </span>
+
+                    {% else %}
+
+                        <span class="task-status status-active">
+                            Sin fecha
+                        </span>
+
+                    {% endif %}
+
+
+                </div>
+
+
+                <!-- DESCRIPCIÓN -->
+
+                <p class="task-description">
+
+                    {% if tarea.descripcion %}
+
+                        {{ tarea.descripcion }}
+
+                    {% else %}
+
+                        Esta tarea no tiene descripción.
+
+                    {% endif %}
+
+                </p>
+
+
+                <!-- INFORMACIÓN -->
+
+                <div class="task-info">
+
+
+                    <span>
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        Creada:
+
+                        {{ tarea.fecha_creacion|date:"d/m/Y" }}
+
+                    </span>
+
+
+                    <span>
+
+                        <i class="fa-regular fa-clock"></i>
+
+                        {% if tarea.fecha_entrega %}
+
+                            Vence:
+
+                            {{ tarea.fecha_entrega|date:"d/m/Y" }}
+
+                        {% else %}
+
+                            Sin fecha de entrega
+
+                        {% endif %}
+
+                    </span>
+
+
+                    <span>
+
+                        <i class="fa-solid fa-users"></i>
+
+                        {{ tarea.total_alumnos }}
+
+                        estudiantes
+
+                    </span>
+
+
+                </div>
+
+
+                <!-- PROGRESO -->
+
+                <div class="task-progress">
+
+
+                    <div class="progress-header">
+
+                        <span>
+                            Entregas
+                        </span>
+
+
+                        <strong>
+
+                            {{ tarea.entregas }}
+
+                            /
+
+                            {{ tarea.total_alumnos }}
+
+                        </strong>
+
+                    </div>
+
+
+                    <div class="progress-bar">
+
+                        <div
+                            style="width: {{ tarea.porcentaje_entrega }}%;">
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =========================
+                ACCIONES
+            ========================== -->
+
+            <div class="task-actions">
+
+                <a href="{% url 'respuesta_alumnos' tarea.id %}">
+                    Ver respuestas
+                </a>
+
+                <a
+                    href="{% url 'editar_tarea_docente' tarea.id %}"
+                    class="edit-button"
+                >
+                    <i class="fa-solid fa-pen"></i>
+                    Editar
+                </a>
+
+                <!-- ELIMINAR -->
+                <form
+                    method="POST"
+                    action="{% url 'eliminar_tarea_docente' tarea.id %}"
+                    onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');"
+                    style="margin: 0;"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="action-btn delete-btn"
+                        data-tooltip="Eliminar tarea"
+                    >
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+
+                <!-- HABILITAR / DESHABILITAR -->
+                <button
+                    type="button"
+                    class="action-btn danger"
+                    data-tooltip="Deshabilitar tarea"
+                >
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        {% empty %}
+
+
+        <!-- =========================
+             SIN TAREAS
+        ========================== -->
+
+        <div class="empty-tasks">
+
+            <i class="fa-solid fa-clipboard-list"></i>
+
+            <h3>
+                No tienes tareas todavía
+            </h3>
+
+            <p>
+                Cuando crees una tarea aparecerá aquí.
+            </p>
+
+
+            <a
+                href="{% url 'crear_tarea_docente' %}"
+                class="btn-new-task">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Crear tarea
+
+            </a>
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}

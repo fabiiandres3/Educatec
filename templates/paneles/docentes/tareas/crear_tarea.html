@@ -1,0 +1,1145 @@
+{% extends 'paneles/docentes/base.html' %}
+{% load static %}
+
+{% block title %}Crear tarea{% endblock %}
+{% block active_tarea %}active{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'css/tareas/crear_tarea.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="create-task-page">
+
+<!-- ENCABEZADO -->
+
+<div class="page-header">
+
+    <div class="header-left">
+
+        <a href="{% url 'listar_tareas_docentes' %}"
+           class="back-button">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+        </a>
+
+        <div>
+
+            <span class="page-label">
+                GESTIÓN DE TAREAS
+            </span>
+
+            <h1>
+                Crear nueva tarea
+            </h1>
+
+            <p>
+                Crea una actividad para los estudiantes de tu curso.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MENSAJES -->
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+<!-- ERRORES -->
+
+{% if tarea_form.errors %}
+
+    <div class="form-errors">
+
+        <strong>
+            Hay errores en el formulario:
+        </strong>
+
+        {{ tarea_form.errors }}
+
+    </div>
+
+{% endif %}
+
+
+<!-- FORMULARIO -->
+
+<form method="POST"
+      enctype="multipart/form-data"
+      class="task-form">
+
+    {% csrf_token %}
+
+
+    <!-- =================================================
+         INFORMACIÓN GENERAL
+    ================================================== -->
+
+    <div class="form-card">
+
+        <div class="card-header">
+
+            <div class="card-icon blue">
+
+                <i class="fa-solid fa-clipboard-list"></i>
+
+            </div>
+
+            <div>
+
+                <h2>
+                    Información de la tarea
+                </h2>
+
+                <p>
+                    Ingresa los datos principales de la actividad.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-body">
+
+
+            <!-- TÍTULO -->
+
+            <div class="form-group full">
+
+                <label for="titulo">
+                    Título de la tarea
+                    <span>*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="titulo"
+                    name="titulo"
+                    maxlength="100"
+                    value="{{ tarea_form.titulo.value|default:'' }}"
+                    placeholder="Ej: Álgebra: Sistemas de ecuaciones"
+                    required>
+
+            </div>
+
+
+            <!-- DESCRIPCIÓN -->
+
+            <div class="form-group full">
+
+                <label for="descripcion">
+                    Descripción
+                </label>
+
+                <textarea
+                    id="descripcion"
+                    name="descripcion"
+                    rows="5"
+                    placeholder="Describe las instrucciones de la tarea...">{{ tarea_form.descripcion.value|default:'' }}</textarea>
+
+            </div>
+
+
+            <!-- FECHA DE ENTREGA -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="fecha_entrega">
+                        Fecha límite
+                    </label>
+
+                    <div class="input-icon">
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        <input
+                            type="date"
+                            id="fecha_entrega"
+                            name="fecha_entrega"
+                            value="{{ tarea_form.fecha_entrega.value|default:'' }}">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     CURSO
+====================================================== -->
+
+        <div class="form-card">
+
+            <div class="card-header">
+
+                <div class="card-icon cyan">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+
+                <div>
+                    <h2>Curso</h2>
+
+                    <p>
+                        Selecciona el curso al que pertenece esta tarea.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="courses-body">
+
+                {% if cursos %}
+
+                    <div class="form-group">
+
+                        <label for="curso">
+                            Curso
+                            <span class="required">*</span>
+                        </label>
+
+                        <select
+                            name="curso"
+                            id="curso"
+                            class="form-control"
+                            required
+                        >
+
+                            <option value="">
+                                -- Selecciona un curso --
+                            </option>
+
+                            {% for curso in cursos %}
+
+                                <option value="{{ curso.id }}">
+
+                                    {{ curso }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="course-help">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        <span>
+                            Selecciona el curso al que deseas asignar la tarea.
+                        </span>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-courses">
+
+                        <i class="fa-solid fa-school"></i>
+
+                        <strong>
+                            No existen cursos registrados.
+                        </strong>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+
+    <!-- =====================================================
+     PREGUNTAS
+====================================================== -->
+
+    <div class="form-card">
+
+        <div class="card-header">
+
+            <div class="card-icon dark">
+                <i class="fa-solid fa-circle-question"></i>
+            </div>
+
+            <div>
+                <h2>Preguntas</h2>
+
+                <p>
+                    Agrega preguntas abiertas o de opción múltiple.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="questions-body">
+
+            <!-- AQUÍ SE CREARÁN LAS PREGUNTAS -->
+
+            <div id="questions-container"></div>
+
+
+            <!-- BOTÓN -->
+
+            <div class="question-actions">
+
+                <button
+                    type="button"
+                    id="add-question"
+                    class="add-question-btn"
+                >
+                    <i class="fa-solid fa-plus"></i>
+
+                    Agregar pregunta
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         MATERIAL ADICIONAL
+    ================================================== -->
+
+    <div class="form-card">
+
+        <div class="card-header">
+
+            <div class="card-icon blue">
+
+                <i class="fa-solid fa-paperclip"></i>
+
+            </div>
+
+            <div>
+
+                <h2>
+                    Material adicional
+                </h2>
+
+                <p>
+                    Adjunta imágenes, archivos o videos.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="files-body">
+
+
+            <!-- ARCHIVOS -->
+
+            <div class="upload-box">
+
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                <strong>
+                    Subir archivos
+                </strong>
+
+                <span>
+                    PDF, Word, Excel, etc.
+                </span>
+
+                <label class="upload-button">
+
+                    <i class="fa-solid fa-folder-open"></i>
+
+                    Seleccionar archivos
+
+                    <input
+                        type="file"
+                        name="archivos"
+                        multiple>
+
+                </label>
+
+            </div>
+
+
+            <!-- IMÁGENES -->
+
+            <div class="upload-box">
+
+                <i class="fa-regular fa-image"></i>
+
+                <strong>
+                    Subir imágenes
+                </strong>
+
+                <span>
+                    JPG, PNG, WEBP
+                </span>
+
+                <label class="upload-button">
+
+                    <i class="fa-solid fa-image"></i>
+
+                    Seleccionar imágenes
+
+                    <input
+                        type="file"
+                        name="imagenes"
+                        multiple
+                        accept="image/*">
+
+                </label>
+
+            </div>
+
+
+            <!-- VIDEO -->
+
+            <div class="upload-box">
+
+                <i class="fa-solid fa-video"></i>
+
+                <strong>
+                    Agregar video
+                </strong>
+
+                <span>
+                    Enlace del video
+                </span>
+
+                <input
+                    type="url"
+                    name="videos"
+                    placeholder="https://www.youtube.com/watch?v=...">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         ACCIONES
+    ================================================== -->
+
+    <div class="form-actions">
+
+        <a
+            href="{% url 'listar_tareas_docentes' %}"
+            class="cancel-button">
+
+            Cancelar
+
+        </a>
+
+
+        <button
+            type="submit"
+            class="save-button">
+
+            <i class="fa-solid fa-check"></i>
+
+            Crear tarea
+
+        </button>
+
+    </div>
+
+
+</form>
+
+
+</div>
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const container =
+        document.getElementById("questions-container");
+
+    const addButton =
+        document.getElementById("add-question");
+
+    let questionIndex = 0;
+
+
+    // =================================================
+    // CREAR PREGUNTA
+    // =================================================
+
+    function addQuestion() {
+
+        const index = questionIndex;
+
+
+        const question = document.createElement("div");
+
+        question.classList.add("question-card");
+
+
+        question.innerHTML = `
+
+            <div class="question-header">
+
+                <h3>
+                    Pregunta ${index + 1}
+                </h3>
+
+                <button
+                    type="button"
+                    class="remove-question">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                    Eliminar
+
+                </button>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Enunciado
+                    <span>*</span>
+                </label>
+
+                <textarea
+                    name="pregunta_${index}"
+                    rows="3"
+                    placeholder="Escribe el enunciado de la pregunta..."
+                    required></textarea>
+
+```
+        </div>
+
+
+        <div class="form-row">
+
+
+            <!-- TIPO -->
+
+            <div class="form-group">
+
+                <label>
+                    Tipo de pregunta
+                </label>
+
+                <select
+                    name="tipo_${index}"
+                    class="question-type">
+
+                    <option value="texto">
+                        Pregunta abierta
+                    </option>
+
+                    <option value="opcion">
+                        Opción múltiple
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PUNTAJE -->
+
+            <div class="form-group">
+
+                <label>
+                    Puntaje
+                </label>
+
+                <input
+                    type="number"
+                    name="puntaje_${index}"
+                    value="1"
+                    min="1"
+                    step="0.1"
+                    required>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- RESPUESTA ABIERTA -->
+
+        <div class="open-answer">
+
+            <div class="form-group">
+
+                <label>
+                    Respuesta correcta
+                </label>
+
+                <textarea
+                    name="respuesta_correcta_${index}"
+                    rows="3"
+                    placeholder="Escribe la respuesta correcta..."></textarea>
+
+                <small>
+                    Esta respuesta será utilizada como referencia
+                    para la calificación.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <!-- OPCIONES -->
+
+        <div class="multiple-choice"
+             style="display: none;">
+
+            <label>
+                Opciones de respuesta
+            </label>
+
+
+            <div class="option-row">
+
+                <span>A</span>
+
+                <input
+                    type="text"
+                    name="opciones_${index}[]"
+                    placeholder="Opción A">
+
+                <input
+                    type="radio"
+                    name="correcta_${index}"
+                    value="A">
+
+            </div>
+
+
+            <div class="option-row">
+
+                <span>B</span>
+
+                <input
+                    type="text"
+                    name="opciones_${index}[]"
+                    placeholder="Opción B">
+
+                <input
+                    type="radio"
+                    name="correcta_${index}"
+                    value="B">
+
+            </div>
+
+
+            <div class="option-row">
+
+                <span>C</span>
+
+                <input
+                    type="text"
+                    name="opciones_${index}[]"
+                    placeholder="Opción C">
+
+                <input
+                    type="radio"
+                    name="correcta_${index}"
+                    value="C">
+
+            </div>
+
+
+            <div class="option-row">
+
+                <span>D</span>
+
+                <input
+                    type="text"
+                    name="opciones_${index}[]"
+                    placeholder="Opción D">
+
+                <input
+                    type="radio"
+                    name="correcta_${index}"
+                    value="D">
+
+            </div>
+
+            <small>
+                Selecciona la respuesta correcta.
+            </small>
+
+        </div>
+
+    `;
+
+
+    container.appendChild(question);
+
+
+    // =================================================
+    // CAMBIAR TIPO
+    // =================================================
+
+    const typeSelect =
+        question.querySelector(".question-type");
+
+    const openAnswer =
+        question.querySelector(".open-answer");
+
+    const multipleChoice =
+        question.querySelector(".multiple-choice");
+
+
+    typeSelect.addEventListener(
+        "change",
+        function () {
+
+            if (this.value === "opcion") {
+
+                openAnswer.style.display = "none";
+
+                multipleChoice.style.display = "block";
+
+            } else {
+
+                openAnswer.style.display = "block";
+
+                multipleChoice.style.display = "none";
+
+            }
+
+        }
+    );
+
+
+    // =================================================
+    // ELIMINAR
+    // =================================================
+
+    const removeButton =
+        question.querySelector(".remove-question");
+
+
+    removeButton.addEventListener(
+        "click",
+        function () {
+
+            question.remove();
+
+        }
+    );
+
+
+    questionIndex++;
+
+}
+
+
+// =================================================
+// BOTÓN AGREGAR
+// =================================================
+
+addButton.addEventListener(
+    "click",
+    addQuestion
+);
+
+
+});
+
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const container = document.getElementById(
+        "questions-container"
+    );
+
+    const addButton = document.getElementById(
+        "add-question"
+    );
+
+    let questionIndex = 0;
+
+
+    // =====================================================
+    // AGREGAR PREGUNTA
+    // =====================================================
+
+    addButton.addEventListener("click", function () {
+
+        const index = questionIndex;
+
+
+        const question = document.createElement("div");
+
+        question.classList.add("question-card");
+
+
+        question.innerHTML = `
+
+            <!-- =========================================
+                 ENCABEZADO
+            ========================================== -->
+
+            <div class="question-header">
+
+                <h3>
+                    Pregunta ${index + 1}
+                </h3>
+
+                <button
+                    type="button"
+                    class="remove-question"
+                >
+
+                    <i class="fa-solid fa-trash"></i>
+
+                    Eliminar
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================================
+                 ENUNCIADO
+            ========================================== -->
+
+            <div class="form-group">
+
+                <label>
+                    Enunciado
+                    <span>*</span>
+                </label>
+
+                <textarea
+                    name="pregunta_${index}"
+                    rows="3"
+                    placeholder="Escribe el enunciado de la pregunta..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <!-- =========================================
+                 TIPO Y PUNTAJE
+            ========================================== -->
+
+            <div class="form-row">
+
+
+                <!-- TIPO -->
+
+                <div class="form-group">
+
+                    <label>
+                        Tipo de pregunta
+                    </label>
+
+                    <select
+                        name="tipo_${index}"
+                        class="question-type"
+                    >
+
+                        <option value="texto">
+                            Pregunta abierta
+                        </option>
+
+                        <option value="opcion">
+                            Opción múltiple
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PUNTAJE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Puntaje
+                    </label>
+
+                    <input
+                        type="number"
+                        name="puntaje_${index}"
+                        value="1"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================================
+                 RESPUESTA ABIERTA
+            ========================================== -->
+
+            <div class="open-answer">
+
+                <div class="form-group">
+
+                    <label>
+                        Respuesta correcta
+                    </label>
+
+                    <textarea
+                        name="respuesta_correcta_${index}"
+                        rows="3"
+                        placeholder="Escribe la respuesta correcta..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================================
+                 OPCIÓN MÚLTIPLE
+            ========================================== -->
+
+            <div
+                class="multiple-choice"
+                style="display: none;"
+            >
+
+                <div class="form-group">
+
+                    <label>
+                        Opciones de respuesta
+                    </label>
+
+
+                    <!-- OPCIÓN A -->
+
+                    <div class="option-row">
+
+                        <span>A</span>
+
+                        <input
+                            type="text"
+                            name="opciones_${index}[]"
+                            placeholder="Opción A"
+                        >
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="correcta_${index}"
+                                value="A"
+                            >
+
+                            Correcta
+                        </label>
+
+                    </div>
+
+
+                    <!-- OPCIÓN B -->
+
+                    <div class="option-row">
+
+                        <span>B</span>
+
+                        <input
+                            type="text"
+                            name="opciones_${index}[]"
+                            placeholder="Opción B"
+                        >
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="correcta_${index}"
+                                value="B"
+                            >
+
+                            Correcta
+                        </label>
+
+                    </div>
+
+
+                    <!-- OPCIÓN C -->
+
+                    <div class="option-row">
+
+                        <span>C</span>
+
+                        <input
+                            type="text"
+                            name="opciones_${index}[]"
+                            placeholder="Opción C"
+                        >
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="correcta_${index}"
+                                value="C"
+                            >
+
+                            Correcta
+                        </label>
+
+                    </div>
+
+
+                    <!-- OPCIÓN D -->
+
+                    <div class="option-row">
+
+                        <span>D</span>
+
+                        <input
+                            type="text"
+                            name="opciones_${index}[]"
+                            placeholder="Opción D"
+                        >
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="correcta_${index}"
+                                value="D"
+                            >
+
+                            Correcta
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        // =================================================
+        // INSERTAR PREGUNTA
+        // =================================================
+
+        container.appendChild(question);
+
+
+        // =================================================
+        // SELECTOR DE TIPO
+        // =================================================
+
+        const typeSelect = question.querySelector(
+            ".question-type"
+        );
+
+        const openAnswer = question.querySelector(
+            ".open-answer"
+        );
+
+        const multipleChoice = question.querySelector(
+            ".multiple-choice"
+        );
+
+
+        typeSelect.addEventListener(
+            "change",
+            function () {
+
+                if (this.value === "opcion") {
+
+                    openAnswer.style.display = "none";
+
+                    multipleChoice.style.display = "block";
+
+                } else {
+
+                    openAnswer.style.display = "block";
+
+                    multipleChoice.style.display = "none";
+
+                }
+
+            }
+        );
+
+
+        // =================================================
+        // BOTÓN ELIMINAR
+        // =================================================
+
+        const removeButton = question.querySelector(
+            ".remove-question"
+        );
+
+
+        removeButton.addEventListener(
+            "click",
+            function () {
+
+                question.remove();
+
+            }
+        );
+
+
+        // =================================================
+        // SIGUIENTE ÍNDICE
+        // =================================================
+
+        questionIndex++;
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

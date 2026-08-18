@@ -1,0 +1,742 @@
+.answer-page {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.task-header {
+    margin-bottom: 30px;
+}
+
+.back-section {
+    margin-bottom: 25px;
+}
+
+.back-button {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.task-header-content {
+    padding: 30px;
+
+    border-radius: 20px;
+
+    background: #111827;
+    color: white;
+}
+
+.task-label {
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    opacity: 0.65;
+
+    margin-bottom: 8px;
+}
+
+.task-header-content h1 {
+    margin: 0;
+
+    font-size: 32px;
+    font-weight: 750;
+}
+
+.task-description {
+    max-width: 750px;
+
+    margin: 12px 0 0;
+
+    line-height: 1.6;
+
+    opacity: 0.75;
+}
+
+
+/* =========================================================
+   META
+========================================================= */
+
+.task-meta {
+    display: flex;
+
+    gap: 30px;
+
+    padding: 20px 25px;
+
+    border: 1px solid #e5e7eb;
+
+    border-top: none;
+
+    border-radius: 0 0 20px 20px;
+
+    background: white;
+}
+
+.meta-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.meta-icon {
+    font-size: 20px;
+}
+
+.meta-item small {
+    display: block;
+
+    font-size: 11px;
+
+    color: #9ca3af;
+}
+
+.meta-item strong {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   MATERIALES
+========================================================= */
+
+.materials-section {
+    margin-bottom: 35px;
+
+    padding: 25px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 18px;
+
+    background: white;
+}
+
+.section-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+}
+
+.section-title h2 {
+    margin: 0;
+
+    font-size: 19px;
+}
+
+.material-group {
+    margin-top: 25px;
+}
+
+.material-group h3 {
+    margin-bottom: 12px;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   IMÁGENES
+========================================================= */
+
+.images-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(160px, 1fr)
+        );
+
+    gap: 12px;
+}
+
+.image-item {
+    height: 150px;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    border: 1px solid #e5e7eb;
+}
+
+.image-item img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform 0.2s;
+}
+
+.image-item:hover img {
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   ARCHIVOS
+========================================================= */
+
+.files-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.file-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 15px;
+
+    border-radius: 10px;
+
+    background: #f9fafb;
+
+    border: 1px solid #e5e7eb;
+
+    text-decoration: none;
+
+    color: inherit;
+}
+
+.file-name {
+    flex: 1;
+
+    font-size: 14px;
+
+    font-weight: 500;
+}
+
+.file-arrow {
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   PREGUNTAS
+========================================================= */
+
+.questions-section {
+    margin-top: 30px;
+}
+
+.questions-header {
+    margin-bottom: 20px;
+}
+
+.section-label {
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    opacity: 0.5;
+}
+
+.questions-header h2 {
+    margin: 5px 0;
+
+    font-size: 25px;
+}
+
+.questions-header p {
+    margin: 0;
+
+    font-size: 14px;
+
+    color: #6b7280;
+}
+
+.questions-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   TARJETA PREGUNTA
+========================================================= */
+
+.question-card {
+    background: white;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    transition: 0.2s;
+}
+
+.question-card:hover {
+    border-color: #d1d5db;
+}
+
+.question-completed {
+    background: #fafafa;
+}
+
+
+/* =========================================================
+   TOP PREGUNTA
+========================================================= */
+
+.question-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 15px 20px;
+
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.question-number {
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.question-points {
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: #f3f4f6;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.question-content {
+    padding: 22px;
+}
+
+.question-content h3 {
+    margin: 0 0 22px;
+
+    font-size: 18px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+.answer-field label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.answer-field textarea {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 14px;
+
+    resize: vertical;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 12px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.answer-field textarea:focus {
+    border-color: #111827;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            17,
+            24,
+            39,
+            0.08
+        );
+}
+
+
+/* =========================================================
+   OPCIONES
+========================================================= */
+
+.options-container {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.options-label {
+    margin-bottom: 5px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.option-card {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px 16px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.option-card:hover {
+    background: #f9fafb;
+
+    border-color: #cbd5e1;
+}
+
+.option-card input {
+    position: absolute;
+
+    opacity: 0;
+}
+
+.option-radio {
+    width: 18px;
+    height: 18px;
+
+    border: 2px solid #9ca3af;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+}
+
+.option-card input:checked
++ .option-radio {
+    border-color: #111827;
+
+    box-shadow:
+        inset 0 0 0 4px white;
+
+    background: #111827;
+}
+
+.option-text {
+    font-size: 14px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   BOTÓN
+========================================================= */
+
+.answer-submit {
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: 20px;
+}
+
+.submit-answer {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 11px 18px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #111827;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.submit-answer:hover {
+    transform: translateX(2px);
+
+    background: #000000;
+}
+
+
+/* =========================================================
+   RESPUESTA ENVIADA
+========================================================= */
+
+.answered-container {
+    padding: 18px;
+
+    border-radius: 14px;
+
+    background: #f0fdf4;
+
+    border: 1px solid #bbf7d0;
+}
+
+.answered-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+}
+
+.answered-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    border-radius: 50%;
+
+    background: #16a34a;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+.answered-header strong {
+    display: block;
+
+    font-size: 14px;
+}
+
+.answered-header small {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   RESPUESTA DEL ALUMNO
+========================================================= */
+
+.student-answer {
+    padding: 15px;
+
+    border-radius: 10px;
+
+    background: white;
+
+    border: 1px solid #dcfce7;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+}
+
+.student-option {
+    padding: 14px;
+
+    border-radius: 10px;
+
+    background: white;
+
+    border: 1px solid #dcfce7;
+}
+
+.student-option span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 12px;
+
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   RESULTADO
+========================================================= */
+
+.answer-result {
+    margin-top: 12px;
+
+    padding: 10px 12px;
+
+    border-radius: 9px;
+
+    background: #dcfce7;
+
+    color: #166534;
+
+    font-size: 13px;
+}
+
+.waiting-result {
+    margin-top: 12px;
+
+    padding: 10px 12px;
+
+    border-radius: 9px;
+
+    background: #fef3c7;
+
+    color: #92400e;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SIN PREGUNTAS
+========================================================= */
+
+.no-questions {
+    padding: 60px 25px;
+
+    text-align: center;
+
+    border: 1px dashed #d1d5db;
+
+    border-radius: 18px;
+
+    background: #fafafa;
+}
+
+.no-questions-icon {
+    font-size: 40px;
+
+    margin-bottom: 10px;
+}
+
+.no-questions h3 {
+    margin: 0 0 8px;
+}
+
+.no-questions p {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .answer-page {
+        padding: 20px 14px 40px;
+    }
+
+    .task-header-content {
+        padding: 22px;
+    }
+
+    .task-header-content h1 {
+        font-size: 25px;
+    }
+
+    .task-meta {
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .question-content {
+        padding: 18px;
+    }
+
+    .question-top {
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+    .submit-answer {
+        width: 100%;
+
+        justify-content: center;
+    }
+
+    .answer-submit {
+        width: 100%;
+    }
+
+}

@@ -1,0 +1,949 @@
+{% extends 'paneles/docentes/base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Respuesta del estudiante
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/tareas/ver_respuesta.css' %}"
+>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="answer-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="answer-header">
+
+        <a
+            href="{% url 'listar_tareas_docentes' %}"
+            class="back-button"
+            title="Volver"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+        </a>
+
+
+        <div class="header-information">
+
+            <span class="page-label">
+                RESPUESTA DEL ESTUDIANTE
+            </span>
+
+
+            <h1>
+
+                {{ alumno.get_full_name|default:alumno.username }}
+
+            </h1>
+
+
+            <p>
+
+                <i class="fa-solid fa-clipboard-list"></i>
+
+                {{ tarea.titulo }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         INFORMACIÓN DEL ESTUDIANTE
+    ====================================================== -->
+
+    <div class="student-summary">
+
+
+        <div class="student-summary-left">
+
+
+            <div class="big-avatar">
+
+                {{ alumno.first_name|first|default:alumno.username|first|upper }}
+
+            </div>
+
+
+            <div class="student-data">
+
+                <h2>
+
+                    {{ alumno.get_full_name|default:alumno.username }}
+
+                </h2>
+
+
+                {% if alumno.alumnos_set.first.curso %}
+
+                    <span>
+
+                        <i class="fa-solid fa-school"></i>
+
+                        {{ alumno.alumnos_set.first.curso }}
+
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="student-summary-info">
+
+
+            <div class="summary-item">
+
+                <span>
+                    Estado
+                </span>
+
+
+                <strong class="status-answer">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    Respondió
+
+                </strong>
+
+            </div>
+
+
+
+            <div class="summary-item">
+
+                <span>
+                    Preguntas respondidas
+                </span>
+
+
+                <strong>
+
+                    {{ respuestas|length }}
+
+                    /
+
+                    {{ total_preguntas }}
+
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         RESUMEN DE CALIFICACIÓN
+    ====================================================== -->
+
+    <div class="grade-summary">
+
+
+        <div class="grade-title">
+
+            <span>
+                RESULTADO DE LA TAREA
+            </span>
+
+
+            <h2>
+                Calificación
+            </h2>
+
+
+            <p>
+                Resultado actual de la evaluación
+            </p>
+
+        </div>
+
+
+
+        <div class="grade-number">
+
+            <strong>
+
+                {{ puntos_obtenidos }}
+
+            </strong>
+
+
+            <span>
+
+                /
+
+                {{ puntos_totales }}
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ENCABEZADO DE RESPUESTAS
+    ====================================================== -->
+
+    <div class="answers-title">
+
+
+        <div>
+
+            <span class="section-label">
+                EVALUACIÓN
+            </span>
+
+
+            <h2>
+                Respuestas entregadas
+            </h2>
+
+
+            <p>
+                Revisa las respuestas y califica cada pregunta.
+            </p>
+
+        </div>
+
+
+        <span class="answers-count">
+
+            {{ total_preguntas }}
+
+            {% if total_preguntas == 1 %}
+                pregunta
+            {% else %}
+                preguntas
+            {% endif %}
+
+        </span>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CONTENEDOR DE PREGUNTAS
+    ====================================================== -->
+
+    <div class="answers-container">
+
+
+        {% for item in preguntas_respuestas %}
+
+
+            {% with pregunta=item.pregunta %}
+            {% with respuesta=item.respuesta %}
+
+
+                <div class="question-card">
+
+
+                    <!-- =========================================
+                         HEADER DE PREGUNTA
+                    ========================================== -->
+
+                    <div class="question-header">
+
+
+                        <div class="question-number">
+
+                            {{ forloop.counter }}
+
+                        </div>
+
+
+                        <div class="question-title">
+
+
+                            <span>
+
+                                Pregunta {{ forloop.counter }}
+
+                            </span>
+
+
+                            <h3>
+
+                                {{ pregunta.descripcion }}
+
+                            </h3>
+
+                        </div>
+
+
+                        <span class="question-type">
+
+
+                            {% if pregunta.tipo == "texto" %}
+
+                                <i class="fa-solid fa-align-left"></i>
+
+                                Abierta
+
+                            {% else %}
+
+                                <i class="fa-solid fa-list"></i>
+
+                                Opción múltiple
+
+                            {% endif %}
+
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         CONTENIDO
+                    ========================================== -->
+
+                    <div class="question-content">
+
+
+                        <!-- =====================================
+                             PREGUNTA DE OPCIÓN MÚLTIPLE
+                        ====================================== -->
+
+                        {% if pregunta.tipo == "opcion" %}
+
+
+                            <div class="statement">
+
+
+                                <strong>
+
+                                    <i class="fa-solid fa-list-check"></i>
+
+                                    Opciones
+
+                                </strong>
+
+
+                                <div class="options">
+
+
+                                    {% for opcion in pregunta.opciones.all %}
+
+
+                                        <div
+                                            class="
+                                                option
+                                                {% if respuesta and respuesta.opcion_seleccionada_id == opcion.id %}
+                                                    selected
+                                                {% endif %}
+                                            "
+                                        >
+
+                                            {{ opcion.opcion }}
+
+
+                                            {% if respuesta and respuesta.opcion_seleccionada_id == opcion.id %}
+
+                                                <span>
+
+                                                    Respuesta seleccionada
+
+                                                </span>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+
+                                    {% endfor %}
+
+
+                                </div>
+
+                            </div>
+
+
+                        {% endif %}
+
+
+
+                        <!-- =====================================
+                             RESPUESTA DEL ALUMNO
+                        ====================================== -->
+
+                        <div class="student-answer">
+
+
+                            <div class="answer-label">
+
+
+                                <strong>
+
+                                    Respuesta del estudiante
+
+                                </strong>
+
+
+                                {% if respuesta %}
+
+
+                                    {% if respuesta.calificada %}
+
+
+                                        {% if respuesta.es_correcta %}
+
+                                            <span class="correct">
+
+                                                <i class="fa-solid fa-circle-check"></i>
+
+                                                Correcta
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="incorrect">
+
+                                                <i class="fa-solid fa-circle-xmark"></i>
+
+                                                Incorrecta
+
+                                            </span>
+
+                                        {% endif %}
+
+
+                                    {% else %}
+
+
+                                        <span class="pending">
+
+                                            <i class="fa-solid fa-clock"></i>
+
+                                            Pendiente
+
+                                        </span>
+
+
+                                    {% endif %}
+
+
+                                {% else %}
+
+
+                                    <span class="pending">
+
+                                        <i class="fa-solid fa-clock"></i>
+
+                                        Sin respuesta
+
+                                    </span>
+
+
+                                {% endif %}
+
+
+                            </div>
+
+
+
+                            <!-- =================================
+                                 RESPUESTA ABIERTA
+                            ================================== -->
+
+                            {% if respuesta and pregunta.tipo == "texto" %}
+
+
+                                <div class="answer-box">
+
+                                    {{ respuesta.respuesta_texto|linebreaks }}
+
+                                </div>
+
+
+                            {% elif respuesta and pregunta.tipo == "opcion" %}
+
+
+                                <div class="answer-box">
+
+                                    {% if respuesta.opcion_seleccionada %}
+
+                                        {{ respuesta.opcion_seleccionada.opcion }}
+
+                                    {% else %}
+
+                                        Sin respuesta
+
+                                    {% endif %}
+
+                                </div>
+
+
+                            {% else %}
+
+
+                                <div class="answer-box">
+
+                                    El estudiante no respondió esta pregunta.
+
+                                </div>
+
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         EVALUACIÓN
+                    ========================================== -->
+
+                    {% if respuesta %}
+
+
+                        <div class="evaluation-area">
+
+
+                            <div class="evaluation-header">
+
+
+                                <div>
+
+                                    <strong>
+                                        Evaluar respuesta
+                                    </strong>
+
+
+                                    <span>
+                                        Selecciona el resultado de la respuesta.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <form
+                                method="POST"
+                                action=""
+                            >
+
+                                {% csrf_token %}
+
+
+                                <input
+                                    type="hidden"
+                                    name="respuesta_id"
+                                    value="{{ respuesta.id }}"
+                                >
+
+
+                                <div class="evaluation-options">
+
+
+                                    <button
+                                        type="button"
+                                        class="evaluation-btn correct-btn"
+                                        onclick="selectEvaluation(this, 'correct')"
+                                    >
+
+                                        <i class="fa-solid fa-check"></i>
+
+                                        Correcta
+
+                                    </button>
+
+
+                                    <button
+                                        type="button"
+                                        class="evaluation-btn incorrect-btn"
+                                        onclick="selectEvaluation(this, 'incorrect')"
+                                    >
+
+                                        <i class="fa-solid fa-xmark"></i>
+
+                                        Incorrecta
+
+                                    </button>
+
+
+                                    <button
+                                        type="button"
+                                        class="evaluation-btn partial-btn"
+                                        onclick="selectEvaluation(this, 'partial')"
+                                    >
+
+                                        <i class="fa-solid fa-circle-half-stroke"></i>
+
+                                        Parcial
+
+                                    </button>
+
+
+                                    <button
+                                        type="button"
+                                        class="evaluation-btn pending-btn"
+                                        onclick="selectEvaluation(this, 'pending')"
+                                    >
+
+                                        <i class="fa-solid fa-clock"></i>
+
+                                        Pendiente
+
+                                    </button>
+
+                                </div>
+
+
+
+                                <div class="evaluation-row">
+
+
+                                    <div class="points-container">
+
+
+                                        <label>
+                                            Puntos obtenidos
+                                        </label>
+
+
+                                        <div class="points-input">
+
+
+                                            <input
+                                                type="number"
+                                                name="nota"
+                                                min="0"
+                                                max="{{ pregunta.puntaje }}"
+                                                step="0.1"
+                                                value="{{ respuesta.nota_obtenida }}"
+                                            >
+
+
+                                            <span>
+
+                                                /
+
+                                                {{ pregunta.puntaje }}
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="evaluation-status">
+
+
+                                        <span>
+                                            Estado:
+                                        </span>
+
+
+                                        <strong class="current-status">
+
+                                            {% if respuesta.calificada %}
+
+                                                {% if respuesta.es_correcta %}
+                                                    Correcta
+                                                {% else %}
+                                                    Incorrecta
+                                                {% endif %}
+
+                                            {% else %}
+
+                                                Pendiente
+
+                                            {% endif %}
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="teacher-comment">
+
+
+                                    <label>
+                                        Comentario del docente
+                                    </label>
+
+
+                                    <textarea
+                                        name="comentario"
+                                        placeholder="Escribe una observación para el estudiante..."
+                                    ></textarea>
+
+                                </div>
+
+
+
+                                <div class="evaluation-save">
+
+
+                                    <button
+                                        type="submit"
+                                        class="btn-primary"
+                                    >
+
+                                        <i class="fa-solid fa-floppy-disk"></i>
+
+                                        Guardar evaluación
+
+                                    </button>
+
+
+                                </div>
+
+
+                            </form>
+
+                        </div>
+
+
+                    {% endif %}
+
+
+
+                    <!-- =========================================
+                         FOOTER
+                    ========================================== -->
+
+                    <div class="question-footer">
+
+
+                        <span>
+
+                            {% if respuesta %}
+
+                                Puntos obtenidos
+
+                            {% else %}
+
+                                Valor de la pregunta
+
+                            {% endif %}
+
+                        </span>
+
+
+                        <strong>
+
+
+                            {% if respuesta %}
+
+                                {{ respuesta.nota_obtenida }}
+
+                                /
+
+                            {% endif %}
+
+
+                            {{ pregunta.puntaje }}
+
+
+                            {% if not respuesta %}
+
+                                puntos
+
+                            {% endif %}
+
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+            {% endwith %}
+            {% endwith %}
+
+
+        {% empty %}
+
+
+            <div class="question-card">
+
+
+                <div class="question-content">
+
+                    <h3>
+                        No hay preguntas para esta tarea.
+                    </h3>
+
+
+                    <p>
+                        Esta tarea todavía no tiene preguntas registradas.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ACCIONES FINALES
+    ====================================================== -->
+
+    <div class="answer-actions">
+
+
+        <a
+            href="{% url 'listar_tareas_docentes' %}"
+            class="btn-secondary"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Volver
+
+        </a>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+function selectEvaluation(button, type) {
+
+    const evaluationArea =
+        button.closest(".evaluation-area");
+
+    const buttons =
+        evaluationArea.querySelectorAll(
+            ".evaluation-btn"
+        );
+
+    const status =
+        evaluationArea.querySelector(
+            ".current-status"
+        );
+
+    const pointsInput =
+        evaluationArea.querySelector(
+            ".points-input input"
+        );
+
+
+    /*
+     * Quitar selección anterior
+     */
+
+    buttons.forEach(function(btn) {
+
+        btn.classList.remove("selected");
+
+    });
+
+
+    /*
+     * Seleccionar botón
+     */
+
+    button.classList.add("selected");
+
+
+    /*
+     * Cambiar estado
+     */
+
+    if (type === "correct") {
+
+        status.textContent = "Correcta";
+
+        pointsInput.value = pointsInput.max;
+
+    }
+
+
+    else if (type === "incorrect") {
+
+        status.textContent = "Incorrecta";
+
+        pointsInput.value = 0;
+
+    }
+
+
+    else if (type === "partial") {
+
+        status.textContent = "Parcial";
+
+        pointsInput.value =
+            (parseFloat(pointsInput.max) / 2)
+            .toFixed(1);
+
+    }
+
+
+    else if (type === "pending") {
+
+        status.textContent = "Pendiente";
+
+        pointsInput.value = 0;
+
+    }
+
+}
+
+</script>
+
+
+{% endblock %}

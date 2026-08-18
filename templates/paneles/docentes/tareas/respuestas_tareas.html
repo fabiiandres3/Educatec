@@ -1,0 +1,743 @@
+{% extends 'paneles/docentes/base.html' %}
+{% load static %}
+
+{% block title %}Respuestas de la tarea{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tareas/crear_tarea.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="responses-page">
+
+    <!-- ==========================================
+         ENCABEZADO
+    =========================================== -->
+
+    <div class="responses-header">
+
+        <div class="header-left">
+
+            <a href="{% url 'listar_tareas_docentes' %}"
+               class="back-button"
+               title="Volver a tareas">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+            </a>
+
+            <div>
+
+                <span class="page-label">
+                    RESPUESTAS DE LA TAREA
+                </span>
+
+                <h1>{{ tarea.titulo }}</h1>
+
+                <p>
+                    <i class="fa-solid fa-school"></i>
+
+                    {{ tarea.curso }}
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         INFORMACIÓN DE LA TAREA
+    =========================================== -->
+
+    <div class="task-summary">
+
+        <div class="summary-main">
+
+            <div class="summary-icon">
+                <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+
+            <div>
+
+                <h2>
+                    {{ tarea.titulo }}
+                </h2>
+
+                <p>
+                    Consulta las respuestas de los estudiantes
+                    y revisa quién ha completado la tarea.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-date">
+
+            <span>
+                Fecha límite
+            </span>
+
+            <strong>
+                {{ tarea.fecha_limite|date:"d/m/Y" }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         ESTADÍSTICAS
+    =========================================== -->
+
+    <div class="response-stats">
+
+        <!-- TOTAL -->
+
+        <div class="response-stat">
+
+            <div class="response-stat-icon total">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div>
+
+                <span>
+                    Total estudiantes
+                </span>
+
+                <strong>
+                    {{ total_alumnos }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESPONDIERON -->
+
+        <div class="response-stat">
+
+            <div class="response-stat-icon answered">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div>
+
+                <span>
+                    Respondieron
+                </span>
+
+                <strong>
+                    {{ total_respondieron }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- PENDIENTES -->
+
+        <div class="response-stat">
+
+            <div class="response-stat-icon pending">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+
+            <div>
+
+                <span>
+                    Pendientes
+                </span>
+
+                <strong>
+                    {{ total_pendientes }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- PORCENTAJE -->
+
+        <div class="response-stat">
+
+            <div class="response-stat-icon percentage">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+
+            <div>
+
+                <span>
+                    Participación
+                </span>
+
+                <strong>
+                    {{ porcentaje_respuestas }}%
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         BARRA DE PROGRESO
+    =========================================== -->
+
+    <div class="completion-card">
+
+        <div class="completion-header">
+
+            <div>
+
+                <h3>
+                    Progreso de la tarea
+                </h3>
+
+                <span>
+                    Estudiantes que han enviado su respuesta
+                </span>
+
+            </div>
+
+            <strong>
+                {{ total_respondieron }} / {{ total_alumnos }}
+            </strong>
+
+        </div>
+
+
+        <div class="completion-bar">
+
+            <div
+                style="width: {{ porcentaje_respuestas }}%;"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         FILTROS
+    =========================================== -->
+
+    <div class="students-toolbar">
+
+        <div class="student-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="studentSearch"
+                placeholder="Buscar estudiante..."
+            >
+
+        </div>
+
+
+        <select id="statusFilter">
+
+            <option value="todos">
+                Todos los estudiantes
+            </option>
+
+            <option value="respondio">
+                Respondieron
+            </option>
+
+            <option value="pendiente">
+                Pendientes
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- ==========================================
+         TABLA DE ESTUDIANTES
+    =========================================== -->
+
+    <div class="students-card">
+
+        <div class="students-table-wrapper">
+
+            <table class="students-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Estudiante
+                        </th>
+
+                        <th>
+                            Curso
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Fecha de respuesta
+                        </th>
+
+                        <th>
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="studentsTable">
+
+                    <!-- ALUMNO 1 -->
+                    <tr
+                        class="student-row"
+                        data-name="juan perez"
+                        data-status="respondio"
+                    >
+
+                        <td class="student-number">
+                            1
+                        </td>
+
+                        <td>
+                            <div class="student-info">
+
+                                <div class="student-avatar">
+                                    JP
+                                </div>
+
+                                <div>
+                                    <strong>Juan Pérez</strong>
+                                    <span>juan.perez</span>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="course-badge">
+                                <i class="fa-solid fa-school"></i>
+                                10°A
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-status answered">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Respondió
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-date">
+                                10/03/2026 09:35
+                            </span>
+                        </td>
+
+                        <td>
+                            <a
+                                href="#"
+                                class="view-response-icon"
+                                title="Visualizar respuesta"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ALUMNO 2 -->
+                    <tr
+                        class="student-row"
+                        data-name="maria gomez"
+                        data-status="respondio"
+                    >
+
+                        <td class="student-number">
+                            2
+                        </td>
+
+                        <td>
+                            <div class="student-info">
+
+                                <div class="student-avatar">
+                                    MG
+                                </div>
+
+                                <div>
+                                    <strong>María Gómez</strong>
+                                    <span>maria.gomez</span>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="course-badge">
+                                <i class="fa-solid fa-school"></i>
+                                10°A
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-status answered">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Respondió
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-date">
+                                10/03/2026 10:12
+                            </span>
+                        </td>
+
+                        <td>
+                            <a
+                                href="#"
+                                class="view-response-icon"
+                                title="Visualizar respuesta"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ALUMNO 3 -->
+                    <tr
+                        class="student-row"
+                        data-name="carlos rodriguez"
+                        data-status="pendiente"
+                    >
+
+                        <td class="student-number">
+                            3
+                        </td>
+
+                        <td>
+                            <div class="student-info">
+
+                                <div class="student-avatar">
+                                    CR
+                                </div>
+
+                                <div>
+                                    <strong>Carlos Rodríguez</strong>
+                                    <span>carlos.rodriguez</span>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="course-badge">
+                                <i class="fa-solid fa-school"></i>
+                                10°A
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-status pending">
+                                <i class="fa-solid fa-clock"></i>
+                                Pendiente
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="no-response">
+                                —
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="no-action">
+                                —
+                            </span>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ALUMNO 4 -->
+                    <tr
+                        class="student-row"
+                        data-name="ana martinez"
+                        data-status="respondio"
+                    >
+
+                        <td class="student-number">
+                            4
+                        </td>
+
+                        <td>
+                            <div class="student-info">
+
+                                <div class="student-avatar">
+                                    AM
+                                </div>
+
+                                <div>
+                                    <strong>Ana Martínez</strong>
+                                    <span>ana.martinez</span>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="course-badge">
+                                <i class="fa-solid fa-school"></i>
+                                10°A
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-status answered">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Respondió
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-date">
+                                10/03/2026 11:48
+                            </span>
+                        </td>
+
+                        <td>
+                            <a
+                                href="#"
+                                class="view-response-icon"
+                                title="Visualizar respuesta"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ALUMNO 5 -->
+                    <tr
+                        class="student-row"
+                        data-name="sebastian lopez"
+                        data-status="pendiente"
+                    >
+
+                        <td class="student-number">
+                            5
+                        </td>
+
+                        <td>
+                            <div class="student-info">
+
+                                <div class="student-avatar">
+                                    SL
+                                </div>
+
+                                <div>
+                                    <strong>Sebastián López</strong>
+                                    <span>sebastian.lopez</span>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="course-badge">
+                                <i class="fa-solid fa-school"></i>
+                                10°A
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-status pending">
+                                <i class="fa-solid fa-clock"></i>
+                                Pendiente
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="no-response">
+                                —
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="no-action">
+                                —
+                            </span>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ALUMNO 6 -->
+                    <tr
+                        class="student-row"
+                        data-name="laura torres"
+                        data-status="respondio"
+                    >
+
+                        <td class="student-number">
+                            6
+                        </td>
+
+                        <td>
+                            <div class="student-info">
+
+                                <div class="student-avatar">
+                                    LT
+                                </div>
+
+                                <div>
+                                    <strong>Laura Torres</strong>
+                                    <span>laura.torres</span>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="course-badge">
+                                <i class="fa-solid fa-school"></i>
+                                10°A
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-status answered">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Respondió
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="response-date">
+                                10/03/2026 13:20
+                            </span>
+                        </td>
+
+                        <td>
+                            <a
+                                href="#"
+                                class="view-response-icon"
+                                title="Visualizar respuesta"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     FILTROS CON JAVASCRIPT
+=========================================== -->
+
+<script>
+
+const searchInput =
+    document.getElementById("studentSearch");
+
+const statusFilter =
+    document.getElementById("statusFilter");
+
+const rows =
+    document.querySelectorAll(".student-row");
+
+
+function filterStudents() {
+
+    const search =
+        searchInput.value.toLowerCase().trim();
+
+    const status =
+        statusFilter.value;
+
+
+    rows.forEach(row => {
+
+        const name =
+            row.dataset.name || "";
+
+        const rowStatus =
+            row.dataset.status || "";
+
+
+        const matchesSearch =
+            name.includes(search);
+
+
+        const matchesStatus =
+            status === "todos" ||
+            rowStatus === status;
+
+
+        if (matchesSearch && matchesStatus) {
+
+            row.style.display = "";
+
+        } else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+}
+
+
+searchInput.addEventListener(
+    "input",
+    filterStudents
+);
+
+
+statusFilter.addEventListener(
+    "change",
+    filterStudents
+);
+
+</script>
+
+{% endblock %}

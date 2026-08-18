@@ -1,0 +1,441 @@
+.student-tasks-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 35px 25px 60px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+
+    margin-bottom: 30px;
+}
+
+.header-label {
+    display: block;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+
+    margin-bottom: 8px;
+}
+
+.header-information h1 {
+    margin: 0;
+
+    font-size: 34px;
+    font-weight: 750;
+}
+
+.header-information p {
+    margin-top: 8px;
+
+    font-size: 15px;
+
+    opacity: 0.7;
+}
+
+
+/* =========================================================
+   CURSO
+========================================================= */
+
+.course-badge {
+    min-width: 150px;
+
+    padding: 15px 20px;
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    border: 1px solid #e5e7eb;
+
+    background: #ffffff;
+}
+
+.course-badge span {
+    display: block;
+
+    font-size: 12px;
+
+    opacity: 0.6;
+
+    margin-bottom: 5px;
+}
+
+.course-badge strong {
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   FILTROS
+========================================================= */
+
+.tasks-toolbar {
+    display: flex;
+    gap: 8px;
+
+    margin-bottom: 20px;
+
+    padding: 5px;
+
+    width: fit-content;
+
+    border-radius: 12px;
+
+    background: #f3f4f6;
+}
+
+.filter-button {
+    border: none;
+
+    padding: 9px 17px;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition: 0.2s;
+}
+
+.filter-button:hover {
+    background: #ffffff;
+}
+
+.filter-button.active {
+    background: #ffffff;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 1px 4px rgba(
+            0,
+            0,
+            0,
+            0.08
+        );
+}
+
+
+/* =========================================================
+   LISTA
+========================================================= */
+
+.tasks-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   TARJETA
+========================================================= */
+
+.task-item {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s,
+        border-color 0.2s;
+}
+
+.task-item:hover {
+    transform: translateY(-2px);
+
+    border-color: #d1d5db;
+
+    box-shadow:
+        0 10px 30px rgba(
+            0,
+            0,
+            0,
+            0.07
+        );
+}
+
+
+/* =========================================================
+   PARTE SUPERIOR
+========================================================= */
+
+.task-top {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 18px 22px 0;
+}
+
+.task-subject {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    opacity: 0.7;
+}
+
+.subject-icon {
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   ESTADO
+========================================================= */
+
+.task-status {
+    padding: 6px 11px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.pending-status {
+    background: #fff7ed;
+
+    color: #c2410c;
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.task-content {
+    padding: 15px 22px 5px;
+}
+
+.task-content h2 {
+    margin: 0 0 8px;
+
+    font-size: 21px;
+
+    font-weight: 700;
+}
+
+.task-content p {
+    margin: 0;
+
+    max-width: 800px;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+
+    color: #6b7280;
+}
+
+.no-description {
+    font-style: italic;
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
+
+.task-information {
+    display: flex;
+
+    gap: 35px;
+
+    padding: 18px 22px;
+
+    margin-top: 10px;
+
+    border-top: 1px solid #f0f0f0;
+}
+
+.information-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.information-icon {
+    font-size: 18px;
+}
+
+.information-item small {
+    display: block;
+
+    font-size: 11px;
+
+    color: #9ca3af;
+
+    margin-bottom: 2px;
+}
+
+.information-item strong {
+    display: block;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   BOTÓN
+========================================================= */
+
+.task-action {
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding: 0 22px 20px;
+}
+
+.open-task-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 16px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background: #111827;
+
+    color: #ffffff;
+
+    transition: 0.2s;
+}
+
+.open-task-button:hover {
+    transform: translateX(2px);
+
+    background: #000000;
+}
+
+.arrow {
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   SIN TAREAS
+========================================================= */
+
+.empty-tasks {
+    padding: 70px 30px;
+
+    text-align: center;
+
+    border: 1px dashed #d1d5db;
+
+    border-radius: 18px;
+
+    background: #fafafa;
+}
+
+.empty-icon {
+    font-size: 45px;
+
+    margin-bottom: 15px;
+}
+
+.empty-tasks h2 {
+    margin: 0 0 8px;
+
+    font-size: 22px;
+}
+
+.empty-tasks p {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .student-tasks-page {
+        padding: 25px 15px 40px;
+    }
+
+    .tasks-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .course-badge {
+        width: 100%;
+    }
+
+    .task-information {
+        flex-direction: column;
+
+        gap: 14px;
+    }
+
+    .task-top {
+        align-items: flex-start;
+
+        gap: 12px;
+    }
+
+    .tasks-toolbar {
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+    .filter-button {
+        white-space: nowrap;
+    }
+
+}
