@@ -173,3 +173,9 @@ python manage.py graph_models -a -o diagrama.png
 
 Esto genera una imagen `diagrama.png` con el diagrama de todos los modelos
 de la aplicación.
+
+## Documentacion Final del proyecto
+
+```bash
+https://docs.google.com/document/d/1IvvAGxMQbhCuh6kNDvXS1nsNnK6QicE6Iild1zFYRLI/edit?usp=sharing
+```
