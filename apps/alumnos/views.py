@@ -162,7 +162,10 @@ def listar_tareas_alumno(request):
 
 
 def responder_tarea(request, tarea_id):
-    tarea = get_object_or_404(Tareas, id=tarea_id)
+    tarea = get_object_or_404(
+        Tareas,
+        id=tarea_id
+    )
 
     alumno = get_object_or_404(
         Alumnos,
@@ -172,6 +175,10 @@ def responder_tarea(request, tarea_id):
     preguntas = tarea.preguntas.prefetch_related(
         "opciones"
     ).all()
+
+    # =====================================================
+    # GUARDAR RESPUESTA
+    # =====================================================
 
     if request.method == "POST":
 
@@ -183,16 +190,17 @@ def responder_tarea(request, tarea_id):
             tarea=tarea
         )
 
-        # Evitar que el alumno responda nuevamente
+        # Verificar si ya respondió
         respuesta_existente = RespuestaAlumno.objects.filter(
             alumno=request.user,
             pregunta=pregunta
         ).first()
 
         if respuesta_existente:
+
             messages.warning(
                 request,
-                "Ya has respondido esta pregunta."
+                "Ya respondiste esta pregunta."
             )
 
             return redirect(
@@ -200,10 +208,15 @@ def responder_tarea(request, tarea_id):
                 tarea_id=tarea.id
             )
 
+        # Crear la respuesta
         respuesta = RespuestaAlumno(
             alumno=request.user,
             pregunta=pregunta
         )
+
+        # =================================================
+        # RESPUESTA ABIERTA
+        # =================================================
 
         if pregunta.tipo == "texto":
 
@@ -213,6 +226,7 @@ def responder_tarea(request, tarea_id):
             ).strip()
 
             if not respuesta_texto:
+
                 messages.error(
                     request,
                     "Debes escribir una respuesta."
@@ -225,6 +239,10 @@ def responder_tarea(request, tarea_id):
 
             respuesta.respuesta_texto = respuesta_texto
 
+        # =================================================
+        # PREGUNTA DE OPCIÓN
+        # =================================================
+
         elif pregunta.tipo == "opcion":
 
             opcion_id = request.POST.get(
@@ -232,6 +250,7 @@ def responder_tarea(request, tarea_id):
             )
 
             if not opcion_id:
+
                 messages.error(
                     request,
                     "Debes seleccionar una opción."
@@ -250,21 +269,25 @@ def responder_tarea(request, tarea_id):
 
             respuesta.opcion_seleccionada = opcion
 
-            # Las preguntas de opción se pueden
-            # calificar automáticamente.
+            # Calificación automática
             respuesta.es_correcta = opcion.es_correcta
-            respuesta.nota_obtenida = (
-                pregunta.puntaje
-                if opcion.es_correcta
-                else 0
-            )
+
+            if opcion.es_correcta:
+                respuesta.nota_obtenida = pregunta.puntaje
+            else:
+                respuesta.nota_obtenida = 0
+
             respuesta.calificada = True
+
+        # =================================================
+        # GUARDAR RESPUESTA
+        # =================================================
 
         respuesta.save()
 
         messages.success(
             request,
-            "Respuesta enviada correctamente."
+            "✓ Respuesta enviada correctamente."
         )
 
         return redirect(
@@ -273,22 +296,44 @@ def responder_tarea(request, tarea_id):
         )
 
     # =====================================================
-    # PREPARAR LAS PREGUNTAS CON SU RESPUESTA
+    # OBTENER RESPUESTAS DEL ALUMNO
+    # =====================================================
+
+    respuestas_alumno = RespuestaAlumno.objects.filter(
+        alumno=request.user,
+        pregunta__in=preguntas
+    ).select_related(
+        "pregunta",
+        "opcion_seleccionada"
+    )
+
+    # Crear un diccionario:
+    # {id_pregunta: respuesta}
+    respuestas_por_pregunta = {
+        respuesta.pregunta_id: respuesta
+        for respuesta in respuestas_alumno
+    }
+
+    # =====================================================
+    # PREPARAR DATOS PARA EL TEMPLATE
     # =====================================================
 
     preguntas_data = []
 
     for pregunta in preguntas:
 
-        respuesta = RespuestaAlumno.objects.filter(
-            alumno=request.user,
-            pregunta=pregunta
-        ).first()
+        respuesta = respuestas_por_pregunta.get(
+            pregunta.id
+        )
 
         preguntas_data.append({
             "pregunta": pregunta,
             "respuesta": respuesta,
         })
+
+    # =====================================================
+    # MOSTRAR PÁGINA
+    # =====================================================
 
     return render(
         request,
@@ -299,6 +344,8 @@ def responder_tarea(request, tarea_id):
             "preguntas": preguntas_data,
         }
     )
+
+
 
 def respuesta_alumnos(request, tarea_id):
 

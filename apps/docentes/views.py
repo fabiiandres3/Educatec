@@ -736,73 +736,67 @@ def listar_tareas(request):
         usuario=request.user
     )
 
-    # Tareas del curso del docente
     if docente.curso:
 
         tareas = Tareas.objects.filter(
             curso=docente.curso
         ).order_by("-fecha_creacion")
 
+        # Total de estudiantes inscritos en el curso
+        total_alumnos = Alumnos.objects.filter(
+            curso=docente.curso
+        ).count()
+
+        # Calcular entregas de cada tarea
+        for tarea in tareas:
+
+            tarea.total_alumnos = total_alumnos
+
+            tarea.entregas = (
+                RespuestaAlumno.objects
+                .filter(pregunta__tarea=tarea)
+                .values("alumno")
+                .distinct()
+                .count()
+            )
+
+            if total_alumnos > 0:
+                tarea.porcentaje_entrega = (
+                    tarea.entregas / total_alumnos
+                ) * 100
+            else:
+                tarea.porcentaje_entrega = 0
+
     else:
 
         tareas = Tareas.objects.none()
-
-
-    # Total de tareas
-    total_tareas = tareas.count()
-
-
-    # Total de alumnos del curso
-    if docente.curso:
-
-        total_alumnos = Alumnos.objects.filter(
-            curso=docente.curso,
-            activo=True
-        ).count()
-
-    else:
-
         total_alumnos = 0
 
+    total_tareas = tareas.count()
 
-    # Preparar información de cada tarea
-    for tarea in tareas:
+    tareas_activas = tareas.filter(
+        fecha_entrega__isnull=False
+    ).count()
 
-        # Alumnos que respondieron esta tarea
-        tarea.entregas = (
-            RespuestaAlumno.objects
-            .filter(
-                pregunta__tarea=tarea,
-                alumno__alumno__curso=docente.curso
-            )
-            .values("alumno")
-            .distinct()
-            .count()
-        )
-
-        tarea.total_alumnos = total_alumnos
-
-        if total_alumnos > 0:
-            tarea.porcentaje_entrega = int(
-                (tarea.entregas / total_alumnos) * 100
-            )
-        else:
-            tarea.porcentaje_entrega = 0
-
+    tareas_sin_fecha = tareas.filter(
+        fecha_entrega__isnull=True
+    ).count()
 
     context = {
-        "tareas": tareas,
         "docente": docente,
+        "tareas": tareas,
         "total_tareas": total_tareas,
+        "tareas_activas": tareas_activas,
+        "tareas_sin_fecha": tareas_sin_fecha,
         "total_alumnos": total_alumnos,
     }
-
 
     return render(
         request,
         "paneles/docentes/tareas/docente_tareas.html",
         context
     )
+    
 
 def respuesta_alumnos(request, tarea_id):
 
@@ -816,13 +810,24 @@ def respuesta_alumnos(request, tarea_id):
         id=tarea_id
     )
 
-    # Verificar que la tarea pertenece al curso del docente
+    # ==========================================
+    # VERIFICAR PERMISO
+    # ==========================================
+
     if docente.curso != tarea.curso:
+
         messages.error(
             request,
             "No tienes permiso para ver esta tarea."
         )
-        return redirect("listar_tareas_docentes")
+
+        return redirect(
+            "listar_tareas_docentes"
+        )
+
+    # ==========================================
+    # OBTENER ALUMNOS QUE RESPONDIERON
+    # ==========================================
 
     alumnos_ids = (
         RespuestaAlumno.objects
@@ -836,9 +841,16 @@ def respuesta_alumnos(request, tarea_id):
         .distinct()
     )
 
-    alumnos = Usuario.objects.filter(
-        id__in=alumnos_ids
+    alumnos = (
+        Usuario.objects
+        .filter(
+            id__in=alumnos_ids
+        )
     )
+
+    # ==========================================
+    # RENDERIZAR
+    # ==========================================
 
     return render(
         request,
@@ -848,6 +860,7 @@ def respuesta_alumnos(request, tarea_id):
             "alumnos": alumnos,
         }
     )
+
 
 def ver_respuestas(request, tarea_id, alumno_id):
 
@@ -862,15 +875,19 @@ def ver_respuestas(request, tarea_id, alumno_id):
     )
 
     # ==========================================
-    # VERIFICAR QUE EL DOCENTE TENGA PERMISO
+    # VERIFICAR PERMISO DEL DOCENTE
     # ==========================================
 
     if docente.curso != tarea.curso:
+
         messages.error(
             request,
-            "No tienes permiso para editar esta tarea."
+            "No tienes permiso para ver esta tarea."
         )
-        return redirect("listar_tareas_docentes")
+
+        return redirect(
+            "listar_tareas_docentes"
+        )
 
     # ==========================================
     # OBTENER ALUMNO
@@ -880,6 +897,154 @@ def ver_respuestas(request, tarea_id, alumno_id):
         Usuario,
         id=alumno_id
     )
+
+    # ==========================================
+    # GUARDAR EVALUACIÓN
+    # ==========================================
+
+    if request.method == "POST":
+
+        respuesta_id = request.POST.get(
+            "respuesta_id"
+        )
+
+        nota = request.POST.get(
+            "nota"
+        )
+
+        estado = request.POST.get(
+            "estado"
+        )
+
+        # ======================================
+        # OBTENER RESPUESTA
+        # ======================================
+
+        respuesta = get_object_or_404(
+            RespuestaAlumno,
+            id=respuesta_id,
+            alumno_id=alumno_id,
+            pregunta__tarea=tarea
+        )
+
+        # ======================================
+        # CONVERTIR NOTA
+        # ======================================
+
+        try:
+
+            nota = float(nota)
+
+        except (TypeError, ValueError):
+
+            nota = 0
+
+
+        # ======================================
+        # OBTENER PUNTAJE MÁXIMO
+        # ======================================
+
+        puntaje_maximo = float(
+            respuesta.pregunta.puntaje
+        )
+
+
+        # ======================================
+        # VALIDAR NOTA
+        # ======================================
+
+        if nota < 0:
+
+            nota = 0
+
+
+        if nota > puntaje_maximo:
+
+            nota = puntaje_maximo
+
+
+        # ======================================
+        # GUARDAR NOTA
+        # ======================================
+
+        respuesta.nota_obtenida = nota
+
+
+        # ======================================
+        # GUARDAR ESTADO
+        # ======================================
+
+        if estado == "pending":
+
+            respuesta.calificada = False
+
+            respuesta.es_correcta = False
+
+            respuesta.nota_obtenida = 0
+
+
+        elif estado == "correct":
+
+            respuesta.calificada = True
+
+            respuesta.es_correcta = True
+
+            respuesta.nota_obtenida = puntaje_maximo
+
+
+        elif estado == "incorrect":
+
+            respuesta.calificada = True
+
+            respuesta.es_correcta = False
+
+            respuesta.nota_obtenida = 0
+
+
+        elif estado == "partial":
+
+            respuesta.calificada = True
+
+            respuesta.es_correcta = False
+
+            # Conserva la nota que escribió el docente
+
+
+        else:
+
+            respuesta.calificada = True
+
+            respuesta.es_correcta = (
+                nota == puntaje_maximo
+            )
+
+
+        # ======================================
+        # GUARDAR EN BASE DE DATOS
+        # ======================================
+
+        respuesta.save()
+
+
+        # ======================================
+        # MENSAJE
+        # ======================================
+
+        messages.success(
+            request,
+            "Evaluación guardada correctamente."
+        )
+
+
+        # ======================================
+        # VOLVER AL LISTADO DE ALUMNOS
+        # ======================================
+
+        return redirect(
+            "respuesta_alumnos",
+            tarea_id=tarea.id
+        )
+
 
     # ==========================================
     # OBTENER RESPUESTAS DEL ALUMNO
@@ -904,8 +1069,9 @@ def ver_respuestas(request, tarea_id, alumno_id):
         )
     )
 
+
     # ==========================================
-    # OBTENER PREGUNTAS DE LA TAREA
+    # OBTENER PREGUNTAS
     # ==========================================
 
     preguntas = (
@@ -916,20 +1082,26 @@ def ver_respuestas(request, tarea_id, alumno_id):
         )
     )
 
+
     # ==========================================
     # CREAR DICCIONARIO DE RESPUESTAS
     # ==========================================
 
     respuestas_dict = {
+
         respuesta.pregunta_id: respuesta
+
         for respuesta in respuestas
+
     }
+
 
     # ==========================================
     # UNIR PREGUNTAS CON RESPUESTAS
     # ==========================================
 
     preguntas_respuestas = []
+
 
     for pregunta in preguntas:
 
@@ -938,43 +1110,73 @@ def ver_respuestas(request, tarea_id, alumno_id):
         )
 
         preguntas_respuestas.append({
+
             "pregunta": pregunta,
+
             "respuesta": respuesta,
+
         })
+
 
     # ==========================================
     # CALCULAR PUNTOS OBTENIDOS
     # ==========================================
 
     puntos_obtenidos = sum(
+
         respuesta.nota_obtenida
+
         for respuesta in respuestas
+
         if respuesta.calificada
+
     )
+
 
     # ==========================================
     # CALCULAR PUNTOS TOTALES
     # ==========================================
 
     puntos_totales = sum(
+
         pregunta.puntaje
+
         for pregunta in preguntas
+
     )
 
+
     # ==========================================
-    # RENDERIZAR TEMPLATE
+    # RENDERIZAR RESPUESTAS
     # ==========================================
 
     return render(
+
         request,
+
         "paneles/docentes/tareas/ver_respuesta.html",
+
         {
+
             "tarea": tarea,
+
             "alumno": alumno,
-            "preguntas_respuestas": preguntas_respuestas,
-            "puntos_obtenidos": puntos_obtenidos,
-            "puntos_totales": puntos_totales,
-            "total_preguntas": preguntas.count(),
-            "respuestas": respuestas,
+
+            "preguntas_respuestas":
+                preguntas_respuestas,
+
+            "puntos_obtenidos":
+                puntos_obtenidos,
+
+            "puntos_totales":
+                puntos_totales,
+
+            "total_preguntas":
+                preguntas.count(),
+
+            "respuestas":
+                respuestas,
+
         }
+
     )

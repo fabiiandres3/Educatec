@@ -327,14 +327,14 @@
 
 
                     <!-- =========================================
-                         CONTENIDO
+                         CONTENIDO DE LA PREGUNTA
                     ========================================== -->
 
                     <div class="question-content">
 
 
                         <!-- =====================================
-                             PREGUNTA DE OPCIÓN MÚLTIPLE
+                             OPCIONES DE RESPUESTA
                         ====================================== -->
 
                         {% if pregunta.tipo == "opcion" %}
@@ -397,7 +397,7 @@
 
 
                         <!-- =====================================
-                             RESPUESTA DEL ALUMNO
+                             RESPUESTA DEL ESTUDIANTE
                         ====================================== -->
 
                         <div class="student-answer">
@@ -557,6 +557,10 @@
 
 
 
+                            <!-- =================================
+                                 FORMULARIO
+                            ================================== -->
+
                             <form
                                 method="POST"
                                 action=""
@@ -572,12 +576,26 @@
                                 >
 
 
+                                <input
+                                    type="hidden"
+                                    name="estado"
+                                    value="{% if not respuesta.calificada %}pending{% elif respuesta.es_correcta %}correct{% else %}incorrect{% endif %}"
+                                >
+
+
+
+                                <!-- =================================
+                                     BOTONES DE EVALUACIÓN
+                                ================================== -->
+
                                 <div class="evaluation-options">
 
 
+                                    <!-- CORRECTA -->
+
                                     <button
                                         type="button"
-                                        class="evaluation-btn correct-btn"
+                                        class="evaluation-btn correct-btn {% if respuesta.calificada and respuesta.es_correcta %}selected{% endif %}"
                                         onclick="selectEvaluation(this, 'correct')"
                                     >
 
@@ -588,9 +606,12 @@
                                     </button>
 
 
+
+                                    <!-- INCORRECTA -->
+
                                     <button
                                         type="button"
-                                        class="evaluation-btn incorrect-btn"
+                                        class="evaluation-btn incorrect-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida == 0 %}selected{% endif %}"
                                         onclick="selectEvaluation(this, 'incorrect')"
                                     >
 
@@ -601,9 +622,12 @@
                                     </button>
 
 
+
+                                    <!-- PARCIAL -->
+
                                     <button
                                         type="button"
-                                        class="evaluation-btn partial-btn"
+                                        class="evaluation-btn partial-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida > 0 %}selected{% endif %}"
                                         onclick="selectEvaluation(this, 'partial')"
                                     >
 
@@ -614,9 +638,12 @@
                                     </button>
 
 
+
+                                    <!-- PENDIENTE -->
+
                                     <button
                                         type="button"
-                                        class="evaluation-btn pending-btn"
+                                        class="evaluation-btn pending-btn {% if not respuesta.calificada %}selected{% endif %}"
                                         onclick="selectEvaluation(this, 'pending')"
                                     >
 
@@ -626,9 +653,14 @@
 
                                     </button>
 
+
                                 </div>
 
 
+
+                                <!-- =================================
+                                     PUNTOS Y ESTADO
+                                ================================== -->
 
                                 <div class="evaluation-row">
 
@@ -678,19 +710,28 @@
 
                                         <strong class="current-status">
 
-                                            {% if respuesta.calificada %}
 
-                                                {% if respuesta.es_correcta %}
-                                                    Correcta
-                                                {% else %}
-                                                    Incorrecta
-                                                {% endif %}
-
-                                            {% else %}
+                                            {% if not respuesta.calificada %}
 
                                                 Pendiente
 
+
+                                            {% elif respuesta.es_correcta %}
+
+                                                Correcta
+
+
+                                            {% elif respuesta.nota_obtenida > 0 %}
+
+                                                Parcial
+
+
+                                            {% else %}
+
+                                                Incorrecta
+
                                             {% endif %}
+
 
                                         </strong>
 
@@ -699,6 +740,10 @@
                                 </div>
 
 
+
+                                <!-- =================================
+                                     COMENTARIO
+                                ================================== -->
 
                                 <div class="teacher-comment">
 
@@ -716,6 +761,10 @@
                                 </div>
 
 
+
+                                <!-- =================================
+                                     GUARDAR
+                                ================================== -->
 
                                 <div class="evaluation-save">
 
@@ -866,19 +915,28 @@ function selectEvaluation(button, type) {
     const evaluationArea =
         button.closest(".evaluation-area");
 
+
     const buttons =
         evaluationArea.querySelectorAll(
             ".evaluation-btn"
         );
+
 
     const status =
         evaluationArea.querySelector(
             ".current-status"
         );
 
+
     const pointsInput =
         evaluationArea.querySelector(
             ".points-input input"
+        );
+
+
+    const stateInput =
+        evaluationArea.querySelector(
+            'input[name="estado"]'
         );
 
 
@@ -894,24 +952,37 @@ function selectEvaluation(button, type) {
 
 
     /*
-     * Seleccionar botón
+     * Seleccionar botón actual
      */
 
     button.classList.add("selected");
 
 
     /*
-     * Cambiar estado
+     * Guardar estado
+     * que será enviado a Django
+     */
+
+    stateInput.value = type;
+
+
+    /*
+     * CORRECTA
      */
 
     if (type === "correct") {
 
         status.textContent = "Correcta";
 
-        pointsInput.value = pointsInput.max;
+        pointsInput.value =
+            pointsInput.max;
 
     }
 
+
+    /*
+     * INCORRECTA
+     */
 
     else if (type === "incorrect") {
 
@@ -922,16 +993,25 @@ function selectEvaluation(button, type) {
     }
 
 
+    /*
+     * PARCIAL
+     */
+
     else if (type === "partial") {
 
         status.textContent = "Parcial";
 
         pointsInput.value =
-            (parseFloat(pointsInput.max) / 2)
-            .toFixed(1);
+            (
+                parseFloat(pointsInput.max) / 2
+            ).toFixed(2);
 
     }
 
+
+    /*
+     * PENDIENTE
+     */
 
     else if (type === "pending") {
 

@@ -90,23 +90,46 @@ class RespuestaCorrecta(models.Model):
 
 
 class RespuestaAlumno(models.Model):
-    alumno = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
-    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
-
-    respuesta_texto = models.TextField(blank=True, null=True)
-
-    opcion_seleccionada = models.ForeignKey(
-        OpcionesRespuesta, on_delete=models.CASCADE, blank=True, null=True
+    alumno = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE
     )
 
-    fecha_respuesta = models.DateTimeField(auto_now_add=True)
+    pregunta = models.ForeignKey(
+        Pregunta,
+        on_delete=models.CASCADE
+    )
 
-    es_correcta = models.BooleanField(default=False)
+    respuesta_texto = models.TextField(
+        blank=True,
+        null=True
+    )
 
-    nota_obtenida = models.DecimalField(max_digits=3, decimal_places=2, default=0)
-    calificada = models.BooleanField(default=False)
+    opcion_seleccionada = models.ForeignKey(
+        OpcionesRespuesta,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
 
+    fecha_respuesta = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    es_correcta = models.BooleanField(
+        default=False
+    )
+
+    nota_obtenida = models.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+        default=0
+    )
+
+    calificada = models.BooleanField(
+        default=False
+    )
 
 class Calificacion(models.Model):
     alumno = models.ForeignKey(Usuario, on_delete=models.CASCADE)
