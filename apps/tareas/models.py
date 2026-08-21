@@ -7,18 +7,51 @@ from apps.cursos.models import Cursos
 
 
 class Tareas(models.Model):
-    titulo = models.CharField(max_length=100)
-    descripcion = models.TextField(blank=True, null=True)
-    fecha_creacion = models.DateField(auto_now_add=True)
-    fecha_entrega = models.DateField(blank=True, null=True)
-    clase = models.ForeignKey(Clases, on_delete=models.SET_NULL, blank=True, null=True)
-    curso = models.ForeignKey(Cursos, on_delete=models.SET_NULL, blank=True, null=True)
+
+    titulo = models.CharField(
+        max_length=100
+    )
+
+    descripcion = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    fecha_creacion = models.DateField(
+        auto_now_add=True
+    )
+
+    fecha_entrega = models.DateField(
+        blank=True,
+        null=True
+    )
+
+    clase = models.ForeignKey(
+        Clases,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+
+    curso = models.ForeignKey(
+        Cursos,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+
+    activa = models.BooleanField(
+        default=True
+    )
 
     class Meta:
+
         verbose_name = "Tarea"
+
         verbose_name_plural = "Tareas"
 
     def __str__(self):
+
         return str(self.titulo)
 
 

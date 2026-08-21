@@ -42,4 +42,10 @@ urlpatterns = [
         views.ver_respuestas,
         name="ver_respuestas",
     ),
+
+    path(
+        "tareas/<int:tarea_id>/habilitar-deshabilitar/",
+        views.habilitar_deshabilitar_tarea,
+        name="habilitar_deshabilitar_tarea"
+    ),
 ]

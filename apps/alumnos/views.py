@@ -136,36 +136,65 @@ def listar_tareas_alumno(request):
     curso = alumno.curso
 
     if not curso:
-        messages.error(
-            request,
-            "No tienes un curso asignado."
-        )
 
-        return redirect("dashboard_alumnos")
+        return render(
+            request,
+            "paneles/alumnos/tareas/listar_tareas.html",
+            {
+                "tareas": [],
+                "curso": None,
+            }
+        )
 
     tareas = (
         Tareas.objects
-        .filter(curso=curso)
-        .select_related("curso", "clase")
-        .order_by("-fecha_creacion")
+        .filter(
+            curso=curso,
+            activa=True
+        )
+        .prefetch_related(
+            "preguntas"
+        )
+        .order_by(
+            "-fecha_creacion"
+        )
     )
 
     return render(
         request,
         "paneles/alumnos/tareas/listar_tareas_alumno.html",
         {
-            "alumno": alumno,
-            "curso": curso,
             "tareas": tareas,
+            "curso": curso,
         }
     )
 
 
 def responder_tarea(request, tarea_id):
+
     tarea = get_object_or_404(
         Tareas,
         id=tarea_id
     )
+
+    # =====================================================
+    # VERIFICAR SI LA TAREA ESTÁ HABILITADA
+    # =====================================================
+
+    if not tarea.activa:
+
+        messages.error(
+            request,
+            "Esta tarea está actualmente deshabilitada."
+        )
+
+        return redirect(
+            "listar_tareas_alumno"
+        )
+
+    # =====================================================
+    # OBTENER ALUMNO
+    # =====================================================
 
     alumno = get_object_or_404(
         Alumnos,
@@ -182,7 +211,9 @@ def responder_tarea(request, tarea_id):
 
     if request.method == "POST":
 
-        pregunta_id = request.POST.get("pregunta_id")
+        pregunta_id = request.POST.get(
+            "pregunta_id"
+        )
 
         pregunta = get_object_or_404(
             Pregunta,
@@ -190,11 +221,18 @@ def responder_tarea(request, tarea_id):
             tarea=tarea
         )
 
-        # Verificar si ya respondió
-        respuesta_existente = RespuestaAlumno.objects.filter(
-            alumno=request.user,
-            pregunta=pregunta
-        ).first()
+        # =================================================
+        # VERIFICAR SI YA RESPONDIÓ
+        # =================================================
+
+        respuesta_existente = (
+            RespuestaAlumno.objects
+            .filter(
+                alumno=request.user,
+                pregunta=pregunta
+            )
+            .first()
+        )
 
         if respuesta_existente:
 
@@ -208,7 +246,10 @@ def responder_tarea(request, tarea_id):
                 tarea_id=tarea.id
             )
 
-        # Crear la respuesta
+        # =================================================
+        # CREAR RESPUESTA
+        # =================================================
+
         respuesta = RespuestaAlumno(
             alumno=request.user,
             pregunta=pregunta
@@ -240,7 +281,7 @@ def responder_tarea(request, tarea_id):
             respuesta.respuesta_texto = respuesta_texto
 
         # =================================================
-        # PREGUNTA DE OPCIÓN
+        # PREGUNTA DE OPCIÓN MÚLTIPLE
         # =================================================
 
         elif pregunta.tipo == "opcion":
@@ -269,12 +310,18 @@ def responder_tarea(request, tarea_id):
 
             respuesta.opcion_seleccionada = opcion
 
-            # Calificación automática
+            # =============================================
+            # CALIFICACIÓN AUTOMÁTICA
+            # =============================================
+
             respuesta.es_correcta = opcion.es_correcta
 
             if opcion.es_correcta:
+
                 respuesta.nota_obtenida = pregunta.puntaje
+
             else:
+
                 respuesta.nota_obtenida = 0
 
             respuesta.calificada = True
@@ -299,16 +346,22 @@ def responder_tarea(request, tarea_id):
     # OBTENER RESPUESTAS DEL ALUMNO
     # =====================================================
 
-    respuestas_alumno = RespuestaAlumno.objects.filter(
-        alumno=request.user,
-        pregunta__in=preguntas
-    ).select_related(
-        "pregunta",
-        "opcion_seleccionada"
+    respuestas_alumno = (
+        RespuestaAlumno.objects
+        .filter(
+            alumno=request.user,
+            pregunta__in=preguntas
+        )
+        .select_related(
+            "pregunta",
+            "opcion_seleccionada"
+        )
     )
 
-    # Crear un diccionario:
-    # {id_pregunta: respuesta}
+    # =====================================================
+    # CREAR DICCIONARIO DE RESPUESTAS
+    # =====================================================
+
     respuestas_por_pregunta = {
         respuesta.pregunta_id: respuesta
         for respuesta in respuestas_alumno

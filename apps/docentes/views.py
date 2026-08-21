@@ -1180,3 +1180,61 @@ def ver_respuestas(request, tarea_id, alumno_id):
         }
 
     )
+
+
+def habilitar_deshabilitar_tarea(request, tarea_id):
+
+    docente = get_object_or_404(
+        Docente,
+        usuario=request.user
+    )
+
+    tarea = get_object_or_404(
+        Tareas,
+        id=tarea_id
+    )
+
+    # ==========================================
+    # VERIFICAR PERMISO
+    # ==========================================
+
+    if docente.curso != tarea.curso:
+
+        messages.error(
+            request,
+            "No tienes permiso para modificar esta tarea."
+        )
+
+        return redirect(
+            "listar_tareas_docentes"
+        )
+
+    # ==========================================
+    # SOLO POST
+    # ==========================================
+
+    if request.method == "POST":
+
+        tarea.activa = not tarea.activa
+
+        tarea.save(
+            update_fields=["activa"]
+        )
+
+        if tarea.activa:
+
+            messages.success(
+                request,
+                "La tarea ha sido habilitada."
+            )
+
+        else:
+
+            messages.success(
+                request,
+                "La tarea ha sido deshabilitada."
+            )
+
+    return redirect(
+        "listar_tareas_docentes"
+    )

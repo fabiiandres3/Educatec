@@ -263,7 +263,7 @@
 
                     <!-- ESTADO -->
 
-                    {% if tarea.fecha_entrega %}
+                    {% if tarea.activa %}
 
                         <span class="task-status status-active">
                             Activa
@@ -271,8 +271,8 @@
 
                     {% else %}
 
-                        <span class="task-status status-active">
-                            Sin fecha
+                        <span class="task-status status-finished">
+                            Deshabilitada
                         </span>
 
                     {% endif %}
@@ -408,10 +408,25 @@
                 <!-- ELIMINAR -->
                 <form
                     method="POST"
-                    action="{% url 'eliminar_tarea_docente' tarea.id %}"
-                    onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');"
+                    action="{% url 'habilitar_deshabilitar_tarea' tarea.id %}"
                     style="margin: 0;"
                 >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="action-btn {% if tarea.activa %}danger{% else %}success{% endif %}"
+                        data-tooltip="{% if tarea.activa %}Deshabilitar tarea{% else %}Habilitar tarea{% endif %}"
+                    >
+
+                        <i
+                            class="fa-solid fa-power-off"
+                        ></i>
+
+                    </button>
+
+                </form>
                     {% csrf_token %}
 
                     <button
