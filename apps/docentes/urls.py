@@ -48,4 +48,16 @@ urlpatterns = [
         views.habilitar_deshabilitar_tarea,
         name="habilitar_deshabilitar_tarea"
     ),
+
+    path(
+        "tareas/<int:tarea_id>/alumno/<int:alumno_id>/habilitar/",
+        views.habilitar_deshabilitar_tarea_alumno,
+        name="habilitar_deshabilitar_tarea_alumno"
+    ),
+
+    path(
+        "repetir_tarea_alumno/<int:tarea_id>/<int:alumno_id>/",
+        views.repetir_tarea_alumno,
+        name="repetir_tarea_alumno",
+    ),
 ]

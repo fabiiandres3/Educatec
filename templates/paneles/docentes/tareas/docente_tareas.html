@@ -236,24 +236,17 @@
                     <div>
 
                         <h3>
-
                             {{ tarea.titulo }}
-
                         </h3>
-
 
                         <span class="task-course">
 
                             <i class="fa-solid fa-school"></i>
 
                             {% if tarea.curso %}
-
                                 {{ tarea.curso.nombre }}
-
                             {% else %}
-
                                 Sin curso
-
                             {% endif %}
 
                         </span>
@@ -265,18 +258,17 @@
 
                     {% if tarea.activa %}
 
-                        <span class="task-status status-active">
+                        <span class="task-status active">
                             Activa
                         </span>
 
                     {% else %}
 
-                        <span class="task-status status-finished">
+                        <span class="task-status inactive">
                             Deshabilitada
                         </span>
 
                     {% endif %}
-
 
                 </div>
 

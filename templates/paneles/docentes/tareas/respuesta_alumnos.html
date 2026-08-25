@@ -313,6 +313,33 @@
             justify-content: center;
         }
     }
+
+    .student-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-refresh {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.btn-refresh:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+}
 </style>
 
 
@@ -428,84 +455,88 @@
 
         <div class="students-grid">
 
-            {% for alumno in alumnos %}
+            {% for alumno_data in alumnos %}
 
-                <div class="student-card">
+                {% with estudiante=alumno_data.alumno %}
 
-                    <div class="student-top">
+                    <div class="student-card">
 
-                        <div class="student-info">
+                        <div class="student-top">
 
-                            <div class="student-avatar">
+                            <div class="student-info">
 
-                                {% if alumno.first_name %}
+                                <div class="student-avatar">
 
-                                    {{ alumno.first_name|first|upper }}
+                                    {% if estudiante.first_name %}
+                                        {{ estudiante.first_name|first|upper }}
+                                    {% else %}
+                                        {{ estudiante.username|first|upper }}
+                                    {% endif %}
 
-                                {% else %}
+                                </div>
 
-                                    {{ alumno.username|first|upper }}
+                                <div>
 
-                                {% endif %}
+                                    <h3 class="student-name">
+
+                                        {% if estudiante.get_full_name %}
+                                            {{ estudiante.get_full_name }}
+                                        {% else %}
+                                            {{ estudiante.username }}
+                                        {% endif %}
+
+                                    </h3>
+
+                                    <p class="student-email">
+                                        {{ estudiante.email }}
+                                    </p>
+
+                                </div>
 
                             </div>
 
+                            <span class="status">
+                                Respondió
+                            </span>
 
-                            <div>
+                        </div>
 
-                                <h3 class="student-name">
+                        <div class="student-footer">
 
-                                    {% if alumno.get_full_name %}
+                            <span class="answer-label">
+                                Respuestas disponibles
+                            </span>
 
-                                        {{ alumno.get_full_name }}
+                            <div class="student-actions">
 
-                                    {% else %}
+                                <a
+                                    href="{% url 'ver_respuestas' tarea.id estudiante.id %}"
+                                    class="btn-ver"
+                                >
+                                    Ver respuestas →
+                                </a>
 
-                                        {{ alumno.username }}
-
-                                    {% endif %}
-
-                                </h3>
-
-                                <p class="student-email">
-
-                                    {{ alumno.email }}
-
-                                </p>
+                                <a
+                                    href="{% url 'repetir_tarea_alumno' tarea.id estudiante.id %}"
+                                    class="btn-refresh"
+                                    onclick="return confirmarRepetir('{{ estudiante.get_full_name|default:estudiante.username|escapejs }}');"
+                                >
+                                    ↻ Repetir tarea
+                                </a>
 
                             </div>
 
                         </div>
 
-
-                        <span class="status">
-                            Respondió
-                        </span>
-
                     </div>
 
+                {% endwith %}
 
-                    <div class="student-footer">
+            {% empty %}
 
-                        <span class="answer-label">
-                            Respuestas disponibles
-                        </span>
+        <p>No hay alumnos que hayan respondido esta tarea.</p>
 
-
-                        <a
-                            href="{% url 'ver_respuestas' tarea.id alumno.id %}"
-                            class="btn-ver"
-                        >
-                            Ver respuestas →
-                        </a>
-
-                    </div>
-
-                </div>
-
-            {% endfor %}
-
-        </div>
+    {% endfor %}
 
     {% else %}
 

@@ -54,6 +54,33 @@ class Tareas(models.Model):
 
         return str(self.titulo)
 
+class TareaAlumno(models.Model):
+
+    tarea = models.ForeignKey(
+        Tareas,
+        on_delete=models.CASCADE,
+        related_name="alumnos_estado"
+    )
+
+    alumno = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        related_name="tareas_estado"
+    )
+
+    activa = models.BooleanField(
+        default=True
+    )
+
+    class Meta:
+        unique_together = (
+            "tarea",
+            "alumno"
+        )
+
+    def __str__(self):
+        return f"{self.tarea} - {self.alumno}"
+        
 
 class Video(models.Model):
     tarea = models.ForeignKey(Tareas, on_delete=models.CASCADE)

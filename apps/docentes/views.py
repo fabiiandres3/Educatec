@@ -5,7 +5,7 @@ from apps.user.models import Usuario
 from apps.user.forms import EditarUsuarioForm
 from apps.docentes.models import Docente
 from apps.docentes.forms import DocenteForm
-from apps.tareas.models import Tareas, RespuestaAlumno, Pregunta
+from apps.tareas.models import Tareas, TareaAlumno, RespuestaAlumno, Pregunta
 from apps.tareas.forms import TareasForm
 from apps.alumnos.models import Alumnos
 from apps.cursos.models import Cursos
@@ -810,10 +810,6 @@ def respuesta_alumnos(request, tarea_id):
         id=tarea_id
     )
 
-    # ==========================================
-    # VERIFICAR PERMISO
-    # ==========================================
-
     if docente.curso != tarea.curso:
 
         messages.error(
@@ -824,10 +820,6 @@ def respuesta_alumnos(request, tarea_id):
         return redirect(
             "listar_tareas_docentes"
         )
-
-    # ==========================================
-    # OBTENER ALUMNOS QUE RESPONDIERON
-    # ==========================================
 
     alumnos_ids = (
         RespuestaAlumno.objects
@@ -841,23 +833,51 @@ def respuesta_alumnos(request, tarea_id):
         .distinct()
     )
 
-    alumnos = (
-        Usuario.objects
-        .filter(
-            id__in=alumnos_ids
-        )
+    alumnos = Usuario.objects.filter(
+        id__in=alumnos_ids
     )
 
     # ==========================================
-    # RENDERIZAR
+    # ESTADO INDIVIDUAL DE CADA ALUMNO
     # ==========================================
+
+    estados = TareaAlumno.objects.filter(
+        tarea=tarea,
+        alumno_id__in=alumnos_ids
+    )
+
+    estados_dict = {
+        estado.alumno_id: estado
+        for estado in estados
+    }
+
+    alumnos_data = []
+
+    for alumno in alumnos:
+
+        estado = estados_dict.get(
+            alumno.id
+        )
+
+        # Si todavía no existe registro,
+        # consideramos la tarea habilitada.
+        activa = (
+            estado.activa
+            if estado
+            else True
+        )
+
+        alumnos_data.append({
+            "alumno": alumno,
+            "activa": activa,
+        })
 
     return render(
         request,
         "paneles/docentes/tareas/respuesta_alumnos.html",
         {
             "tarea": tarea,
-            "alumnos": alumnos,
+            "alumnos": alumnos_data,
         }
     )
 
@@ -1237,4 +1257,143 @@ def habilitar_deshabilitar_tarea(request, tarea_id):
 
     return redirect(
         "listar_tareas_docentes"
+    )
+
+
+def habilitar_deshabilitar_tarea_alumno(
+    request,
+    tarea_id,
+    alumno_id
+):
+
+    docente = get_object_or_404(
+        Docente,
+        usuario=request.user
+    )
+
+    tarea = get_object_or_404(
+        Tareas,
+        id=tarea_id
+    )
+
+    alumno = get_object_or_404(
+        Usuario,
+        id=alumno_id
+    )
+
+    # Verificar que el docente tenga acceso
+    if docente.curso != tarea.curso:
+
+        messages.error(
+            request,
+            "No tienes permiso para modificar esta tarea."
+        )
+
+        return redirect(
+            "listar_tareas_docentes"
+        )
+
+    # Obtener o crear el estado
+    tarea_alumno, creado = (
+        TareaAlumno.objects.get_or_create(
+            tarea=tarea,
+            alumno=alumno
+        )
+    )
+
+    # Cambiar estado
+    tarea_alumno.activa = not tarea_alumno.activa
+
+    tarea_alumno.save()
+
+    if tarea_alumno.activa:
+
+        messages.success(
+            request,
+            f"La tarea fue habilitada para {alumno.get_full_name() or alumno.username}."
+        )
+
+    else:
+
+        messages.success(
+            request,
+            f"La tarea fue deshabilitada para {alumno.get_full_name() or alumno.username}."
+        )
+
+    return redirect(
+        "respuesta_alumnos",
+        tarea_id=tarea.id
+    )
+
+
+def repetir_tarea_alumno(request, tarea_id, alumno_id):
+
+    docente = get_object_or_404(
+        Docente,
+        usuario=request.user
+    )
+
+    tarea = get_object_or_404(
+        Tareas,
+        id=tarea_id
+    )
+
+    alumno = get_object_or_404(
+        Usuario,
+        id=alumno_id
+    )
+
+    # ==========================================
+    # VERIFICAR PERMISO DEL DOCENTE
+    # ==========================================
+
+    if docente.curso != tarea.curso:
+
+        messages.error(
+            request,
+            "No tienes permiso para modificar esta tarea."
+        )
+
+        return redirect(
+            "listar_tareas_docentes"
+        )
+
+    # ==========================================
+    # ELIMINAR RESPUESTAS DEL ALUMNO
+    # SOLO PARA ESTA TAREA
+    # ==========================================
+
+    RespuestaAlumno.objects.filter(
+        alumno=alumno,
+        pregunta__tarea=tarea
+    ).delete()
+
+    # ==========================================
+    # REACTIVAR LA TAREA PARA EL ALUMNO
+    # ==========================================
+
+    tarea_alumno, created = TareaAlumno.objects.get_or_create(
+        tarea=tarea,
+        alumno=alumno
+    )
+
+    tarea_alumno.activa = True
+    tarea_alumno.save()
+
+    # ==========================================
+    # MENSAJE
+    # ==========================================
+
+    messages.success(
+        request,
+        f"La tarea fue reiniciada para {alumno.get_full_name() or alumno.username}."
+    )
+
+    # ==========================================
+    # VOLVER AL LISTADO
+    # ==========================================
+
+    return redirect(
+        "respuesta_alumnos",
+        tarea_id=tarea.id
     )
