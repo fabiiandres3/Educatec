@@ -568,3 +568,271 @@ def configuracion_alumnos(request):
         request,
         "paneles/alumnos/configuracion_alumnos.html"
     )
+
+
+
+# ============================================================
+#                    DASHBOARD ACUDIENTE
+# ============================================================
+
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+
+from apps.alumnos.models import (
+    Acudiente,
+    AcudienteAlumno,
+    Alumnos,
+)
+
+from apps.tareas.models import Calificacion
+from apps.asistencia.models import Asistencia
+
+
+# ============================================================
+#                    PANEL ACUDIENTE
+# ============================================================
+
+def dashboard_acudiente(request):
+
+    acudiente = get_object_or_404(
+        Acudiente.objects.select_related("usuario"),
+        usuario=request.user,
+        activo=True
+    )
+
+    relaciones = (
+        AcudienteAlumno.objects
+        .filter(
+            acudiente=acudiente,
+            autorizado=True,
+            alumno__activo=True
+        )
+        .select_related(
+            "alumno",
+            "alumno__usuario",
+            "alumno__curso",
+            "alumno__clase",
+        )
+        .order_by(
+            "alumno__usuario__first_name",
+            "alumno__usuario__last_name"
+        )
+    )
+
+    alumnos = []
+
+    for relacion in relaciones:
+
+        alumno = relacion.alumno
+
+        # -------------------------------------------------
+        # CALIFICACIONES
+        # -------------------------------------------------
+
+        calificaciones = (
+            Calificacion.objects
+            .filter(
+                alumno=alumno.usuario
+            )
+            .select_related("tarea")
+            .order_by("-id")
+        )
+
+        notas = [
+            float(cal.nota)
+            for cal in calificaciones
+            if cal.nota is not None
+        ]
+
+        promedio = (
+            round(
+                sum(notas) / len(notas),
+                2
+            )
+            if notas
+            else None
+        )
+
+        # -------------------------------------------------
+        # ASISTENCIA
+        # -------------------------------------------------
+
+        asistencias = Asistencia.objects.filter(
+            alumno=alumno
+        )
+
+        total_asistencias = asistencias.count()
+
+        presentes = asistencias.filter(
+            estado="P"
+        ).count()
+
+        porcentaje_asistencia = (
+
+            round(
+                (presentes / total_asistencias) * 100,
+                1
+            )
+
+            if total_asistencias > 0
+
+            else None
+        )
+
+        # -------------------------------------------------
+        # TAREAS
+        # -------------------------------------------------
+
+        tareas_pendientes = 0
+
+        if alumno.curso:
+
+            tareas_pendientes = alumno.curso.tareas_set.count()
+
+        # -------------------------------------------------
+        # DATOS PARA LA PLANTILLA
+        # -------------------------------------------------
+
+        alumno.promedio = promedio
+
+        alumno.porcentaje_asistencia = (
+            porcentaje_asistencia
+        )
+
+        alumno.tareas_pendientes = (
+            tareas_pendientes
+        )
+
+        alumno.parentesco = (
+            relacion.parentesco
+        )
+
+        alumnos.append(alumno)
+
+    return render(
+        request,
+        "paneles/acudientes/dashboard_acudiente.html",
+        {
+            "acudiente": acudiente,
+            "alumnos": alumnos,
+        }
+    )
+
+
+# ============================================================
+#                    DETALLE DEL ALUMNO
+# ============================================================
+
+def detalle_alumno_acudiente(
+    request,
+    alumno_id
+):
+
+    acudiente = get_object_or_404(
+        Acudiente,
+        usuario=request.user,
+        activo=True
+    )
+
+    relacion = get_object_or_404(
+        AcudienteAlumno.objects.select_related(
+            "alumno",
+            "alumno__usuario",
+            "alumno__curso",
+            "alumno__clase",
+        ),
+        acudiente=acudiente,
+        alumno_id=alumno_id,
+        autorizado=True
+    )
+
+    alumno = relacion.alumno
+
+    # -------------------------------------------------
+    # CALIFICACIONES
+    # -------------------------------------------------
+
+    calificaciones = (
+        Calificacion.objects
+        .filter(
+            alumno=alumno.usuario
+        )
+        .select_related(
+            "tarea",
+            "tarea__curso",
+            "tarea__clase",
+        )
+        .order_by("-id")
+    )
+
+    notas = [
+        float(cal.nota)
+        for cal in calificaciones
+        if cal.nota is not None
+    ]
+
+    promedio = (
+        round(
+            sum(notas) / len(notas),
+            2
+        )
+        if notas
+        else None
+    )
+
+    # -------------------------------------------------
+    # ASISTENCIA
+    # -------------------------------------------------
+
+    asistencias = (
+        Asistencia.objects
+        .filter(
+            alumno=alumno
+        )
+        .select_related("curso")
+        .order_by("-fecha")
+    )
+
+    total = asistencias.count()
+
+    presentes = asistencias.filter(
+        estado="P"
+    ).count()
+
+    tardanzas = asistencias.filter(
+        estado="T"
+    ).count()
+
+    ausentes = asistencias.filter(
+        estado="A"
+    ).count()
+
+    porcentaje_asistencia = (
+
+        round(
+            (presentes / total) * 100,
+            1
+        )
+
+        if total > 0
+
+        else None
+    )
+
+    return render(
+        request,
+        "paneles/acudientes/detalle_alumno.html",
+        {
+            "acudiente": acudiente,
+            "alumno": alumno,
+            "relacion": relacion,
+            "calificaciones": calificaciones,
+            "promedio": promedio,
+            "asistencias": asistencias,
+            "total_asistencias": total,
+            "presentes": presentes,
+            "tardanzas": tardanzas,
+            "ausentes": ausentes,
+            "porcentaje_asistencia": porcentaje_asistencia,
+        }
+    )

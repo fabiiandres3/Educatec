@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 
 
 # =========================================================
-# OBTENER EL PANEL SEGÚN EL ROL
+# OBTENER PANEL SEGÚN ROL
 # =========================================================
 
 def obtener_panel_por_rol(rol):
@@ -21,7 +21,11 @@ def obtener_panel_por_rol(rol):
 
     elif rol == "alumno":
 
-        return "dashboard_alumno"
+        return "dashboard_alumnos"
+
+    elif rol == "acudiente":
+
+        return "dashboard_acudiente"
 
     elif rol == "usuario":
 
@@ -31,7 +35,7 @@ def obtener_panel_por_rol(rol):
 
 
 # =========================================================
-# DECORADOR PARA PROTEGER VISTAS SEGÚN ROL
+# DECORADOR DE ROLES
 # =========================================================
 
 def rol_requerido(*roles_permitidos):
@@ -41,27 +45,25 @@ def rol_requerido(*roles_permitidos):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
 
-            # =================================================
-            # 1. USUARIO NO AUTENTICADO
-            # =================================================
+            # -------------------------------------------------
+            # NO AUTENTICADO
+            # -------------------------------------------------
 
             if not request.user.is_authenticated:
 
                 return redirect("login")
 
-
-            # =================================================
-            # 2. USUARIO SIN ROL
-            # =================================================
+            # -------------------------------------------------
+            # SIN ROL
+            # -------------------------------------------------
 
             if not request.user.rol:
 
                 return redirect("login")
 
-
-            # =================================================
-            # 3. OBTENER ROL DEL USUARIO
-            # =================================================
+            # -------------------------------------------------
+            # ROL ACTUAL
+            # -------------------------------------------------
 
             rol_usuario = (
                 request.user.rol.nombre
@@ -69,10 +71,9 @@ def rol_requerido(*roles_permitidos):
                 .strip()
             )
 
-
-            # =================================================
-            # 4. NORMALIZAR ROLES PERMITIDOS
-            # =================================================
+            # -------------------------------------------------
+            # ROLES PERMITIDOS
+            # -------------------------------------------------
 
             roles_normalizados = [
 
@@ -82,10 +83,9 @@ def rol_requerido(*roles_permitidos):
 
             ]
 
-
-            # =================================================
-            # 5. VERIFICAR SI TIENE PERMISO
-            # =================================================
+            # -------------------------------------------------
+            # PERMITIDO
+            # -------------------------------------------------
 
             if rol_usuario in roles_normalizados:
 
@@ -95,11 +95,9 @@ def rol_requerido(*roles_permitidos):
                     **kwargs
                 )
 
-
-            # =================================================
-            # 6. NO TIENE PERMISO
-            # ENVIAR A SU PROPIO PANEL
-            # =================================================
+            # -------------------------------------------------
+            # NO PERMITIDO
+            # -------------------------------------------------
 
             return redirect(
                 obtener_panel_por_rol(
@@ -107,8 +105,6 @@ def rol_requerido(*roles_permitidos):
                 )
             )
 
-
         return wrapper
-
 
     return decorador

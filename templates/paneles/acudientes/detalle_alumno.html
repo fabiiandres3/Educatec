@@ -1,0 +1,434 @@
+{% extends "paneles/acudientes/base.html" %}
+
+
+{% block title %}
+
+    {{ alumno.usuario.get_full_name }}
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="mb-4">
+
+    <a
+        href="{% url 'dashboard_acudiente' %}"
+        class="btn btn-outline-secondary"
+    >
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Volver
+
+    </a>
+
+</div>
+
+
+<div class="topbar">
+
+    <div class="d-flex align-items-center">
+
+        <div class="student-icon me-3">
+
+            <i class="fa-solid fa-user-graduate"></i>
+
+        </div>
+
+        <div>
+
+            <h2 class="mb-1">
+
+                {{ alumno.usuario.get_full_name }}
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Código:
+                {{ alumno.codigo|default:"Sin código" }}
+
+                |
+
+                {{ alumno.curso|default:"Sin curso" }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ESTADÍSTICAS
+====================================================== -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+
+        <div class="student-card text-center">
+
+            <i
+                class="fa-solid fa-star text-warning"
+                style="font-size:30px;"
+            ></i>
+
+            <h3 class="mt-3">
+
+                {{ promedio|default:"—" }}
+
+            </h3>
+
+            <p class="text-muted">
+
+                Promedio
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-3">
+
+        <div class="student-card text-center">
+
+            <i
+                class="fa-solid fa-user-check text-success"
+                style="font-size:30px;"
+            ></i>
+
+            <h3 class="mt-3">
+
+                {% if porcentaje_asistencia != None %}
+
+                    {{ porcentaje_asistencia }}%
+
+                {% else %}
+
+                    —
+
+                {% endif %}
+
+            </h3>
+
+            <p class="text-muted">
+
+                Asistencia
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-3">
+
+        <div class="student-card text-center">
+
+            <i
+                class="fa-solid fa-check text-success"
+                style="font-size:30px;"
+            ></i>
+
+            <h3 class="mt-3">
+
+                {{ presentes }}
+
+            </h3>
+
+            <p class="text-muted">
+
+                Presentes
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-3">
+
+        <div class="student-card text-center">
+
+            <i
+                class="fa-solid fa-xmark text-danger"
+                style="font-size:30px;"
+            ></i>
+
+            <h3 class="mt-3">
+
+                {{ ausentes }}
+
+            </h3>
+
+            <p class="text-muted">
+
+                Ausencias
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     INFORMACIÓN ACADÉMICA
+====================================================== -->
+
+<div class="row g-4">
+
+
+    <!-- CALIFICACIONES -->
+
+    <div class="col-lg-7">
+
+        <div class="student-card">
+
+            <h4 class="mb-4">
+
+                <i class="fa-solid fa-chart-column"></i>
+
+                Calificaciones
+
+            </h4>
+
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Tarea
+
+                            </th>
+
+                            <th>
+
+                                Curso
+
+                            </th>
+
+                            <th>
+
+                                Nota
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for calificacion in calificaciones %}
+
+                            <tr>
+
+                                <td>
+
+                                    {{ calificacion.tarea.titulo }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ calificacion.tarea.curso|default:"—" }}
+
+                                </td>
+
+                                <td>
+
+                                    <strong>
+
+                                        {{ calificacion.nota }}
+
+                                    </strong>
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="3"
+                                    class="text-center text-muted"
+                                >
+
+                                    No hay calificaciones registradas.
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ASISTENCIA -->
+
+    <div class="col-lg-5">
+
+        <div class="student-card">
+
+            <h4 class="mb-4">
+
+                <i class="fa-solid fa-calendar-check"></i>
+
+                Asistencia
+
+            </h4>
+
+
+            <div class="mb-3">
+
+                <strong>
+
+                    Presentes:
+
+                </strong>
+
+                {{ presentes }}
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <strong>
+
+                    Tardanzas:
+
+                </strong>
+
+                {{ tardanzas }}
+
+            </div>
+
+
+            <div class="mb-4">
+
+                <strong>
+
+                    Ausencias:
+
+                </strong>
+
+                {{ ausentes }}
+
+            </div>
+
+
+            <hr>
+
+
+            <h5>
+
+                Últimos registros
+
+            </h5>
+
+
+            <div class="table-responsive">
+
+                <table class="table table-sm">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Fecha
+
+                            </th>
+
+                            <th>
+
+                                Estado
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for asistencia in asistencias|slice:":10" %}
+
+                            <tr>
+
+                                <td>
+
+                                    {{ asistencia.fecha|date:"d/m/Y" }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ asistencia.get_estado_display }}
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="2"
+                                    class="text-center text-muted"
+                                >
+
+                                    No hay registros.
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

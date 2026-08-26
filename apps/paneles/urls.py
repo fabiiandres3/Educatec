@@ -90,5 +90,20 @@ urlpatterns = [
         views.configuracion_alumnos,
         name="configuracion_alumnos"
     ),
+        # =========================================================
+    # ACUDIENTE
+    # =========================================================
+
+    path(
+        "acudiente/",
+        views.dashboard_acudiente,
+        name="dashboard_acudiente"
+    ),
+
+    path(
+        "acudiente/alumno/<int:alumno_id>/",
+        views.detalle_alumno_acudiente,
+        name="detalle_alumno_acudiente"
+    ),
 
 ]

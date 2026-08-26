@@ -56,63 +56,90 @@ def secundaria(request):
 def redireccionar_por_rol(request):
 
     # -----------------------------------------------------
-    # Usuario no autenticado
+    # USUARIO NO AUTENTICADO
     # -----------------------------------------------------
 
     if not request.user.is_authenticated:
+
         return redirect("login")
 
     # -----------------------------------------------------
-    # Usuario sin rol
+    # USUARIO SIN ROL
     # -----------------------------------------------------
 
     if not request.user.rol:
+
         logout(request)
 
         return redirect("login")
 
     # -----------------------------------------------------
-    # Obtener rol
+    # OBTENER ROL
     # -----------------------------------------------------
 
-    rol = request.user.rol.nombre.lower().strip()
+    rol = (
+        request.user.rol.nombre
+        .lower()
+        .strip()
+    )
 
     # -----------------------------------------------------
-    # Administrador
+    # ADMINISTRADOR
     # -----------------------------------------------------
 
     if rol == "administrador":
-        return redirect("dashboard_administrador")
+
+        return redirect(
+            "dashboard_administrador"
+        )
 
     # -----------------------------------------------------
-    # Docente
+    # DOCENTE
     # -----------------------------------------------------
 
     elif rol == "docente":
-        return redirect("dashboard_docente")
+
+        return redirect(
+            "dashboard_docente"
+        )
 
     # -----------------------------------------------------
-    # Alumno
+    # ALUMNO
     # -----------------------------------------------------
 
     elif rol == "alumno":
-        return redirect("dashboard_alumnos")
+
+        return redirect(
+            "dashboard_alumnos"
+        )
 
     # -----------------------------------------------------
-    # Usuario normal
+    # ACUDIENTE
+    # -----------------------------------------------------
+
+    elif rol == "acudiente":
+
+        return redirect(
+            "dashboard_acudiente"
+        )
+
+    # -----------------------------------------------------
+    # USUARIO
     # -----------------------------------------------------
 
     elif rol == "usuario":
-        return redirect("verificacion")
+
+        return redirect(
+            "verificacion"
+        )
 
     # -----------------------------------------------------
-    # Rol desconocido
+    # ROL DESCONOCIDO
     # -----------------------------------------------------
 
     logout(request)
 
     return redirect("login")
-
 
 # =========================================================
 # REGISTRO DE USUARIO
