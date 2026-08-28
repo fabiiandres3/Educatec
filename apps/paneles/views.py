@@ -1,11 +1,13 @@
 from datetime import date, datetime
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 
 from apps.asistencia.models import Asistencia
-from apps.docentes.models import Docente
+from apps.docentes.models import Docente, AsignacionDocente, MAX_CURSOS_POR_DOCENTE
 from apps.eventos.models import Evento
 from apps.tareas.models import Calificacion
+from apps.alumnos.models import Acudiente, AcudienteAlumno, Alumnos
 
 from .selectors import (
     obtener_tareas_docente,
@@ -15,7 +17,6 @@ from .selectors import (
     obtener_materias,
     obtener_alumnos_por_curso,
 )
-
 
 # ============================================================
 #                    DASHBOARD DOCENTE
@@ -35,6 +36,17 @@ def dashboard_docente(request):
     )
 
     # --------------------------------------------------------
+    # ASIGNACIONES DEL DOCENTE
+    # --------------------------------------------------------
+
+    asignaciones = AsignacionDocente.objects.filter(
+        docente=docente
+    ).select_related(
+        "clase",
+        "clase__curso"
+    )
+
+    # --------------------------------------------------------
     # EVENTOS PARA DOCENTES
     # --------------------------------------------------------
 
@@ -47,44 +59,40 @@ def dashboard_docente(request):
     )
 
     # --------------------------------------------------------
-    # CURSOS
+    # TOTAL DE ALUMNOS (suma de todos los cursos asignados)
     # --------------------------------------------------------
 
-    cursos = obtener_cursos()
+    cursos_ids = set()
 
-    # --------------------------------------------------------
-    # TOTAL DE ALUMNOS
-    # --------------------------------------------------------
+    for asignacion in asignaciones:
+        if asignacion.clase and asignacion.clase.curso:
+            cursos_ids.add(asignacion.clase.curso.id)
 
     total_alumnoss = 0
 
-    if docente.curso:
-        total_alumnoss = contar_alumnos_curso(
-            docente.curso.id
-        )
+    for curso_id in cursos_ids:
+        total_alumnoss += contar_alumnos_curso(curso_id)
 
     # --------------------------------------------------------
-    # TAREAS RECIENTES
+    # TAREAS RECIENTES (de todas las asignaciones)
     # --------------------------------------------------------
 
     tareas_recientes = []
 
-    if docente.curso and docente.clase:
+    for asignacion in asignaciones:
 
-        tareas_recientes = list(
-            obtener_tareas_docente(
-                docente.clase.id,
-                docente.curso.id
+        if asignacion.clase and asignacion.clase.curso:
+
+            tareas_recientes += list(
+                obtener_tareas_docente(
+                    asignacion.clase.id,
+                    asignacion.clase.curso.id
+                )
             )
-        )[:5]
+
+    tareas_recientes = tareas_recientes[:5]
 
     total_tareas = len(tareas_recientes)
-
-    # --------------------------------------------------------
-    # MATERIAS
-    # --------------------------------------------------------
-
-    materias = obtener_materias()
 
     # --------------------------------------------------------
     # ESTADÍSTICAS
@@ -102,12 +110,11 @@ def dashboard_docente(request):
         "paneles/docentes/dashboard_docente.html",
         {
             "docente": docente,
+            "asignaciones": asignaciones,
             "eventos": eventos,
-            "cursos": cursos,
             "total_alumnoss": total_alumnoss,
             "total_tareas": total_tareas,
             "tareas_recientes": tareas_recientes,
-            "materias": materias,
             "porcentaje_asistencia": porcentaje_asistencia,
             "promedio": promedio,
         }
@@ -150,18 +157,35 @@ def cursos_docente(request):
         usuario=request.user
     )
 
+    asignaciones = AsignacionDocente.objects.filter(
+        docente=docente
+    ).select_related(
+        "clase",
+        "clase__curso"
+    )
+
     total_alumnos = 0
 
-    if docente.curso:
-        total_alumnos = contar_alumnos_curso(
-            docente.curso.id
-        )
+    for asignacion in asignaciones:
+
+        if asignacion.clase and asignacion.clase.curso:
+
+            asignacion.total_alumno = contar_alumnos_curso(
+                asignacion.clase.curso.id
+            )
+
+            total_alumnos += asignacion.total_alumno
+
+        else:
+
+            asignacion.total_alumno = 0
 
     return render(
         request,
         "paneles/docentes/cursos_docente.html",
         {
             "docente": docente,
+            "asignaciones": asignaciones,
             "total_alumnos": total_alumnos,
         }
     )
@@ -180,6 +204,47 @@ def calificaciones_docente(request):
         usuario=request.user
     )
 
+    # --------------------------------------------------------
+    # ASIGNACIONES DEL DOCENTE
+    # --------------------------------------------------------
+
+    asignaciones = AsignacionDocente.objects.filter(
+        docente=docente
+    ).select_related(
+        "clase",
+        "clase__curso"
+    )
+
+    # --------------------------------------------------------
+    # ASIGNACIÓN SELECCIONADA
+    # --------------------------------------------------------
+
+    asignacion_id = request.GET.get("asignacion")
+
+    asignacion_sel = None
+
+    if asignacion_id:
+
+        asignacion_sel = asignaciones.filter(
+            id=asignacion_id
+        ).first()
+
+    if not asignacion_sel:
+
+        asignacion_sel = asignaciones.first()
+
+    curso_actual = (
+        asignacion_sel.clase.curso
+        if asignacion_sel
+        else None
+    )
+
+    clase_actual = (
+        asignacion_sel.clase
+        if asignacion_sel
+        else None
+    )
+
     alumnos = []
     tareas = []
 
@@ -187,12 +252,12 @@ def calificaciones_docente(request):
     # TAREAS DEL DOCENTE
     # --------------------------------------------------------
 
-    if docente.curso and docente.clase:
+    if curso_actual and clase_actual:
 
         tareas = list(
             obtener_tareas_docente(
-                docente.clase.id,
-                docente.curso.id
+                clase_actual.id,
+                curso_actual.id
             )
         )
 
@@ -220,7 +285,7 @@ def calificaciones_docente(request):
         # ----------------------------------------------------
 
         alumnos_qs = obtener_alumnos_por_curso(
-            docente.curso.id
+            curso_actual.id
         )
 
         for alumno in alumnos_qs:
@@ -313,6 +378,10 @@ def calificaciones_docente(request):
         "paneles/docentes/calificaciones_docente.html",
         {
             "docente": docente,
+            "asignaciones": asignaciones,
+            "asignacion_sel": asignacion_sel,
+            "curso_actual": curso_actual,
+            "clase_actual": clase_actual,
             "alumnos": alumnos,
             "tareas": tareas,
             "total_notas": total_notas,
@@ -337,6 +406,41 @@ def asistencia_docente(request):
     )
 
     hoy = date.today()
+
+    # --------------------------------------------------------
+    # CURSOS ÚNICOS DEL DOCENTE (a partir de sus asignaciones)
+    # --------------------------------------------------------
+
+    asignaciones = AsignacionDocente.objects.filter(
+        docente=docente
+    ).select_related(
+        "clase",
+        "clase__curso"
+    )
+
+    cursos_dict = {}
+
+    for asignacion in asignaciones:
+        if asignacion.clase and asignacion.clase.curso:
+            cursos_dict[asignacion.clase.curso.id] = asignacion.clase.curso
+
+    cursos_docente = list(cursos_dict.values())
+
+    # --------------------------------------------------------
+    # CURSO SELECCIONADO
+    # --------------------------------------------------------
+
+    curso_id = request.GET.get("curso")
+
+    curso_sel = None
+
+    if curso_id:
+
+        curso_sel = cursos_dict.get(int(curso_id))
+
+    if not curso_sel and cursos_docente:
+
+        curso_sel = cursos_docente[0]
 
     # --------------------------------------------------------
     # FECHA SELECCIONADA
@@ -373,17 +477,17 @@ def asistencia_docente(request):
     ausentes = 0
 
     # --------------------------------------------------------
-    # ALUMNOS DEL CURSO
+    # ALUMNOS DEL CURSO SELECCIONADO
     # --------------------------------------------------------
 
-    if docente.curso:
+    if curso_sel:
 
         alumnos_qs = obtener_alumnos_por_curso(
-            docente.curso.id
+            curso_sel.id
         )
 
         registros = Asistencia.objects.filter(
-            curso=docente.curso,
+            curso=curso_sel,
             fecha=fecha_sel
         )
 
@@ -433,11 +537,12 @@ def asistencia_docente(request):
         "paneles/docentes/asistencia_docente.html",
         {
             "docente": docente,
+            "cursos_docente": cursos_docente,
             "hoy": hoy,
             "fecha_hoy": hoy,
             "fecha_sel": fecha_sel,
             "alumnos": alumnos,
-            "curso_sel": docente.curso,
+            "curso_sel": curso_sel,
             "total": total,
             "presentes": presentes,
             "tardanzas": tardanzas,
@@ -476,9 +581,96 @@ def guardar_asistencia(request):
 
 def configuracion_docente(request):
 
+    docente = Docente.objects.select_related(
+        "usuario",
+        "curso",
+        "clase"
+    ).get(
+        usuario=request.user
+    )
+
+    asignaciones = AsignacionDocente.objects.filter(
+        docente=docente
+    ).select_related(
+        "clase",
+        "clase__curso"
+    )
+
+    if request.method == "POST":
+
+        usuario = docente.usuario
+
+        nombre_completo = request.POST.get("nombre", "").strip()
+        correo = request.POST.get("correo", "").strip()
+        telefono = request.POST.get("telefono", "").strip()
+
+        partes = nombre_completo.split(" ", 1)
+        usuario.first_name = partes[0] if partes else ""
+        usuario.last_name = partes[1] if len(partes) > 1 else ""
+
+        if correo:
+            usuario.email = correo
+
+        usuario.save()
+
+        if telefono:
+
+            try:
+                docente.telefono = int(telefono)
+                docente.save()
+            except ValueError:
+                messages.error(request, "El teléfono debe contener solo números.")
+        else:
+            docente.telefono = None
+            docente.save()
+
+        messages.success(request, "Perfil actualizado correctamente.")
+
+        return redirect("configuracion_docente")
+
     return render(
         request,
-        "paneles/docentes/configuracion_docente.html"
+        "paneles/docentes/configuracion_docente.html",
+        {
+            "docente": docente,
+            "asignaciones": asignaciones,
+        }
+    )
+    
+# ============================================================
+#                    CARGA ACADÉMICA
+# ============================================================
+
+def carga_academica(request):
+
+    docentes = Docente.objects.select_related("usuario").all()
+
+    filas = []
+
+    for docente in docentes:
+
+        asignaciones = AsignacionDocente.objects.filter(
+            docente=docente
+        ).select_related(
+            "clase",
+            "clase__curso"
+        )
+
+        filas.append(
+            {
+                "docente": docente,
+                "asignaciones": asignaciones,
+                "total": asignaciones.count(),
+                "max": MAX_CURSOS_POR_DOCENTE,
+            }
+        )
+
+    return render(
+        request,
+        "paneles/docentes/carga_academica.html",
+        {
+            "filas": filas,
+        }
     )
 
 
@@ -823,16 +1015,6 @@ def detalle_alumno_acudiente(
         request,
         "paneles/acudientes/detalle_alumno.html",
         {
-            "acudiente": acudiente,
-            "alumno": alumno,
-            "relacion": relacion,
-            "calificaciones": calificaciones,
-            "promedio": promedio,
-            "asistencias": asistencias,
-            "total_asistencias": total,
-            "presentes": presentes,
-            "tardanzas": tardanzas,
-            "ausentes": ausentes,
-            "porcentaje_asistencia": porcentaje_asistencia,
+           
         }
     )

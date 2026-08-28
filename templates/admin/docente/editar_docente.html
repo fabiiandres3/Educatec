@@ -35,7 +35,7 @@
         </div>
         {% endfor %}
 
-        <button type="submit" class="btn btn-warning">
+        <button type="submit" name="guardar_docente" class="btn btn-warning">
             Actualizar
         </button>
 
@@ -45,6 +45,41 @@
 
     </form>
 
+    <hr class="my-4">
+
+<h4>Cursos / Materias Asignadas ({{ asignaciones|length }} / {{ max_asignaciones }})</h4>
+
+<ul class="list-group mb-3">
+    {% for a in asignaciones %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ a.clase.curso.nombre }} — {{ a.clase.titulo }}
+        <form method="post" action="{% url 'eliminar_asignacion_docente' docente_form.instance.usuario_id a.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">Quitar</button>
+        </form>
+    </li>
+    {% empty %}
+    <li class="list-group-item text-muted">Sin asignaciones todavía.</li>
+    {% endfor %}
+</ul>
+
+{% if asignaciones|length < max_asignaciones %}
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">{{ asignacion_form.clase.label }}</label>
+        {{ asignacion_form.clase }}
+        {% for error in asignacion_form.clase.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <button type="submit" name="agregar_asignacion" class="btn btn-success">
+        Agregar Asignación
+    </button>
+</form>
+{% else %}
+<p class="text-warning">Este docente ya alcanzó el máximo de {{ max_asignaciones }} asignaciones.</p>
+{% endif %}
 </div>
 
 {% endblock %}

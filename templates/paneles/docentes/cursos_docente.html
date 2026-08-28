@@ -27,7 +27,7 @@
 <div class="stats">
   <div class="stat-card">
     <div class="icon blue"><i class="fa-solid fa-school"></i></div>
-    <h3>{{ docente.curso|length|default:"0" }}</h3>
+    <h3>{{ asignaciones|length }}</h3>
     <p>Grados</p>
   </div>
   <div class="stat-card">
@@ -42,7 +42,7 @@
   </div>
   <div class="stat-card">
     <div class="icon purple"><i class="fa-solid fa-book"></i></div>
-    <h3>{{ docente.clase|length|default:"0" }}</h3>
+    <h3>{{ asignaciones|length }}</h3>
     <p>Materias</p>
   </div>
 </div>
@@ -59,29 +59,29 @@
       </tr>
     </thead>
     <tbody>
-      {% if docente.curso and docente.clase %}
+      {% for a in asignaciones %}
       <tr>
-        <td><strong>{{ docente.curso.nombre }}</strong></td>
-        <td>{{ total_alumnos }}</td>
+        <td><strong>{{ a.clase.curso.nombre }}</strong></td>
+        <td>{{ a.total_alumno }}</td>
         <td style="display:flex;gap:8px;">
-          <a href="{% url 'calificaciones_docente' %}?curso={{ docente.curso.id }}"
+          <a href="{% url 'calificaciones_docente' %}?asignacion={{ a.id }}"
              class="btn-save" style="font-size:13px;padding:7px 14px;">
             <i class="fa-solid fa-star-half-stroke"></i> Calificaciones
           </a>
-          <a href="{% url 'asistencia_docente' %}?curso={{ docente.curso.id }}"
+          <a href="{% url 'asistencia_docente' %}?curso={{ a.clase.curso.id }}"
              class="btn-save" style="font-size:13px;padding:7px 14px;">
             <i class="fa-solid fa-clipboard-check"></i> Asistencia
           </a>
         </td>
-        <td>{{ docente.clase.titulo }}</td>
+        <td>{{ a.clase.titulo }}</td>
       </tr>
-      {% else %}
+      {% empty %}
       <tr>
         <td colspan="4" style="text-align:center;color:#6b7280;padding:30px 0;">
           No hay grados asignados.
         </td>
       </tr>
-      {% endif %}
+      {% endfor %}
     </tbody>
   </table>
 </div>

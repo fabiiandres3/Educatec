@@ -31,13 +31,21 @@
     <div class="profile">
       <img src="https://i.pravatar.cc/120?img=3" alt="docente Avatar" class="profile-img">
       <div>
-        <strong>{{ docente.nombre }}</strong>
+        <strong>{{ docente.usuario.first_name }} {{ docente.usuario.last_name }}</strong>
         <small>docente</small>
       </div>
     </div>
   </div>
 </div>
 <br>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="section-card" style="border-left:4px solid {% if message.tags == 'success' %}#10b981{% else %}#ef4444{% endif %};">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
 
 <form method="POST">
   {% csrf_token %}
@@ -48,22 +56,22 @@
       <div class="config-group">
         <label>Nombre Completo</label>
         <input type="text" name="nombre" class="config-input"
-               value="{{ docente.nombre|default:'' }}">
+               value="{{ docente.usuario.first_name }} {{ docente.usuario.last_name }}">
       </div>
       <div class="config-group">
         <label>Correo Electrónico</label>
         <input type="email" name="correo" class="config-input"
-               value="{{ docente.correo|default:'' }}">
+               value="{{ docente.usuario.email|default:'' }}">
       </div>
       <div class="config-group">
         <label>Teléfono</label>
         <input type="text" name="telefono" class="config-input"
-               value="{{ docente.usuario.telefono|default:'' }}">
+               value="{{ docente.telefono|default:'' }}">
       </div>
       <div class="config-group">
         <label>Materias Asignadas</label>
         <input type="text" class="config-input" readonly
-               value="{% for m in materias %}{{ m.nombre }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+               value="{% for a in asignaciones %}{{ a.clase.titulo }}{% if not forloop.last %}, {% endif %}{% empty %}Sin materias asignadas{% endfor %}">
       </div>
     </div>
     <br>
@@ -90,8 +98,8 @@
 <div class="section-card">
   <h4>Grados Asignados</h4><br>
   <div class="grados">
-    {% for curso in cursos %}
-      <span class="grado">{{ curso.nombre }}</span>
+    {% for a in asignaciones %}
+      <span class="grado">{{ a.clase.curso.nombre }} — {{ a.clase.titulo }}</span>
     {% empty %}
       <p style="color:#6b7280;">No hay grados asignados.</p>
     {% endfor %}

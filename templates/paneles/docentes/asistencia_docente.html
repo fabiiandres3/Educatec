@@ -153,6 +153,22 @@
 
     <form method="GET" class="filtro-form" id="filtroForm">
         <div class="select-group">
+            <label for="selectCurso">Grado</label>
+            <div class="select-wrap">
+                <select name="curso" id="selectCurso" onchange="this.form.submit()">
+                    {% for c in cursos_docente %}
+                        <option value="{{ c.id }}" {% if curso_sel and c.id == curso_sel.id %}selected{% endif %}>
+                            {{ c.nombre }}
+                        </option>
+                    {% empty %}
+                        <option value="">Sin grados asignados</option>
+                    {% endfor %}
+                </select>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+        </div>
+
+        <div class="select-group">
             <label>Fecha</label>
             <div class="date-nav">
                 <button type="button" class="date-nav-btn" id="btnPrevDay" title="Día anterior">
@@ -239,7 +255,7 @@
 {% else %}
 <div class="section-card" style="text-align:center;color:#6b7280;padding:40px;">
     <i class="fa-solid fa-arrow-up" style="font-size:2rem;margin-bottom:10px;display:block;"></i>
-    Selecciona un grado para registrar la asistencia.
+    No tienes grados asignados todavía.
 </div>
 {% endif %}
 <script>

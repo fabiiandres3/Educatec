@@ -289,7 +289,7 @@
     <div class="welcome">
 
         <h2>
-            Bienvenido, {{ docente.nombre }}
+            Bienvenido, {{ docente.usuario.first_name }}
         </h2>
 
         <p>
@@ -323,7 +323,7 @@
             <div>
 
                 <strong>
-                    {{ docente.nombre }}
+                    {{ docente.usuario.first_name }} {{ docente.usuario.last_name }}
                 </strong>
 
                 <small>
@@ -440,13 +440,13 @@
 
     <div class="grados">
 
-        {% for curso in cursos %}
+        {% for a in asignaciones %}
 
             <button
                 type="button"
                 class="grado {% if forloop.first %}active{% endif %}"
             >
-                {{ curso.nombre }}
+                {{ a.clase.curso.nombre }} — {{ a.clase.titulo }}
             </button>
 
         {% empty %}
@@ -482,7 +482,7 @@
 
         <!-- BOTÓN VER TODOS -->
 
-        <a
+        
             href="{% url 'eventos_docente' %}"
             class="btn-ver-eventos"
         >
@@ -581,7 +581,7 @@
 
                                     🎥
 
-                                    <a
+                                    
                                         href="{{ evento.video }}"
                                         target="_blank"
                                         rel="noopener"
@@ -850,13 +850,13 @@
             <ul class="activities">
 
 
-                {% for materia in materias %}
+                {% for a in asignaciones %}
 
                     <li>
 
                         <i class="fa-solid fa-book"></i>
 
-                        {{ materia.nombre }}
+                        {{ a.clase.titulo }} ({{ a.clase.curso.nombre }})
 
                     </li>
 

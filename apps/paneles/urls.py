@@ -49,6 +49,12 @@ urlpatterns = [
         views.configuracion_docente,
         name="configuracion_docente"
     ),
+    
+        path(
+        "docente/carga-academica/",
+        views.carga_academica,
+        name="carga_academica"
+    ),
 
 
     # =========================================================

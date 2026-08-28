@@ -1,5 +1,5 @@
 from django import forms
-from apps.docentes.models import Docente
+from apps.docentes.models import Docente, AsignacionDocente
 
 
 class DocenteForm(forms.ModelForm):
@@ -11,3 +11,9 @@ class DocenteForm(forms.ModelForm):
             "curso",
             "clase"
         ]
+
+
+class AsignacionDocenteForm(forms.ModelForm):
+    class Meta:
+        model = AsignacionDocente
+        fields = ["clase"]

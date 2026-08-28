@@ -175,30 +175,16 @@
     <form method="GET" class="filtro-form" id="filtroForm">
 
         <div class="select-group">
-            <label for="selectCurso">Grado</label>
+            <label for="selectAsignacion">Grado — Materia</label>
             <div class="select-wrap">
-                <select name="curso" id="selectCurso">
-                    <option value="">Seleccionar grado</option>
-                    {% for curso in cursos %}
-                        <option value="{{ curso.id }}"
-                            {% if curso_sel and curso.id == curso_sel.id %}selected{% endif %}>
-                            {{ curso.nombre }}
+                <select name="asignacion" id="selectAsignacion" onchange="this.form.submit()">
+                    {% for a in asignaciones %}
+                        <option value="{{ a.id }}"
+                            {% if asignacion_sel and a.id == asignacion_sel.id %}selected{% endif %}>
+                            {{ a.clase.curso.nombre }} — {{ a.clase.titulo }}
                         </option>
-                    {% endfor %}
-                </select>
-                <i class="fa-solid fa-chevron-down"></i>
-            </div>
-        </div>
-
-        <div class="select-group">
-            <label for="selectMateria">Materia</label>
-            <div class="select-wrap">
-                <select name="materia" id="selectMateria">
-                    <option value="">Seleccionar materia</option>
-                    {% for clase in clases %}
-                        <option value="{{ clase.id }}">
-                            {{ clase.titulo }}
-                        </option>
+                    {% empty %}
+                        <option value="">Sin asignaciones</option>
                     {% endfor %}
                 </select>
                 <i class="fa-solid fa-chevron-down"></i>
@@ -208,10 +194,11 @@
         <button type="submit" class="btn-save">Ver Calificaciones</button>
     </form>
 </div>
-{% if docente.curso and docente.clase %}
+
+{% if curso_actual and clase_actual %}
 <div class="section-card">
     <div class="header-card">
-        <h4>{{ docente.curso.nombre }} — {{ docente.clase.titulo }}</h4>
+        <h4>{{ curso_actual.nombre }} — {{ clase_actual.titulo }}</h4>
     </div>
 
     {% if tareas %}
@@ -257,7 +244,7 @@
 {% else %}
 <div class="section-card" style="text-align:center;color:#6b7280;padding:40px;">
     <i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;margin-bottom:10px;display:block;"></i>
-    No tienes un grado y materia asignados todavía.
+    No tienes asignaciones de curso/materia todavía.
 </div>
 {% endif %}
 {% endblock %}

@@ -11,6 +11,12 @@ urlpatterns = [
         views.listar_tareas,
         name='listar_tareas_docentes'
     ),
+    
+    path(
+        'editar_docente/<int:docente_id>/eliminar_asignacion/<int:asignacion_id>/',
+         views.Eliminar_asignacion_docente, 
+         name='eliminar_asignacion_docente'
+         ),
 
     path(
         "crear_tarea_docente/",

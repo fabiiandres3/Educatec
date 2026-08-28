@@ -3,13 +3,14 @@ from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from apps.user.models import Usuario
 from apps.user.forms import EditarUsuarioForm
-from apps.docentes.models import Docente
-from apps.docentes.forms import DocenteForm
+from apps.docentes.models import Docente, AsignacionDocente, MAX_CURSOS_POR_DOCENTE
+from apps.docentes.forms import DocenteForm, AsignacionDocenteForm
 from apps.tareas.models import Tareas, TareaAlumno, RespuestaAlumno, Pregunta
 from apps.tareas.forms import TareasForm
 from apps.alumnos.models import Alumnos
 from apps.cursos.models import Cursos
 from apps.tareas.services import Crear_preguntas
+from django.core.exceptions import ValidationError
 
 #Administrador
 def Listar_docentes(request):
@@ -22,24 +23,68 @@ def Editar_docente(request, docente_id):
     docente = get_object_or_404(Docente, usuario_id=docente_id)
     usuario = docente.usuario
 
-    if request.method == "POST":
-        usuario_form = EditarUsuarioForm(request.POST, instance=usuario)
-        docente_form = DocenteForm(request.POST, instance=docente)
+    asignaciones = AsignacionDocente.objects.filter(docente=docente).select_related("clase", "clase__curso")
 
-        if usuario_form.is_valid() and docente_form.is_valid():
-            usuario_form.save()
-            docente_form.save()
-            return redirect("listar_docentes")
+    if request.method == "POST":
+
+        # ---- Guardar datos básicos del docente ----
+        if "guardar_docente" in request.POST:
+            usuario_form = EditarUsuarioForm(request.POST, instance=usuario)
+            docente_form = DocenteForm(request.POST, instance=docente)
+
+            if usuario_form.is_valid() and docente_form.is_valid():
+                usuario_form.save()
+                docente_form.save()
+                messages.success(request, "Datos del docente actualizados.")
+                return redirect("editar_docente", docente_id=docente_id)
+
+            asignacion_form = AsignacionDocenteForm()
+
+        # ---- Agregar nueva asignación ----
+        elif "agregar_asignacion" in request.POST:
+            usuario_form = EditarUsuarioForm(instance=usuario)
+            docente_form = DocenteForm(instance=docente)
+            asignacion_form = AsignacionDocenteForm(request.POST)
+
+            if asignacion_form.is_valid():
+                nueva = asignacion_form.save(commit=False)
+                nueva.docente = docente
+                try:
+                    nueva.save()
+                    messages.success(request, "Asignación agregada correctamente.")
+                    return redirect("editar_docente", docente_id=docente_id)
+                except ValidationError as e:
+                    messages.error(request, e.messages[0])
+        else:
+            usuario_form = EditarUsuarioForm(instance=usuario)
+            docente_form = DocenteForm(instance=docente)
+            asignacion_form = AsignacionDocenteForm()
+
     else:
         usuario_form = EditarUsuarioForm(instance=usuario)
         docente_form = DocenteForm(instance=docente)
+        asignacion_form = AsignacionDocenteForm()
 
-    return render(request,"admin/docente/editar_docente.html",
+    return render(request, "admin/docente/editar_docente.html",
         {
             "usuario_form": usuario_form,
             "docente_form": docente_form,
+            "asignacion_form": asignacion_form,
+            "asignaciones": asignaciones,
+            "max_asignaciones": MAX_CURSOS_POR_DOCENTE,
         },
     )
+
+
+def Eliminar_asignacion_docente(request, asignacion_id):
+    asignacion = get_object_or_404(AsignacionDocente, id=asignacion_id)
+    docente_id = asignacion.docente.usuario_id
+
+    if request.method == "POST":
+        asignacion.delete()
+        messages.success(request, "Asignación eliminada.")
+
+    return redirect("editar_docente", docente_id=docente_id)
 
 
 def Eliminar_docente(request, docente_id):
