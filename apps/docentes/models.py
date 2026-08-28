@@ -38,6 +38,10 @@ class AsignacionDocente(models.Model):
         verbose_name_plural = "Asignaciones de docentes"
 
     def clean(self):
+
+        if not self.docente_id:
+            return
+
         if not self.pk:
             total = AsignacionDocente.objects.filter(docente=self.docente).count()
             if total >= MAX_CURSOS_POR_DOCENTE:

@@ -53,13 +53,20 @@
     {% for a in asignaciones %}
     <li class="list-group-item d-flex justify-content-between align-items-center">
         {{ a.clase.curso.nombre }} — {{ a.clase.titulo }}
-        <form method="post" action="{% url 'eliminar_asignacion_docente' docente_form.instance.usuario_id a.id %}" style="display:inline;">
+
+        <form method="post"
+              action="{% url 'eliminar_asignacion_docente' a.id %}"
+              style="display:inline;">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-danger">Quitar</button>
+            <button type="submit" class="btn btn-sm btn-danger">
+                Quitar
+            </button>
         </form>
     </li>
     {% empty %}
-    <li class="list-group-item text-muted">Sin asignaciones todavía.</li>
+    <li class="list-group-item text-muted">
+        Sin asignaciones todavía.
+    </li>
     {% endfor %}
 </ul>
 
