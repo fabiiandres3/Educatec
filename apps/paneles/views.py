@@ -1,18 +1,15 @@
 import json
-
 from datetime import date, datetime
-
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import JsonResponse
-
-
 from datetime import date, datetime
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
 from apps.asistencia.models import Asistencia
+from apps.cursos.models import Cursos
 from apps.docentes.models import Docente, AsignacionDocente, MAX_CURSOS_POR_DOCENTE
 from apps.eventos.models import Evento
 from apps.tareas.models import Calificacion
@@ -25,6 +22,7 @@ from .selectors import (
     obtener_cursos,
     obtener_materias,
     obtener_alumnos_por_curso,
+    obtener_asistencia_por_curso_fecha,
 )
 
 # ============================================================
@@ -405,277 +403,133 @@ def calificaciones_docente(request):
 #                    ASISTENCIA DOCENTE
 # ============================================================
 
-from django.urls import path
-from . import views
 
+def asistencia_docente(request):
 
-urlpatterns = [
+    docente = Docente.objects.select_related(
+        "curso",
+        "clase"
+    ).get(
+        usuario=request.user
+    )
 
-    # =========================================================
-    # DOCENTE
-    # =========================================================
+    hoy = date.today()
 
-    path(
-        "docente/",
-        views.dashboard_docente,
-        name="dashboard_docente"
-    ),
+    asignaciones = AsignacionDocente.objects.filter(
+        docente=docente
+    ).select_related(
+        "clase",
+        "clase__curso"
+    )
 
-    path(
-        "docente/cursos/",
-        views.cursos_docente,
-        name="cursos_docente"
-    ),
+    cursos_dict = {}
 
-    path(
-        "docente/calificaciones/",
-        views.calificaciones_docente,
-        name="calificaciones_docente"
-    ),
+    for asignacion in asignaciones:
 
-    path(
-        "docente/asistencia/",
-        views.asistencia_docente,
-        name="asistencia_docente"
-    ),
+        if asignacion.clase and asignacion.clase.curso:
 
-    path(
-        "docente/asistencia/historial/",
-        views.historial_asistencia,
-        name="historial_asistencia"
-    ),
+            curso = asignacion.clase.curso
 
-    path(
-        "docente/asistencia/guardar/",
-        views.guardar_asistencia,
-        name="guardar_asistencia"
-    ),
+            cursos_dict[curso.id] = curso
 
-    path(
-    "asistencia/",
-    views.asistencia_docente,
-    name="asistencia_docente"
-),
+    cursos_docente = list(cursos_dict.values())
 
-path(
-    "asistencia/datos/",
-    views.obtener_datos_asistencia,
-    name="obtener_datos_asistencia"
-),
+    curso_id = request.GET.get("curso")
 
-path(
-    "asistencia/guardar/",
-    views.guardar_asistencia_ajax,
-    name="guardar_asistencia_ajax"
-),
+    curso_sel = None
 
-    path(
-        "docente/configuracion/",
-        views.configuracion_docente,
-        name="configuracion_docente"
-    ),
-    
-        path(
-        "docente/carga-academica/",
-        views.carga_academica,
-        name="carga_academica"
-    ),
+    if curso_id:
 
+        try:
+            curso_sel = cursos_dict.get(int(curso_id))
+        except (ValueError, TypeError):
+            curso_sel = None
 
-    # =========================================================
-    # ALUMNOS
-    # =========================================================
+    if not curso_sel and cursos_docente:
+        curso_sel = cursos_docente[0]
 
-    path(
-        "alumno/",
-        views.dashboard_alumnos,
-        name="dashboard_alumnos"
-    ),
+    fecha_str = request.GET.get("fecha")
 
-    path(
-        "alumno/materias/",
-        views.materias_alumnos,
-        name="materias_alumnos"
-    ),
+    if fecha_str:
 
-    path(
-        "alumno/calificaciones/",
-        views.calificaciones_alumnos,
-        name="calificaciones_alumnos"
-    ),
+        try:
+            fecha_sel = datetime.strptime(
+                fecha_str,
+                "%Y-%m-%d"
+            ).date()
 
-    path(
-        "alumno/asistencia/",
-        views.asistencia_alumnos,
-        name="asistencia_alumnos"
-    ),
+        except ValueError:
+            fecha_sel = hoy
 
-    path(
-        "alumno/logros/",
-        views.logros_alumnos,
-        name="logros_alumnos"
-    ),
+    else:
+        fecha_sel = hoy
 
-    path(
-        "alumno/configuracion/",
-        views.configuracion_alumnos,
-        name="configuracion_alumnos"
-    ),
-        # =========================================================
-    # ACUDIENTE
-    # =========================================================
+    alumnos = []
 
-    path(
-        "acudiente/",
-        views.dashboard_acudiente,
-        name="dashboard_acudiente"
-    ),
+    total = 0
+    presentes = 0
+    tardanzas = 0
+    ausentes = 0
 
-    path(
-        "acudiente/alumno/<int:alumno_id>/",
-        views.detalle_alumno_acudiente,
-        name="detalle_alumno_acudiente"
-    ),
+    if curso_sel:
 
-]
+        alumnos_qs = obtener_alumnos_por_curso(
+            curso_sel.id
+        )
 
+        registros = obtener_asistencia_por_curso_fecha(
+            curso_sel.id,
+            fecha_sel
+        )
 
-from django.urls import path
-from . import views
+        estado_map = {
+            registro.alumno_id: registro.estado
+            for registro in registros
+        }
 
+        for alumno in alumnos_qs:
 
-urlpatterns = [
+            alumno.estado_asistencia = estado_map.get(
+                alumno.id
+            )
 
-    # =========================================================
-    # DOCENTE
-    # =========================================================
+            alumnos.append(alumno)
 
-    path(
-        "docente/",
-        views.dashboard_docente,
-        name="dashboard_docente"
-    ),
+        total = len(alumnos)
 
-    path(
-        "docente/cursos/",
-        views.cursos_docente,
-        name="cursos_docente"
-    ),
+        presentes = sum(
+            1 for alumno in alumnos
+            if alumno.estado_asistencia == "P"
+        )
 
-    path(
-        "docente/calificaciones/",
-        views.calificaciones_docente,
-        name="calificaciones_docente"
-    ),
+        tardanzas = sum(
+            1 for alumno in alumnos
+            if alumno.estado_asistencia == "T"
+        )
 
-    path(
-        "docente/asistencia/",
-        views.asistencia_docente,
-        name="asistencia_docente"
-    ),
+        ausentes = sum(
+            1 for alumno in alumnos
+            if alumno.estado_asistencia == "A"
+        )
 
-    path(
-        "docente/asistencia/historial/",
-        views.historial_asistencia,
-        name="historial_asistencia"
-    ),
+    return render(
+        request,
+        "paneles/docentes/asistencia_docente.html",
+        {
+            "docente": docente,
+            "cursos_docente": cursos_docente,
+            "hoy": hoy,
+            "fecha_hoy": hoy,
+            "fecha_sel": fecha_sel,
+            "alumnos": alumnos,
+            "curso_sel": curso_sel,
+            "total": total,
+            "presentes": presentes,
+            "tardanzas": tardanzas,
+            "ausentes": ausentes,
+        }
+    )
 
-    path(
-        "docente/asistencia/guardar/",
-        views.guardar_asistencia,
-        name="guardar_asistencia"
-    ),
-
-    path(
-    "asistencia/",
-    views.asistencia_docente,
-    name="asistencia_docente"
-),
-
-path(
-    "asistencia/datos/",
-    views.obtener_datos_asistencia,
-    name="obtener_datos_asistencia"
-),
-
-path(
-    "asistencia/guardar/",
-    views.guardar_asistencia_ajax,
-    name="guardar_asistencia_ajax"
-),
-
-    path(
-        "docente/configuracion/",
-        views.configuracion_docente,
-        name="configuracion_docente"
-    ),
-    
-        path(
-        "docente/carga-academica/",
-        views.carga_academica,
-        name="carga_academica"
-    ),
-
-
-    # =========================================================
-    # ALUMNOS
-    # =========================================================
-
-    path(
-        "alumno/",
-        views.dashboard_alumnos,
-        name="dashboard_alumnos"
-    ),
-
-    path(
-        "alumno/materias/",
-        views.materias_alumnos,
-        name="materias_alumnos"
-    ),
-
-    path(
-        "alumno/calificaciones/",
-        views.calificaciones_alumnos,
-        name="calificaciones_alumnos"
-    ),
-
-    path(
-        "alumno/asistencia/",
-        views.asistencia_alumnos,
-        name="asistencia_alumnos"
-    ),
-
-    path(
-        "alumno/logros/",
-        views.logros_alumnos,
-        name="logros_alumnos"
-    ),
-
-    path(
-        "alumno/configuracion/",
-        views.configuracion_alumnos,
-        name="configuracion_alumnos"
-    ),
-        # =========================================================
-    # ACUDIENTE
-    # =========================================================
-
-    path(
-        "acudiente/",
-        views.dashboard_acudiente,
-        name="dashboard_acudiente"
-    ),
-
-    path(
-        "acudiente/alumno/<int:alumno_id>/",
-        views.detalle_alumno_acudiente,
-        name="detalle_alumno_acudiente"
-    ),
-
-]
-
-
-@login_required
 def obtener_datos_asistencia(request):
 
     if request.method != "GET":
@@ -771,6 +625,118 @@ def obtener_datos_asistencia(request):
         }
     })
 
+
+def guardar_asistencia_ajax(request):
+
+    if request.method != "POST":
+
+        return JsonResponse(
+            {"error": "Método no permitido"},
+            status=405
+        )
+
+    try:
+
+        data = json.loads(
+            request.body
+        )
+
+        curso_id = data.get("curso_id")
+        fecha_str = data.get("fecha")
+        asistencias = data.get("asistencias", [])
+
+        if not curso_id or not fecha_str:
+
+            return JsonResponse(
+                {
+                    "error": "Curso y fecha son obligatorios"
+                },
+                status=400
+            )
+
+        fecha = datetime.strptime(
+            fecha_str,
+            "%Y-%m-%d"
+        ).date()
+
+        curso = get_object_or_404(
+            Cursos,
+            id=curso_id
+        )
+
+        alumno_ids = [
+            item.get("alumno_id")
+            for item in asistencias
+        ]
+
+        alumnos_validos = set(
+            Alumnos.objects.filter(
+                id__in=alumno_ids,
+                curso=curso,
+                activo=True
+            ).values_list(
+                "id",
+                flat=True
+            )
+        )
+
+        with transaction.atomic():
+
+            for item in asistencias:
+
+                alumno_id = item.get(
+                    "alumno_id"
+                )
+
+                estado = item.get(
+                    "estado"
+                )
+
+                if alumno_id not in alumnos_validos:
+                    continue
+
+                if estado not in ["P", "T", "A"]:
+                    continue
+
+                Asistencia.objects.update_or_create(
+
+                    alumno_id=alumno_id,
+
+                    fecha=fecha,
+
+                    defaults={
+                        "curso": curso,
+                        "estado": estado,
+                    }
+                )
+
+        return JsonResponse({
+            "success": True,
+            "message": "Asistencia guardada correctamente"
+        })
+
+    except json.JSONDecodeError:
+
+        return JsonResponse(
+            {"error": "JSON inválido"},
+            status=400
+        )
+
+    except ValueError:
+
+        return JsonResponse(
+            {"error": "Fecha inválida"},
+            status=400
+        )
+
+    except Exception as e:
+
+        return JsonResponse(
+            {
+                "error": str(e)
+            },
+            status=500
+        )
 
 # ============================================================
 #                    HISTORIAL ASISTENCIA
