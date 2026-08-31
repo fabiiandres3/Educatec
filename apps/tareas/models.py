@@ -3,10 +3,19 @@ from apps.user.models import Usuario
 from embed_video.fields import EmbedVideoField
 from apps.clases.models import Clases
 from apps.cursos.models import Cursos
+from apps.docentes.models import Docente
 
 
 
 class Tareas(models.Model):
+
+    docente = models.ForeignKey(
+        "docentes.Docente",
+        on_delete=models.CASCADE,
+        related_name="tareas",
+        null=True,
+        blank=True
+    )
 
     titulo = models.CharField(
         max_length=100
@@ -44,15 +53,7 @@ class Tareas(models.Model):
         default=True
     )
 
-    class Meta:
 
-        verbose_name = "Tarea"
-
-        verbose_name_plural = "Tareas"
-
-    def __str__(self):
-
-        return str(self.titulo)
 
 class TareaAlumno(models.Model):
 

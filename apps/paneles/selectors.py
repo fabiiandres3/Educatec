@@ -6,7 +6,10 @@ from apps.tareas.models import Tareas, Calificacion
 from apps.asistencia.models import Asistencia
 
 def obtener_asistencia_por_curso_fecha(curso_id, fecha):
-    return Asistencia.objects.filter(curso_id=curso_id, fecha=fecha)
+    return Asistencia.objects.filter(
+        curso_id=curso_id,
+        fecha=fecha
+    )
 
 def obtener_tareas_docente(clase_id, curso_id):
     return Tareas.objects.filter(clase_id=clase_id, curso_id=curso_id).order_by("fecha_creacion")
@@ -15,12 +18,13 @@ def obtener_calificaciones_por_tareas(tarea_ids):
     return Calificacion.objects.filter(tarea_id__in=tarea_ids)
 
 def obtener_alumnos_por_curso(curso_id):
-    return Alumnos.objects.filter(
-        curso_id=curso_id
-    ).select_related(
+    return Alumnos.objects.select_related(
         "usuario",
         "curso",
-        "clase"
+        "clase",
+    ).filter(
+        curso_id=curso_id,
+        activo=True,
     )
 
 def alumnos_totales():
@@ -33,14 +37,6 @@ def alumnos_totales():
 def obtener_curso(curso_id):
     return Cursos.objects.filter(id=curso_id).first()
 
-def obtener_alumnos_por_curso(curso_id):
-    return Alumnos.objects.filter(
-        curso_id=curso_id
-    ).select_related(
-        "usuario",
-        "curso",
-        "clase"
-    )
 
 
 def contar_materias():
@@ -72,15 +68,7 @@ def obtener_alumnos_asistencia():
         'curso__nombre',
     )
 
-def obtener_alumnos_por_curso(curso_id):
-    return Alumnos.objects.select_related(
-        "usuario",
-        "curso",
-        "clase",
-    ).filter(
-        curso_id=curso_id,
-        activo=True,
-    )
+
 
 
 def contar_alumnos_curso(curso_id):

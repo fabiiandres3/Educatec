@@ -26,10 +26,26 @@ urlpatterns = [
         name="calificaciones_docente"
     ),
 
+    # ---------------------------------------------------------
+    # ASISTENCIA
+    # ---------------------------------------------------------
+
     path(
         "docente/asistencia/",
         views.asistencia_docente,
         name="asistencia_docente"
+    ),
+
+    path(
+        "docente/asistencia/datos/",
+        views.obtener_datos_asistencia,
+        name="obtener_datos_asistencia"
+    ),
+
+    path(
+        "docente/asistencia/guardar/",
+        views.guardar_asistencia_ajax,
+        name="guardar_asistencia_ajax"
     ),
 
     path(
@@ -38,19 +54,17 @@ urlpatterns = [
         name="historial_asistencia"
     ),
 
-    path(
-        "docente/asistencia/guardar/",
-        views.guardar_asistencia,
-        name="guardar_asistencia"
-    ),
+    # ---------------------------------------------------------
+    # OTROS
+    # ---------------------------------------------------------
 
     path(
         "docente/configuracion/",
         views.configuracion_docente,
         name="configuracion_docente"
     ),
-    
-        path(
+
+    path(
         "docente/carga-academica/",
         views.carga_academica,
         name="carga_academica"
@@ -96,7 +110,9 @@ urlpatterns = [
         views.configuracion_alumnos,
         name="configuracion_alumnos"
     ),
-        # =========================================================
+
+
+    # =========================================================
     # ACUDIENTE
     # =========================================================
 

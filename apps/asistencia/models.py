@@ -10,15 +10,33 @@ class Asistencia(models.Model):
         ("A", "Ausente"),
     )
 
-    alumno = models.ForeignKey(Alumnos, on_delete=models.CASCADE, related_name="asistencias")
-    curso = models.ForeignKey(Cursos, on_delete=models.CASCADE)
+    alumno = models.ForeignKey(
+        Alumnos,
+        on_delete=models.CASCADE,
+        related_name="asistencias"
+    )
+
+    curso = models.ForeignKey(
+        Cursos,
+        on_delete=models.CASCADE
+    )
+
     fecha = models.DateField()
-    estado = models.CharField(max_length=1, choices=ESTADOS, default="P")
+
+    estado = models.CharField(
+        max_length=1,
+        choices=ESTADOS,
+        default="P"
+    )
 
     class Meta:
         unique_together = ("alumno", "fecha")
         verbose_name = "Asistencia"
         verbose_name_plural = "Asistencias"
 
-    def _str_(self):
-        return f"{self.alumno} - {self.fecha} - {self.get_estado_display()}"
+    def __str__(self):
+        return (
+            f"{self.alumno} - "
+            f"{self.fecha} - "
+            f"{self.get_estado_display()}"
+        )

@@ -135,7 +135,7 @@ def crear_tareas_docente(request):
 
         else:
 
-            # Solo permitir cursos del docente
+            # Verificar que el docente tenga un curso asignado
             if not docente.curso:
 
                 messages.error(
@@ -143,6 +143,7 @@ def crear_tareas_docente(request):
                     "No tienes ningún curso asignado."
                 )
 
+            # Verificar que el curso seleccionado sea el del docente
             elif str(curso_id) != str(docente.curso.id):
 
                 messages.error(
@@ -154,45 +155,61 @@ def crear_tareas_docente(request):
 
                 with transaction.atomic():
 
-                    # Crear tarea
-                    tarea = tarea_form.save(
-                        commit=False
-                    )
+                    # =========================
+                    # CREAR TAREA
+                    # =========================
 
-                    # Asignar curso
+                    tarea = tarea_form.save(commit=False)
+
+                    tarea.docente = docente
                     tarea.curso = docente.curso
 
-                    # Asignar clase
                     if docente.clase:
                         tarea.clase = docente.clase
 
                     tarea.save()
 
-                    # Imágenes
+                    # =========================
+                    # IMÁGENES
+                    # =========================
+
                     for imagen in request.FILES.getlist("imagenes"):
+
                         Imagen.objects.create(
                             tarea=tarea,
                             imagen=imagen
                         )
 
-                    # Archivos
+                    # =========================
+                    # ARCHIVOS
+                    # =========================
+
                     for archivo in request.FILES.getlist("archivos"):
+
                         ArchivoTarea.objects.create(
                             tarea=tarea,
                             archivo=archivo
                         )
 
-                    # Videos
+                    # =========================
+                    # VIDEOS
+                    # =========================
+
                     for video in request.POST.getlist("videos"):
+
                         video = video.strip()
 
                         if video:
+
                             Video.objects.create(
                                 tarea=tarea,
                                 video=video
                             )
 
-                    # Preguntas
+                    # =========================
+                    # PREGUNTAS
+                    # =========================
+
                     Crear_preguntas(
                         request,
                         tarea
@@ -208,6 +225,7 @@ def crear_tareas_docente(request):
                 )
 
     else:
+
         tarea_form = TareasForm()
 
     return render(
@@ -781,41 +799,43 @@ def listar_tareas(request):
         usuario=request.user
     )
 
+    tareas = Tareas.objects.filter(
+        docente_id=docente.id
+    ).order_by("-fecha_creacion")
+
     if docente.curso:
 
-        tareas = Tareas.objects.filter(
-            curso=docente.curso
-        ).order_by("-fecha_creacion")
-
-        # Total de estudiantes inscritos en el curso
         total_alumnos = Alumnos.objects.filter(
             curso=docente.curso
         ).count()
 
-        # Calcular entregas de cada tarea
-        for tarea in tareas:
-
-            tarea.total_alumnos = total_alumnos
-
-            tarea.entregas = (
-                RespuestaAlumno.objects
-                .filter(pregunta__tarea=tarea)
-                .values("alumno")
-                .distinct()
-                .count()
-            )
-
-            if total_alumnos > 0:
-                tarea.porcentaje_entrega = (
-                    tarea.entregas / total_alumnos
-                ) * 100
-            else:
-                tarea.porcentaje_entrega = 0
-
     else:
 
-        tareas = Tareas.objects.none()
         total_alumnos = 0
+
+    for tarea in tareas:
+
+        tarea.total_alumnos = total_alumnos
+
+        tarea.entregas = (
+            RespuestaAlumno.objects
+            .filter(
+                pregunta__tarea=tarea
+            )
+            .values("alumno")
+            .distinct()
+            .count()
+        )
+
+        if total_alumnos > 0:
+
+            tarea.porcentaje_entrega = (
+                tarea.entregas / total_alumnos
+            ) * 100
+
+        else:
+
+            tarea.porcentaje_entrega = 0
 
     total_tareas = tareas.count()
 
