@@ -1,14 +1,12 @@
 {% extends "paneles/alumnos/base.html" %}
-
 {% load static %}
-
-
 
 {% block title %}
     Mis tareas
 {% endblock %}
 
 {% block content %}
+
 <link
     rel="stylesheet"
     href="{% static 'css/tareas/listar_tareas.css' %}"
@@ -17,100 +15,266 @@
 <div class="student-tasks-page">
 
     <!-- =====================================================
-         ENCABEZADO
+         HEADER
     ====================================================== -->
 
-    <div class="tasks-header">
+    <header class="tasks-header">
 
-        <div class="header-information">
+        <div class="header-main">
 
-            <span class="header-label">
+            <div class="header-label">
                 ACTIVIDADES ACADÉMICAS
-            </span>
+            </div>
 
             <h1>
                 Mis tareas
             </h1>
 
             <p>
-                Revisa las actividades asignadas a tu curso
-                y responde cada pregunta.
+                Consulta tus actividades y revisa cuáles tienes
+                pendientes o ya entregaste.
             </p>
 
         </div>
 
-        <div class="course-badge">
 
-            <span>
-                Mi curso
-            </span>
+        <!-- CURSO -->
 
-            <strong>
-                {{ curso }}
-            </strong>
+        <div class="course-card">
+
+            <div class="course-card-icon">
+
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M22 10v6"/>
+                    <path d="m2 10 10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+
+            </div>
+
+            <div>
+
+                <span>
+                    MI CURSO
+                </span>
+
+                <strong>
+                    {{ curso|default:"Sin curso" }}
+                </strong>
+
+            </div>
 
         </div>
 
-    </div>
+    </header>
+
+
+    <!-- =====================================================
+         RESUMEN
+    ====================================================== -->
+
+    <section class="tasks-summary">
+
+        <!-- TOTAL -->
+
+        <div class="summary-card">
+
+            <div class="summary-icon total-icon">
+
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                </svg>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ total_tareas }}
+                </strong>
+
+                <span>
+                    Total de tareas
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- PENDIENTES -->
+
+        <div class="summary-card">
+
+            <div class="summary-icon pending-icon">
+
+                <span></span>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ tareas_pendientes }}
+                </strong>
+
+                <span>
+                    Pendientes
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ENTREGADAS -->
+
+        <div class="summary-card">
+
+            <div class="summary-icon delivered-icon">
+
+                <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ tareas_entregadas }}
+                </strong>
+
+                <span>
+                    Entregadas
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
     <!-- =====================================================
          FILTROS
     ====================================================== -->
 
-    <div class="tasks-toolbar">
+    <section class="tasks-controls">
 
-        <button
-            type="button"
-            class="filter-button active"
-            data-filter="all"
-        >
-            Todas
-        </button>
+        <div class="tasks-toolbar">
 
-        <button
-            type="button"
-            class="filter-button"
-            data-filter="pending"
-        >
-            Pendientes
-        </button>
+            <button
+                type="button"
+                class="filter-button active"
+                data-filter="all"
+            >
+                Todas
 
-        <button
-            type="button"
-            class="filter-button"
-            data-filter="completed"
-        >
-            Completadas
-        </button>
+                <span>
+                    {{ total_tareas }}
+                </span>
 
-    </div>
+            </button>
+
+
+            <button
+                type="button"
+                class="filter-button"
+                data-filter="pending"
+            >
+                Pendientes
+
+                <span>
+                    {{ tareas_pendientes }}
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="filter-button"
+                data-filter="delivered"
+            >
+                Entregadas
+
+                <span>
+                    {{ tareas_entregadas }}
+                </span>
+
+            </button>
+
+        </div>
+
+    </section>
 
 
     <!-- =====================================================
-         LISTA DE TAREAS
+         LISTA
     ====================================================== -->
 
-    <div class="tasks-list">
+    <main class="tasks-list">
 
         {% for tarea in tareas %}
 
             <article
-                class="task-item"
+                class="task-card"
                 data-task
+                data-status="{% if tarea.entregada %}delivered{% else %}pending{% endif %}"
             >
 
-                <!-- -----------------------------------------
-                     PARTE SUPERIOR
-                ------------------------------------------ -->
+                <!-- =================================================
+                     HEADER DE TARJETA
+                ================================================== -->
 
-                <div class="task-top">
+                <div class="task-card-header">
 
-                    <div class="task-subject">
+                    <div class="task-class">
 
-                        <span class="subject-icon">
-                            📚
-                        </span>
+                        <div class="task-class-icon">
+
+                            <svg
+                                width="17"
+                                height="17"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                            </svg>
+
+                        </div>
 
                         <span>
                             {{ tarea.clase|default:"Actividad académica" }}
@@ -118,22 +282,44 @@
 
                     </div>
 
-                    <span class="task-status pending-status">
-                        Pendiente
-                    </span>
+
+                    <!-- ESTADO -->
+
+                    {% if tarea.entregada %}
+
+                        <div class="task-status delivered-status">
+
+                            <span class="status-dot"></span>
+
+                            Entregado
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="task-status pending-status">
+
+                            <span class="status-dot"></span>
+
+                            Pendiente
+
+                        </div>
+
+                    {% endif %}
 
                 </div>
 
 
-                <!-- -----------------------------------------
+                <!-- =================================================
                      CONTENIDO
-                ------------------------------------------ -->
+                ================================================== -->
 
-                <div class="task-content">
+                <div class="task-card-content">
 
                     <h2>
                         {{ tarea.titulo }}
                     </h2>
+
 
                     {% if tarea.descripcion %}
 
@@ -152,23 +338,65 @@
                 </div>
 
 
-                <!-- -----------------------------------------
+                <!-- =================================================
                      INFORMACIÓN
-                ------------------------------------------ -->
+                ================================================== -->
 
-                <div class="task-information">
+                <div class="task-meta">
 
-                    <div class="information-item">
+                    <!-- FECHA -->
 
-                        <span class="information-icon">
-                            📅
-                        </span>
+                    <div class="meta-item">
+
+                        <div class="meta-icon">
+
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <rect
+                                    width="18"
+                                    height="18"
+                                    x="3"
+                                    y="4"
+                                    rx="2"
+                                />
+
+                                <line
+                                    x1="16"
+                                    x2="16"
+                                    y1="2"
+                                    y2="6"
+                                />
+
+                                <line
+                                    x1="8"
+                                    x2="8"
+                                    y1="2"
+                                    y2="6"
+                                />
+
+                                <line
+                                    x1="3"
+                                    x2="21"
+                                    y1="10"
+                                    y2="10"
+                                />
+                            </svg>
+
+                        </div>
 
                         <div>
 
-                            <small>
+                            <span>
                                 Fecha de entrega
-                            </small>
+                            </span>
 
                             <strong>
 
@@ -189,21 +417,36 @@
                     </div>
 
 
-                    <div class="information-item">
+                    <!-- PREGUNTAS -->
 
-                        <span class="information-icon">
-                            📝
-                        </span>
+                    <div class="meta-item">
+
+                        <div class="meta-icon">
+
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+
+                        </div>
 
                         <div>
 
-                            <small>
-                                Actividad
-                            </small>
+                            <span>
+                                Preguntas
+                            </span>
 
                             <strong>
-                                {{ tarea.preguntas.count }}
-                                preguntas
+                                {{ tarea.total_preguntas }}
                             </strong>
 
                         </div>
@@ -211,20 +454,45 @@
                     </div>
 
 
-                    <div class="information-item">
+                    <!-- PROGRESO -->
 
-                        <span class="information-icon">
-                            📖
-                        </span>
+                    <div class="meta-item progress-meta">
+
+                        <div class="meta-icon">
+
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="9"
+                                />
+
+                                <polyline
+                                    points="12 7 12 12 15 14"
+                                />
+                            </svg>
+
+                        </div>
 
                         <div>
 
-                            <small>
-                                Curso
-                            </small>
+                            <span>
+                                Progreso
+                            </span>
 
                             <strong>
-                                {{ curso }}
+
+                                {{ tarea.respuestas_count }}/{{ tarea.total_preguntas }}
+
                             </strong>
 
                         </div>
@@ -234,26 +502,100 @@
                 </div>
 
 
-                <!-- -----------------------------------------
-                     ACCIÓN
-                ------------------------------------------ -->
+                <!-- =================================================
+                     FOOTER
+                ================================================== -->
 
-                <div class="task-action">
+                <div class="task-card-footer">
 
-                    <a
-                        href="{% url 'responder_tarea_alumno' tarea.id %}"
-                        class="open-task-button"
-                    >
+                    {% if tarea.entregada %}
 
-                        <span>
+                        <div class="completed-message">
+
+                            <span class="completed-check">
+
+                                <svg
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2.7"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+
+                            </span>
+
+                            <span>
+                                Tarea entregada
+                            </span>
+
+                        </div>
+
+
+                        <a
+                            href="{% url 'responder_tarea_alumno' tarea.id %}"
+                            class="task-button delivered-button"
+                        >
+
+                            Ver respuestas
+
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M5 12h14"/>
+                                <path d="m12 5 7 7-7 7"/>
+                            </svg>
+
+                        </a>
+
+                    {% else %}
+
+                        <div class="pending-message">
+
+                            <span class="pending-check"></span>
+
+                            <span>
+                                Aún no has terminado esta tarea
+                            </span>
+
+                        </div>
+
+
+                        <a
+                            href="{% url 'responder_tarea_alumno' tarea.id %}"
+                            class="task-button"
+                        >
+
                             Ver y responder
-                        </span>
 
-                        <span class="arrow">
-                            →
-                        </span>
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M5 12h14"/>
+                                <path d="m12 5 7 7-7 7"/>
+                            </svg>
 
-                    </a>
+                        </a>
+
+                    {% endif %}
 
                 </div>
 
@@ -261,14 +603,27 @@
 
         {% empty %}
 
-            <!-- =============================================
-                 SIN TAREAS
-            ============================================== -->
+            <!-- =================================================
+                 ESTADO VACÍO
+            ================================================== -->
 
             <div class="empty-tasks">
 
                 <div class="empty-icon">
-                    📚
+
+                    <svg
+                        width="27"
+                        height="27"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 0-5H20"/>
+                    </svg>
+
                 </div>
 
                 <h2>
@@ -284,106 +639,143 @@
 
         {% endfor %}
 
-    </div>
+
+        <!-- =================================================
+             SIN RESULTADOS DEL FILTRO
+        ================================================== -->
+
+        <div
+            class="no-filter-results"
+            id="no-filter-results"
+        >
+
+            <div class="no-filter-icon">
+
+                <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                    />
+
+                    <path d="m20 20-4-4"/>
+                </svg>
+
+            </div>
+
+            <h3>
+                No hay tareas aquí
+            </h3>
+
+            <p>
+                No tienes tareas que coincidan con este filtro.
+            </p>
+
+        </div>
+
+    </main>
 
 </div>
 
 
 <!-- =========================================================
-     JAVASCRIPT FILTROS
+     FILTROS
 ========================================================= -->
 
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        const buttons =
-            document.querySelectorAll(
-                ".filter-button"
-            );
+    const buttons = document.querySelectorAll(".filter-button");
 
-        const tasks =
-            document.querySelectorAll(
-                "[data-task]"
-            );
+    const tasks = document.querySelectorAll("[data-task]");
+
+    const noResults = document.getElementById(
+        "no-filter-results"
+    );
 
 
-        buttons.forEach(
-            function (button) {
+    buttons.forEach(function (button) {
 
-                button.addEventListener(
-                    "click",
-                    function () {
+        button.addEventListener("click", function () {
 
-                        buttons.forEach(
-                            function (btn) {
+            /* -----------------------------------------------
+               ACTIVAR BOTÓN
+            ------------------------------------------------ */
 
-                                btn.classList.remove(
-                                    "active"
-                                );
+            buttons.forEach(function (btn) {
 
-                            }
-                        );
+                btn.classList.remove("active");
 
+            });
 
-                        button.classList.add(
-                            "active"
-                        );
+            button.classList.add("active");
 
 
-                        const filter =
-                            button.dataset.filter;
+            /* -----------------------------------------------
+               OBTENER FILTRO
+            ------------------------------------------------ */
+
+            const filter = button.dataset.filter;
+
+            let visibleTasks = 0;
 
 
-                        tasks.forEach(
-                            function (task) {
+            /* -----------------------------------------------
+               FILTRAR TAREAS
+            ------------------------------------------------ */
 
-                                if (
-                                    filter === "all"
-                                ) {
+            tasks.forEach(function (task) {
 
-                                    task.style.display =
-                                        "";
-
-                                    return;
-                                }
+                const status = task.dataset.status;
 
 
-                                /*
-                                 * Por ahora las tareas
-                                 * empiezan como pendientes.
-                                 *
-                                 * Luego conectamos este
-                                 * estado con RespuestaAlumno.
-                                 */
+                if (
+                    filter === "all" ||
+                    status === filter
+                ) {
 
-                                if (
-                                    filter === "pending"
-                                ) {
+                    task.style.display = "";
 
-                                    task.style.display =
-                                        "";
+                    visibleTasks++;
 
-                                } else {
+                } else {
 
-                                    task.style.display =
-                                        "none";
+                    task.style.display = "none";
 
-                                }
+                }
 
-                            }
-                        );
+            });
 
-                    }
-                );
+
+            /* -----------------------------------------------
+               SIN RESULTADOS
+            ------------------------------------------------ */
+
+            if (visibleTasks === 0) {
+
+                noResults.classList.add("visible");
+
+            } else {
+
+                noResults.classList.remove("visible");
 
             }
-        );
 
-    }
-);
+        });
+
+    });
+
+});
 
 </script>
 

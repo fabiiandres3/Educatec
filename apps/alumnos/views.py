@@ -128,25 +128,44 @@ def Eliminar_alumno(request, docente_id):
 
 def listar_tareas_alumno(request):
 
+    # =====================================================
+    # OBTENER ALUMNO
+    # =====================================================
+
     alumno = get_object_or_404(
         Alumnos,
         usuario=request.user
     )
 
+    # =====================================================
+    # OBTENER CURSO
+    # =====================================================
+
     curso = alumno.curso
+
+    # =====================================================
+    # SI NO TIENE CURSO
+    # =====================================================
 
     if not curso:
 
         return render(
             request,
-            "paneles/alumnos/tareas/listar_tareas.html",
+            "paneles/alumnos/tareas/listar_tareas_alumno.html",
             {
                 "tareas": [],
                 "curso": None,
+                "total_tareas": 0,
+                "tareas_entregadas": 0,
+                "tareas_pendientes": 0,
             }
         )
 
-    tareas = (
+    # =====================================================
+    # OBTENER TAREAS DEL CURSO
+    # =====================================================
+
+    tareas = list(
         Tareas.objects
         .filter(
             curso=curso,
@@ -160,12 +179,93 @@ def listar_tareas_alumno(request):
         )
     )
 
+    # =====================================================
+    # DETERMINAR SI CADA TAREA ESTÁ ENTREGADA
+    # =====================================================
+
+    tareas_entregadas = 0
+    tareas_pendientes = 0
+
+    for tarea in tareas:
+
+        # -------------------------------------------------
+        # TOTAL DE PREGUNTAS
+        # -------------------------------------------------
+
+        total_preguntas = tarea.preguntas.count()
+
+        # -------------------------------------------------
+        # SI NO TIENE PREGUNTAS
+        # -------------------------------------------------
+
+        if total_preguntas == 0:
+
+            tarea.entregada = False
+            tarea.respuestas_count = 0
+            tarea.total_preguntas = 0
+
+            tareas_pendientes += 1
+
+            continue
+
+        # -------------------------------------------------
+        # RESPUESTAS DEL ALUMNO PARA ESTA TAREA
+        # -------------------------------------------------
+
+        respuestas_count = (
+            RespuestaAlumno.objects
+            .filter(
+                alumno=request.user,
+                pregunta__tarea=tarea
+            )
+            .values("pregunta_id")
+            .distinct()
+            .count()
+        )
+
+        # -------------------------------------------------
+        # GUARDAR DATOS PARA EL TEMPLATE
+        # -------------------------------------------------
+
+        tarea.respuestas_count = respuestas_count
+        tarea.total_preguntas = total_preguntas
+
+        # -------------------------------------------------
+        # DETERMINAR ESTADO
+        # -------------------------------------------------
+
+        if respuestas_count >= total_preguntas:
+
+            tarea.entregada = True
+
+            tareas_entregadas += 1
+
+        else:
+
+            tarea.entregada = False
+
+            tareas_pendientes += 1
+
+    # =====================================================
+    # CONTADORES
+    # =====================================================
+
+    total_tareas = len(tareas)
+
+    # =====================================================
+    # RENDER
+    # =====================================================
+
     return render(
         request,
         "paneles/alumnos/tareas/listar_tareas_alumno.html",
         {
             "tareas": tareas,
             "curso": curso,
+
+            "total_tareas": total_tareas,
+            "tareas_entregadas": tareas_entregadas,
+            "tareas_pendientes": tareas_pendientes,
         }
     )
 

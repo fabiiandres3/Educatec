@@ -1,481 +1,282 @@
 {% extends 'paneles/docentes/base.html' %}
 {% load static %}
 
-{% block title %}Tareas{% endblock %}
+{% block title %}Gestión de Tareas | Panel Docente{% endblock %}
 
 {% block active_tarea %}active{% endblock %}
 
 {% block extra_css %}
-
-<link rel="stylesheet"
-      href="{% static 'css/tareas/tareas_docente.css' %}">
-
+<!-- CSS personalizado con romper-caché ?v=5.0 -->
+<link rel="stylesheet" href="{% static 'css/tareas/tareas_docente.css' %}?v=5.0">
 {% endblock %}
 
-
 {% block content %}
+<div class="tasks-wrapper">
 
-<div class="tasks-page">
+    <!-- HERO / BANNER PRINCIPAL -->
+    <header class="tasks-hero">
+        <div class="hero-main">
+            <span class="hero-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                Módulo de Tareas
+            </span>
+            <h1>Panel de Control de Tareas</h1>
+            <p>Supervisa el avance, gestiona entregas y crea nuevas asignaciones para tus alumnos.</p>
+        </div>
 
-    <!-- =========================
-         ENCABEZADO
-    ========================== -->
+        <a href="{% url 'crear_tarea_docente' %}" class="btn-create-task">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <span>Nueva Tarea</span>
+        </a>
+    </header>
 
-    <div class="tasks-header">
+    <!-- METRICAS Y ESTADÍSTICAS -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon icon-blue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L8.6 3.3A2 2 0 0 0 6.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-title">Total Tareas</span>
+                <strong class="stat-value">{{ total_tareas }}</strong>
+            </div>
+        </div>
 
-        <div>
+        <div class="stat-card">
+            <div class="stat-icon icon-green">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-title">Tareas Activas</span>
+                <strong class="stat-value">{{ tareas_activas|default:total_tareas }}</strong>
+            </div>
+        </div>
 
-            <h1>Mis tareas</h1>
+        <div class="stat-card">
+            <div class="stat-icon icon-amber">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-title">Por Vencer</span>
+                <strong class="stat-value">{{ tareas_por_vencer|default:0 }}</strong>
+            </div>
+        </div>
 
-            <p>
-                Administra y consulta las tareas de tus cursos.
+        <div class="stat-card">
+            <div class="stat-icon icon-purple">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-title">Estudiantes</span>
+                <strong class="stat-value">{{ total_alumnos }}</strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+    <section class="toolbar-section">
+        <div class="search-box">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="buscarTarea" placeholder="Buscar por título o contenido...">
+        </div>
+
+        <div class="filters-group">
+            <div class="select-box">
+                <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <select id="filtroEstado">
+                    <option value="">Todos los estados</option>
+                    <option value="active">Activas</option>
+                    <option value="pending">Pendientes</option>
+                    <option value="finished">Finalizadas</option>
+                </select>
+            </div>
+
+            <div class="select-box">
+                <svg class="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                <select id="filtroCurso">
+                    <option value="">Todos los cursos</option>
+                    {% if docente.curso %}
+                        <option value="{{ docente.curso.id }}">{{ docente.curso.nombre }}</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEED / LISTADO DE TAREAS -->
+    <main class="tasks-feed">
+        {% for tarea in tareas %}
+        <article class="task-card {% if not tarea.activa %}task-disabled{% endif %}">
+            
+            <div class="card-header">
+                <div class="header-left">
+                    <span class="badge-course">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                        {% if tarea.curso %}{{ tarea.curso.nombre }}{% else %}Sin Curso{% endif %}
+                    </span>
+                    <h2 class="task-title">{{ tarea.titulo }}</h2>
+                </div>
+
+                {% if tarea.activa %}
+                    <span class="status-pill status-active">
+                        <span class="dot"></span> Activa
+                    </span>
+                {% else %}
+                    <span class="status-pill status-inactive">
+                        <span class="dot"></span> Inactiva
+                    </span>
+                {% endif %}
+            </div>
+
+            <p class="task-description">
+                {% if tarea.descripcion %}
+                    {{ tarea.descripcion }}
+                {% else %}
+                    <span class="empty-text">Sin descripción provista para esta tarea.</span>
+                {% endif %}
             </p>
 
-        </div>
-
-
-        <a
-            href="{% url 'crear_tarea_docente' %}"
-            class="btn-new-task">
-
-            <i class="fa-solid fa-plus"></i>
-
-            Nueva tarea
-
-        </a>
-
-    </div>
-
-
-    <!-- =========================
-         ESTADÍSTICAS
-    ========================== -->
-
-    <div class="task-stats">
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-
-                <i class="fa-solid fa-list-check"></i>
-
-            </div>
-
-            <div>
-
-                <span class="stat-label">
-                    Total de tareas
-                </span>
-
-                <strong>
-                    {{ total_tareas }}
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-
-                <i class="fa-solid fa-circle-check"></i>
-
-            </div>
-
-            <div>
-
-                <span class="stat-label">
-                    Tareas activas
-                </span>
-
-                <strong>
-                    {{ total_tareas }}
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-
-                <i class="fa-solid fa-clock"></i>
-
-            </div>
-
-            <div>
-
-                <span class="stat-label">
-                    Por vencer
-                </span>
-
-                <strong>
-                    {{ total_tareas }}
-                </strong>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-
-                <i class="fa-solid fa-users"></i>
-
-            </div>
-
-            <div>
-
-                <span class="stat-label">
-                    Estudiantes
-                </span>
-
-                <strong>
-                    {{ total_alumnos }}
-                </strong>
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-
-    <!-- =========================
-         FILTROS
-    ========================== -->
-
-    <div class="tasks-toolbar">
-
-
-        <div class="search-task">
-
-            <i class="fa-solid fa-magnifying-glass"></i>
-
-            <input
-                type="text"
-                id="buscarTarea"
-                placeholder="Buscar tarea..."
-            >
-
-        </div>
-
-
-        <select id="filtroEstado">
-
-            <option value="">
-                Todos los estados
-            </option>
-
-            <option value="active" style="background:green">
-                Activas
-            </option>
-
-            <option value="pending">
-                Pendientes
-            </option>
-
-            <option value="finished">
-                Finalizadas
-            </option>
-
-        </select>
-
-
-        <select id="filtroCurso">
-
-            <option value="">
-                Todos los cursos
-            </option>
-
-            {% if docente.curso %}
-
-                <option value="{{ docente.curso.id }}">
-                    {{ docente.curso.nombre }}
-                </option>
-
-            {% endif %}
-
-        </select>
-
-
-    </div>
-
-
-    <!-- =========================
-         LISTA DE TAREAS
-    ========================== -->
-
-    <div class="tasks-container">
-
-
-        {% for tarea in tareas %}
-
-
-        <div class="task-card">
-
-
-            <div class="task-main">
-
-
-                <!-- TÍTULO -->
-
-                <div class="task-title-row">
-
+            <!-- METADATOS DE LA TAREA -->
+            <div class="task-meta">
+                <div class="meta-card">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
                     <div>
-
-                        <h3>
-                            {{ tarea.titulo }}
-                        </h3>
-
-                        <span class="task-course">
-
-                            <i class="fa-solid fa-school"></i>
-
-                            {% if tarea.curso %}
-                                {{ tarea.curso.nombre }}
-                            {% else %}
-                                Sin curso
-                            {% endif %}
-
-                        </span>
-
+                        <span>Publicación</span>
+                        <strong>{{ tarea.fecha_creacion|date:"d M, Y" }}</strong>
                     </div>
-
-
-                    <!-- ESTADO -->
-
-                    {% if tarea.activa %}
-
-                        <span class="task-status active">
-                            Activa
-                        </span>
-
-                    {% else %}
-
-                        <span class="task-status inactive">
-                            Deshabilitada
-                        </span>
-
-                    {% endif %}
-
                 </div>
 
-
-                <!-- DESCRIPCIÓN -->
-
-                <p class="task-description">
-
-                    {% if tarea.descripcion %}
-
-                        {{ tarea.descripcion }}
-
-                    {% else %}
-
-                        Esta tarea no tiene descripción.
-
-                    {% endif %}
-
-                </p>
-
-
-                <!-- INFORMACIÓN -->
-
-                <div class="task-info">
-
-
-                    <span>
-
-                        <i class="fa-regular fa-calendar"></i>
-
-                        Creada:
-
-                        {{ tarea.fecha_creacion|date:"d/m/Y" }}
-
-                    </span>
-
-
-                    <span>
-
-                        <i class="fa-regular fa-clock"></i>
-
-                        {% if tarea.fecha_entrega %}
-
-                            Vence:
-
-                            {{ tarea.fecha_entrega|date:"d/m/Y" }}
-
-                        {% else %}
-
-                            Sin fecha de entrega
-
-                        {% endif %}
-
-                    </span>
-
-
-                    <span>
-
-                        <i class="fa-solid fa-users"></i>
-
-                        {{ tarea.total_alumnos }}
-
-                        estudiantes
-
-                    </span>
-
-
-                </div>
-
-
-                <!-- PROGRESO -->
-
-                <div class="task-progress">
-
-
-                    <div class="progress-header">
-
-                        <span>
-                            Entregas
-                        </span>
-
-
+                <div class="meta-card">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <div>
+                        <span>Vencimiento</span>
                         <strong>
-
-                            {{ tarea.entregas }}
-
-                            /
-
-                            {{ tarea.total_alumnos }}
-
+                            {% if tarea.fecha_entrega %}
+                                {{ tarea.fecha_entrega|date:"d M, Y" }}
+                            {% else %}
+                                Sin límite
+                            {% endif %}
                         </strong>
-
                     </div>
-
-
-                    <div class="progress-bar">
-
-                        <div
-                            style="width: {{ tarea.porcentaje_entrega }}%;">
-                        </div>
-
-                    </div>
-
-
                 </div>
 
-
+                <div class="meta-card">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <div>
+                        <span>Alumnos</span>
+                        <strong>{{ tarea.total_alumnos }} registrados</strong>
+                    </div>
+                </div>
             </div>
 
-
-            <!-- =========================
-                ACCIONES
-            ========================== -->
-
-            <div class="task-actions">
-
-                <a href="{% url 'respuesta_alumnos' tarea.id %}">
-                    Ver respuestas
-                </a>
-
-                <a
-                    href="{% url 'editar_tarea_docente' tarea.id %}"
-                    class="edit-button"
-                >
-                    <i class="fa-solid fa-pen"></i>
-                    Editar
-                </a>
-
-                <!-- ELIMINAR -->
-                <form
-                    method="POST"
-                    action="{% url 'habilitar_deshabilitar_tarea' tarea.id %}"
-                    style="margin: 0;"
-                >
-
-                    {% csrf_token %}
-
-                    <button
-                        type="submit"
-                        class="action-btn {% if tarea.activa %}danger{% else %}success{% endif %}"
-                        data-tooltip="{% if tarea.activa %}Deshabilitar tarea{% else %}Habilitar tarea{% endif %}"
-                    >
-
-                        <i
-                            class="fa-solid fa-power-off"
-                        ></i>
-
-                    </button>
-
-                </form>
-                    {% csrf_token %}
-
-                    <button
-                        type="submit"
-                        class="action-btn delete-btn"
-                        data-tooltip="Eliminar tarea"
-                    >
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </form>
-
+            <!-- PROGRESO DE ENTREGAS -->
+            <div class="progress-section">
+                <div class="progress-labels">
+                    <span>Entregas completadas</span>
+                    <strong>{{ tarea.entregas }} de {{ tarea.total_alumnos }}</strong>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: {{ tarea.porcentaje_entrega|default:0 }}%;"></div>
+                </div>
             </div>
 
+            <!-- BOTONES Y ACCIONES -->
+            <footer class="card-footer">
+                <div class="footer-primary-actions">
+                    <a href="{% url 'respuesta_alumnos' tarea.id %}" class="btn-action btn-responses">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        Respuestas
+                    </a>
 
-        </div>
+                    <a href="{% url 'editar_tarea_docente' tarea.id %}" class="btn-action btn-edit">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                        Editar
+                    </a>
+                </div>
 
+                <div class="footer-secondary-actions">
+                    <!-- BOTÓN CAMBIAR ESTADO -->
+                    <form method="POST" action="{% url 'habilitar_deshabilitar_tarea' tarea.id %}">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="btn-circle {% if tarea.activa %}btn-toggle-off{% else %}btn-toggle-on{% endif %}" 
+                                title="{% if tarea.activa %}Deshabilitar Tarea{% else %}Habilitar Tarea{% endif %}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77 0"/></svg>
+                        </button>
+                    </form>
+
+                    <!-- BOTÓN ELIMINAR TAREA -->
+                    <form method="POST" action="{% url 'habilitar_deshabilitar_tarea' tarea.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-circle btn-delete" title="Eliminar Tarea">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </footer>
+        </article>
 
         {% empty %}
 
-
-        <!-- =========================
-             SIN TAREAS
-        ========================== -->
-
-        <div class="empty-tasks">
-
-            <i class="fa-solid fa-clipboard-list"></i>
-
-            <h3>
-                No tienes tareas todavía
-            </h3>
-
-            <p>
-                Cuando crees una tarea aparecerá aquí.
-            </p>
-
-
-            <a
-                href="{% url 'crear_tarea_docente' %}"
-                class="btn-new-task">
-
-                <i class="fa-solid fa-plus"></i>
-
-                Crear tarea
-
+        <!-- ESTADO VACÍO -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L8.6 3.3A2 2 0 0 0 6.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            </div>
+            <h3>No se encontraron tareas</h3>
+            <p>Comienza creando una nueva asignación para tus alumnos.</p>
+            <a href="{% url 'crear_tarea_docente' %}" class="btn-create-task">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                Crear Nueva Tarea
             </a>
-
         </div>
 
-
         {% endfor %}
-
-
-    </div>
-
-
+    </main>
 </div>
 
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const buscarInput = document.getElementById('buscarTarea');
+    const filtroEstado = document.getElementById('filtroEstado');
+    const tarjetas = document.querySelectorAll('.task-card');
 
+    function filtrarTareas() {
+        const textoBusqueda = buscarInput.value.toLowerCase().trim();
+        const estadoSeleccionado = filtroEstado.value;
+
+        tarjetas.forEach(card => {
+            // Obtener título y descripción de la tarjeta
+            const titulo = card.querySelector('.task-title')?.textContent.toLowerCase() || '';
+            const descripcion = card.querySelector('.task-description')?.textContent.toLowerCase() || '';
+            const esInactiva = card.classList.contains('task-disabled');
+
+            // Comprobar coincidencia con la búsqueda
+            const coincideTexto = titulo.includes(textoBusqueda) || descripcion.includes(textoBusqueda);
+
+            // Comprobar coincidencia con el filtro de estado
+            let coincideEstado = true;
+            if (estadoSeleccionado === 'active') {
+                coincideEstado = !esInactiva;
+            } else if (estadoSeleccionado === 'finished' || estadoSeleccionado === 'pending') {
+                // Puedes ajustar según tu lógica de negocio
+                coincideEstado = esInactiva;
+            }
+
+            // Mostrar u ocultar la tarjeta
+            if (coincideTexto && coincideEstado) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Escuchar eventos de escritura y selección
+    buscarInput.addEventListener('input', filtrarTareas);
+    filtroEstado.addEventListener('change', filtrarTareas);
+});
+</script>
+{% endblock %}
 {% endblock %}
