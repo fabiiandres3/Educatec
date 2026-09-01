@@ -1,63 +1,547 @@
 {% extends 'admin/base_admin.html' %}
-<title>{% block title %}Tareas{% endblock %}</title>
+
+{% block title %}Tareas{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+
+<style>
+    .tareas-page {
+        padding: 10px 5px 30px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-title {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-subtitle {
+        margin: 5px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .stats-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 13px 18px;
+        box-shadow: 0 4px 15px rgba(0,0,0,.04);
+    }
+
+    .stats-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+    .stats-number {
+        font-size: 21px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .stats-label {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        position: relative;
+        width: 300px;
+        max-width: 100%;
+    }
+
+    .search-box input {
+        width: 100%;
+        height: 42px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 0 14px 0 40px;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .search-box input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+    }
+
+    .btn-create {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 42px;
+        padding: 0 17px;
+        border-radius: 10px;
+        background: #4f46e5;
+        color: white;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .btn-create:hover {
+        background: #4338ca;
+        color: white;
+    }
+
+    .table-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,.05);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .tasks-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .tasks-table thead th {
+        background: #f8fafc;
+        color: #6b7280;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 15px 17px;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    .tasks-table tbody td {
+        padding: 15px 17px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 13px;
+        color: #374151;
+        vertical-align: middle;
+    }
+
+    .tasks-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .task-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 180px;
+    }
+
+    .task-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #4f46e5;
+        flex-shrink: 0;
+    }
+
+    .task-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .badge-course {
+        display: inline-flex;
+        padding: 6px 9px;
+        border-radius: 8px;
+        background: #f0fdf4;
+        color: #15803d;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .badge-status {
+        display: inline-flex;
+        padding: 6px 9px;
+        border-radius: 8px;
+        background: #ecfdf5;
+        color: #047857;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .date {
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .teacher {
+        color: #64748b;
+    }
+
+    .actions {
+        display: flex;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .btn-action {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+
+    .btn-info-soft {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .btn-primary-soft {
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+    .btn-danger-soft {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px !important;
+        color: #9ca3af !important;
+    }
+
+    .empty-icon {
+        width: 60px;
+        height: 60px;
+        margin: auto auto 15px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+</style>
+
+<div class="container-fluid tareas-page">
+
+```
+<!-- ENCABEZADO -->
+<div class="page-header">
+
     <div>
-        <h5 style="color:#f1f5f9;margin:0;">Todas las Tareas</h5>
-        <span style="color:#64748b;font-size:13px;">{{ tareas.count }} registros</span>
+        <h1 class="page-title">Tareas</h1>
+
+        <p class="page-subtitle">
+            Administra las tareas creadas en la plataforma.
+        </p>
     </div>
+
+    <div class="stats-card">
+
+        <div class="stats-icon">
+            <i class="fas fa-tasks"></i>
+        </div>
+
+        <div>
+            <div class="stats-number">
+                {{ tareas|length }}
+            </div>
+
+            <div class="stats-label">
+                Tareas registradas
+            </div>
+        </div>
+
+    </div>
+
 </div>
 
-<div class="mb-4">
-    <a href="{% url 'crear_tarea' %}" class="btn btn-primary">Crear Tarea</a>
+
+<!-- HERRAMIENTAS -->
+<div class="toolbar">
+
+    <div class="search-box">
+
+        <i class="fas fa-search search-icon"></i>
+
+        <input
+            type="text"
+            id="searchTarea"
+            placeholder="Buscar tarea..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <a
+        href="{% url 'crear_tarea' %}"
+        class="btn-create"
+    >
+        <i class="fas fa-plus"></i>
+        Crear tarea
+    </a>
+
 </div>
 
-<div class="admin-table">
-    <table class="table table-dark-custom">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Materia</th>
-                <th>Curso</th>
-                <th>Docente</th>
-                <th>Fecha límite</th>
-                <th>Estado</th>
-                <th>Entregas</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for tarea in tareas %}
-            <tr>
-                <td>{{ tarea.titulo }}</td>
-                <td style="color:#64748b;">{{ tarea.clase }}</td>
-                <td><span class="badge-rol badge-alumno">{{ tarea.curso }}</span></td>
-                <td style="color:#64748b;">{{ tarea.docente }}</td>
-                <td style="color:#64748b;">{{ tarea.fecha_entrega|date:"d/m/Y" }}</td>
-                <td><span class="badge-rol badge-{{ t.estado }}">{{ t.get_estado_display }}</span></td>
-                <td style="color:#94a3b8;">{{ t.entregas }}/{{ t.total_alumnoss }}</td>
-                <td>
 
-                    <a href="{% url 'detalle_tarea' tarea.id %}"
-                       class="btn-action btn-info-soft" style="text-decoration:none;">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    <a href="{% url 'editar_tarea' tarea.id %}"
-                       class="btn-action btn-primary-soft" style="text-decoration:none;">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <a href="{% url 'eliminar_tarea' tarea.id %}"
-                       class="btn-action btn-danger-soft" style="text-decoration:none;"
-                       onclick="return confirm('¿Eliminar tarea {{ t.titulo }}?')">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="8" class="text-center" style="color:#475569;padding:40px;">No hay tareas</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- TABLA -->
+<div class="table-card">
+
+    <div class="table-responsive">
+
+        <table class="tasks-table">
+
+            <thead>
+                <tr>
+                    <th>Tarea</th>
+                    <th>Materia</th>
+                    <th>Curso</th>
+                    <th>Docente</th>
+                    <th>Fecha límite</th>
+                    <th>Estado</th>
+                    <th>Entregas</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+
+            <tbody>
+
+                {% for tarea in tareas %}
+
+                <tr class="task-row">
+
+                    <td>
+                        <div class="task-title">
+
+                            <div class="task-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+
+                            <span class="task-name">
+                                {{ tarea.titulo }}
+                            </span>
+
+                        </div>
+                    </td>
+
+
+                    <td>
+                        {{ tarea.clase|default:"Sin materia" }}
+                    </td>
+
+
+                    <td>
+
+                        {% if tarea.curso %}
+                            <span class="badge-course">
+                                {{ tarea.curso }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">
+                                Sin curso
+                            </span>
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        <span class="teacher">
+                            {{ tarea.docente|default:"Sin docente" }}
+                        </span>
+                    </td>
+
+
+                    <td>
+
+                        {% if tarea.fecha_entrega %}
+
+                            <span class="date">
+                                <i class="far fa-calendar-alt"></i>
+                                {{ tarea.fecha_entrega|date:"d/m/Y" }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                Sin fecha
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if tarea.estado %}
+
+                            <span class="badge-status">
+                                <i class="fas fa-check-circle"></i>
+                                {{ tarea.get_estado_display }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                Sin estado
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        <span class="text-muted">
+                            {{ tarea.entregas|default:"0" }}/{{ tarea.total_alumnoss|default:"0" }}
+                        </span>
+                    </td>
+
+
+                    <td>
+
+                        <div class="actions">
+
+                            <a
+                                href="{% url 'detalle_tarea' tarea.id %}"
+                                class="btn-action btn-info-soft"
+                                title="Ver"
+                            >
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+
+                            <a
+                                href="{% url 'editar_tarea' tarea.id %}"
+                                class="btn-action btn-primary-soft"
+                                title="Editar"
+                            >
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+
+                            <a
+                                href="{% url 'eliminar_tarea' tarea.id %}"
+                                class="btn-action btn-danger-soft"
+                                title="Eliminar"
+                                onclick="return confirm('¿Eliminar tarea {{ tarea.titulo|escapejs }}?')"
+                            >
+                                <i class="fas fa-trash"></i>
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="8" class="empty-state">
+
+                        <div class="empty-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+
+                        <strong>
+                            No hay tareas registradas
+                        </strong>
+
+                        <div>
+                            Las tareas creadas aparecerán aquí.
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>
+```
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.getElementById("searchTarea");
+    const rows = document.querySelectorAll(".task-row");
+
+    input.addEventListener("input", function () {
+
+        const search = this.value.toLowerCase().trim();
+
+        rows.forEach(function (row) {
+
+            const content = row.textContent.toLowerCase();
+
+            row.style.display = content.includes(search)
+                ? ""
+                : "none";
+
+        });
+
+    });
+
+});
+
+</script>
+
 {% endblock %}

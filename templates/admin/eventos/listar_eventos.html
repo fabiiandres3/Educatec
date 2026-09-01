@@ -1,102 +1,675 @@
 {% extends 'admin/base_admin.html' %}
 
 {% block page_title %}
-  Eventos
+    Eventos
 {% endblock %}
 
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h3 style="color: #f1f5f9; font-weight: 700;">Eventos</h3>
 
-      <p style="color: #64748b; margin: 0;">Gestiona los eventos y actividades de Educatec.</p>
+<style>
+    .eventos-page {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 10px 24px 40px;
+        box-sizing: border-box;
+    }
+
+    /* HEADER */
+    .eventos-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .eventos-title {
+        margin: 0;
+        color: #1f2937;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .eventos-subtitle {
+        margin: 6px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    /* CONTADOR */
+    .eventos-stats {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 12px 18px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    }
+
+    .eventos-stats-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-size: 18px;
+    }
+
+    .eventos-stats-number {
+        color: #111827;
+        font-size: 21px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .eventos-stats-label {
+        margin-top: 4px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    /* BARRA */
+    .eventos-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .eventos-search {
+        position: relative;
+        width: 300px;
+        max-width: 100%;
+    }
+
+    .eventos-search input {
+        width: 100%;
+        height: 42px;
+        padding: 0 15px 0 40px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        outline: none;
+        background: #ffffff;
+        color: #374151;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: 0.2s;
+    }
+
+    .eventos-search input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+
+    .eventos-search i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+    }
+
+    /* BOTÓN */
+    .btn-nuevo-evento {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 42px;
+        padding: 0 18px;
+        border-radius: 10px;
+        background: #4f46e5;
+        border: 1px solid #4f46e5;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-nuevo-evento:hover {
+        background: #4338ca;
+        border-color: #4338ca;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    /* TARJETA */
+    .eventos-card {
+        width: 100%;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .eventos-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 20px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .eventos-card-title {
+        margin: 0;
+        color: #374151;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .eventos-card-count {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    /* TABLA */
+    .eventos-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .eventos-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .eventos-table thead th {
+        padding: 15px 18px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+        color: #6b7280;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+    }
+
+    .eventos-table tbody td {
+        padding: 16px 18px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #374151;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .eventos-table tbody tr {
+        transition: 0.2s;
+    }
+
+    .eventos-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .eventos-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* EVENTO */
+    .evento-info {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 200px;
+    }
+
+    .evento-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+    .evento-nombre {
+        color: #1f2937;
+        font-weight: 600;
+    }
+
+    /* DATOS */
+    .evento-dato {
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .evento-dato i {
+        margin-right: 5px;
+        color: #94a3b8;
+    }
+
+    /* BADGES */
+    .evento-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge-tipo {
+        background: #f5f3ff;
+        color: #7c3aed;
+    }
+
+    .badge-publico {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .badge-publicado {
+        background: #ecfdf5;
+        color: #047857;
+    }
+
+    .badge-no-publicado {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    /* ACCIONES */
+    .evento-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .evento-action {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .evento-action:hover {
+        transform: translateY(-1px);
+    }
+
+    .evento-action-new {
+        background: #eef2ff;
+        color: #4f46e5;
+        border: 1px solid #e0e7ff;
+    }
+
+    .evento-action-new:hover {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+
+    /* ESTADO VACÍO */
+    .evento-empty {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .evento-empty-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #f3f4f6;
+        color: #9ca3af;
+        font-size: 25px;
+    }
+
+    .evento-empty-title {
+        margin-bottom: 5px;
+        color: #374151;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .evento-empty-text {
+        color: #9ca3af;
+        font-size: 13px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+
+        .eventos-page {
+            padding: 10px 15px 30px;
+        }
+
+        .eventos-title {
+            font-size: 23px;
+        }
+
+        .eventos-stats {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .eventos-toolbar {
+            align-items: stretch;
+        }
+
+        .eventos-search {
+            width: 100%;
+        }
+
+        .btn-nuevo-evento {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="eventos-page">
+
+    <!-- ENCABEZADO -->
+    <div class="eventos-header">
+
+        <div>
+
+            <h1 class="eventos-title">
+                Eventos
+            </h1>
+
+            <p class="eventos-subtitle">
+                Gestiona los eventos y actividades de Educatec.
+            </p>
+
+        </div>
+
+
+        <!-- CONTADOR -->
+        <div class="eventos-stats">
+
+            <div class="eventos-stats-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+
+            <div>
+
+                <div class="eventos-stats-number">
+                    {{ eventos|length }}
+                </div>
+
+                <div class="eventos-stats-label">
+                    Eventos registrados
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <a href="{% url 'crear_evento' %}" class="btn btn-info">
-      <i class="fas fa-plus me-2"></i>
-      Nuevo evento
-    </a>
-  </div>
 
-  <div class="admin-table">
-    <div class="admin-table-header">
-      <h6>
-        <i class="fas fa-calendar-alt me-2"></i>
-        Eventos registrados
-      </h6>
+    <!-- BARRA DE HERRAMIENTAS -->
+    <div class="eventos-toolbar">
 
-      <span style="color: #64748b;">{{ eventos|length }} evento{{ eventos|length|pluralize }}</span>
+        <div class="eventos-search">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="text"
+                id="buscarEvento"
+                placeholder="Buscar evento..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <a
+            href="{% url 'crear_evento' %}"
+            class="btn-nuevo-evento"
+        >
+            <i class="fas fa-plus"></i>
+            Nuevo evento
+        </a>
+
     </div>
 
-    {% if eventos %}
-      <div class="table-responsive">
-        <table class="table table-dark-custom">
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th>Tipo</th>
-              <th>Fecha</th>
-              <th>Hora</th>
-              <th>Público</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
 
-          <tbody>
-            {% for evento in eventos %}
-              <tr>
-                <td>
-                  <strong style="color: #f1f5f9;">{{ evento.titulo }}</strong>
-                </td>
+    <!-- TABLA -->
+    <div class="eventos-card">
 
-                <td>
-                  <span class="badge-rol badge-docente">{{ evento.get_tipo_display }}</span>
-                </td>
+        <div class="eventos-card-header">
 
-                <td>
-                  <i class="fas fa-calendar-day me-1"></i>
-                  {{ evento.fecha|date:'d/m/Y' }}
-                </td>
+            <h3 class="eventos-card-title">
+                <i class="fas fa-calendar-check me-2"></i>
+                Eventos registrados
+            </h3>
 
-                <td>
-                  {% if evento.hora %}
-                    <i class="fas fa-clock me-1"></i>
-                    {{ evento.hora|time:'H:i' }}
-                  {% else %}
-                    —
-                  {% endif %}
-                </td>
+            <span class="eventos-card-count">
+                {{ eventos|length }}
+                evento{{ eventos|length|pluralize }}
+            </span>
 
-                <td>{{ evento.get_publico_display }}</td>
+        </div>
 
-                <td>
-                  {% if evento.publicado %}
-                    <span class="badge-rol badge-entregada">Publicado</span>
-                  {% else %}
-                    <span class="badge-rol badge-vencida">No publicado</span>
-                  {% endif %}
-                </td>
 
-                <td>
-                  <a href="{% url 'crear_evento' %}" class="btn btn-info">
-                    <i class="fas fa-plus me-2"></i>
-                    Nuevo evento
-                  </a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <div class="text-center p-5">
-        <i class="fas fa-calendar-times" style="font-size: 45px; color: #475569;"></i>
+        {% if eventos %}
 
-        <h5 class="mt-3" style="color: #f1f5f9;">No hay eventos</h5>
+        <div class="eventos-table-wrapper">
 
-        <p style="color: #64748b;">Todavía no se han creado eventos.</p>
-      </div>
-    {% endif %}
-  </div>
+            <table class="eventos-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Evento</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Público</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for evento in eventos %}
+
+                    <tr class="evento-row">
+
+                        <!-- EVENTO -->
+                        <td>
+
+                            <div class="evento-info">
+
+                                <div class="evento-icon">
+                                    <i class="fas fa-calendar-day"></i>
+                                </div>
+
+                                <span class="evento-nombre">
+                                    {{ evento.titulo }}
+                                </span>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- TIPO -->
+                        <td>
+
+                            <span class="evento-badge badge-tipo">
+                                <i class="fas fa-tag"></i>
+                                {{ evento.get_tipo_display }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- FECHA -->
+                        <td>
+
+                            <span class="evento-dato">
+                                <i class="fas fa-calendar-day"></i>
+                                {{ evento.fecha|date:"d/m/Y" }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- HORA -->
+                        <td>
+
+                            {% if evento.hora %}
+
+                                <span class="evento-dato">
+                                    <i class="fas fa-clock"></i>
+                                    {{ evento.hora|time:"H:i" }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    Sin hora
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- PÚBLICO -->
+                        <td>
+
+                            <span class="evento-badge badge-publico">
+                                <i class="fas fa-users"></i>
+                                {{ evento.get_publico_display }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- ESTADO -->
+                        <td>
+
+                            {% if evento.publicado %}
+
+                                <span class="evento-badge badge-publicado">
+                                    <i class="fas fa-check-circle"></i>
+                                    Publicado
+                                </span>
+
+                            {% else %}
+
+                                <span class="evento-badge badge-no-publicado">
+                                    <i class="fas fa-eye-slash"></i>
+                                    No publicado
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACCIONES -->
+                        <td>
+
+                            <div class="evento-actions">
+
+                                <a
+                                    href="{% url 'crear_evento' %}"
+                                    class="evento-action evento-action-new"
+                                    title="Nuevo evento"
+                                >
+                                    <i class="fas fa-plus"></i>
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="evento-empty">
+
+            <div class="evento-empty-icon">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+
+            <div class="evento-empty-title">
+                No hay eventos registrados
+            </div>
+
+            <div class="evento-empty-text">
+                Todavía no se han creado eventos.
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.getElementById("buscarEvento");
+    const rows = document.querySelectorAll(".evento-row");
+
+    if (!input) return;
+
+    input.addEventListener("input", function () {
+
+        const texto = this.value.toLowerCase().trim();
+
+        rows.forEach(function (row) {
+
+            const contenido = row.textContent.toLowerCase();
+
+            row.style.display =
+                contenido.includes(texto)
+                    ? ""
+                    : "none";
+
+        });
+
+    });
+
+});
+
+</script>
+
 {% endblock %}

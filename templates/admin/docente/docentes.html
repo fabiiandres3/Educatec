@@ -4,57 +4,594 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
+    .docentes-page {
+        padding: 10px 5px 30px;
+    }
 
-    <div class="d-flex justify-content-between mb-3">
-        <h2>Docentes Registrados</h2>
+    /* HEADER */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .page-title {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-subtitle {
+        margin: 5px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    /* CONTADOR */
+    .stats-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 14px 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    }
+
+    .stats-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-size: 20px;
+    }
+
+    .stats-number {
+        font-size: 22px;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1;
+    }
+
+    .stats-label {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+
+    /* TARJETA */
+    .table-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    /* TOOLBAR */
+    .table-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 18px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        flex-wrap: wrap;
+    }
+
+    .table-toolbar-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #374151;
+        margin: 0;
+    }
+
+    .search-box {
+        position: relative;
+        width: 280px;
+        max-width: 100%;
+    }
+
+    .search-box input {
+        width: 100%;
+        height: 40px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 0 14px 0 40px;
+        outline: none;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .search-box input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-size: 14px;
+    }
+
+    /* TABLA */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .docentes-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .docentes-table thead th {
+        background: #f8fafc;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 15px 18px;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    .docentes-table tbody td {
+        padding: 16px 18px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #374151;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .docentes-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .docentes-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .docentes-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* ID */
+    .teacher-id {
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    /* USUARIO */
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .user-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .username {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    /* NOMBRE */
+    .teacher-name {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    /* CORREO */
+    .email {
+        color: #6b7280;
+    }
+
+    /* ROL */
+    .badge-role {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    /* ACCIONES */
+    .actions {
+        display: flex;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 8px;
+        padding: 7px 11px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-edit {
+        background: #fff7ed;
+        color: #c2410c;
+        border: 1px solid #fed7aa;
+    }
+
+    .btn-edit:hover {
+        background: #ffedd5;
+        color: #9a3412;
+    }
+
+    .btn-delete {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .btn-delete:hover {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    /* ESTADO VACÍO */
+    .empty-state {
+        text-align: center;
+        padding: 55px 20px !important;
+    }
+
+    .empty-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        font-size: 24px;
+    }
+
+    .empty-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 5px;
+    }
+
+    .empty-text {
+        color: #9ca3af;
+        font-size: 13px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+
+        .page-title {
+            font-size: 23px;
+        }
+
+        .stats-card {
+            width: 100%;
+        }
+
+        .table-toolbar {
+            align-items: stretch;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+
+        .docentes-table thead th,
+        .docentes-table tbody td {
+            padding: 12px;
+        }
+
+        .actions {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid docentes-page">
+
+```
+<!-- ENCABEZADO -->
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">Docentes</h1>
+
+        <p class="page-subtitle">
+            Gestiona los docentes registrados en la plataforma.
+        </p>
+    </div>
+
+
+    <!-- CONTADOR -->
+    <div class="stats-card">
+
+        <div class="stats-icon">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+
+        <div>
+            <div class="stats-number">
+                {{ docentes|length }}
+            </div>
+
+            <div class="stats-label">
+                Docentes registrados
+            </div>
+        </div>
 
     </div>
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Usuario</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Correo</th>
-                <th>Rol</th>
-                <th width="180">Acciones</th>
-            </tr>
-        </thead>
+</div>
 
-        <tbody>
-            {% for docente in docentes %}
-            <tr>
-                <td>{{ docente.id }}</td>
-                <td>{{ docente.username }}</td>
-                <td>{{ docente.first_name }}</td>
-                <td>{{ docente.last_name }}</td>
-                <td>{{ docente.email }}</td>
-                <td>{{ docente.rol.nombre }}</td>
 
-                <td>
-                    <a href="{% url 'editar_docente' docente.id %}" class="btn btn-warning btn-sm">
-                        Editar
-                    </a>
+<!-- TABLA -->
+<div class="table-card">
 
-                    <a href="{% url 'eliminar_docente' docente.id %}" class="btn btn-danger btn-sm">
-                        Eliminar
-                    </a>
-                </td>
-            </tr>
+    <!-- TOOLBAR -->
+    <div class="table-toolbar">
 
-            {% empty %}
-            <tr>
-                <td colspan="6" class="text-center">
-                    No hay docentes registrados.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <h3 class="table-toolbar-title">
+            Lista de docentes
+        </h3>
+
+
+        <div class="search-box">
+
+            <i class="fas fa-search search-icon"></i>
+
+            <input
+                type="text"
+                id="searchDocente"
+                placeholder="Buscar docente..."
+                autocomplete="off"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLA RESPONSIVE -->
+    <div class="table-responsive">
+
+        <table class="docentes-table">
+
+            <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody id="docentesTableBody">
+
+                {% for docente in docentes %}
+
+                <tr class="docente-row">
+
+                    <!-- ID -->
+                    <td>
+                        <span class="teacher-id">
+                            #{{ docente.id }}
+                        </span>
+                    </td>
+
+
+                    <!-- USUARIO -->
+                    <td>
+
+                        <div class="user-info">
+
+                            <div class="user-avatar">
+                                {{ docente.first_name|default:docente.username|slice:":1"|upper }}
+                            </div>
+
+                            <span class="username">
+                                {{ docente.username }}
+                            </span>
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- NOMBRE -->
+                    <td>
+                        <span class="teacher-name">
+                            {{ docente.first_name|default:"—" }}
+                        </span>
+                    </td>
+
+
+                    <!-- APELLIDO -->
+                    <td>
+                        <span class="teacher-name">
+                            {{ docente.last_name|default:"—" }}
+                        </span>
+                    </td>
+
+
+                    <!-- CORREO -->
+                    <td>
+                        <span class="email">
+                            {{ docente.email|default:"—" }}
+                        </span>
+                    </td>
+
+
+                    <!-- ROL -->
+                    <td>
+
+                        {% if docente.rol %}
+
+                            <span class="badge-role">
+                                <i class="fas fa-user-tag"></i>
+                                {{ docente.rol.nombre }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                Sin rol
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ACCIONES -->
+                    <td>
+
+                        <div class="actions">
+
+                            <a
+                                href="{% url 'editar_docente' docente.id %}"
+                                class="action-btn btn-edit"
+                                title="Editar docente"
+                            >
+                                <i class="fas fa-edit"></i>
+                                Editar
+                            </a>
+
+
+                            <a
+                                href="{% url 'eliminar_docente' docente.id %}"
+                                class="action-btn btn-delete"
+                                title="Eliminar docente"
+                            >
+                                <i class="fas fa-trash-alt"></i>
+                                Eliminar
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="7" class="empty-state">
+
+                        <div class="empty-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+
+                        <div class="empty-title">
+                            No hay docentes registrados
+                        </div>
+
+                        <div class="empty-text">
+                            Cuando se registren docentes aparecerán aquí.
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
 
 </div>
+```
+
+</div>
+
+<!-- BUSCADOR EN TIEMPO REAL -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("searchDocente");
+    const rows = document.querySelectorAll(".docente-row");
+
+    searchInput.addEventListener("input", function () {
+
+        const search = this.value.toLowerCase().trim();
+
+        rows.forEach(function (row) {
+
+            const text = row.textContent.toLowerCase();
+
+            if (text.includes(search)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+
+        });
+
+    });
+
+});
+
+</script>
 
 {% endblock %}
