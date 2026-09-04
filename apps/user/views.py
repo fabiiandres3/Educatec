@@ -631,4 +631,4 @@ def Eliminar_usuario(request, usuario_id):
     # GET
     # -----------------------------------------------------
 
-    return render(request, "admin/docente/eliminar_docente.html", {"usuario": usuario})
+    return render(request, "admin/usuarios/eliminar_usuario.html", {"usuario": usuario})

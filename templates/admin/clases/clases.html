@@ -5,6 +5,7 @@
 {% block content %}
 
 <style>
+
     .clases-page {
         padding: 10px 5px 30px;
     }
@@ -248,6 +249,8 @@
         font-weight: 600;
         text-decoration: none;
         transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
     }
 
     .btn-edit {
@@ -303,6 +306,111 @@
         font-size: 13px;
     }
 
+    /* MODAL ELIMINAR */
+    .modal-eliminar {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .modal-eliminar.activo {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-box {
+        width: 100%;
+        max-width: 420px;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+        transform: translateY(15px) scale(0.97);
+        transition: all 0.2s ease;
+    }
+
+    .modal-eliminar.activo .modal-box {
+        transform: translateY(0) scale(1);
+    }
+
+    .modal-icon {
+        width: 62px;
+        height: 62px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: #fef2f2;
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+    }
+
+    .modal-title {
+        font-size: 21px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 10px;
+    }
+
+    .modal-text {
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+    }
+
+    .modal-text strong {
+        color: #374151;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .modal-btn {
+        min-width: 120px;
+        height: 42px;
+        padding: 0 16px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancelar {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+    }
+
+    .btn-cancelar:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-confirmar {
+        background: #dc2626;
+        color: #ffffff;
+        border: 1px solid #dc2626;
+    }
+
+    .btn-confirmar:hover {
+        background: #b91c1c;
+        border-color: #b91c1c;
+    }
+
     /* RESPONSIVE */
     @media (max-width: 768px) {
 
@@ -339,42 +447,236 @@
         .action-btn {
             width: 100%;
         }
+
+        .modal-box {
+            padding: 25px 20px;
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+
+        .modal-btn {
+            width: 100%;
+        }
     }
+
 </style>
 
 <div class="container-fluid clases-page">
 
-```
-<!-- ENCABEZADO -->
-<div class="page-header">
-
-    <div>
-        <h1 class="page-title">
-            Clases
-        </h1>
-
-        <p class="page-subtitle">
-            Gestiona las clases disponibles en la plataforma.
-        </p>
-    </div>
-
-
-    <!-- CONTADOR -->
-    <div class="stats-card">
-
-        <div class="stats-icon">
-            <i class="fas fa-chalkboard"></i>
-        </div>
+    <!-- ENCABEZADO -->
+    <div class="page-header">
 
         <div>
+            <h1 class="page-title">
+                Clases
+            </h1>
 
-            <div class="stats-number">
-                {{ clases|length }}
+            <p class="page-subtitle">
+                Gestiona las clases disponibles en la plataforma.
+            </p>
+        </div>
+
+        <!-- CONTADOR -->
+        <div class="stats-card">
+
+            <div class="stats-icon">
+                <i class="fas fa-chalkboard"></i>
             </div>
 
-            <div class="stats-label">
-                Clases registradas
+            <div>
+
+                <div class="stats-number">
+                    {{ clases|length }}
+                </div>
+
+                <div class="stats-label">
+                    Clases registradas
+                </div>
+
             </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+
+        <div class="search-box">
+
+            <i class="fas fa-search search-icon"></i>
+
+            <input
+                type="text"
+                id="searchClase"
+                placeholder="Buscar clase o curso..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <a
+            href="{% url 'crear_clase' %}"
+            class="btn-create"
+        >
+
+            <i class="fas fa-plus"></i>
+            Crear clase
+
+        </a>
+
+    </div>
+
+
+    <!-- TABLA -->
+    <div class="table-card">
+
+        <div class="table-responsive">
+
+            <table class="clases-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Clase</th>
+                        <th>Curso</th>
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for clase in clases %}
+
+                    <tr class="clase-row">
+
+                        <!-- ID -->
+                        <td>
+
+                            <span class="class-id">
+                                #{{ clase.id }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- NOMBRE -->
+                        <td>
+
+                            <div class="class-info">
+
+                                <div class="class-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+
+                                <span class="class-name">
+                                    {{ clase.titulo }}
+                                </span>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- CURSO -->
+                        <td>
+
+                            {% if clase.curso %}
+
+                                <span class="course-badge">
+
+                                    <i class="fas fa-graduation-cap"></i>
+
+                                    {{ clase.curso }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    Sin curso
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACCIONES -->
+                        <td>
+
+                            <div class="actions">
+
+                                <a
+                                    href="{% url 'editar_clase' clase.id %}"
+                                    class="action-btn btn-edit"
+                                    title="Editar clase"
+                                >
+
+                                    <i class="fas fa-edit"></i>
+                                    Editar
+
+                                </a>
+
+
+                                <button
+                                    type="button"
+                                    class="action-btn btn-delete"
+                                    title="Eliminar clase"
+                                    onclick="abrirModalEliminarClase(
+                                        '{{ clase.id }}',
+                                        '{{ clase.titulo|escapejs }}'
+                                    )"
+                                >
+
+                                    <i class="fas fa-trash-alt"></i>
+                                    Eliminar
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="4" class="empty-state">
+
+                            <div class="empty-icon">
+                                <i class="fas fa-chalkboard"></i>
+                            </div>
+
+                            <div class="empty-title">
+                                No hay clases disponibles
+                            </div>
+
+                            <div class="empty-text">
+                                Cuando se creen clases aparecerán aquí.
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
 
         </div>
 
@@ -383,199 +685,155 @@
 </div>
 
 
-<!-- TOOLBAR -->
-<div class="toolbar">
+<!-- MODAL ELIMINAR CLASE -->
+<div id="modalEliminarClase" class="modal-eliminar">
 
-    <div class="search-box">
+    <div class="modal-box">
 
-        <i class="fas fa-search search-icon"></i>
+        <div class="modal-icon">
+            <i class="fas fa-trash-alt"></i>
+        </div>
 
-        <input
-            type="text"
-            id="searchClase"
-            placeholder="Buscar clase o curso..."
-            autocomplete="off"
+        <div class="modal-title">
+            ¿Eliminar clase?
+        </div>
+
+        <div class="modal-text">
+
+            Estás a punto de eliminar la clase
+            <strong id="nombreClase">esta clase</strong>.
+
+            <br>
+
+            Esta acción no se puede deshacer.
+
+        </div>
+
+
+        <form
+            id="formEliminarClase"
+            method="POST"
         >
 
-    </div>
+            {% csrf_token %}
 
+            <div class="modal-actions">
 
-    <a
-        href="{% url 'crear_clase' %}"
-        class="btn-create"
-    >
-        <i class="fas fa-plus"></i>
-        Crear clase
-    </a>
+                <button
+                    type="button"
+                    class="modal-btn btn-cancelar"
+                    onclick="cerrarModalEliminarClase()"
+                >
+                    Cancelar
+                </button>
 
-</div>
+                <button
+                    type="submit"
+                    class="modal-btn btn-confirmar"
+                >
+                    Eliminar
+                </button>
 
+            </div>
 
-<!-- TABLA -->
-<div class="table-card">
-
-    <div class="table-responsive">
-
-        <table class="clases-table">
-
-            <thead>
-
-                <tr>
-                    <th>ID</th>
-                    <th>Clase</th>
-                    <th>Curso</th>
-                    <th>Acciones</th>
-                </tr>
-
-            </thead>
-
-
-            <tbody>
-
-                {% for clase in clases %}
-
-                <tr class="clase-row">
-
-                    <!-- ID -->
-                    <td>
-                        <span class="class-id">
-                            #{{ clase.id }}
-                        </span>
-                    </td>
-
-
-                    <!-- NOMBRE -->
-                    <td>
-
-                        <div class="class-info">
-
-                            <div class="class-icon">
-                                <i class="fas fa-book"></i>
-                            </div>
-
-                            <span class="class-name">
-                                {{ clase.titulo }}
-                            </span>
-
-                        </div>
-
-                    </td>
-
-
-                    <!-- CURSO -->
-                    <td>
-
-                        {% if clase.curso %}
-
-                            <span class="course-badge">
-                                <i class="fas fa-graduation-cap"></i>
-                                {{ clase.curso }}
-                            </span>
-
-                        {% else %}
-
-                            <span class="text-muted">
-                                Sin curso
-                            </span>
-
-                        {% endif %}
-
-                    </td>
-
-
-                    <!-- ACCIONES -->
-                    <td>
-
-                        <div class="actions">
-
-                            <a
-                                href="{% url 'editar_clase' clase.id %}"
-                                class="action-btn btn-edit"
-                                title="Editar clase"
-                            >
-                                <i class="fas fa-edit"></i>
-                                Editar
-                            </a>
-
-
-                            <a
-                                href="{% url 'eliminar_clase' clase.id %}"
-                                class="action-btn btn-delete"
-                                title="Eliminar clase"
-                                onclick="return confirm('¿Estás seguro de eliminar esta clase?');"
-                            >
-                                <i class="fas fa-trash-alt"></i>
-                                Eliminar
-                            </a>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-
-                {% empty %}
-
-                <tr>
-
-                    <td colspan="4" class="empty-state">
-
-                        <div class="empty-icon">
-                            <i class="fas fa-chalkboard"></i>
-                        </div>
-
-                        <div class="empty-title">
-                            No hay clases disponibles
-                        </div>
-
-                        <div class="empty-text">
-                            Cuando se creen clases aparecerán aquí.
-                        </div>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
+        </form>
 
     </div>
 
 </div>
-```
 
-</div>
 
-<!-- BUSCADOR -->
-
+<!-- BUSCADOR + MODAL -->
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    /* BUSCADOR */
     const searchInput = document.getElementById("searchClase");
     const rows = document.querySelectorAll(".clase-row");
 
-    searchInput.addEventListener("input", function () {
+    if (searchInput) {
 
-        const search = this.value.toLowerCase().trim();
+        searchInput.addEventListener("input", function () {
 
-        rows.forEach(function (row) {
+            const search = this.value
+                .toLowerCase()
+                .trim();
 
-            const content = row.textContent.toLowerCase();
+            rows.forEach(function (row) {
 
-            row.style.display = content.includes(search)
-                ? ""
-                : "none";
+                const content = row.textContent.toLowerCase();
+
+                row.style.display = content.includes(search)
+                    ? ""
+                    : "none";
+
+            });
 
         });
+
+    }
+
+
+    /* CERRAR MODAL AL HACER CLICK FUERA */
+    const modal = document.getElementById("modalEliminarClase");
+
+    if (modal) {
+
+        modal.addEventListener("click", function (event) {
+
+            if (event.target === modal) {
+
+                cerrarModalEliminarClase();
+
+            }
+
+        });
+
+    }
+
+
+    /* CERRAR MODAL CON ESC */
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+
+            cerrarModalEliminarClase();
+
+        }
 
     });
 
 });
+
+
+function abrirModalEliminarClase(id, nombre) {
+
+    const modal = document.getElementById("modalEliminarClase");
+
+    const nombreClase = document.getElementById("nombreClase");
+
+    const formulario = document.getElementById("formEliminarClase");
+
+
+    nombreClase.textContent = nombre.trim() || "esta clase";
+
+
+    formulario.action = "{% url 'eliminar_clase' 0 %}".replace("0", id);
+
+
+    modal.classList.add("activo");
+
+}
+
+
+function cerrarModalEliminarClase() {
+
+    const modal = document.getElementById("modalEliminarClase");
+
+    modal.classList.remove("activo");
+
+}
 
 </script>
 

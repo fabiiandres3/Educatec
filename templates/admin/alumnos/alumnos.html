@@ -5,6 +5,7 @@
 {% block content %}
 
 <style>
+
     .alumnos-page {
         padding: 10px 5px 30px;
     }
@@ -253,6 +254,7 @@
         font-weight: 600;
         text-decoration: none;
         transition: all 0.2s ease;
+        cursor: pointer;
     }
 
     .btn-edit {
@@ -308,8 +310,116 @@
         font-size: 13px;
     }
 
+    /* =========================================================
+       MODAL ELIMINAR
+       ========================================================= */
+
+    .modal-eliminar {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-eliminar.activo {
+        display: flex;
+    }
+
+    .modal-box {
+        width: 100%;
+        max-width: 420px;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+        animation: aparecerModal 0.2s ease;
+    }
+
+    .modal-icon {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: #fef2f2;
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+    }
+
+    .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 10px;
+    }
+
+    .modal-text {
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    .modal-text strong {
+        color: #374151;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .modal-btn {
+        border: none;
+        border-radius: 9px;
+        padding: 10px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancelar {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .btn-cancelar:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-confirmar {
+        background: #dc2626;
+        color: #ffffff;
+    }
+
+    .btn-confirmar:hover {
+        background: #b91c1c;
+    }
+
+    @keyframes aparecerModal {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
+
         .page-title {
             font-size: 23px;
         }
@@ -339,262 +449,552 @@
             width: 100%;
         }
     }
+
+    @media (max-width: 480px) {
+
+        .modal-box {
+            padding: 25px 20px;
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+
+        .modal-btn {
+            width: 100%;
+        }
+    }
+
 </style>
+
 
 <div class="container-fluid alumnos-page">
 
-```
-<!-- ENCABEZADO -->
-<div class="page-header">
-
-    <div>
-        <h1 class="page-title">Alumnos</h1>
-        <p class="page-subtitle">
-            Gestiona los alumnos registrados en la plataforma.
-        </p>
-    </div>
-
-    <!-- CONTADOR -->
-    <div class="stats-card">
-        <div class="stats-icon">
-            <i class="fas fa-user-graduate"></i>
-        </div>
+    <!-- ENCABEZADO -->
+    <div class="page-header">
 
         <div>
-            <div class="stats-number" id="totalAlumnos">
-                {{ alumnos|length }}
-            </div>
 
-            <div class="stats-label">
-                Alumnos registrados
-            </div>
-        </div>
-    </div>
+            <h1 class="page-title">
+                Alumnos
+            </h1>
 
-</div>
+            <p class="page-subtitle">
+                Gestiona los alumnos registrados en la plataforma.
+            </p>
 
-
-<!-- TABLA -->
-<div class="table-card">
-
-    <!-- TOOLBAR -->
-    <div class="table-toolbar">
-
-        <h3 class="table-toolbar-title">
-            Lista de alumnos
-        </h3>
-
-        <div class="search-box">
-            <i class="fas fa-search search-icon"></i>
-
-            <input
-                type="text"
-                id="searchAlumno"
-                placeholder="Buscar alumno..."
-                autocomplete="off"
-            >
         </div>
 
+
+        <!-- CONTADOR -->
+        <div class="stats-card">
+
+            <div class="stats-icon">
+
+                <i class="fas fa-user-graduate"></i>
+
+            </div>
+
+            <div>
+
+                <div class="stats-number" id="totalAlumnos">
+
+                    {{ alumnos|length }}
+
+                </div>
+
+                <div class="stats-label">
+
+                    Alumnos registrados
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 
-    <!-- TABLA RESPONSIVE -->
-    <div class="table-responsive">
-
-        <table class="alumnos-table">
-
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Correo</th>
-                    <th>Curso</th>
-                    <th>Rol</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody id="alumnosTableBody">
-
-                {% for alumno in alumnos %}
-
-                <tr class="alumno-row">
-
-                    <!-- ID -->
-                    <td>
-                        <span class="student-id">
-                            #{{ alumno.id }}
-                        </span>
-                    </td>
+    <!-- TABLA -->
+    <div class="table-card">
 
 
-                    <!-- USUARIO -->
-                    <td>
-                        <div class="user-info">
+        <!-- TOOLBAR -->
+        <div class="table-toolbar">
 
-                            <div class="user-avatar">
-                                {{ alumno.first_name|default:alumno.username|slice:":1"|upper }}
+            <h3 class="table-toolbar-title">
+
+                Lista de alumnos
+
+            </h3>
+
+
+            <div class="search-box">
+
+                <i class="fas fa-search search-icon"></i>
+
+                <input
+                    type="text"
+                    id="searchAlumno"
+                    placeholder="Buscar alumno..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLA RESPONSIVE -->
+        <div class="table-responsive">
+
+            <table class="alumnos-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Usuario</th>
+
+                        <th>Nombre</th>
+
+                        <th>Apellido</th>
+
+                        <th>Correo</th>
+
+                        <th>Curso</th>
+
+                        <th>Rol</th>
+
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="alumnosTableBody">
+
+                    {% for alumno in alumnos %}
+
+                    <tr class="alumno-row">
+
+
+                        <!-- ID -->
+                        <td>
+
+                            <span class="student-id">
+
+                                #{{ alumno.id }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- USUARIO -->
+                        <td>
+
+                            <div class="user-info">
+
+                                <div class="user-avatar">
+
+                                    {{ alumno.first_name|default:alumno.username|slice:":1"|upper }}
+
+                                </div>
+
+                                <span class="username">
+
+                                    {{ alumno.username }}
+
+                                </span>
+
                             </div>
 
-                            <span class="username">
-                                {{ alumno.username }}
+                        </td>
+
+
+                        <!-- NOMBRE -->
+                        <td>
+
+                            <span class="student-name">
+
+                                {{ alumno.first_name|default:"—" }}
+
                             </span>
 
-                        </div>
-                    </td>
+                        </td>
 
 
-                    <!-- NOMBRE -->
-                    <td>
-                        <span class="student-name">
-                            {{ alumno.first_name|default:"—" }}
-                        </span>
-                    </td>
+                        <!-- APELLIDO -->
+                        <td>
 
+                            <span class="student-name">
 
-                    <!-- APELLIDO -->
-                    <td>
-                        <span class="student-name">
-                            {{ alumno.last_name|default:"—" }}
-                        </span>
-                    </td>
+                                {{ alumno.last_name|default:"—" }}
 
-
-                    <!-- CORREO -->
-                    <td>
-                        <span class="email">
-                            {{ alumno.email|default:"—" }}
-                        </span>
-                    </td>
-
-
-                    <!-- CURSO -->
-                    <td>
-
-                        {% if alumno.curso %}
-                            <span class="badge-custom badge-course">
-                                <i class="fas fa-book-open me-1"></i>
-                                {{ alumno.curso.nombre }}
                             </span>
-                        {% else %}
-                            <span class="text-muted">
-                                Sin curso
+
+                        </td>
+
+
+                        <!-- CORREO -->
+                        <td>
+
+                            <span class="email">
+
+                                {{ alumno.email|default:"—" }}
+
                             </span>
-                        {% endif %}
 
-                    </td>
-
-
-                    <!-- ROL -->
-                    <td>
-
-                        {% if alumno.rol %}
-                            <span class="badge-custom badge-role">
-                                <i class="fas fa-user-tag me-1"></i>
-                                {{ alumno.rol.nombre }}
-                            </span>
-                        {% else %}
-                            <span class="text-muted">
-                                Sin rol
-                            </span>
-                        {% endif %}
-
-                    </td>
+                        </td>
 
 
-                    <!-- ACCIONES -->
-                    <td>
+                        <!-- CURSO -->
+                        <td>
 
-                        <div class="actions">
+                            {% if alumno.curso %}
 
-                            <a
-                                href="{% url 'editar_alumno' alumno.id %}"
-                                class="action-btn btn-edit"
-                                title="Editar alumno"
-                            >
-                                <i class="fas fa-edit"></i>
-                                Editar
-                            </a>
+                                <span class="badge-custom badge-course">
 
-                            <a
-                                href="{% url 'eliminar_alumno' alumno.id %}"
-                                class="action-btn btn-delete"
-                                title="Eliminar alumno"
-                            >
-                                <i class="fas fa-trash-alt"></i>
-                                Eliminar
-                            </a>
+                                    <i class="fas fa-book-open me-1"></i>
 
-                        </div>
+                                    {{ alumno.curso.nombre }}
 
-                    </td>
+                                </span>
 
-                </tr>
+                            {% else %}
 
-                {% empty %}
+                                <span class="text-muted">
 
-                <tr>
+                                    Sin curso
 
-                    <td colspan="8" class="empty-state">
+                                </span>
 
-                        <div class="empty-icon">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
+                            {% endif %}
 
-                        <div class="empty-title">
-                            No hay alumnos registrados
-                        </div>
+                        </td>
 
-                        <div class="empty-text">
-                            Cuando se registren alumnos aparecerán aquí.
-                        </div>
 
-                    </td>
+                        <!-- ROL -->
+                        <td>
 
-                </tr>
+                            {% if alumno.rol %}
 
-                {% endfor %}
+                                <span class="badge-custom badge-role">
 
-            </tbody>
+                                    <i class="fas fa-user-tag me-1"></i>
 
-        </table>
+                                    {{ alumno.rol.nombre }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="text-muted">
+
+                                    Sin rol
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACCIONES -->
+                        <td>
+
+                            <div class="actions">
+
+
+                                <!-- EDITAR -->
+                                <a
+                                    href="{% url 'editar_alumno' alumno.id %}"
+                                    class="action-btn btn-edit"
+                                    title="Editar alumno"
+                                >
+
+                                    <i class="fas fa-edit"></i>
+
+                                    Editar
+
+                                </a>
+
+
+                                <!-- ELIMINAR -->
+                                <button
+                                    type="button"
+                                    class="action-btn btn-delete"
+                                    title="Eliminar alumno"
+                                    onclick="abrirModalEliminar(
+                                        '{{ alumno.id }}',
+                                        '{{ alumno.first_name }} {{ alumno.last_name }}'
+                                    )"
+                                >
+
+                                    <i class="fas fa-trash-alt"></i>
+
+                                    Eliminar
+
+                                </button>
+
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="8" class="empty-state">
+
+                            <div class="empty-icon">
+
+                                <i class="fas fa-user-graduate"></i>
+
+                            </div>
+
+                            <div class="empty-title">
+
+                                No hay alumnos registrados
+
+                            </div>
+
+                            <div class="empty-text">
+
+                                Cuando se registren alumnos aparecerán aquí.
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
 </div>
-```
+
+
+<!-- =========================================================
+     MODAL ELIMINAR ALUMNO
+     ========================================================= -->
+
+<div id="modalEliminar" class="modal-eliminar">
+
+    <div class="modal-box">
+
+
+        <div class="modal-icon">
+
+            <i class="fas fa-trash-alt"></i>
+
+        </div>
+
+
+        <div class="modal-title">
+
+            ¿Eliminar alumno?
+
+        </div>
+
+
+        <div class="modal-text">
+
+            Estás a punto de eliminar a
+
+            <strong id="nombreAlumno">
+
+                este alumno
+
+            </strong>.
+
+            <br>
+
+            Esta acción no se puede deshacer.
+
+        </div>
+
+
+        <form
+            id="formEliminar"
+            method="POST"
+        >
+
+            {% csrf_token %}
+
+            <div class="modal-actions">
+
+
+                <button
+                    type="button"
+                    class="modal-btn btn-cancelar"
+                    onclick="cerrarModalEliminar()"
+                >
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="modal-btn btn-confirmar"
+                >
+
+                    Eliminar
+
+                </button>
+
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
-<!-- BUSCADOR -->
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
 
-        const searchInput = document.getElementById("searchAlumno");
-        const rows = document.querySelectorAll(".alumno-row");
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       BUSCADOR
+       ===================================================== */
+
+    const searchInput = document.getElementById("searchAlumno");
+
+    const rows = document.querySelectorAll(".alumno-row");
+
+
+    if (searchInput) {
 
         searchInput.addEventListener("input", function () {
 
             const search = this.value.toLowerCase().trim();
 
+
             rows.forEach(function (row) {
 
                 const text = row.textContent.toLowerCase();
 
+
                 if (text.includes(search)) {
+
                     row.style.display = "";
+
                 } else {
+
                     row.style.display = "none";
+
                 }
 
             });
 
         });
 
+    }
+
+
+    /* =====================================================
+       CERRAR MODAL AL HACER CLICK FUERA
+       ===================================================== */
+
+    const modal = document.getElementById("modalEliminar");
+
+
+    if (modal) {
+
+        modal.addEventListener("click", function (event) {
+
+            if (event.target === modal) {
+
+                cerrarModalEliminar();
+
+            }
+
+        });
+
+    }
+
+
+    /* =====================================================
+       CERRAR MODAL CON ESC
+       ===================================================== */
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+
+            cerrarModalEliminar();
+
+        }
+
     });
+
+});
+
+
+/* =========================================================
+   ABRIR MODAL
+   ========================================================= */
+
+function abrirModalEliminar(id, nombre) {
+
+    const modal = document.getElementById("modalEliminar");
+
+    const nombreAlumno = document.getElementById("nombreAlumno");
+
+    const formulario = document.getElementById("formEliminar");
+
+
+    nombreAlumno.textContent =
+        nombre.trim() || "este alumno";
+
+
+    formulario.action =
+        "{% url 'eliminar_alumno' 0 %}".replace("0", id);
+
+
+    modal.classList.add("activo");
+
+}
+
+
+/* =========================================================
+   CERRAR MODAL
+   ========================================================= */
+
+function cerrarModalEliminar() {
+
+    const modal = document.getElementById("modalEliminar");
+
+    modal.classList.remove("activo");
+
+}
+
 </script>
 
 {% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Eliminar usuario{% endblock %}
+
+{% block content %}
+
+<style>
+    .delete-box {
+        max-width: 480px;
+        margin: 70px auto;
+    }
+
+    .delete-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .delete-icon {
+        width: 55px;
+        height: 55px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: #fff0f1;
+        color: #dc3545;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .delete-card h3 {
+        margin-bottom: 10px;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .delete-card p {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    .delete-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .delete-actions .btn {
+        border-radius: 8px;
+        padding: 9px 18px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="delete-box">
+
+    <div class="delete-card">
+
+        <div class="delete-icon">
+            <i class="fa-solid fa-trash"></i>
+        </div>
+
+        <h3>Eliminar usuario</h3>
+
+        <p>
+            ¿Está seguro de eliminar a
+            <strong>{{ docente.first_name }} {{ docente.last_name }}</strong>?
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="delete-actions">
+
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa-solid fa-trash me-1"></i>
+                    Eliminar
+                </button>
+
+                <a href="{% url 'listar_docentes' %}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

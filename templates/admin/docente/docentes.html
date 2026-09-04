@@ -5,6 +5,7 @@
 {% block content %}
 
 <style>
+
     .docentes-page {
         padding: 10px 5px 30px;
     }
@@ -247,6 +248,7 @@
         font-weight: 600;
         text-decoration: none;
         transition: all 0.2s ease;
+        cursor: pointer;
     }
 
     .btn-edit {
@@ -302,6 +304,111 @@
         font-size: 13px;
     }
 
+    /* MODAL ELIMINAR */
+    .modal-eliminar {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 20px;
+    }
+
+    .modal-eliminar.activo {
+        display: flex;
+    }
+
+    .modal-box {
+        width: 100%;
+        max-width: 390px;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20);
+        animation: aparecerModal 0.2s ease;
+    }
+
+    @keyframes aparecerModal {
+        from {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.97);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .modal-icon {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: #fef2f2;
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+    }
+
+    .modal-title {
+        text-align: center;
+        font-size: 19px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+
+    .modal-text {
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 22px;
+    }
+
+    .modal-text strong {
+        color: #374151;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .modal-btn {
+        flex: 1;
+        border: none;
+        border-radius: 9px;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-cancelar {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .btn-cancelar:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-confirmar {
+        background: #dc2626;
+        color: #ffffff;
+    }
+
+    .btn-confirmar:hover {
+        background: #b91c1c;
+    }
+
     /* RESPONSIVE */
     @media (max-width: 768px) {
 
@@ -334,263 +441,467 @@
             width: 100%;
         }
     }
+
 </style>
+
 
 <div class="container-fluid docentes-page">
 
-```
-<!-- ENCABEZADO -->
-<div class="page-header">
-
-    <div>
-        <h1 class="page-title">Docentes</h1>
-
-        <p class="page-subtitle">
-            Gestiona los docentes registrados en la plataforma.
-        </p>
-    </div>
-
-
-    <!-- CONTADOR -->
-    <div class="stats-card">
-
-        <div class="stats-icon">
-            <i class="fas fa-chalkboard-teacher"></i>
-        </div>
+    <!-- ENCABEZADO -->
+    <div class="page-header">
 
         <div>
-            <div class="stats-number">
-                {{ docentes|length }}
-            </div>
 
-            <div class="stats-label">
-                Docentes registrados
-            </div>
+            <h1 class="page-title">
+                Docentes
+            </h1>
+
+            <p class="page-subtitle">
+                Gestiona los docentes registrados en la plataforma.
+            </p>
+
         </div>
 
-    </div>
 
-</div>
+        <!-- CONTADOR -->
+        <div class="stats-card">
 
+            <div class="stats-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
 
-<!-- TABLA -->
-<div class="table-card">
+            <div>
 
-    <!-- TOOLBAR -->
-    <div class="table-toolbar">
+                <div class="stats-number">
+                    {{ docentes|length }}
+                </div>
 
-        <h3 class="table-toolbar-title">
-            Lista de docentes
-        </h3>
+                <div class="stats-label">
+                    Docentes registrados
+                </div>
 
-
-        <div class="search-box">
-
-            <i class="fas fa-search search-icon"></i>
-
-            <input
-                type="text"
-                id="searchDocente"
-                placeholder="Buscar docente..."
-                autocomplete="off"
-            >
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- TABLA RESPONSIVE -->
-    <div class="table-responsive">
+    <!-- TABLA -->
+    <div class="table-card">
 
-        <table class="docentes-table">
+        <!-- TOOLBAR -->
+        <div class="table-toolbar">
 
-            <thead>
+            <h3 class="table-toolbar-title">
+                Lista de docentes
+            </h3>
 
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Acciones</th>
-                </tr>
+            <div class="search-box">
 
-            </thead>
+                <i class="fas fa-search search-icon"></i>
 
+                <input
+                    type="text"
+                    id="searchDocente"
+                    placeholder="Buscar docente..."
+                    autocomplete="off"
+                >
 
-            <tbody id="docentesTableBody">
+            </div>
 
-                {% for docente in docentes %}
-
-                <tr class="docente-row">
-
-                    <!-- ID -->
-                    <td>
-                        <span class="teacher-id">
-                            #{{ docente.id }}
-                        </span>
-                    </td>
+        </div>
 
 
-                    <!-- USUARIO -->
-                    <td>
+        <!-- TABLA RESPONSIVE -->
+        <div class="table-responsive">
 
-                        <div class="user-info">
+            <table class="docentes-table">
 
-                            <div class="user-avatar">
-                                {{ docente.first_name|default:docente.username|slice:":1"|upper }}
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="docentesTableBody">
+
+                    {% for docente in docentes %}
+
+                    <tr class="docente-row">
+
+                        <!-- ID -->
+                        <td>
+
+                            <span class="teacher-id">
+                                #{{ docente.id }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- USUARIO -->
+                        <td>
+
+                            <div class="user-info">
+
+                                <div class="user-avatar">
+
+                                    {{ docente.first_name|default:docente.username|slice:":1"|upper }}
+
+                                </div>
+
+                                <span class="username">
+                                    {{ docente.username }}
+                                </span>
+
                             </div>
 
-                            <span class="username">
-                                {{ docente.username }}
+                        </td>
+
+
+                        <!-- NOMBRE -->
+                        <td>
+
+                            <span class="teacher-name">
+                                {{ docente.first_name|default:"—" }}
                             </span>
 
-                        </div>
-
-                    </td>
+                        </td>
 
 
-                    <!-- NOMBRE -->
-                    <td>
-                        <span class="teacher-name">
-                            {{ docente.first_name|default:"—" }}
-                        </span>
-                    </td>
+                        <!-- APELLIDO -->
+                        <td>
 
-
-                    <!-- APELLIDO -->
-                    <td>
-                        <span class="teacher-name">
-                            {{ docente.last_name|default:"—" }}
-                        </span>
-                    </td>
-
-
-                    <!-- CORREO -->
-                    <td>
-                        <span class="email">
-                            {{ docente.email|default:"—" }}
-                        </span>
-                    </td>
-
-
-                    <!-- ROL -->
-                    <td>
-
-                        {% if docente.rol %}
-
-                            <span class="badge-role">
-                                <i class="fas fa-user-tag"></i>
-                                {{ docente.rol.nombre }}
+                            <span class="teacher-name">
+                                {{ docente.last_name|default:"—" }}
                             </span>
 
-                        {% else %}
+                        </td>
 
-                            <span class="text-muted">
-                                Sin rol
+
+                        <!-- CORREO -->
+                        <td>
+
+                            <span class="email">
+                                {{ docente.email|default:"—" }}
                             </span>
 
-                        {% endif %}
-
-                    </td>
+                        </td>
 
 
-                    <!-- ACCIONES -->
-                    <td>
+                        <!-- ROL -->
+                        <td>
 
-                        <div class="actions">
+                            {% if docente.rol %}
 
-                            <a
-                                href="{% url 'editar_docente' docente.id %}"
-                                class="action-btn btn-edit"
-                                title="Editar docente"
-                            >
-                                <i class="fas fa-edit"></i>
-                                Editar
-                            </a>
+                                <span class="badge-role">
 
+                                    <i class="fas fa-user-tag"></i>
 
-                            <a
-                                href="{% url 'eliminar_docente' docente.id %}"
-                                class="action-btn btn-delete"
-                                title="Eliminar docente"
-                            >
-                                <i class="fas fa-trash-alt"></i>
-                                Eliminar
-                            </a>
+                                    {{ docente.rol.nombre }}
 
-                        </div>
+                                </span>
 
-                    </td>
+                            {% else %}
 
-                </tr>
+                                <span class="text-muted">
+                                    Sin rol
+                                </span>
+
+                            {% endif %}
+
+                        </td>
 
 
-                {% empty %}
+                        <!-- ACCIONES -->
+                        <td>
 
-                <tr>
+                            <div class="actions">
 
-                    <td colspan="7" class="empty-state">
+                                <!-- EDITAR -->
+                                <a
+                                    href="{% url 'editar_docente' docente.id %}"
+                                    class="action-btn btn-edit"
+                                    title="Editar docente"
+                                >
 
-                        <div class="empty-icon">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
+                                    <i class="fas fa-edit"></i>
 
-                        <div class="empty-title">
-                            No hay docentes registrados
-                        </div>
+                                    Editar
 
-                        <div class="empty-text">
-                            Cuando se registren docentes aparecerán aquí.
-                        </div>
+                                </a>
 
-                    </td>
 
-                </tr>
+                                <!-- ELIMINAR -->
+                                <button
+                                    type="button"
+                                    class="action-btn btn-delete"
+                                    title="Eliminar docente"
+                                    onclick="abrirModalEliminar(
+                                        '{{ docente.id }}',
+                                        '{{ docente.first_name }} {{ docente.last_name }}'
+                                    )"
+                                >
 
-                {% endfor %}
+                                    <i class="fas fa-trash-alt"></i>
 
-            </tbody>
+                                    Eliminar
 
-        </table>
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="7" class="empty-state">
+
+                            <div class="empty-icon">
+
+                                <i class="fas fa-chalkboard-teacher"></i>
+
+                            </div>
+
+                            <div class="empty-title">
+                                No hay docentes registrados
+                            </div>
+
+                            <div class="empty-text">
+                                Cuando se registren docentes aparecerán aquí.
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
 </div>
-```
+
+
+<!-- ========================================================= -->
+<!-- MODAL DE CONFIRMACIÓN -->
+<!-- ========================================================= -->
+
+<div
+    id="modalEliminar"
+    class="modal-eliminar"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-icon">
+
+            <i class="fas fa-trash-alt"></i>
+
+        </div>
+
+
+        <div class="modal-title">
+            ¿Eliminar docente?
+        </div>
+
+
+        <div class="modal-text">
+
+            Estás a punto de eliminar a
+
+            <strong id="nombreDocente">
+                este docente
+            </strong>.
+
+            <br>
+
+            Esta acción no se puede deshacer.
+
+        </div>
+
+
+        <form
+            id="formEliminar"
+            method="POST"
+        >
+
+            {% csrf_token %}
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="modal-btn btn-cancelar"
+                    onclick="cerrarModalEliminar()"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="modal-btn btn-confirmar"
+                >
+                    Eliminar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
-<!-- BUSCADOR EN TIEMPO REAL -->
+
+<!-- ========================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ========================================================= -->
 
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    /* ============================
+       BUSCADOR
+    ============================ */
+
     const searchInput = document.getElementById("searchDocente");
+
     const rows = document.querySelectorAll(".docente-row");
 
-    searchInput.addEventListener("input", function () {
 
-        const search = this.value.toLowerCase().trim();
+    if (searchInput) {
 
-        rows.forEach(function (row) {
+        searchInput.addEventListener("input", function () {
 
-            const text = row.textContent.toLowerCase();
+            const search = this.value.toLowerCase().trim();
 
-            if (text.includes(search)) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
+
+            rows.forEach(function (row) {
+
+                const text = row.textContent.toLowerCase();
+
+
+                if (text.includes(search)) {
+
+                    row.style.display = "";
+
+                } else {
+
+                    row.style.display = "none";
+
+                }
+
+            });
+
+        });
+
+    }
+
+
+    /* ============================
+       CERRAR MODAL AL HACER CLICK
+       FUERA DE LA CAJA
+    ============================ */
+
+    const modal = document.getElementById("modalEliminar");
+
+    if (modal) {
+
+        modal.addEventListener("click", function (event) {
+
+            if (event.target === modal) {
+
+                cerrarModalEliminar();
+
             }
 
         });
 
+    }
+
+
+    /* ============================
+       CERRAR CON ESC
+    ============================ */
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+
+            cerrarModalEliminar();
+
+        }
+
     });
 
 });
+
+
+/* ============================
+   ABRIR MODAL
+============================ */
+
+function abrirModalEliminar(id, nombre) {
+
+    const modal = document.getElementById("modalEliminar");
+
+    const nombreDocente = document.getElementById("nombreDocente");
+
+    const formulario = document.getElementById("formEliminar");
+
+
+    nombreDocente.textContent = nombre.trim() || "este docente";
+
+
+    /*
+       Se utiliza la URL de eliminar_docente
+       que ya tienes configurada.
+    */
+
+    formulario.action = "{% url 'eliminar_docente' 0 %}".replace("0", id);
+
+
+    modal.classList.add("activo");
+
+}
+
+
+/* ============================
+   CERRAR MODAL
+============================ */
+
+function cerrarModalEliminar() {
+
+    const modal = document.getElementById("modalEliminar");
+
+    modal.classList.remove("activo");
+
+}
 
 </script>
 
