@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
-
+from django.shortcuts import redirect, render, get_object_or_404
 from .forms import EventoForm
 from .models import Evento
 
 
-@login_required
+
+
 def listar_eventos(request):
 
     eventos = Evento.objects.all().order_by(
@@ -21,8 +21,6 @@ def listar_eventos(request):
         }
     )
 
-
-@login_required
 def crear_evento(request):
 
     if request.method == "POST":
@@ -36,7 +34,9 @@ def crear_evento(request):
 
             form.save()
 
-            return redirect("listar_eventos")
+            return redirect(
+                "listar_eventos"
+            )
 
     else:
 
@@ -51,41 +51,90 @@ def crear_evento(request):
     )
 
 
-@login_required
-def eventos_docente(request):
+def editar_evento(request, evento_id):
 
-    eventos = Evento.objects.filter(
-        publicado=True,
-        publico__in=["todos", "docentes"]
-    ).order_by(
-        "fecha",
-        "hora"
+    evento = get_object_or_404(
+        Evento,
+        id=evento_id
     )
+
+    if request.method == "POST":
+
+        form = EventoForm(
+            request.POST,
+            request.FILES,
+            instance=evento
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect(
+                "listar_eventos"
+            )
+
+    else:
+
+        form = EventoForm(
+            instance=evento
+        )
 
     return render(
         request,
-        "admin/eventos/eventos_docente.html",
+        "admin/eventos/form_evento.html",
         {
-            "eventos": eventos,
+            "form": form,
+            "evento": evento,
+            "editar": True,
         }
     )
 
 
-@login_required
-def eventos_alumnos(request):
+def eliminar_evento(request, evento_id):
 
-    eventos = Evento.objects.filter(
-        publicado=True,
-        publico__in=["todos", "alumnos"]
-    ).order_by(
-        "fecha",
-        "hora"
+    evento = get_object_or_404(
+        Evento,
+        id=evento_id
+    )
+
+    if request.method == "POST":
+
+        evento.delete()
+
+        return redirect(
+            "listar_eventos"
+        )
+
+    return render(
+        request,
+        "admin/eventos/eliminar_evento.html",
+        {
+            "evento": evento,
+        }
+    )
+
+def detalle_evento(request, id):
+
+    evento = get_object_or_404(
+        Evento,
+        id=id,
+        activo=True
     )
 
     return render(
         request,
-        "admin/eventos/eventos_alumnos.html",
+        "eventos/detalle_evento.html",
         {
-            "eventos": eventos,
+            "evento": evento,
         }
     )
+
+
+def listar_eventos_alumno(request): 
+    eventos = Evento.objects.filter( publicado=True ).order_by( "fecha", "hora" ) 
+    return render( request, "admin/eventos/eventos_alumnos.html", { "eventos": eventos, } ) 
+
+def listar_eventos_docente(request): 
+    eventos = Evento.objects.filter( publicado=True ).order_by( "fecha", "hora" ) 
+    return render( request, "admin/eventos/eventos_docente.html", { "eventos": eventos, } )

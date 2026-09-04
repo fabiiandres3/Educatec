@@ -16,7 +16,7 @@ urlpatterns = [
         admin.site.urls
     ),
     
-    path("eventos/", include("apps.eventos.urls")),
+    path("", include("apps.eventos.urls")),
 
 
     # =========================================================

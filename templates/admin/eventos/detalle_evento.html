@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ evento.titulo }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-9">
+
+            {% if evento.imagen %}
+
+            <img
+                src="{{ evento.imagen.url }}"
+                alt="{{ evento.titulo }}"
+                class="img-fluid rounded-4 mb-4"
+                style="
+                    width:100%;
+                    max-height:500px;
+                    object-fit:cover;
+                "
+            >
+
+            {% endif %}
+
+
+            <span class="badge bg-primary mb-3">
+
+                {{ evento.get_tipo_display }}
+
+            </span>
+
+
+            <h1 class="fw-bold">
+
+                {{ evento.titulo }}
+
+            </h1>
+
+
+            <div class="d-flex gap-4 flex-wrap text-muted my-3">
+
+                <span>
+
+                    <i class="fas fa-calendar"></i>
+
+                    {{ evento.fecha|date:"d/m/Y" }}
+
+                </span>
+
+
+                {% if evento.hora %}
+
+                <span>
+
+                    <i class="fas fa-clock"></i>
+
+                    {{ evento.hora|time:"H:i" }}
+
+                </span>
+
+                {% endif %}
+
+
+                {% if evento.lugar %}
+
+                <span>
+
+                    <i class="fas fa-map-marker-alt"></i>
+
+                    {{ evento.lugar }}
+
+                </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <hr>
+
+
+            <div class="evento-detalle-texto">
+
+                {{ evento.descripcion|linebreaks }}
+
+            </div>
+
+
+            {% if evento.video %}
+
+            <div class="mt-5">
+
+                <h3>
+                    Video del evento
+                </h3>
+
+                <div class="ratio ratio-16x9">
+
+                    <iframe
+                        src="{{ evento.video }}"
+                        allowfullscreen
+                    ></iframe>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="mt-5">
+
+                <a
+                    href="{% url 'index' %}#eventos"
+                    class="btn btn-primary"
+                >
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Volver a eventos
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

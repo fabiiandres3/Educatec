@@ -10,41 +10,21 @@ class EventoForm(forms.ModelForm):
 
         fields = [
             "titulo",
-            "tipo",
-            "fecha",
-            "hora",
             "descripcion",
             "imagen",
             "video",
+            "tipo",
             "publico",
-            "publicado",
+            "fecha",
+            "hora",
         ]
 
         widgets = {
+
             "titulo": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Título del evento",
-                }
-            ),
-
-            "tipo": forms.Select(
-                attrs={
-                    "class": "form-select",
-                }
-            ),
-
-            "fecha": forms.DateInput(
-                attrs={
-                    "class": "form-control",
-                    "type": "date",
-                }
-            ),
-
-            "hora": forms.TimeInput(
-                attrs={
-                    "class": "form-control",
-                    "type": "time",
+                    "placeholder": "Título del evento"
                 }
             ),
 
@@ -52,32 +32,53 @@ class EventoForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "rows": 5,
-                    "placeholder": "Descripción del evento...",
-                }
-            ),
-
-            "imagen": forms.ClearableFileInput(
-                attrs={
-                    "class": "form-control",
+                    "placeholder": "Descripción del evento"
                 }
             ),
 
             "video": forms.URLInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "https://youtube.com/...",
+                    "placeholder": "https://youtube.com/..."
+                }
+            ),
+
+            "tipo": forms.Select(
+                attrs={
+                    "class": "form-select"
                 }
             ),
 
             "publico": forms.Select(
                 attrs={
-                    "class": "form-select",
+                    "class": "form-select"
                 }
             ),
 
-            "publicado": forms.CheckboxInput(
+            "fecha": forms.DateInput(
                 attrs={
-                    "class": "form-check-input",
+                    "class": "form-control",
+                    "type": "date"
+                }
+            ),
+
+            "hora": forms.TimeInput(
+                attrs={
+                    "class": "form-control",
+                    "type": "time"
+                }
+            ),
+
+            "lugar": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Lugar del evento"
+                }
+            ),
+
+            "activo": forms.CheckboxInput(
+                attrs={
+                    "class": "form-check-input"
                 }
             ),
         }

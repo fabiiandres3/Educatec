@@ -4,6 +4,8 @@
 <title>{% block title %}Index{% endblock %}</title>
 
 {% block content %}
+
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
@@ -261,229 +263,278 @@
 
 
     <!-- Eventos Section -->
-    <div class="container" id="eventos">
-        <div class="row mb-1">
-            <div class="col-lg-6">
-                <h2 class="section-title">Eventos del Colegio</h2>
-                <p class="section-description">
-                    Participamos en actividades que fortalecen el espíritu de comunidad, competencia sana y desarrollo
-                    integral.
+    <!-- =====================================================
+     EVENTOS DEL COLEGIO
+====================================================== -->
+
+    <section id="eventos" class="eventos-section">
+
+        <div class="container">
+
+            <!-- ENCABEZADO -->
+
+            <div class="eventos-header">
+
+                <div>
+
+                    <span class="nivel-badge">
+                        Actividades
+                    </span>
+
+                    <h2 class="section-title">
+                        Eventos del Colegio
+                    </h2>
+
+                    <p class="section-description">
+                        Participamos en actividades que fortalecen
+                        el espíritu de comunidad, la competencia sana
+                        y el desarrollo integral.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if eventos %}
+
+            <!-- CARRUSEL -->
+
+            <div class="eventos-carousel-wrapper">
+
+                <!-- FLECHA IZQUIERDA -->
+
+                <button
+                    type="button"
+                    class="carousel-arrow carousel-prev"
+                    id="btnPrev"
+                    aria-label="Evento anterior"
+                >
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+
+                <!-- VENTANA DEL CARRUSEL -->
+
+                <div
+                    class="eventos-carousel"
+                    id="eventosCarousel"
+                >
+
+                    <!-- TRACK -->
+
+                    <div
+                        class="eventos-track"
+                        id="eventosTrack"
+                    >
+
+                        {% for evento in eventos %}
+
+                        <article class="evento-card">
+
+                            <!-- IMAGEN -->
+
+                            <div class="evento-image">
+
+                                {% if evento.imagen %}
+
+                                    <img
+                                        src="{{ evento.imagen.url }}"
+                                        alt="{{ evento.titulo }}"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="evento-no-image">
+
+                                        <i class="fas fa-calendar-alt"></i>
+
+                                    </div>
+
+                                {% endif %}
+
+                                <!-- TIPO DEL EVENTO -->
+
+                                <div class="evento-type">
+
+                                    {% if evento.tipo == "academico" %}
+                                        <i class="fas fa-flask"></i>
+                                        Académico
+
+                                    {% elif evento.tipo == "reunion" %}
+                                        <i class="fas fa-users"></i>
+                                        Reunión
+
+                                    {% elif evento.tipo == "evaluacion" %}
+                                        <i class="fas fa-clipboard-check"></i>
+                                        Evaluación
+
+                                    {% elif evento.tipo == "actividad" %}
+                                        <i class="fas fa-bullseye"></i>
+                                        Actividad
+
+                                    {% elif evento.tipo == "aviso" %}
+                                        <i class="fas fa-bullhorn"></i>
+                                        Aviso
+
+                                    {% else %}
+                                        <i class="fas fa-calendar"></i>
+                                        General
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- CONTENIDO -->
+
+                            <div class="evento-content">
+
+                                <h3 class="evento-title">
+                                    {{ evento.titulo }}
+                                </h3>
+
+
+                                {% if evento.descripcion %}
+
+                                <p class="evento-description">
+                                    {{ evento.descripcion|truncatechars:130 }}
+                                </p>
+
+                                {% else %}
+
+                                <p class="evento-description">
+                                    Conoce todos los detalles de esta actividad
+                                    organizada por Educatec.
+                                </p>
+
+                                {% endif %}
+
+
+                                <!-- INFORMACIÓN -->
+
+                                <div class="evento-details">
+
+                                    <div class="evento-info">
+
+                                        <i class="fas fa-calendar-alt"></i>
+
+                                        <span>
+                                            {{ evento.fecha|date:"d/m/Y" }}
+                                        </span>
+
+                                    </div>
+
+
+                                    {% if evento.hora %}
+
+                                    <div class="evento-info">
+
+                                        <i class="fas fa-clock"></i>
+
+                                        <span>
+                                            {{ evento.hora|time:"H:i" }}
+                                        </span>
+
+                                    </div>
+
+                                    {% endif %}
+
+
+                                    {% if evento.lugar %}
+
+                                    <div class="evento-info">
+
+                                        <i class="fas fa-map-marker-alt"></i>
+
+                                        <span>
+                                            {{ evento.lugar }}
+                                        </span>
+
+                                    </div>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <!-- BOTÓN -->
+
+                                <a
+                                    href="{% url 'detalle_evento' evento.id %}"
+                                    class="evento-button"
+                                >
+
+                                    Ver detalles
+
+                                    <i class="fas fa-arrow-right"></i>
+
+                                </a>
+
+                            </div>
+
+                        </article>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- FLECHA DERECHA -->
+
+                <button
+                    type="button"
+                    class="carousel-arrow carousel-next"
+                    id="btnNext"
+                    aria-label="Evento siguiente"
+                >
+
+                    <i class="fas fa-chevron-right"></i>
+
+                </button>
+
+            </div>
+
+
+            <!-- INDICADORES -->
+
+            <div
+                class="eventos-indicators"
+                id="eventosIndicators"
+            ></div>
+
+
+            {% else %}
+
+            <!-- SIN EVENTOS -->
+
+            <div class="eventos-empty">
+
+                <div class="eventos-empty-icon">
+
+                    <i class="fas fa-calendar-times"></i>
+
+                </div>
+
+                <h3>
+                    No hay eventos disponibles
+                </h3>
+
+                <p>
+                    Próximamente publicaremos nuevas actividades.
                 </p>
-            </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-2">
-
-            <!-- FLECHA IZQUIERDA -->
-            <button class="btn btn-light shadow p-3 flex-shrink-0" id="btnPrev">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-
-            <!-- CAROUSEL -->
-            <div class="overflow-hidden w-100" id="eventosCarousel">
-
-                <!-- GRUPO 1 -->
-                <div class="carousel-item active">
-                    <div class="row g-3">
-
-                        <!-- CARD 1 -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm" style="transition:.3s ease; cursor:pointer;"
-                                onmouseover="this.classList.replace('shadow-sm','shadow-lg'); this.style.transform='translateY(-8px)'"
-                                onmouseout="this.classList.replace('shadow-lg','shadow-sm'); this.style.transform='translateY(0)'">
-
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <img src="https://i.pinimg.com/736x/42/56/7e/42567e3320389d80f985c0883bc2ac72.jpg"
-                                        alt="" class="img-fluid w-100"
-                                        style="height:300px; object-fit:cover; object-position:top;">
-                                </div>
-
-                                <div class="card-body">
-                                    <span class="badge bg-secondary mb-2">🔬 Educación</span>
-                                    <h5 class="card-title">Feria de Ciencia y Tecnología</h5>
-                                    <p class="card-text small text-muted">Exposición de proyectos innovadores e
-                                        investigaciones de nuestros alumnoss.</p>
-                                    <p class="small text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> 5 Agosto
-                                    </p>
-                                    <p class="small text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i>
-                                        Laboratorios
-                                    </p>
-                                    <a href="feria-ciencia.html" class="btn btn-primary">Ver
-                                        detalles</a>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- CARD 2 -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm" style="transition:.3s ease; cursor:pointer;"
-                                onmouseover="this.classList.replace('shadow-sm','shadow-lg'); this.style.transform='translateY(-8px)'"
-                                onmouseout="this.classList.replace('shadow-lg','shadow-sm'); this.style.transform='translateY(0)'">
-
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <img src="https://www.culturarecreacionydeporte.gov.co/sites/default/files/styles/1300/public/noticias/imagen/2022-03/Festival%20Escolar%20de%20las%20Artes.JPG?itok=uWQoKX-1"
-                                        alt="" class="img-fluid w-100"
-                                        style="height:300px; object-fit:cover; object-position:top;">
-                                </div>
-
-                                <div class="card-body">
-                                    <span class="badge bg-danger mb-2">🎭 Cultura</span>
-                                    <h5 class="card-title">Festival Artístico Scholaris</h5>
-                                    <p class="card-text small text-muted">Celebración de las artes con teatro, danza,
-                                        música y expresiones culturales.
-                                    </p>
-                                    <p class="small text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> 15
-                                        Septiembre
-                                    </p>
-                                    <p class="small text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> Teatro
-                                        Principal
-                                    </p>
-                                    <a href="festival-artistico.html" class="btn btn-primary">
-                                        Más detalles
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- CARD 3 -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm" style="transition:.3s ease; cursor:pointer;"
-                                onmouseover="this.classList.replace('shadow-sm','shadow-lg'); this.style.transform='translateY(-8px)'"
-                                onmouseout="this.classList.replace('shadow-lg','shadow-sm'); this.style.transform='translateY(0)'">
-
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <img src="https://colegiosanbenito.org/wp-content/uploads/sites/7/2022/12/sabado-lector-1024x758.jpg"
-                                        alt="" class="img-fluid w-100"
-                                        style="height:300px; object-fit:cover; object-position:top;">
-                                </div>
-
-                                <div class="card-body">
-                                    <span class="badge bg-success mb-2">📚 Académico</span>
-                                    <h5 class="card-title">Semana de la Lectura</h5>
-                                    <p class="card-text small text-muted">Actividades literarias, concursos de lectura y
-                                        presentaciones culturales para fomentar el amor por los libros.</p>
-                                    <p class="small text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> 22 Octubre
-                                    </p>
-                                    <p class="small text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i>
-                                        Biblioteca Escolar</p>
-                                    <a href="semana-lectura.html" class="btn btn-primary">
-                                        Más detalles
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- GRUPO 2 -->
-                <div class="carousel-item d-none">
-                    <div class="row g-3">
-
-                        <!-- CARD 4 -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm" style="transition:.3s ease; cursor:pointer;"
-                                onmouseover="this.classList.replace('shadow-sm','shadow-lg'); this.style.transform='translateY(-8px)'"
-                                onmouseout="this.classList.replace('shadow-lg','shadow-sm'); this.style.transform='translateY(0)'">
-
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <img src="https://www.ayto-sanfernando.com/wp-content/uploads/2015/05/DSC021821.jpg"
-                                        alt="" class="img-fluid w-100"
-                                        style="height:300px; object-fit:cover; object-position:top;">
-                                </div>
-
-                                <div class="card-body">
-                                    <span class="badge bg-warning text-dark mb-2">⚽ Deportes</span>
-                                    <h5 class="card-title">Olimpiadas Escolares</h5>
-                                    <p class="card-text small text-muted">Competencias deportivas inter-cursos que
-                                        promueven el trabajo en equipo y el fair play.</p>
-                                    <p class="small text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> 10
-                                        Noviembre
-                                    </p>
-                                    <p class="small text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i>
-                                        Polideportivo
-                                    </p>
-                                    <button class="btn btn-primary btn-sm">Ver Detalles</button>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- CARD 5 -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm" style="transition:.3s ease; cursor:pointer;"
-                                onmouseover="this.classList.replace('shadow-sm','shadow-lg'); this.style.transform='translateY(-8px)'"
-                                onmouseout="this.classList.replace('shadow-lg','shadow-sm'); this.style.transform='translateY(0)'">
-
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <img src="https://uees.edu.ec/wp-content/uploads/2021/04/ceremonia-graduacion-grado-julio-1.jpeg"
-                                        alt="" class="img-fluid w-100"
-                                        style="height:300px; object-fit:cover; object-position:top;">
-                                </div>
-
-                                <div class="card-body">
-                                    <span class="badge bg-dark mb-2">🎓 Graduación</span>
-                                    <h5 class="card-title">Ceremonia de Grados</h5>
-                                    <p class="card-text small text-muted">Celebración del logro académico de nuestros
-                                        egresados junto a sus familias.</p>
-                                    <p class="small text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> 5
-                                        Diciembre
-                                    </p>
-                                    <p class="small text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i>
-                                        Auditorio
-                                    </p>
-                                    <button class="btn btn-primary btn-sm">Ver Detalles</button>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- CARD 6 -->
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm" style="transition:.3s ease; cursor:pointer;"
-                                onmouseover="this.classList.replace('shadow-sm','shadow-lg'); this.style.transform='translateY(-8px)'"
-                                onmouseout="this.classList.replace('shadow-lg','shadow-sm'); this.style.transform='translateY(0)'">
-
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <img src="https://tse2.mm.bing.net/th/id/OIP.6H2z2k_6sszjbomP-XT0oQHaF7?rs=1&pid=ImgDetMain&o=7&rm=3"
-                                        alt="" class="img-fluid w-100"
-                                        style="height:300px; object-fit:cover; object-position:top;">
-                                </div>
-
-                                <div class="card-body">
-                                    <span class="badge bg-danger mb-2">🎨 Arte</span>
-                                    <h5 class="card-title">Exposición de Arte</h5>
-                                    <p class="card-text small text-muted">Muestra de obras creadas por alumnoss
-                                        durante el año escolar.
-                                    </p>
-                                    <p class="small text-muted mb-1"><i class="fas fa-calendar-alt me-1"></i> 20
-                                        Noviembre
-                                    </p>
-                                    <p class="small text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> Salón
-                                        Cultural
-                                    </p>
-                                    <button class="btn btn-primary btn-sm">Ver Detalles</button>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
 
             </div>
 
-            <!-- FLECHA DERECHA -->
-            <button class="btn btn-light shadow p-3 flex-shrink-0" id="btnNext">
-                <i class="fas fa-chevron-right"></i>
-            </button>
+            {% endif %}
 
         </div>
 
-    </div>
+    </section>
 
     <!-- SOBRE NOSOTROS: BACHILLERATO CON GALERÍA -->
     <section id="sobre-nosotros" class="sobre-nosotros-section py-5">

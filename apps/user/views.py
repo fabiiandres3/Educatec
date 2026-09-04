@@ -22,6 +22,8 @@ from apps.user import decorators
 
 from apps.user.tokens import email_verification_token
 
+from apps.eventos.models import Evento
+
 
 # =========================================================
 # PÁGINAS PÚBLICAS
@@ -30,7 +32,20 @@ from apps.user.tokens import email_verification_token
 
 def index(request):
 
-    return render(request, "index.html")
+    eventos = Evento.objects.filter(
+        publicado=True
+    ).order_by(
+        "fecha",
+        "hora"
+    )
+
+    return render(
+        request,
+        "index.html",
+        {
+            "eventos": eventos,
+        }
+    )
 
 
 def prescolar(request):

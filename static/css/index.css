@@ -690,3 +690,557 @@ body {
         padding: 3rem 0;
     }
 }
+
+/* =========================================================
+   EVENTOS - CARRUSEL
+========================================================= */
+
+.eventos-section {
+    padding: 90px 0;
+    background: #f8fafc;
+    overflow: hidden;
+}
+
+.eventos-header {
+    margin-bottom: 40px;
+}
+
+.eventos-header .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 12px;
+}
+
+.eventos-header .section-description {
+    max-width: 700px;
+    color: #64748b;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   CONTENEDOR DEL CARRUSEL
+========================================================= */
+
+.eventos-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    padding: 0 55px;
+}
+
+
+/* Ventana */
+
+.eventos-carousel {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+
+/* =========================================================
+   TRACK
+========================================================= */
+
+.eventos-track {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.5s ease;
+    will-change: transform;
+}
+
+
+/* =========================================================
+   TARJETA
+========================================================= */
+
+.evento-card {
+    flex: 0 0 calc((100% - 48px) / 3);
+
+    background: #ffffff;
+    border-radius: 22px;
+    overflow: hidden;
+
+    box-shadow:
+        0 10px 30px rgba(15, 23, 42, 0.08);
+
+    border: 1px solid #e5e7eb;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+
+    min-width: 0;
+}
+
+
+.evento-card:hover {
+    transform: translateY(-8px);
+
+    box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.14);
+}
+
+
+/* =========================================================
+   IMAGEN
+========================================================= */
+
+.evento-image {
+    position: relative;
+
+    width: 100%;
+    height: 230px;
+
+    overflow: hidden;
+
+    background: #e2e8f0;
+}
+
+
+.evento-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform 0.5s ease;
+}
+
+
+.evento-card:hover .evento-image img {
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   CUANDO NO HAY IMAGEN
+========================================================= */
+
+.evento-no-image {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(
+        135deg,
+        #006eff,
+        #0f172a
+    );
+
+    color: white;
+
+    font-size: 3rem;
+}
+
+
+/* =========================================================
+   TIPO DE EVENTO
+========================================================= */
+
+.evento-type {
+    position: absolute;
+
+    top: 15px;
+    left: 15px;
+
+    padding: 8px 14px;
+
+    border-radius: 50px;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    color: #006eff;
+
+    font-size: 0.8rem;
+    font-weight: 700;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.12);
+
+    backdrop-filter: blur(5px);
+}
+
+.evento-type i {
+    margin-right: 5px;
+}
+
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.evento-content {
+    padding: 25px;
+}
+
+
+/* TÍTULO */
+
+.evento-title {
+    font-size: 1.25rem;
+
+    font-weight: 800;
+
+    color: #0f172a;
+
+    margin-bottom: 12px;
+
+    line-height: 1.35;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+
+    min-height: 54px;
+}
+
+
+/* DESCRIPCIÓN */
+
+.evento-description {
+    color: #64748b;
+
+    font-size: 0.95rem;
+
+    line-height: 1.6;
+
+    margin-bottom: 20px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+
+    min-height: 72px;
+}
+
+
+/* =========================================================
+   DETALLES
+========================================================= */
+
+.evento-details {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 9px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #e5e7eb;
+
+    margin-bottom: 20px;
+}
+
+
+.evento-info {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: #475569;
+
+    font-size: 0.88rem;
+}
+
+
+.evento-info i {
+    color: #006eff;
+
+    width: 18px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   BOTÓN
+========================================================= */
+
+.evento-button {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+
+    padding: 12px 16px;
+
+    background: #006eff;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 12px;
+
+    font-weight: 700;
+
+    font-size: 0.9rem;
+
+    transition: all 0.3s ease;
+}
+
+
+.evento-button:hover {
+    background: #0055cc;
+
+    color: white;
+
+    transform: translateX(2px);
+}
+
+
+.evento-button i {
+    transition: transform 0.3s ease;
+}
+
+
+.evento-button:hover i {
+    transform: translateX(5px);
+}
+
+
+/* =========================================================
+   FLECHAS
+========================================================= */
+
+.carousel-arrow {
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: white;
+
+    color: #006eff;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1rem;
+
+    cursor: pointer;
+
+    z-index: 10;
+
+    box-shadow:
+        0 8px 20px rgba(15, 23, 42, 0.15);
+
+    transition: all 0.3s ease;
+}
+
+
+.carousel-arrow:hover {
+    background: #006eff;
+
+    color: white;
+
+    transform: translateY(-50%) scale(1.08);
+}
+
+
+.carousel-prev {
+    left: 0;
+}
+
+
+.carousel-next {
+    right: 0;
+}
+
+
+.carousel-arrow:disabled {
+    opacity: 0.35;
+
+    cursor: not-allowed;
+
+    transform: translateY(-50%);
+}
+
+
+/* =========================================================
+   INDICADORES
+========================================================= */
+
+.eventos-indicators {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 30px;
+}
+
+
+.eventos-indicator {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #cbd5e1;
+
+    border: none;
+
+    padding: 0;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+
+.eventos-indicator.active {
+    width: 28px;
+
+    border-radius: 20px;
+
+    background: #006eff;
+}
+
+
+/* =========================================================
+   SIN EVENTOS
+========================================================= */
+
+.eventos-empty {
+    text-align: center;
+
+    padding: 70px 20px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    border: 1px solid #e5e7eb;
+}
+
+
+.eventos-empty-icon {
+    font-size: 3rem;
+
+    color: #006eff;
+
+    margin-bottom: 20px;
+}
+
+
+.eventos-empty h3 {
+    color: #0f172a;
+
+    font-weight: 700;
+}
+
+
+.eventos-empty p {
+    color: #64748b;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 991px) {
+
+    .evento-card {
+        flex: 0 0 calc((100% - 24px) / 2);
+    }
+
+    .eventos-header .section-title {
+        font-size: 2.1rem;
+    }
+
+}
+
+
+/* =========================================================
+   CELULAR
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .eventos-section {
+        padding: 60px 0;
+    }
+
+    .eventos-carousel-wrapper {
+        padding: 0 45px;
+    }
+
+    .evento-card {
+        flex: 0 0 100%;
+    }
+
+    .evento-image {
+        height: 220px;
+    }
+
+    .evento-content {
+        padding: 20px;
+    }
+
+    .eventos-header .section-title {
+        font-size: 1.8rem;
+    }
+
+    .eventos-header .section-description {
+        font-size: 0.95rem;
+    }
+
+    .carousel-arrow {
+        width: 40px;
+        height: 40px;
+    }
+
+}
+
+
+/* =========================================================
+   CELULAR PEQUEÑO
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .eventos-carousel-wrapper {
+        padding: 0 38px;
+    }
+
+    .evento-image {
+        height: 200px;
+    }
+
+    .evento-title {
+        font-size: 1.15rem;
+    }
+
+}

@@ -1,0 +1,341 @@
+/* =====================================================
+   SECCIÓN EVENTOS
+===================================================== */
+
+.eventos-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.eventos-header {
+    margin-bottom: 35px;
+}
+
+.eventos-label {
+    display: inline-block;
+    margin-bottom: 10px;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+
+    color: #2563eb;
+}
+
+.eventos-header h2 {
+    margin: 0;
+
+    font-size: 38px;
+    line-height: 1.15;
+    font-weight: 800;
+
+    color: #111827;
+}
+
+.eventos-header p {
+    max-width: 650px;
+
+    margin-top: 12px;
+    margin-bottom: 0;
+
+    color: #6b7280;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.evento-card {
+    height: 100%;
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 25px rgba(15, 23, 42, 0.06);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.evento-card:hover {
+    transform: translateY(-7px);
+
+    box-shadow:
+        0 20px 45px rgba(15, 23, 42, 0.12);
+}
+
+
+/* =====================================================
+   IMAGEN
+===================================================== */
+
+.evento-imagen {
+    position: relative;
+
+    width: 100%;
+    height: 230px;
+
+    overflow: hidden;
+
+    background: #eef2ff;
+}
+
+.evento-img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform .45s ease;
+}
+
+.evento-card:hover .evento-img {
+    transform: scale(1.06);
+}
+
+
+/* =====================================================
+   PLACEHOLDER
+===================================================== */
+
+.evento-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eff6ff,
+            #eef2ff
+        );
+
+    color: #2563eb;
+
+    font-size: 48px;
+}
+
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+.evento-content {
+    padding: 24px;
+}
+
+
+/* =====================================================
+   TIPO
+===================================================== */
+
+.evento-tipo {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 11px;
+
+    border-radius: 50px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+
+/* =====================================================
+   TITULO
+===================================================== */
+
+.evento-titulo {
+    margin: 14px 0 10px;
+
+    color: #111827;
+
+    font-size: 21px;
+    line-height: 1.3;
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   DESCRIPCIÓN
+===================================================== */
+
+.evento-descripcion {
+    min-height: 48px;
+
+    margin-bottom: 20px;
+
+    color: #6b7280;
+
+    font-size: 14px;
+    line-height: 1.65;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+
+/* =====================================================
+   INFORMACIÓN
+===================================================== */
+
+.evento-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 9px;
+
+    margin-bottom: 22px;
+}
+
+.evento-info-item {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+.evento-info-item i {
+    width: 18px;
+
+    color: #2563eb;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   BOTÓN
+===================================================== */
+
+.evento-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+
+    padding: 12px 18px;
+
+    border-radius: 11px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+.evento-button:hover {
+    background: #1d4ed8;
+
+    color: #ffffff;
+
+    transform: translateY(-2px);
+}
+
+
+/* =====================================================
+   SIN EVENTOS
+===================================================== */
+
+.eventos-empty {
+    padding: 60px 20px;
+
+    text-align: center;
+
+    color: #6b7280;
+}
+
+.eventos-empty-icon {
+    width: 65px;
+    height: 65px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 25px;
+}
+
+.eventos-empty h3 {
+    margin-bottom: 7px;
+
+    color: #111827;
+
+    font-size: 20px;
+    font-weight: 750;
+}
+
+.eventos-empty p {
+    margin: 0;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .eventos-section {
+        padding: 55px 0;
+    }
+
+    .eventos-header h2 {
+        font-size: 29px;
+    }
+
+    .evento-imagen {
+        height: 210px;
+    }
+}
