@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 
 from .models import Evento
 
@@ -58,7 +59,8 @@ class EventoForm(forms.ModelForm):
             "fecha": forms.DateInput(
                 attrs={
                     "class": "form-control",
-                    "type": "date"
+                    "type": "date",
+                    "min": timezone.localdate().isoformat()
                 }
             ),
 
@@ -68,17 +70,15 @@ class EventoForm(forms.ModelForm):
                     "type": "time"
                 }
             ),
-
-            "lugar": forms.TextInput(
-                attrs={
-                    "class": "form-control",
-                    "placeholder": "Lugar del evento"
-                }
-            ),
-
-            "activo": forms.CheckboxInput(
-                attrs={
-                    "class": "form-check-input"
-                }
-            ),
         }
+
+    def clean_fecha(self):
+        fecha = self.cleaned_data.get("fecha")
+
+        if fecha and fecha < timezone.localdate():
+            raise forms.ValidationError(
+                "No puedes crear un evento en una fecha que ya pasó."
+            )
+
+        return fecha
+

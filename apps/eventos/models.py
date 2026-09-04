@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 class Evento(models.Model):
@@ -65,6 +67,14 @@ class Evento(models.Model):
     actualizado_en = models.DateTimeField(
         auto_now=True
     )
+
+    def clean(self):
+        super().clean()
+
+        if self.fecha and self.fecha < timezone.localdate():
+            raise ValidationError({
+                "fecha": "No puedes crear un evento en una fecha que ya pasó."
+            })
 
     def __str__(self):
         return self.titulo

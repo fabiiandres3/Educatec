@@ -32,9 +32,54 @@ from apps.eventos.models import Evento
 
 def index(request):
 
-    eventos = Evento.objects.filter(
-        publicado=True
-    ).order_by(
+    # =========================================================
+    # EVENTOS VISIBLES EN EL HOME
+    # =========================================================
+
+    if request.user.is_authenticated and request.user.rol:
+
+        rol = request.user.rol.nombre.strip().lower()
+
+        # ADMINISTRADOR
+        if rol in ["administrador", "admin"]:
+            eventos = Evento.objects.filter(
+                publicado=True
+            )
+
+        # DOCENTE
+        elif rol in ["docente", "docentes"]:
+            eventos = Evento.objects.filter(
+                publicado=True,
+                publico__in=["todos", "docentes"]
+            )
+
+        # ALUMNO / ESTUDIANTE
+        elif rol in ["alumno", "alumnos", "estudiante", "estudiantes"]:
+            eventos = Evento.objects.filter(
+                publicado=True,
+                publico__in=["todos", "alumnos"]
+            )
+
+        # CUALQUIER OTRO ROL
+        else:
+            eventos = Evento.objects.filter(
+                publicado=True,
+                publico="todos"
+            )
+
+    else:
+        # USUARIO NO AUTENTICADO
+        # Solo puede ver eventos públicos para todos
+        eventos = Evento.objects.filter(
+            publicado=True,
+            publico="todos"
+        )
+
+    # =========================================================
+    # ORDENAR EVENTOS
+    # =========================================================
+
+    eventos = eventos.order_by(
         "fecha",
         "hora"
     )
