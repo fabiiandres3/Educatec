@@ -5,15 +5,410 @@
 
 {% block content %}
 
-<h1 style="color: #333;">Crear Curso</h1>
-<div class="card">
-    <div class="card-body">
-        <form action="{% url 'crear_curso' %}" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Guardar</button>
-        </form>
+<style>
+    /* =========================================================
+       CREAR CURSO
+       ========================================================= */
+
+    .crear-curso-page {
+        padding-bottom: 40px;
+    }
+
+    /* HERO */
+    .curso-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        padding: 35px 40px;
+        margin-bottom: 30px;
+        background: linear-gradient(135deg, #0d6efd, #4f46e5);
+        color: white;
+        box-shadow: 0 15px 35px rgba(13, 110, 253, 0.20);
+    }
+
+    .curso-hero::before {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        top: -100px;
+        right: 80px;
+    }
+
+    .curso-hero::after {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        bottom: -80px;
+        right: -20px;
+    }
+
+    .curso-hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .curso-hero-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.16);
+        font-size: 25px;
+        margin-bottom: 18px;
+        backdrop-filter: blur(5px);
+    }
+
+    .curso-hero h1 {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .curso-hero p {
+        margin: 0;
+        font-size: 15px;
+        opacity: 0.88;
+    }
+
+    /* CONTENEDOR */
+    .curso-form-card {
+        background: #fff;
+        border-radius: 22px;
+        border: 1px solid #edf0f5;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .curso-form-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 25px 30px;
+        border-bottom: 1px solid #edf0f5;
+        background: #fff;
+    }
+
+    .form-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(13, 110, 253, 0.10);
+        color: #0d6efd;
+        font-size: 20px;
+    }
+
+    .curso-form-header h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .curso-form-header p {
+        margin: 4px 0 0;
+        color: #8a94a6;
+        font-size: 13px;
+    }
+
+    /* FORMULARIO */
+    .curso-form-body {
+        padding: 30px;
+    }
+
+    .curso-form-body p {
+        margin-bottom: 22px;
+    }
+
+    .curso-form-body label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #343a40;
+        font-size: 14px;
+    }
+
+    .curso-form-body input,
+    .curso-form-body select,
+    .curso-form-body textarea {
+        width: 100%;
+        border: 1px solid #dfe3e8;
+        border-radius: 12px;
+        padding: 12px 15px;
+        font-size: 14px;
+        color: #343a40;
+        background: #fff;
+        transition: all 0.25s ease;
+        outline: none;
+    }
+
+    .curso-form-body input:focus,
+    .curso-form-body select:focus,
+    .curso-form-body textarea:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.10);
+    }
+
+    .curso-form-body input:hover,
+    .curso-form-body select:hover,
+    .curso-form-body textarea:hover {
+        border-color: #b9c2d0;
+    }
+
+    .curso-form-body .helptext {
+        display: block;
+        margin-top: 7px;
+        color: #8a94a6;
+        font-size: 12px;
+    }
+
+    .curso-form-body ul.errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 7px 0 0;
+        color: #dc3545;
+        font-size: 13px;
+    }
+
+    /* BOTONES */
+    .curso-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        padding: 22px 30px;
+        border-top: 1px solid #edf0f5;
+        background: #fafbfc;
+    }
+
+    .btn-cancelar {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 20px;
+        border-radius: 11px;
+        border: 1px solid #dfe3e8;
+        background: white;
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.25s ease;
+    }
+
+    .btn-cancelar:hover {
+        background: #f1f3f5;
+        color: #343a40;
+        transform: translateY(-1px);
+    }
+
+    .btn-guardar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 11px 23px;
+        border: none;
+        border-radius: 11px;
+        background: linear-gradient(135deg, #0d6efd, #4f46e5);
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        box-shadow: 0 7px 18px rgba(13, 110, 253, 0.22);
+        transition: all 0.25s ease;
+    }
+
+    .btn-guardar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 22px rgba(13, 110, 253, 0.30);
+    }
+
+    .btn-guardar:active {
+        transform: translateY(0);
+    }
+
+    /* INFO LATERAL */
+    .curso-info {
+        margin-top: 25px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    .info-card {
+        padding: 20px;
+        border-radius: 17px;
+        background: #fff;
+        border: 1px solid #edf0f5;
+        box-shadow: 0 7px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .info-card-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5ff;
+        color: #0d6efd;
+        margin-bottom: 13px;
+    }
+
+    .info-card h5 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #343a40;
+        margin-bottom: 5px;
+    }
+
+    .info-card p {
+        margin: 0;
+        color: #8a94a6;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+
+        .curso-hero {
+            padding: 28px 25px;
+            border-radius: 18px;
+        }
+
+        .curso-hero h1 {
+            font-size: 26px;
+        }
+
+        .curso-form-header {
+            padding: 22px;
+        }
+
+        .curso-form-body {
+            padding: 22px;
+        }
+
+        .curso-actions {
+            padding: 18px 22px;
+            flex-direction: column-reverse;
+        }
+
+        .btn-guardar,
+        .btn-cancelar {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .curso-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="container-fluid crear-curso-page">
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+    <div class="curso-hero">
+
+        <div class="curso-hero-content">
+
+            <div class="curso-hero-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <h1>Crear nuevo curso</h1>
+
+            <p>
+                Registra un nuevo curso para organizar y gestionar
+                a los estudiantes de la institución.
+            </p>
+
+        </div>
+
     </div>
-</div>
+
+
+    <!-- =====================================================
+         FORMULARIO
+         ===================================================== -->
+    <div class="curso-form-card">
+
+        <div class="curso-form-header">
+
+            <div class="form-header-icon">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+
+            <div>
+                <h3>Información del curso</h3>
+                <p>
+                    Completa los datos necesarios para crear el curso.
+                </p>
+            </div>
+
+        </div>
+
+
+        <form
+            action="{% url 'crear_curso' %}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+
+            <div class="curso-form-body">
+
+                {{ form.non_field_errors }}
+
+                {{ form.as_p }}
+
+            </div>
+
+
+            <!-- =================================================
+                 ACCIONES
+                 ================================================= -->
+            <div class="curso-actions">
+
+                <a
+                    href="{% url 'listar_cursos' %}"
+                    class="btn-cancelar"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Cancelar
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn-guardar"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    Crear curso
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
 
 {% endblock %}

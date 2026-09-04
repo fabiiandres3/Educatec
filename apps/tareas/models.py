@@ -1,10 +1,12 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+
 from apps.user.models import Usuario
 from embed_video.fields import EmbedVideoField
 from apps.clases.models import Clases
 from apps.cursos.models import Cursos
 from apps.docentes.models import Docente
-
 
 
 class Tareas(models.Model):
@@ -53,6 +55,27 @@ class Tareas(models.Model):
         default=True
     )
 
+    def clean(self):
+        super().clean()
+
+        # No permitir una fecha de entrega anterior a hoy
+        if self.fecha_entrega and self.fecha_entrega < timezone.localdate():
+            raise ValidationError({
+                "fecha_entrega": "No puedes establecer una fecha de entrega que ya pasó."
+            })
+
+        # La fecha de entrega no puede ser anterior a la fecha de creación
+        if (
+            self.fecha_entrega
+            and self.fecha_creacion
+            and self.fecha_entrega < self.fecha_creacion
+        ):
+            raise ValidationError({
+                "fecha_entrega": "La fecha de entrega no puede ser anterior a la fecha de creación."
+            })
+
+    def __str__(self):
+        return self.titulo
 
 
 class TareaAlumno(models.Model):
@@ -81,70 +104,125 @@ class TareaAlumno(models.Model):
 
     def __str__(self):
         return f"{self.tarea} - {self.alumno}"
-        
+
 
 class Video(models.Model):
-    tarea = models.ForeignKey(Tareas, on_delete=models.CASCADE)
-    video = EmbedVideoField(blank=True, null=True)
+
+    tarea = models.ForeignKey(
+        Tareas,
+        on_delete=models.CASCADE
+    )
+
+    video = EmbedVideoField(
+        blank=True,
+        null=True
+    )
 
 
 class Imagen(models.Model):
-    tarea = models.ForeignKey(Tareas, on_delete=models.CASCADE, related_name="imagenes")
-    imagen = models.ImageField(null=True, blank=True, upload_to="imagenes/")
+
+    tarea = models.ForeignKey(
+        Tareas,
+        on_delete=models.CASCADE,
+        related_name="imagenes"
+    )
+
+    imagen = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to="imagenes/"
+    )
 
     def __str__(self):
         return str(self.imagen)
 
 
 class ArchivoTarea(models.Model):
+
     tarea = models.ForeignKey(
-        "Tareas", on_delete=models.CASCADE, related_name="archivos"
+        "Tareas",
+        on_delete=models.CASCADE,
+        related_name="archivos"
     )
 
-    archivo = models.FileField(upload_to="archivos/", blank=True, null=True)
+    archivo = models.FileField(
+        upload_to="archivos/",
+        blank=True,
+        null=True
+    )
 
-    fecha_subida = models.DateTimeField(auto_now_add=True)
+    fecha_subida = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
         return f"{self.tarea} - {self.archivo.name}"
 
 
 class Pregunta(models.Model):
+
     TIPOS = (
         ("texto", "Respuesta abierta"),
         ("opcion", "Opción múltiple"),
     )
 
     tarea = models.ForeignKey(
-        Tareas, on_delete=models.CASCADE, related_name="preguntas"
+        Tareas,
+        on_delete=models.CASCADE,
+        related_name="preguntas"
     )
 
-    descripcion = models.TextField(blank=True, null=True)
+    descripcion = models.TextField(
+        blank=True,
+        null=True
+    )
 
-    tipo = models.CharField(max_length=20, choices=TIPOS)
+    tipo = models.CharField(
+        max_length=20,
+        choices=TIPOS
+    )
 
-    puntaje = models.DecimalField(max_digits=3, decimal_places=2, default=1)
+    puntaje = models.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+        default=1
+    )
 
     def __str__(self):
-        return f" {self.descripcion} - {self.tipo} - puntaje "
+        return f"{self.descripcion} - {self.tipo} - puntaje"
 
 
 class OpcionesRespuesta(models.Model):
+
     pregunta = models.ForeignKey(
-        Pregunta, on_delete=models.CASCADE, related_name="opciones"
+        Pregunta,
+        on_delete=models.CASCADE,
+        related_name="opciones"
     )
 
-    opcion = models.CharField(max_length=255)
-    es_correcta = models.BooleanField(default=False)
+    opcion = models.CharField(
+        max_length=255
+    )
+
+    es_correcta = models.BooleanField(
+        default=False
+    )
 
     def __str__(self):
-        return f" {self.opcion} - {self.es_correcta}"
+        return f"{self.opcion} - {self.es_correcta}"
 
 
 class RespuestaCorrecta(models.Model):
-    pregunta = models.OneToOneField(Pregunta, on_delete=models.CASCADE)
 
-    respuesta = models.CharField("Respuesta", max_length=255)
+    pregunta = models.OneToOneField(
+        Pregunta,
+        on_delete=models.CASCADE
+    )
+
+    respuesta = models.CharField(
+        "Respuesta",
+        max_length=255
+    )
 
     def __str__(self):
         return self.respuesta
@@ -192,9 +270,20 @@ class RespuestaAlumno(models.Model):
         default=False
     )
 
+
 class Calificacion(models.Model):
-    alumno = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
-    tarea = models.ForeignKey(Tareas, on_delete=models.CASCADE)
+    alumno = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE
+    )
 
-    nota = models.DecimalField(max_digits=3, decimal_places=2)
+    tarea = models.ForeignKey(
+        Tareas,
+        on_delete=models.CASCADE
+    )
+
+    nota = models.DecimalField(
+        max_digits=3,
+        decimal_places=2
+    )

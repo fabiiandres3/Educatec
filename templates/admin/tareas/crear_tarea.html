@@ -5,333 +5,1089 @@
 
 {% block content %}
 
-<h2>Crear Tarea</h2>
+<style>
 
-<form method="post" enctype="multipart/form-data">
+/* =========================================================
+   CONTENEDOR GENERAL
+========================================================= */
 
-    {% csrf_token %}
+.crear-tarea-wrapper {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 10px 5px 50px;
+}
 
-    {{ tarea_form.non_field_errors }}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.tarea-header {
+    background: linear-gradient(135deg, #2563eb, #4f46e5, #7c3aed);
+    border-radius: 24px;
+    padding: 35px 40px;
+    color: white;
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(37, 99, 235, .18);
+}
+
+.tarea-header::before {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    top: -100px;
+    right: -50px;
+}
+
+.tarea-header::after {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.06);
+    bottom: -80px;
+    left: 35%;
+}
+
+.tarea-header-content {
+    position: relative;
+    z-index: 2;
+}
+
+.tarea-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.tarea-header p {
+    margin: 0;
+    opacity: .9;
+    font-size: 15px;
+}
 
 
-    <!-- TÍTULO -->
+/* =========================================================
+   LAYOUT
+========================================================= */
 
-    <div class="mb-3">
+.tarea-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 25px;
+}
 
-        {{ tarea_form.titulo.label_tag }}
 
-        {{ tarea_form.titulo }}
+/* =========================================================
+   CARDS
+========================================================= */
 
-        {% if tarea_form.titulo.errors %}
-            <div class="text-danger">
-                {{ tarea_form.titulo.errors }}
-            </div>
-        {% endif %}
+.form-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 22px;
+    box-shadow: 0 8px 25px rgba(15, 23, 42, .05);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.section-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 19px;
+}
+
+.section-title h3 {
+    font-size: 18px;
+    font-weight: 750;
+    margin: 0;
+    color: #172033;
+}
+
+.section-title span {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 3px;
+}
+
+
+/* =========================================================
+   FORMULARIO
+========================================================= */
+
+.field-group {
+    margin-bottom: 20px;
+}
+
+.field-group label {
+    display: block;
+    font-weight: 650;
+    color: #334155;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.field-group input,
+.field-group textarea,
+.field-group select {
+    width: 100%;
+    border: 1px solid #dbe2ea;
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: #f8fafc;
+    color: #1e293b;
+    transition: all .2s ease;
+}
+
+.field-group input:focus,
+.field-group textarea:focus,
+.field-group select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(79,70,229,.10);
+}
+
+.field-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.error-message {
+    margin-top: 6px;
+    color: #dc2626;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+
+/* =========================================================
+   RECURSOS
+========================================================= */
+
+.resource-box {
+    border: 2px dashed #dbe2ea;
+    border-radius: 16px;
+    padding: 18px;
+    background: #f8fafc;
+    transition: .2s ease;
+}
+
+.resource-box:hover {
+    border-color: #93c5fd;
+    background: #f8fbff;
+}
+
+.resource-input {
+    margin-bottom: 10px;
+}
+
+.resource-input input {
+    width: 100%;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    padding: 11px 13px;
+    background: white;
+}
+
+
+/* =========================================================
+   BOTONES AGREGAR
+========================================================= */
+
+.add-resource-btn {
+    border: none;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-weight: 650;
+    font-size: 13px;
+    transition: .2s ease;
+}
+
+.add-resource-btn:hover {
+    background: #dbeafe;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   EVENTOS
+========================================================= */
+
+.eventos-box {
+    display: none;
+    background: linear-gradient(135deg, #fff7ed, #fffbeb);
+    border: 1px solid #fed7aa;
+    border-radius: 17px;
+    padding: 18px;
+    margin-top: 15px;
+}
+
+.eventos-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #9a3412;
+    font-weight: 750;
+    margin-bottom: 15px;
+}
+
+.evento-fecha-item {
+    display: none;
+    background: white;
+    border: 1px solid #fed7aa;
+    border-radius: 13px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: .2s ease;
+}
+
+.evento-fecha-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 5px 15px rgba(154,52,18,.08);
+}
+
+.evento-titulo {
+    font-weight: 750;
+    color: #1e293b;
+}
+
+.evento-info {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+.evento-descripcion {
+    font-size: 13px;
+    color: #475569;
+    margin-top: 7px;
+}
+
+
+/* =========================================================
+   PREGUNTAS
+========================================================= */
+
+#preguntas-container {
+    margin-top: 15px;
+}
+
+.question-area {
+    border-radius: 14px;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.tarea-sidebar {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+}
+
+.summary-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 23px;
+    box-shadow: 0 8px 25px rgba(15,23,42,.05);
+}
+
+.summary-title {
+    font-weight: 750;
+    font-size: 17px;
+    color: #172033;
+    margin-bottom: 18px;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+}
+
+.summary-item strong {
+    display: block;
+    font-size: 13px;
+    color: #334155;
+}
+
+.summary-item small {
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   BOTONES FINALES
+========================================================= */
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.btn-create {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 20px;
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: white;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.btn-create:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37,99,235,.25);
+}
+
+.btn-cancel {
+    border-radius: 12px;
+    padding: 13px 20px;
+    background: #f1f5f9;
+    color: #475569;
+    text-decoration: none;
+    font-weight: 650;
+    transition: .2s ease;
+}
+
+.btn-cancel:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 950px) {
+
+    .tarea-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .tarea-sidebar {
+        position: static;
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    .fields-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tarea-header {
+        padding: 28px 22px;
+    }
+
+    .tarea-header h1 {
+        font-size: 25px;
+    }
+
+    .form-card {
+        padding: 20px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+}
+
+</style>
+
+<div class="crear-tarea-wrapper">
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<div class="tarea-header">
+
+    <div class="tarea-header-content">
+
+        <h1>
+            <i class="fas fa-plus-circle"></i>
+            Crear nueva tarea
+        </h1>
+
+        <p>
+            Diseña una actividad completa para tus estudiantes,
+            agrega recursos y preguntas.
+        </p>
 
     </div>
 
-
-    <!-- DESCRIPCIÓN -->
-
-    <div class="mb-3">
-
-        {{ tarea_form.descripcion.label_tag }}
-
-        {{ tarea_form.descripcion }}
-
-        {% if tarea_form.descripcion.errors %}
-            <div class="text-danger">
-                {{ tarea_form.descripcion.errors }}
-            </div>
-        {% endif %}
-
-    </div>
+</div>
 
 
-    <!-- FECHA DE ENTREGA -->
+<!-- =====================================================
+     LAYOUT
+====================================================== -->
 
-    <div class="mb-3">
-
-        {{ tarea_form.fecha_entrega.label_tag }}
-
-        {{ tarea_form.fecha_entrega }}
-
-        {% if tarea_form.fecha_entrega.errors %}
-            <div class="text-danger">
-                {{ tarea_form.fecha_entrega.errors }}
-            </div>
-        {% endif %}
-
-    </div>
+<div class="tarea-layout">
 
 
-    <!-- ====================================== -->
-    <!-- EVENTOS DE LA FECHA SELECCIONADA -->
-    <!-- ====================================== -->
+    <!-- =================================================
+         CONTENIDO PRINCIPAL
+    ================================================== -->
 
-    <div
-        id="eventos-fecha-container"
-        style="
-            display: none;
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-        "
-    >
+    <main>
 
-        <div
-            style="
-                font-weight: 700;
-                color: #9a3412;
-                margin-bottom: 12px;
-            "
-        >
-            📢 Eventos programados para esta fecha
-        </div>
+        <form method="post" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            {{ tarea_form.non_field_errors }}
 
 
-        {% for evento in eventos %}
+            <!-- =========================================
+                 INFORMACIÓN GENERAL
+            ========================================== -->
 
-            <div
-                class="evento-fecha-item"
-                data-fecha="{{ evento.fecha|date:'Y-m-d' }}"
-                style="
-                    display: none;
-                    background: white;
-                    border: 1px solid #fed7aa;
-                    border-radius: 8px;
-                    padding: 12px;
-                    margin-bottom: 8px;
-                "
-            >
+            <div class="form-card">
 
-                <div
-                    style="
-                        font-weight: 700;
-                        color: #1e293b;
-                    "
-                >
-                    📢 {{ evento.titulo }}
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Información de la tarea</h3>
+
+                        <span>
+                            Define los datos principales de la actividad
+                        </span>
+
+                    </div>
+
                 </div>
 
 
-                <div
-                    style="
-                        font-size: 13px;
-                        color: #64748b;
-                        margin-top: 4px;
-                    "
-                >
+                <!-- TÍTULO -->
 
-                    {{ evento.get_tipo_display }}
+                <div class="field-group">
 
-                    {% if evento.hora %}
-                        · {{ evento.hora|time:"H:i" }}
+                    {{ tarea_form.titulo.label_tag }}
+
+                    {{ tarea_form.titulo }}
+
+                    {% if tarea_form.titulo.errors %}
+
+                        <div class="error-message">
+                            {{ tarea_form.titulo.errors }}
+                        </div>
+
                     {% endif %}
 
                 </div>
 
 
-                {% if evento.descripcion %}
+                <!-- DESCRIPCIÓN -->
 
-                    <div
-                        style="
-                            font-size: 13px;
-                            color: #475569;
-                            margin-top: 6px;
-                        "
-                    >
-                        {{ evento.descripcion }}
+                <div class="field-group">
+
+                    {{ tarea_form.descripcion.label_tag }}
+
+                    {{ tarea_form.descripcion }}
+
+                    {% if tarea_form.descripcion.errors %}
+
+                        <div class="error-message">
+                            {{ tarea_form.descripcion.errors }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- FECHA -->
+
+                <div class="field-group">
+
+                    {{ tarea_form.fecha_entrega.label_tag }}
+
+                    {{ tarea_form.fecha_entrega }}
+
+                    {% if tarea_form.fecha_entrega.errors %}
+
+                        <div class="error-message">
+                            {{ tarea_form.fecha_entrega.errors }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- =====================================
+                     EVENTOS DE LA FECHA
+                ====================================== -->
+
+                <div
+                    id="eventos-fecha-container"
+                    class="eventos-box"
+                >
+
+                    <div class="eventos-header">
+
+                        <i class="fas fa-calendar-day"></i>
+
+                        Eventos programados para esta fecha
+
                     </div>
 
-                {% endif %}
+
+                    {% for evento in eventos %}
+
+                        <div
+                            class="evento-fecha-item"
+                            data-fecha="{{ evento.fecha|date:'Y-m-d' }}"
+                        >
+
+                            <div class="evento-titulo">
+
+                                <i class="fas fa-bullhorn"></i>
+
+                                {{ evento.titulo }}
+
+                            </div>
+
+
+                            <div class="evento-info">
+
+                                {{ evento.get_tipo_display }}
+
+                                {% if evento.hora %}
+
+                                    · {{ evento.hora|time:"H:i" }}
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if evento.descripcion %}
+
+                                <div class="evento-descripcion">
+
+                                    {{ evento.descripcion }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- CLASE Y CURSO -->
+
+                <div class="fields-grid">
+
+                    <div class="field-group">
+
+                        {{ tarea_form.clase.label_tag }}
+
+                        {{ tarea_form.clase }}
+
+                        {% if tarea_form.clase.errors %}
+
+                            <div class="error-message">
+                                {{ tarea_form.clase.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="field-group">
+
+                        {{ tarea_form.curso.label_tag }}
+
+                        {{ tarea_form.curso }}
+
+                        {% if tarea_form.curso.errors %}
+
+                            <div class="error-message">
+                                {{ tarea_form.curso.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
 
             </div>
 
-        {% empty %}
 
-            <!-- No hay eventos publicados -->
+            <!-- =========================================
+                 IMÁGENES
+            ========================================== -->
 
-        {% endfor %}
+            <div class="form-card">
 
-    </div>
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Imágenes</h3>
+
+                        <span>
+                            Añade imágenes para complementar la actividad
+                        </span>
+
+                    </div>
+
+                </div>
 
 
-    <!-- CLASE -->
+                <div
+                    id="imagenes-container"
+                    class="resource-box"
+                >
 
-    <div class="mb-3">
+                    <div class="resource-input">
 
-        {{ tarea_form.clase.label_tag }}
+                        <input
+                            type="file"
+                            name="imagenes"
+                        >
 
-        {{ tarea_form.clase }}
+                    </div>
 
-        {% if tarea_form.clase.errors %}
-            <div class="text-danger">
-                {{ tarea_form.clase.errors }}
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-resource-btn mt-3"
+                    onclick="agregarImagen()"
+                >
+
+                    <i class="fas fa-plus"></i>
+
+                    Agregar otra imagen
+
+                </button>
+
             </div>
-        {% endif %}
-
-    </div>
 
 
-    <!-- CURSO -->
+            <!-- =========================================
+                 ARCHIVOS
+            ========================================== -->
 
-    <div class="mb-3">
+            <div class="form-card">
 
-        {{ tarea_form.curso.label_tag }}
+                <div class="section-title">
 
-        {{ tarea_form.curso }}
+                    <div class="section-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
 
-        {% if tarea_form.curso.errors %}
-            <div class="text-danger">
-                {{ tarea_form.curso.errors }}
+                    <div>
+
+                        <h3>Archivos</h3>
+
+                        <span>
+                            Adjunta documentos y material de apoyo
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="archivos-container"
+                    class="resource-box"
+                >
+
+                    <div class="resource-input">
+
+                        <input
+                            type="file"
+                            name="archivos"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-resource-btn mt-3"
+                    onclick="agregarArchivo()"
+                >
+
+                    <i class="fas fa-plus"></i>
+
+                    Agregar otro archivo
+
+                </button>
+
             </div>
-        {% endif %}
-
-    </div>
 
 
-    <hr>
+            <!-- =========================================
+                 VIDEOS
+            ========================================== -->
+
+            <div class="form-card">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Videos</h3>
+
+                        <span>
+                            YouTube, Vimeo y otros recursos multimedia
+                        </span>
+
+                    </div>
+
+                </div>
 
 
-    <!-- ====================================== -->
-    <!-- IMÁGENES -->
-    <!-- ====================================== -->
+                <div
+                    id="videos-container"
+                    class="resource-box"
+                >
 
-    <h5>Imágenes</h5>
+                    <div class="resource-input">
 
-    <div id="imagenes-container">
+                        <input
+                            type="url"
+                            name="videos"
+                            placeholder="https://youtube.com/watch?v=..."
+                        >
 
-        <input
-            type="file"
-            name="imagenes"
-            class="form-control mb-2"
-        >
+                    </div>
 
-    </div>
-
-
-    <button
-        type="button"
-        class="btn btn-outline-primary btn-sm mb-3"
-        onclick="agregarImagen()"
-    >
-        + Agregar imagen
-    </button>
+                </div>
 
 
-    <hr>
+                <button
+                    type="button"
+                    class="add-resource-btn mt-3"
+                    onclick="agregarVideo()"
+                >
+
+                    <i class="fas fa-plus"></i>
+
+                    Agregar otro video
+
+                </button>
+
+            </div>
 
 
-    <!-- ====================================== -->
-    <!-- ARCHIVOS -->
-    <!-- ====================================== -->
+            <!-- =========================================
+                 PREGUNTAS
+            ========================================== -->
 
-    <h5>Archivos</h5>
+            <div class="form-card">
 
-    <div id="archivos-container">
+                <div class="section-title">
 
-        <input
-            type="file"
-            name="archivos"
-            class="form-control mb-2"
-        >
+                    <div class="section-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
 
-    </div>
+                    <div>
 
+                        <h3>Preguntas</h3>
 
-    <button
-        type="button"
-        class="btn btn-outline-primary btn-sm mb-3"
-        onclick="agregarArchivo()"
-    >
-        + Agregar archivo
-    </button>
+                        <span>
+                            Crea preguntas para evaluar a tus estudiantes
+                        </span>
 
+                    </div>
 
-    <hr>
+                </div>
 
 
-    <!-- ====================================== -->
-    <!-- VIDEOS -->
-    <!-- ====================================== -->
-
-    <h5>Videos (YouTube, Vimeo, etc.)</h5>
-
-    <div id="videos-container">
-
-        <input
-            type="url"
-            name="videos"
-            class="form-control mb-2"
-            placeholder="https://youtube.com/watch?v=..."
-        >
-
-    </div>
+                <div id="preguntas-container"></div>
 
 
-    <button
-        type="button"
-        class="btn btn-outline-primary btn-sm mb-3"
-        onclick="agregarVideo()"
-    >
-        + Agregar video
-    </button>
+                <button
+                    type="button"
+                    class="add-resource-btn mt-3"
+                    onclick="agregarPregunta()"
+                >
+
+                    <i class="fas fa-plus"></i>
+
+                    Agregar pregunta
+
+                </button>
+
+            </div>
 
 
-    <!-- ====================================== -->
-    <!-- PREGUNTAS -->
-    <!-- ====================================== -->
+            <!-- =========================================
+                 BOTONES
+            ========================================== -->
 
-    <div id="preguntas-container"></div>
+            <div class="action-buttons">
 
+                <button
+                    type="submit"
+                    class="btn-create"
+                >
 
-    <button
-        type="button"
-        class="btn btn-primary mt-3"
-        onclick="agregarPregunta()"
-    >
-        + Agregar pregunta
-    </button>
+                    <i class="fas fa-check-circle"></i>
 
+                    Crear tarea
 
-    <hr>
-
-
-    <!-- ====================================== -->
-    <!-- BOTONES -->
-    <!-- ====================================== -->
-
-    <button
-        type="submit"
-        class="btn btn-primary"
-    >
-        Crear Tarea
-    </button>
+                </button>
 
 
-    <a
-        href="{% url 'listar_tareas' %}"
-        class="btn btn-secondary"
-    >
-        Cancelar
-    </a>
+                <a
+                    href="{% url 'listar_tareas' %}"
+                    class="btn-cancel"
+                >
 
-</form>
+                    <i class="fas fa-arrow-left"></i>
+
+                    Cancelar
+
+                </a>
+
+            </div>
 
 
-<!-- ====================================== -->
-<!-- JAVASCRIPT EXISTENTE -->
-<!-- ====================================== -->
+        </form>
+
+    </main>
+
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================== -->
+
+    <aside class="tarea-sidebar">
+
+        <div class="summary-card">
+
+            <div class="summary-title">
+
+                <i class="fas fa-layer-group"></i>
+
+                Contenido de la tarea
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-icon">
+
+                    <i class="fas fa-align-left"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Información</strong>
+
+                    <small>Datos principales</small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-icon">
+
+                    <i class="fas fa-calendar"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Fecha de entrega</strong>
+
+                    <small>Define el plazo</small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-icon">
+
+                    <i class="fas fa-images"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Imágenes</strong>
+
+                    <small>Material visual</small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-icon">
+
+                    <i class="fas fa-file"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Archivos</strong>
+
+                    <small>Documentos adjuntos</small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-icon">
+
+                    <i class="fas fa-video"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Videos</strong>
+
+                    <small>Contenido multimedia</small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-icon">
+
+                    <i class="fas fa-question"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Preguntas</strong>
+
+                    <small>Evaluación</small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+</div>
+
+
+</div>
+
+<!-- =========================================================
+     JAVASCRIPT EXISTENTE
+========================================================= -->
 
 <script src="{% static 'js/tareas/tareas.js' %}"></script>
 
-
-<!-- ====================================== -->
-<!-- JAVASCRIPT DE EVENTOS -->
-<!-- ====================================== -->
+<!-- =========================================================
+     JAVASCRIPT EVENTOS
+========================================================= -->
 
 <script>
 
