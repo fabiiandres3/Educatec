@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestro equipo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- DevIcon CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+
+    <style>
+        :root {
+            /* Paleta exacta */
+            --primary: #0EA5E9;       /* Cyan / Azul Claro */
+            --secondary: #1E40AF;     /* Azul Oscuro */
+            --dark: #020617;          /* Casi Negro */
+            --bg-light: #E2E8F0;      /* Fondo Claro */
+
+            --font: 'Plus Jakarta Sans', sans-serif;
+            --transition-smooth: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-light) !important;
+            font-family: var(--font);
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Resplandores de fondo */
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+
+        body::before {
+            top: -100px;
+            left: 10%;
+            background: var(--primary);
+        }
+
+        body::after {
+            bottom: -100px;
+            right: 10%;
+            background: var(--secondary);
+        }
+
+        .team {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+            padding: 60px 24px;
+            text-align: center;
+        }
+
+        .team-header {
+            margin-bottom: 50px;
+        }
+
+        .code-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: #FFFFFF;
+            border: 1px solid rgba(14, 165, 233, 0.4);
+            border-radius: 16px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.15);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .team-header h2 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .team-header p {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .team-network {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        /* =====================================================
+           TARJETA BASE (Aumentada la altura desplegada)
+        ===================================================== */
+        .member {
+            position: relative;
+            width: 350px;
+            height: 430px;
+            background-color: #FFFFFF;
+            border: 1px solid rgba(30, 64, 175, 0.15);
+            border-radius: 24px;
+            padding: 28px 20px;
+            transition: var(--transition-smooth);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        /* Estado Hover: Mayor altura total para dar espacio a la imagen vertical */
+        .member:hover {
+            height: 640px;
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+            z-index: 10;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            margin-bottom: 14px;
+            border-radius: 50%;
+            background: var(--bg-light);
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+        }
+
+        .member h3 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .member .role {
+            color: var(--secondary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 16px;
+        }
+
+        .technologies {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            max-width: 100%;
+        }
+
+        .technologies span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--dark);
+            background: var(--bg-light);
+            border: 1px solid rgba(30, 64, 175, 0.1);
+            padding: 6px 12px;
+            border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .technologies span i {
+            font-size: 1rem;
+        }
+
+        .devicon-github-original {
+            color: var(--dark);
+        }
+
+        /* =====================================================
+           OVERLAY EXPANDIDO
+        ===================================================== */
+        .member-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: #FFFFFF;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95);
+            transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1),
+                        transform 1.2s cubic-bezier(0.25, 1, 0.5, 1),
+                        visibility 1.2s ease;
+        }
+
+        .member:hover .member-overlay {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .overlay-header {
+            text-align: center;
+            width: 100%;
+        }
+
+        .overlay-header h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 2px;
+            color: var(--dark);
+        }
+
+        .overlay-header .overlay-role {
+            color: var(--secondary);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* IMAGEN MÁS LARGA VERTICALMENTE (Aumentada de 160px a 240px) */
+        .preview-image {
+            width: 100%;
+            height: 240px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 2px solid var(--bg-light);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            margin: 6px 0;
+        }
+
+        .profile-bio {
+            font-size: 0.8rem;
+            color: #475569;
+            line-height: 1.35;
+            text-align: center;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .hobbies-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .hobbies-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            width: 100%;
+            margin-bottom: 2px;
+        }
+
+        .hobby-tag {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--dark);
+            background: var(--bg-light);
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+            padding: 9px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: #FFFFFF;
+            background: var(--dark);
+            transition: all 0.3s ease;
+        }
+
+        .social-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .social-btn.github:hover {
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .social-btn.linkedin:hover {
+            background: var(--secondary);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .team-footer {
+            margin-top: 60px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(30, 64, 175, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--dark);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .team-footer .brand {
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+        }
+
+        @media (max-width: 768px) {
+            .team-header h2 { font-size: 2.1rem; }
+            .team-network { flex-direction: column; }
+            .member { width: 100%; max-width: 380px; }
+            .team-footer {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="team">
+
+        <header class="team-header">
+            <div class="code-icon">&lt;/&gt;</div>
+            <h2>Nuestro equipo</h2>
+            <p>Pasa el cursor sobre un integrante para desplegar su perfil completo</p>
+        </header>
+
+        <div class="team-network">
+
+            <!-- MIEMBRO 1: YUBEN VARGAS -->
+            <article class="member">
+                <div class="avatar">👨‍💻</div>
+                <h3>Yuben Vargas</h3>
+                <p class="role">Full Stack Developer</p>
+                <div class="technologies">
+                    <span><i class="devicon-html5-plain colored"></i> HTML</span>
+                    <span><i class="devicon-css3-plain colored"></i> CSS</span>
+                    <span><i class="devicon-javascript-plain colored"></i> JavaScript</span>
+                    <span><i class="devicon-mysql-plain colored"></i> MySQL</span>
+                    <span><i class="devicon-git-plain colored"></i> Git</span>
+                    <span><i class="devicon-github-original colored"></i> GitHub</span>
+                    <span><i class="devicon-bootstrap-plain colored"></i> Bootstrap</span>
+                    <span><i class="devicon-django-plain colored"></i> Django</span>
+                    <span><i class="devicon-python-plain colored"></i> Python</span>
+                </div>
+
+                <div class="member-overlay">
+                    <div class="overlay-header">
+                        <h3>Yuben Vargas</h3>
+                        <span class="overlay-role">Full Stack Developer</span>
+                    </div>
+
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop" alt="Yuben Vargas" class="preview-image">
+
+                    <p class="profile-bio">
+                        Desarrollador enfocado en soluciones web integrales con Python y JavaScript, creando aplicaciones eficientes y adaptables.
+                    </p>
+
+                    <div class="hobbies-container">
+                        <span class="hobbies-label">Hobbies</span>
+                        <span class="hobby-tag">🎮 Videojuegos</span>
+                        <span class="hobby-tag">📸 Fotografía</span>
+                        <span class="hobby-tag">☕ Café</span>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="https://github.com" target="_blank" class="social-btn github">
+                            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                            GitHub
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" class="social-btn linkedin">
+                            <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MIEMBRO 2: FABIAN PAGUANA -->
+            <article class="member">
+                <div class="avatar">👨‍💻</div>
+                <h3>Fabian Paguana</h3>
+                <p class="role">Backend & API Specialist</p>
+                <div class="technologies">
+                    <span><i class="devicon-html5-plain colored"></i> HTML</span>
+                    <span><i class="devicon-css3-plain colored"></i> CSS</span>
+                    <span><i class="devicon-javascript-plain colored"></i> JavaScript</span>
+                    <span><i class="devicon-mysql-plain colored"></i> MySQL</span>
+                    <span><i class="devicon-git-plain colored"></i> Git</span>
+                    <span><i class="devicon-github-original colored"></i> GitHub</span>
+                    <span><i class="devicon-bootstrap-plain colored"></i> Bootstrap</span>
+                    <span><i class="devicon-django-plain colored"></i> Django</span>
+                    <span><i class="devicon-django-plain colored"></i> DRF</span>
+                    <span><i class="devicon-python-plain colored"></i> Python</span>
+                </div>
+
+                <div class="member-overlay">
+                    <div class="overlay-header">
+                        <h3>Fabian Paguana</h3>
+                        <span class="overlay-role">Backend & API Specialist</span>
+                    </div>
+
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop" alt="Fabian Paguana" class="preview-image">
+
+                    <p class="profile-bio">
+                        Especialista en arquitectura backend y construcción de APIs REST robustas utilizando Django Rest Framework y SQL.
+                    </p>
+
+                    <div class="hobbies-container">
+                        <span class="hobbies-label">Hobbies</span>
+                        <span class="hobby-tag">📚 Lectura</span>
+                        <span class="hobby-tag">🧩 Ajedrez</span>
+                        <span class="hobby-tag">🧗 Senderismo</span>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="https://github.com" target="_blank" class="social-btn github">
+                            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                            GitHub
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" class="social-btn linkedin">
+                            <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MIEMBRO 3: BRAYAN CRUZ -->
+            <article class="member">
+                <div class="avatar">👨‍💻</div>
+                <h3>Brayan Cruz</h3>
+                <p class="role">Full Stack Developer</p>
+                <div class="technologies">
+                    <span><i class="devicon-html5-plain colored"></i> HTML</span>
+                    <span><i class="devicon-css3-plain colored"></i> CSS</span>
+                    <span><i class="devicon-javascript-plain colored"></i> JavaScript</span>
+                    <span><i class="devicon-mysql-plain colored"></i> MySQL</span>
+                    <span><i class="devicon-git-plain colored"></i> Git</span>
+                    <span><i class="devicon-github-original colored"></i> GitHub</span>
+                    <span><i class="devicon-bootstrap-plain colored"></i> Bootstrap</span>
+                    <span><i class="devicon-django-plain colored"></i> Django</span>
+                    <span><i class="devicon-python-plain colored"></i> Python</span>
+                </div>
+
+                <div class="member-overlay">
+                    <div class="overlay-header">
+                        <h3>Brayan Cruz</h3>
+                        <span class="overlay-role">Full Stack Developer</span>
+                    </div>
+
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop" alt="Brayan Cruz" class="preview-image">
+
+                    <p class="profile-bio">
+                        Desarrollador orientado al diseño web moderno y la implementación de lógica del lado del servidor mantenible.
+                    </p>
+
+                    <div class="hobbies-container">
+                        <span class="hobbies-label">Hobbies</span>
+                        <span class="hobby-tag">🎸 Música</span>
+                        <span class="hobby-tag">🚴 Ciclismo</span>
+                        <span class="hobby-tag">🎬 Cine</span>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="https://github.com" target="_blank" class="social-btn github">
+                            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                            GitHub
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" class="social-btn linkedin">
+                            <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+
+        <footer class="team-footer">
+            <span class="brand">Código + Colaboración</span>
+            <span>© 2026 Nuestro equipo</span>
+        </footer>
+
+    </section>
+
+</body>
+</html>

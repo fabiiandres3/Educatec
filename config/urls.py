@@ -58,6 +58,11 @@ urlpatterns = [
         include("apps.paneles.urls")
     ),
 
+    path(
+            "",
+            include("apps.horario.urls")
+        ),
+
 
     # =========================================================
     # DJANGO ALLAUTH
