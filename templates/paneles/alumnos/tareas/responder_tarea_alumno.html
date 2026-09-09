@@ -552,10 +552,13 @@
                                         {% if respuesta.calificada %}
 
 
-                                            <div class="answer-result">
+                                            <!-- =================================
+                                                 RESPUESTA CORRECTA
+                                            ================================== -->
 
+                                            {% if respuesta.es_correcta %}
 
-                                                {% if respuesta.es_correcta %}
+                                                <div class="answer-result correct-result">
 
                                                     <div class="result-icon correct">
                                                         ✓
@@ -576,7 +579,16 @@
 
                                                     </div>
 
-                                                {% else %}
+                                                </div>
+
+
+                                            <!-- =================================
+                                                 RESPUESTA INCORRECTA
+                                            ================================== -->
+
+                                            {% else %}
+
+                                                <div class="answer-result incorrect-result">
 
                                                     <div class="result-icon incorrect">
                                                         ✕
@@ -597,11 +609,14 @@
 
                                                     </div>
 
-                                                {% endif %}
+                                                </div>
+
+                                            {% endif %}
 
 
-                                            </div>
-
+                                        <!-- =================================
+                                             PENDIENTE DE CALIFICACIÓN
+                                        ================================== -->
 
                                         {% else %}
 

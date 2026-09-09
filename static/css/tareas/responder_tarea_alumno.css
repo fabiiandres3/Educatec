@@ -631,6 +631,7 @@
    RESULTADO
 ========================================================= */
 
+/* Resultado correcto */
 .answer-result {
     margin-top: 12px;
 
@@ -645,6 +646,24 @@
     font-size: 13px;
 }
 
+
+/* Resultado incorrecto */
+.answer-result.incorrect-result {
+    background: #fee2e2;
+
+    color: #991b1b;
+
+    border: 1px solid #fecaca;
+}
+
+
+/* Icono de respuesta incorrecta */
+.result-icon.incorrect {
+    color: #dc2626;
+}
+
+
+/* Resultado pendiente */
 .waiting-result {
     margin-top: 12px;
 
