@@ -1,0 +1,1812 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}Gestión Académica{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+:root {
+    --academic-primary: #4f46e5;
+    --academic-primary-hover: #4338ca;
+    --academic-primary-light: #eef2ff;
+
+    --academic-bg: #f8fafc;
+    --academic-white: #ffffff;
+
+    --academic-title: #0f172a;
+    --academic-text: #334155;
+    --academic-muted: #64748b;
+
+    --academic-border: #e2e8f0;
+
+    --academic-success: #16a34a;
+    --academic-success-bg: #dcfce7;
+
+    --academic-danger: #dc2626;
+    --academic-danger-bg: #fef2f2;
+
+    --academic-radius: 14px;
+
+    --academic-shadow-sm:
+        0 1px 2px rgba(0, 0, 0, 0.05);
+
+    --academic-shadow-md:
+        0 4px 12px rgba(15, 23, 42, 0.08);
+
+    --academic-shadow-lg:
+        0 15px 35px rgba(15, 23, 42, 0.12);
+}
+
+
+/* =========================================================
+   CONTENEDOR
+========================================================= */
+
+.academic-page {
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.academic-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 28px;
+}
+
+.academic-title {
+    margin: 0;
+
+    color: var(--academic-title);
+
+    font-size: 30px;
+    font-weight: 750;
+
+    letter-spacing: -0.6px;
+}
+
+.academic-subtitle {
+    margin: 7px 0 0;
+
+    color: var(--academic-muted);
+
+    font-size: 15px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.academic-tabs {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 5px;
+
+    margin-bottom: 25px;
+
+    background: #eef2f7;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+}
+
+.academic-tab {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 130px;
+
+    padding: 10px 18px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: var(--academic-muted);
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.academic-tab:hover {
+    color: var(--academic-title);
+
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.academic-tab.active {
+    background: var(--academic-white);
+
+    color: var(--academic-primary);
+
+    box-shadow: var(--academic-shadow-sm);
+}
+
+.academic-tab i {
+    width: 17px;
+    height: 17px;
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.academic-alert {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+
+    padding: 14px 17px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   KPIs
+========================================================= */
+
+.academic-kpi-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(280px, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 25px;
+}
+
+.academic-kpi {
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    min-height: 105px;
+
+    padding: 20px;
+
+    background: var(--academic-white);
+
+    border: 1px solid var(--academic-border);
+
+    border-radius: var(--academic-radius);
+
+    box-shadow: var(--academic-shadow-sm);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.academic-kpi:hover {
+    transform: translateY(-2px);
+
+    box-shadow: var(--academic-shadow-md);
+}
+
+.academic-kpi-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    width: 54px;
+    height: 54px;
+
+    border-radius: 12px;
+
+    background: var(--academic-primary-light);
+
+    color: var(--academic-primary);
+}
+
+.academic-kpi-icon i {
+    width: 25px;
+    height: 25px;
+}
+
+.academic-kpi-label {
+    margin-bottom: 5px;
+
+    color: var(--academic-muted);
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.7px;
+}
+
+.academic-kpi-value {
+    color: var(--academic-title);
+
+    font-size: 23px;
+
+    font-weight: 750;
+}
+
+.academic-kpi-value.current {
+    color: var(--academic-success);
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.academic-card {
+    overflow: hidden;
+
+    background: var(--academic-white);
+
+    border: 1px solid var(--academic-border);
+
+    border-radius: var(--academic-radius);
+
+    box-shadow: var(--academic-shadow-sm);
+}
+
+.academic-card-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 20px 24px;
+
+    border-bottom: 1px solid var(--academic-border);
+}
+
+.academic-card-title {
+    margin: 0;
+
+    color: var(--academic-title);
+
+    font-size: 16px;
+
+    font-weight: 750;
+}
+
+.academic-card-description {
+    display: block;
+
+    margin-top: 4px;
+
+    color: var(--academic-muted);
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   BOTÓN PRINCIPAL
+========================================================= */
+
+.academic-btn-primary {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 10px 16px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: var(--academic-primary);
+
+    color: white !important;
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+    text-decoration: none !important;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 10px rgba(79, 70, 229, 0.20);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.academic-btn-primary:hover {
+    background: var(--academic-primary-hover);
+
+    color: white !important;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 15px rgba(79, 70, 229, 0.25);
+}
+
+.academic-btn-primary i {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* =========================================================
+   TABLA
+========================================================= */
+
+.academic-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.academic-table {
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: collapse;
+}
+
+.academic-table thead th {
+    padding: 14px 24px;
+
+    background: #f8fafc;
+
+    color: var(--academic-muted);
+
+    border-bottom: 1px solid var(--academic-border);
+
+    font-size: 11px;
+
+    font-weight: 750;
+
+    text-align: left;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.7px;
+
+    white-space: nowrap;
+}
+
+.academic-table tbody td {
+    padding: 17px 24px;
+
+    color: var(--academic-text);
+
+    border-bottom: 1px solid #edf0f4;
+
+    font-size: 14px;
+
+    vertical-align: middle;
+}
+
+.academic-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.academic-table tbody tr:hover {
+    background: #fafbff;
+}
+
+.academic-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   INFORMACIÓN PERÍODO
+========================================================= */
+
+.period-name {
+    color: var(--academic-title);
+
+    font-weight: 700;
+}
+
+.period-year {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    background: #f8fafc;
+
+    border: 1px solid var(--academic-border);
+
+    border-radius: 7px;
+
+    color: var(--academic-text);
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+.period-date {
+    color: var(--academic-muted);
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+
+.academic-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 6px 11px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.academic-status.active {
+    background: var(--academic-success-bg);
+
+    color: var(--academic-success);
+}
+
+.academic-status.inactive {
+    background: #f1f5f9;
+
+    color: var(--academic-muted);
+}
+
+.academic-status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+/* =========================================================
+   ACCIONES
+========================================================= */
+
+.academic-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 7px;
+}
+
+.academic-action {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+
+    border: 1px solid var(--academic-border);
+
+    border-radius: 8px;
+
+    background: white;
+
+    color: var(--academic-muted);
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.academic-action:hover {
+    transform: translateY(-1px);
+
+    background: #f8fafc;
+
+    color: var(--academic-title);
+
+    border-color: #cbd5e1;
+}
+
+.academic-action.danger:hover {
+    background: var(--academic-danger-bg);
+
+    color: var(--academic-danger);
+
+    border-color: #fecaca;
+}
+
+.academic-action i {
+    width: 16px;
+    height: 16px;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.academic-empty {
+    padding: 65px 30px;
+
+    text-align: center;
+}
+
+.academic-empty-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 50%;
+
+    background: var(--academic-primary-light);
+
+    color: var(--academic-primary);
+}
+
+.academic-empty-icon i {
+    width: 32px;
+    height: 32px;
+}
+
+.academic-empty h5 {
+    margin: 0 0 7px;
+
+    color: var(--academic-title);
+
+    font-size: 17px;
+
+    font-weight: 750;
+}
+
+.academic-empty p {
+    max-width: 430px;
+
+    margin: 0 auto 22px;
+
+    color: var(--academic-muted);
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.academic-modal .modal-content {
+    overflow: hidden;
+
+    border: none;
+
+    border-radius: 16px;
+
+    box-shadow: var(--academic-shadow-lg);
+}
+
+.academic-modal-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 62px;
+    height: 62px;
+
+    margin: 0 auto 15px;
+
+    border-radius: 50%;
+
+    background: var(--academic-danger-bg);
+
+    color: var(--academic-danger);
+}
+
+.academic-modal-icon i {
+    width: 28px;
+    height: 28px;
+}
+
+.academic-modal-name {
+    padding: 10px;
+
+    margin-bottom: 15px;
+
+    background: #fef2f2;
+
+    border-radius: 8px;
+
+    color: var(--academic-danger);
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   HORARIOS
+========================================================= */
+
+.schedule-day {
+    font-weight: 700;
+
+    color: var(--academic-title);
+}
+
+.schedule-time {
+    display: inline-flex;
+
+    padding: 6px 10px;
+
+    background: var(--academic-primary-light);
+
+    border-radius: 7px;
+
+    color: var(--academic-primary);
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.schedule-jornada {
+    display: inline-flex;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    background: #f1f5f9;
+
+    color: #475569;
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .academic-page {
+        padding: 20px 15px;
+    }
+
+    .academic-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .academic-title {
+        font-size: 25px;
+    }
+
+    .academic-tabs {
+        display: flex;
+
+        width: 100%;
+    }
+
+    .academic-tab {
+        flex: 1;
+
+        min-width: 0;
+    }
+
+    .academic-card-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .academic-btn-primary {
+        width: 100%;
+    }
+
+    .academic-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+
+
+<!-- =========================================================
+     PÁGINA
+========================================================= -->
+
+<div class="academic-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
+
+    <div class="academic-header">
+
+        <div>
+
+            <h1 class="academic-title">
+                Gestión Académica
+            </h1>
+
+            <p class="academic-subtitle">
+                Administra los períodos académicos y los horarios de los docentes.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PESTAÑAS
+    ====================================================== -->
+
+    <div
+        class="academic-tabs"
+        id="academicTabs"
+        role="tablist"
+    >
+
+        <button
+            class="academic-tab active"
+            id="periodos-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#periodos"
+            type="button"
+            role="tab"
+        >
+
+            <i data-lucide="calendar"></i>
+
+            <span>
+                Períodos
+            </span>
+
+        </button>
+
+
+        <button
+            class="academic-tab"
+            id="horarios-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#horarios"
+            type="button"
+            role="tab"
+        >
+
+            <i data-lucide="clock"></i>
+
+            <span>
+                Horarios
+            </span>
+
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         MENSAJES
+    ====================================================== -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div
+                class="academic-alert alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show"
+                role="alert"
+            >
+
+                <span>
+                    {{ message }}
+                </span>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         CONTENIDO
+    ====================================================== -->
+
+    <div
+        class="tab-content"
+        id="academicTabsContent"
+    >
+
+
+        <!-- =================================================
+             TAB PERÍODOS
+        ================================================== -->
+
+        <div
+            class="tab-pane fade show active"
+            id="periodos"
+            role="tabpanel"
+            aria-labelledby="periodos-tab"
+        >
+
+
+            <!-- KPIs -->
+
+            <div class="academic-kpi-grid">
+
+
+                <!-- TOTAL PERÍODOS -->
+
+                <div class="academic-kpi">
+
+                    <div class="academic-kpi-icon">
+
+                        <i data-lucide="layers"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="academic-kpi-label">
+                            Total períodos
+                        </div>
+
+                        <div class="academic-kpi-value">
+                            {{ periodos|length }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PERÍODO ACTIVO -->
+
+                <div class="academic-kpi">
+
+                    <div class="academic-kpi-icon">
+
+                        <i data-lucide="check-circle-2"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="academic-kpi-label">
+                            Período vigente
+                        </div>
+
+                        <div class="academic-kpi-value current">
+
+                            {% for p in periodos %}
+
+                                {% if p.activo %}
+
+                                    Período {{ p.numero }}
+                                    ({{ p.anio }})
+
+                                {% endif %}
+
+                            {% empty %}
+
+                                Sin período activo
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CARD PERÍODOS -->
+
+            <div class="academic-card">
+
+
+                <!-- HEADER -->
+
+                <div class="academic-card-header">
+
+                    <div>
+
+                        <h3 class="academic-card-title">
+                            Períodos registrados
+                        </h3>
+
+                        <span class="academic-card-description">
+                            Lista completa de los ciclos académicos.
+                        </span>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'crear_periodo' %}"
+                        class="academic-btn-primary"
+                    >
+
+                        <i data-lucide="plus"></i>
+
+                        Nuevo período
+
+                    </a>
+
+                </div>
+
+
+                <!-- TABLA -->
+
+                <div class="academic-table-wrapper">
+
+                    <table class="academic-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Período
+                                </th>
+
+                                <th>
+                                    Año lectivo
+                                </th>
+
+                                <th>
+                                    Fecha inicio
+                                </th>
+
+                                <th>
+                                    Fecha fin
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                                <th style="text-align:right;">
+                                    Acciones
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for periodo in periodos %}
+
+                                <tr
+                                    id="periodo-{{ periodo.id }}"
+                                >
+
+
+                                    <td>
+
+                                        <span class="period-name">
+
+                                            Período
+                                            {{ periodo.numero }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="period-year">
+
+                                            {{ periodo.anio }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="period-date">
+
+                                            {{ periodo.fecha_inicio|date:"d/m/Y" }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="period-date">
+
+                                            {{ periodo.fecha_fin|date:"d/m/Y" }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if periodo.activo %}
+
+                                            <span class="academic-status active">
+
+                                                <span class="academic-status-dot"></span>
+
+                                                Activo
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="academic-status inactive">
+
+                                                <span class="academic-status-dot"></span>
+
+                                                Inactivo
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="academic-actions">
+
+
+                                            <!-- EDITAR -->
+
+                                            <a
+                                                href="{% url 'editar_periodo' periodo.id %}"
+                                                class="academic-action"
+                                                title="Editar"
+                                            >
+
+                                                <i data-lucide="pencil"></i>
+
+                                            </a>
+
+
+                                            <!-- ELIMINAR -->
+
+                                            <button
+                                                type="button"
+                                                class="academic-action danger"
+                                                title="Eliminar"
+
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEliminar"
+
+                                                data-periodo-id="{{ periodo.id }}"
+
+                                                data-periodo-nombre="Período {{ periodo.numero }} - {{ periodo.anio }}"
+                                            >
+
+                                                <i data-lucide="trash-2"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td colspan="6">
+
+                                        <div class="academic-empty">
+
+                                            <div class="academic-empty-icon">
+
+                                                <i data-lucide="calendar-x-2"></i>
+
+                                            </div>
+
+                                            <h5>
+                                                No hay períodos registrados
+                                            </h5>
+
+                                            <p>
+                                                Todavía no has creado ningún período académico.
+                                            </p>
+
+                                            <a
+                                                href="{% url 'crear_periodo' %}"
+                                                class="academic-btn-primary"
+                                            >
+
+                                                <i data-lucide="plus"></i>
+
+                                                Crear período
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             TAB HORARIOS
+        ================================================== -->
+
+        <div
+            class="tab-pane fade"
+            id="horarios"
+            role="tabpanel"
+            aria-labelledby="horarios-tab"
+        >
+
+            <div class="academic-card">
+
+
+                <!-- HEADER -->
+
+                <div class="academic-card-header">
+
+                    <div>
+
+                        <h3 class="academic-card-title">
+                            Horarios registrados
+                        </h3>
+
+                        <span class="academic-card-description">
+                            Administra los horarios asignados a los docentes.
+                        </span>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'crear_horario' %}"
+                        class="academic-btn-primary"
+                    >
+
+                        <i data-lucide="plus"></i>
+
+                        Nuevo horario
+
+                    </a>
+
+                </div>
+
+
+                <!-- TABLA HORARIOS -->
+
+                <div class="academic-table-wrapper">
+
+                    <table class="academic-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Docente
+                                </th>
+
+                                <th>
+                                    Período
+                                </th>
+
+                                <th>
+                                    Día
+                                </th>
+
+                                <th>
+                                    Jornada
+                                </th>
+
+                                <th>
+                                    Horario
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                                <th style="text-align:right;">
+                                    Acciones
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for horario in horarios %}
+
+                                <tr>
+
+
+                                    <!-- DOCENTE -->
+
+                                    <td>
+
+                                        <span class="period-name">
+
+                                            {{ horario.docente }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- PERÍODO -->
+
+                                    <td>
+
+                                        <span class="period-year">
+
+                                            Período
+                                            {{ horario.periodo.numero }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- DÍA -->
+
+                                    <td>
+
+                                        <span class="schedule-day">
+
+                                            {{ horario.get_dia_display }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- JORNADA -->
+
+                                    <td>
+
+                                        <span class="schedule-jornada">
+
+                                            {{ horario.get_jornada_display }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- HORARIO -->
+
+                                    <td>
+
+                                        <span class="schedule-time">
+
+                                            {{ horario.hora_inicio|time:"H:i" }}
+
+                                            -
+
+                                            {{ horario.hora_fin|time:"H:i" }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- ESTADO -->
+
+                                    <td>
+
+                                        {% if horario.activo %}
+
+                                            <span class="academic-status active">
+
+                                                <span class="academic-status-dot"></span>
+
+                                                Activo
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="academic-status inactive">
+
+                                                <span class="academic-status-dot"></span>
+
+                                                Inactivo
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- ACCIONES -->
+
+                                    <td>
+
+                                        <div class="academic-actions">
+
+
+                                            <!-- EDITAR -->
+
+                                            <a
+                                                href="{% url 'editar_horario' horario.id %}"
+                                                class="academic-action"
+                                                title="Editar horario"
+                                            >
+
+                                                <i data-lucide="pencil"></i>
+
+                                            </a>
+
+
+                                            <!-- ELIMINAR -->
+
+                                            <form
+                                                method="POST"
+                                                action="{% url 'eliminar_horario' horario.id %}"
+                                                style="display:inline;"
+                                                onsubmit="return confirm('¿Deseas eliminar este horario?');"
+                                            >
+
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="academic-action danger"
+                                                    title="Eliminar horario"
+                                                >
+
+                                                    <i data-lucide="trash-2"></i>
+
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+
+                            {% empty %}
+
+                                <tr>
+
+                                    <td colspan="7">
+
+                                        <div class="academic-empty">
+
+                                            <div
+                                                class="academic-empty-icon"
+                                                style="
+                                                    background:#f1f5f9;
+                                                    color:#64748b;
+                                                "
+                                            >
+
+                                                <i data-lucide="clock"></i>
+
+                                            </div>
+
+                                            <h5>
+                                                No hay horarios registrados
+                                            </h5>
+
+                                            <p>
+                                                Crea el primer horario y asígnalo a un docente.
+                                            </p>
+
+                                            <a
+                                                href="{% url 'crear_horario' %}"
+                                                class="academic-btn-primary"
+                                            >
+
+                                                <i data-lucide="plus"></i>
+
+                                                Crear horario
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL ELIMINAR PERÍODO
+========================================================= -->
+
+<div
+    class="modal fade academic-modal"
+    id="modalEliminar"
+    tabindex="-1"
+    aria-hidden="true"
+>
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+
+            <div class="modal-body text-center p-4">
+
+
+                <div class="academic-modal-icon">
+
+                    <i data-lucide="alert-triangle"></i>
+
+                </div>
+
+
+                <h5 class="fw-bold text-dark mb-2">
+
+                    Eliminar período
+
+                </h5>
+
+
+                <p class="text-muted small mb-3">
+
+                    ¿Estás seguro de que deseas eliminar este período?
+
+                </p>
+
+
+                <div
+                    class="academic-modal-name"
+                    id="nombrePeriodo"
+                >
+
+                </div>
+
+
+                <p
+                    class="text-muted mb-0"
+                    style="font-size:12px;"
+                >
+
+                    Esta acción no se puede deshacer.
+
+                </p>
+
+            </div>
+
+
+            <div class="modal-footer border-0 p-3 pt-0">
+
+
+                <button
+                    type="button"
+                    class="btn btn-light flex-fill"
+                    data-bs-dismiss="modal"
+                >
+
+                    Cancelar
+
+                </button>
+
+
+                <form
+                    id="formEliminar"
+                    method="POST"
+                    class="flex-fill"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger w-100"
+                    >
+
+                        Eliminar
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     LUCIDE
+========================================================= -->
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* =====================================================
+           ICONOS
+        ===================================================== */
+
+        if (
+            typeof lucide !== "undefined"
+        ) {
+
+            lucide.createIcons();
+
+        }
+
+
+        /* =====================================================
+           MODAL ELIMINAR PERÍODO
+        ===================================================== */
+
+        const modalEliminar =
+            document.getElementById(
+                "modalEliminar"
+            );
+
+
+        if (modalEliminar) {
+
+            modalEliminar.addEventListener(
+                "show.bs.modal",
+                function (event) {
+
+
+                    const button =
+                        event.relatedTarget;
+
+
+                    if (!button) {
+
+                        return;
+
+                    }
+
+
+                    const periodoId =
+                        button.getAttribute(
+                            "data-periodo-id"
+                        );
+
+
+                    const periodoNombre =
+                        button.getAttribute(
+                            "data-periodo-nombre"
+                        );
+
+
+                    const nombrePeriodo =
+                        modalEliminar.querySelector(
+                            "#nombrePeriodo"
+                        );
+
+
+                    const formEliminar =
+                        modalEliminar.querySelector(
+                            "#formEliminar"
+                        );
+
+
+                    if (nombrePeriodo) {
+
+                        nombrePeriodo.textContent =
+                            periodoNombre;
+
+                    }
+
+
+                    if (formEliminar) {
+
+                        formEliminar.action =
+                            `/periodos/eliminar/${periodoId}/`;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           VOLVER A CARGAR ICONOS CUANDO CAMBIA EL TAB
+        ===================================================== */
+
+        const tabs =
+            document.querySelectorAll(
+                '[data-bs-toggle="tab"]'
+            );
+
+
+        tabs.forEach(function (tab) {
+
+            tab.addEventListener(
+                "shown.bs.tab",
+                function () {
+
+                    if (
+                        typeof lucide !== "undefined"
+                    ) {
+
+                        lucide.createIcons();
+
+                    }
+
+                }
+            );
+
+        });
+
+    }
+
+);
+
+</script>
+
+{% endblock %}
