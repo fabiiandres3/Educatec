@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import PeriodoForm
-from .models import Periodo
+from .forms import PeriodoForm, HorarioForm
+from .models import Periodo, Horario
 
 
 def listar_periodos(request):
+
     periodos = Periodo.objects.all()
 
     return render(
@@ -40,7 +41,7 @@ def crear_periodo(request):
 
     return render(
         request,
-        "horario/periodos/formulario.html",
+        "admin/horario/periodo/formulario.html",
         {
             "form": form,
             "titulo": "Crear período"
@@ -81,7 +82,7 @@ def editar_periodo(request, pk):
 
     return render(
         request,
-        "horario/periodos/formulario.html",
+        "admin/horario/periodo/formulario.html",
         {
             "form": form,
             "titulo": "Editar período"
@@ -106,3 +107,109 @@ def eliminar_periodo(request, pk):
         )
 
     return redirect("listar_periodos")
+
+
+def listar_horarios(request):
+
+    horarios = Horario.objects.select_related(
+        "docente",
+        "periodo"
+    ).all()
+
+    return render(
+        request,
+        "horarios/listar_horarios.html",
+        {
+            "horarios": horarios
+        }
+    )
+
+
+def crear_horario(request):
+
+    if request.method == "POST":
+
+        form = HorarioForm(request.POST)
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "El horario fue creado correctamente."
+            )
+
+            return redirect("listar_horarios")
+
+    else:
+
+        form = HorarioForm()
+
+    return render(
+        request,
+        "horarios/crear_horario.html",
+        {
+            "form": form
+        }
+    )
+
+
+def editar_horario(request, id):
+
+    horario = get_object_or_404(
+        Horario,
+        id=id
+    )
+
+    if request.method == "POST":
+
+        form = HorarioForm(
+            request.POST,
+            instance=horario
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "El horario fue actualizado correctamente."
+            )
+
+            return redirect("listar_horarios")
+
+    else:
+
+        form = HorarioForm(
+            instance=horario
+        )
+
+    return render(
+        request,
+        "horarios/editar_horario.html",
+        {
+            "form": form,
+            "horario": horario
+        }
+    )
+
+
+def eliminar_horario(request, id):
+
+    horario = get_object_or_404(
+        Horario,
+        id=id
+    )
+
+    if request.method == "POST":
+
+        horario.delete()
+
+        messages.success(
+            request,
+            "El horario fue eliminado correctamente."
+        )
+
+    return redirect("listar_horarios")

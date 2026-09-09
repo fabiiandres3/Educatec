@@ -28,5 +28,28 @@ urlpatterns = [
         name="eliminar_periodo"
     ),
 
+    path(
+        "",
+        views.listar_horarios,
+        name="listar_horarios"
+    ),
+
+    path(
+        "crear/",
+        views.crear_horario,
+        name="crear_horario"
+    ),
+
+    path(
+        "editar/<int:id>/",
+        views.editar_horario,
+        name="editar_horario"
+    ),
+
+    path(
+        "eliminar/<int:id>/",
+        views.eliminar_horario,
+        name="eliminar_horario"
+    ),
 
 ]
