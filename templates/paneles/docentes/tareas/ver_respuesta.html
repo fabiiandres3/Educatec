@@ -708,30 +708,42 @@
                                         </span>
 
 
-                                        <strong class="current-status">
+                                        <strong
+                                            class="
+                                                current-status
 
+                                                {% if not respuesta.calificada %}
+                                                    status-pending
+
+                                                {% elif respuesta.es_correcta %}
+                                                    status-correct
+
+                                                {% elif respuesta.nota_obtenida > 0 %}
+                                                    status-partial
+
+                                                {% else %}
+                                                    status-incorrect
+                                                {% endif %}
+                                            "
+                                        >
 
                                             {% if not respuesta.calificada %}
 
                                                 Pendiente
 
-
                                             {% elif respuesta.es_correcta %}
 
                                                 Correcta
 
-
                                             {% elif respuesta.nota_obtenida > 0 %}
 
                                                 Parcial
-
 
                                             {% else %}
 
                                                 Incorrecta
 
                                             {% endif %}
-
 
                                         </strong>
 

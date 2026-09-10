@@ -1417,3 +1417,96 @@
     }
 
 }
+
+/* =========================================================
+   ESTADOS DE RESPUESTA
+========================================================= */
+
+.answer-label .correct {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #15803d;
+    background: #dcfce7;
+
+    padding: 6px 12px;
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.answer-label .incorrect {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #dc2626;
+    background: #fee2e2;
+
+    padding: 6px 12px;
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.answer-label .pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #2563eb;
+    background: #dbeafe;
+
+    padding: 6px 12px;
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   ESTADO ACTUAL DE LA EVALUACIÓN
+========================================================= */
+
+.current-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+
+/* CORRECTA */
+
+.current-status.status-correct {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+
+/* INCORRECTA */
+
+.current-status.status-incorrect {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+
+/* PARCIAL */
+
+.current-status.status-partial {
+    color: #d97706;
+    background: #fef3c7;
+}
+
+
+/* PENDIENTE */
+
+.current-status.status-pending {
+    color: #2563eb;
+    background: #dbeafe;
+}
