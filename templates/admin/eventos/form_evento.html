@@ -4,7 +4,6 @@
 Crear Evento
 {% endblock %}
 
-
 {% block content %}
 
 <div class="container py-5">
@@ -21,7 +20,6 @@ Crear Evento
                         Crear evento
                     </h2>
 
-
                     <form
                         method="POST"
                         enctype="multipart/form-data"
@@ -29,9 +27,7 @@ Crear Evento
 
                         {% csrf_token %}
 
-
                         {{ form.as_p }}
-
 
                         <div class="d-flex gap-2 mt-4">
 
@@ -41,7 +37,6 @@ Crear Evento
                             >
                                 Crear evento
                             </button>
-
 
                             <a
                                 href="{% url 'listar_eventos' %}"
@@ -63,5 +58,99 @@ Crear Evento
     </div>
 
 </div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const fechaInput = document.getElementById("id_fecha");
+    const horaInput = document.getElementById("id_hora");
+
+    if (!fechaInput || !horaInput) {
+        return;
+    }
+
+
+    function actualizarHoraMinima() {
+
+        const ahora = new Date();
+
+        const año = ahora.getFullYear();
+        const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+        const dia = String(ahora.getDate()).padStart(2, "0");
+
+        const hoy = `${año}-${mes}-${dia}`;
+
+
+        /*
+         * Si seleccionó HOY:
+         * la hora mínima será la hora y minuto actual.
+         */
+        if (fechaInput.value === hoy) {
+
+            const horas = String(
+                ahora.getHours()
+            ).padStart(2, "0");
+
+            const minutos = String(
+                ahora.getMinutes()
+            ).padStart(2, "0");
+
+            horaInput.min = `${horas}:${minutos}`;
+
+        }
+
+
+        /*
+         * Si seleccionó una fecha futura,
+         * quitamos la restricción de hora.
+         */
+        else if (fechaInput.value > hoy) {
+
+            horaInput.removeAttribute("min");
+
+        }
+
+
+        /*
+         * Si no hay fecha seleccionada,
+         * tampoco restringimos la hora.
+         */
+        else {
+
+            horaInput.removeAttribute("min");
+
+        }
+    }
+
+
+    /*
+     * Cuando cambia la fecha
+     */
+    fechaInput.addEventListener(
+        "change",
+        actualizarHoraMinima
+    );
+
+
+    /*
+     * Ejecutar al cargar la página
+     */
+    actualizarHoraMinima();
+
+
+    /*
+     * Actualizar cada minuto.
+     *
+     * Así, si la página permanece abierta,
+     * la restricción también avanza.
+     */
+    setInterval(
+        actualizarHoraMinima,
+        60000
+    );
+
+});
+</script>
 
 {% endblock %}

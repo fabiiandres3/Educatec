@@ -71,9 +71,23 @@ class Evento(models.Model):
     def clean(self):
         super().clean()
 
-        if self.fecha and self.fecha < timezone.localdate():
+        hoy = timezone.localdate()
+        ahora = timezone.localtime().time()
+
+        # No permitir crear eventos en fechas anteriores
+        if self.fecha and self.fecha < hoy:
             raise ValidationError({
                 "fecha": "No puedes crear un evento en una fecha que ya pasó."
+            })
+
+        # Si el evento es para hoy, la hora debe ser futura
+        if (
+            self.fecha == hoy
+            and self.hora
+            and self.hora <= ahora
+        ):
+            raise ValidationError({
+                "hora": "No puedes crear un evento con una hora que ya pasó."
             })
 
     def __str__(self):

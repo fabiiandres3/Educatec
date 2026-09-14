@@ -60,17 +60,41 @@ class EventoForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "type": "date",
-                    "min": timezone.localdate().isoformat()
                 }
             ),
 
             "hora": forms.TimeInput(
                 attrs={
                     "class": "form-control",
-                    "type": "time"
+                    "type": "time",
                 }
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        hoy = timezone.localdate()
+
+        # No permitir fechas anteriores a hoy
+        self.fields["fecha"].widget.attrs["min"] = hoy.isoformat()
+
+        # Crear opciones de hora cada 30 minutos
+        opciones_hora = [
+            ("", "Selecciona una hora")
+        ]
+
+        for hora in range(0, 24):
+            for minuto in (0, 30):
+
+                valor = f"{hora:02d}:{minuto:02d}"
+                texto = timezone.datetime(
+                    2000, 1, 1, hora, minuto
+                ).strftime("%I:%M %p")
+
+                opciones_hora.append((valor, texto))
+
+        self.fields["hora"].choices = opciones_hora
 
     def clean_fecha(self):
         fecha = self.cleaned_data.get("fecha")
@@ -82,3 +106,19 @@ class EventoForm(forms.ModelForm):
 
         return fecha
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        fecha = cleaned_data.get("fecha")
+        hora = cleaned_data.get("hora")
+
+        hoy = timezone.localdate()
+        ahora = timezone.localtime().time()
+
+        if fecha == hoy and hora and hora <= ahora:
+            self.add_error(
+                "hora",
+                "No puedes crear un evento con una hora que ya pasó."
+            )
+
+        return cleaned_data
