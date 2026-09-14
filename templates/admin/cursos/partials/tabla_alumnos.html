@@ -7,9 +7,7 @@
                 <th>#</th>
                 <th>Nombre</th>
                 <th>Usuario</th>
-                <th>Código</th>
                 <th>Curso</th>
-                <th>Clase</th>
                 <th>Teléfono</th>
                 <th>Estado</th>
             </tr>
@@ -36,22 +34,10 @@
                     </td>
 
                     <td>
-                        {{ alumno.codigo }}
-                    </td>
-
-                    <td>
                         {% if alumno.curso %}
                             {{ alumno.curso.nombre }}
                         {% else %}
                             Sin curso
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        {% if alumno.clase %}
-                            {{ alumno.clase.titulo }}
-                        {% else %}
-                            Sin clase
                         {% endif %}
                     </td>
 

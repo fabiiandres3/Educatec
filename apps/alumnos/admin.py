@@ -77,7 +77,6 @@ class AlumnosAdmin(admin.ModelAdmin):
 
     list_display = (
         "usuario",
-        "codigo",
         "curso",
         "clase",
         "activo",
@@ -88,7 +87,6 @@ class AlumnosAdmin(admin.ModelAdmin):
         "usuario__first_name",
         "usuario__last_name",
         "usuario__email",
-        "codigo",
     )
 
     list_filter = (

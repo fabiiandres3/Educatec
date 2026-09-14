@@ -259,71 +259,493 @@ def asignar_alumno_curso(
 
 
 
+
+
+
+import pandas as pd
+
+from django.contrib import messages
+from django.db import transaction
+from django.shortcuts import redirect
+
+from apps.user.models import Usuario
+from apps.alumnos.models import Alumnos
+from apps.cursos.models import Cursos
+
+
 def cargar_alumnos_excel(request):
-    if request.method == 'POST':
-        if 'archivo_excel' not in request.FILES:
-            messages.error(request, "No se adjuntó ningún archivo Excel.")
-            return redirect('cursos')
 
-        file = request.FILES['archivo_excel']
+    if request.method != 'POST':
+        return redirect('listar_cursos')
 
-        try:
-            df = pd.read_excel(file)
-            print("Filas detectadas en el Excel:", len(df))  # Imprime en consola de terminal
+    # =========================================================
+    # ARCHIVO
+    # =========================================================
 
-            # Reemplazar valores nulos
-            df = df.where(pd.notnull(df), None)
+    if 'archivo_excel' not in request.FILES:
+        messages.error(
+            request,
+            'No se adjuntó ningún archivo Excel.'
+        )
+        return redirect('listar_cursos')
 
-            creados = 0
-            omitidos = 0
+    archivo = request.FILES['archivo_excel']
 
-            with transaction.atomic():
-                for index, row in df.iterrows():
-                    # Convertir username
-                    val_username = row.get('username')
-                    if val_username is None:
-                        continue
-                    
-                    username = str(int(val_username) if isinstance(val_username, float) else val_username).strip()
-                    email = str(row.get('email')).strip() if row.get('email') else None
+    try:
 
-                    if not username or not email:
-                        continue
+        # =====================================================
+        # LEER EXCEL
+        # =====================================================
 
-                    if Usuario.objects.filter(username=username).exists():
-                        omitidos += 1
-                        continue
+        df = pd.read_excel(archivo)
 
-                    usuario = Usuario.objects.create_user(
+        # Normalizar encabezados
+        df.columns = [
+            str(col).strip().lower()
+            for col in df.columns
+        ]
+
+        print('Columnas detectadas:')
+        print(df.columns.tolist())
+
+        print('Filas detectadas:', len(df))
+
+        if df.empty:
+            messages.error(
+                request,
+                'El archivo Excel está vacío.'
+            )
+            return redirect('listar_cursos')
+
+        # =====================================================
+        # COLUMNAS OBLIGATORIAS
+        #
+        # PASSWORD YA NO ES NECESARIO
+        # =====================================================
+
+        columnas_requeridas = {
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'curso',
+            'fecha_nacimiento',
+            'telefono',
+            'direccion',
+            'fecha_ingreso',
+        }
+
+        faltantes = (
+            columnas_requeridas -
+            set(df.columns)
+        )
+
+        if faltantes:
+
+            faltantes_texto = ', '.join(
+                sorted(faltantes)
+            )
+
+            messages.error(
+                request,
+                f'Faltan columnas obligatorias: '
+                f'{faltantes_texto}'
+            )
+
+            return redirect('listar_cursos')
+
+        # =====================================================
+        # REEMPLAZAR NaN
+        # =====================================================
+
+        df = df.where(
+            pd.notnull(df),
+            None
+        )
+
+        creados = 0
+        actualizados = 0
+        errores = []
+
+        # =====================================================
+        # PROCESAR FILAS
+        # =====================================================
+
+        for numero_fila, row in df.iterrows():
+
+            fila_excel = numero_fila + 2
+
+            try:
+
+                # =================================================
+                # USERNAME
+                # =================================================
+
+                username = row.get('username')
+
+                if username is None:
+                    raise ValueError(
+                        'username vacío'
+                    )
+
+                if isinstance(username, float):
+
+                    if username.is_integer():
+                        username = str(
+                            int(username)
+                        )
+                    else:
+                        username = str(username)
+
+                else:
+                    username = str(username)
+
+                username = username.strip()
+
+                if not username:
+                    raise ValueError(
+                        'username vacío'
+                    )
+
+                # =================================================
+                # NOMBRE
+                # =================================================
+
+                first_name = row.get(
+                    'first_name'
+                )
+
+                first_name = (
+                    str(first_name).strip()
+                    if first_name is not None
+                    else ''
+                )
+
+                # =================================================
+                # APELLIDO
+                # =================================================
+
+                last_name = row.get(
+                    'last_name'
+                )
+
+                last_name = (
+                    str(last_name).strip()
+                    if last_name is not None
+                    else ''
+                )
+
+                # =================================================
+                # EMAIL
+                # =================================================
+
+                email = row.get('email')
+
+                if email is None:
+                    raise ValueError(
+                        'email vacío'
+                    )
+
+                email = str(
+                    email
+                ).strip().lower()
+
+                if not email:
+                    raise ValueError(
+                        'email vacío'
+                    )
+
+                # =================================================
+                # CURSO
+                # =================================================
+
+                curso_nombre = row.get(
+                    'curso'
+                )
+
+                if curso_nombre is None:
+                    raise ValueError(
+                        'curso vacío'
+                    )
+
+                curso_nombre = str(
+                    curso_nombre
+                ).strip()
+
+                curso_obj = Cursos.objects.filter(
+                    nombre__iexact=curso_nombre
+                ).first()
+
+                if not curso_obj:
+                    raise ValueError(
+                        f"el curso '{curso_nombre}' "
+                        f"no existe"
+                    )
+
+                # =================================================
+                # FECHA NACIMIENTO
+                # =================================================
+
+                fecha_nacimiento = row.get(
+                    'fecha_nacimiento'
+                )
+
+                if fecha_nacimiento is not None:
+
+                    fecha_nacimiento = pd.to_datetime(
+                        fecha_nacimiento,
+                        dayfirst=True,
+                        errors='raise'
+                    ).date()
+
+                # =================================================
+                # TELÉFONO
+                # =================================================
+
+                telefono = row.get(
+                    'telefono'
+                )
+
+                if telefono is not None:
+
+                    if isinstance(
+                        telefono,
+                        float
+                    ):
+
+                        if telefono.is_integer():
+
+                            telefono = str(
+                                int(telefono)
+                            )
+
+                        else:
+
+                            telefono = format(
+                                telefono,
+                                'f'
+                            ).rstrip('0').rstrip('.')
+
+                    else:
+
+                        telefono = str(
+                            telefono
+                        ).strip()
+
+                # =================================================
+                # DIRECCIÓN
+                # =================================================
+
+                direccion = row.get(
+                    'direccion'
+                )
+
+                direccion = (
+                    str(direccion).strip()
+                    if direccion is not None
+                    else None
+                )
+
+                # =================================================
+                # FECHA INGRESO
+                # =================================================
+
+                fecha_ingreso = row.get(
+                    'fecha_ingreso'
+                )
+
+                if fecha_ingreso is not None:
+
+                    fecha_ingreso = pd.to_datetime(
+                        fecha_ingreso,
+                        dayfirst=True,
+                        errors='raise'
+                    ).date()
+
+                # =================================================
+                # BUSCAR USUARIO POR USERNAME
+                # =================================================
+
+                usuario_username = Usuario.objects.filter(
+                    username=username
+                ).first()
+
+                # =================================================
+                # BUSCAR USUARIO POR EMAIL
+                # =================================================
+
+                usuario_email = Usuario.objects.filter(
+                    email__iexact=email
+                ).first()
+
+                # =================================================
+                # CASO 1
+                #
+                # Username existe
+                # =================================================
+
+                if usuario_username:
+
+                    usuario_obj = usuario_username
+
+                    # ---------------------------------------------
+                    # El email pertenece a otro usuario
+                    # ---------------------------------------------
+
+                    if (
+                        usuario_email and
+                        usuario_email.pk != usuario_obj.pk
+                    ):
+
+                        raise ValueError(
+                            f"el email '{email}' "
+                            f"ya pertenece a otro usuario"
+                        )
+
+                    usuario_obj.email = email
+                    usuario_obj.first_name = first_name
+                    usuario_obj.last_name = last_name
+
+                    usuario_obj.save()
+
+                    usuario_creado = False
+
+                # =================================================
+                # CASO 2
+                #
+                # Username no existe pero email sí existe
+                # =================================================
+
+                elif usuario_email:
+
+                    raise ValueError(
+                        f"el email '{email}' "
+                        f"ya está registrado con "
+                        f"otro username"
+                    )
+
+                # =================================================
+                # CASO 3
+                #
+                # Usuario completamente nuevo
+                # =================================================
+
+                else:
+
+                    usuario_obj = Usuario.objects.create(
                         username=username,
                         email=email,
-                        password=str(row.get('password', 'Alumno2026*')),
-                        first_name=str(row.get('first_name', '') or ''),
-                        last_name=str(row.get('last_name', '') or '')
+                        first_name=first_name,
+                        last_name=last_name,
                     )
 
-                    curso_id = row.get('curso_id')
-                    clase_id = row.get('clase_id')
+                    # ---------------------------------------------
+                    # NO usamos password del Excel.
+                    #
+                    # El usuario queda sin contraseña utilizable.
+                    # Luego podrá establecerla mediante recuperación
+                    # de contraseña si tienes ese sistema configurado.
+                    # ---------------------------------------------
 
-                    curso_obj = Cursos.objects.filter(id=int(curso_id)).first() if curso_id and pd.notnull(curso_id) else None
-                    clase_obj = Clases.objects.filter(id=int(clase_id)).first() if clase_id and pd.notnull(clase_id) else None
+                    usuario_obj.set_unusable_password()
 
-                    Alumnos.objects.create(
-                        usuario=usuario,
-                        codigo=str(row.get('codigo')).strip() if row.get('codigo') and pd.notnull(row.get('codigo')) else None,
-                        curso=curso_obj,
-                        clase=clase_obj,
-                        fecha_nacimiento=row.get('fecha_nacimiento') if pd.notnull(row.get('fecha_nacimiento')) else None,
-                        telefono=str(row.get('telefono')).strip() if row.get('telefono') and pd.notnull(row.get('telefono')) else None,
-                        direccion=str(row.get('direccion')).strip() if row.get('direccion') and pd.notnull(row.get('direccion')) else None,
-                        fecha_ingreso=row.get('fecha_ingreso') if pd.notnull(row.get('fecha_ingreso')) else None
+                    usuario_obj.save()
+
+                    usuario_creado = True
+
+                # =================================================
+                # CREAR / ACTUALIZAR ALUMNO
+                # =================================================
+
+                with transaction.atomic():
+
+                    Alumnos.objects.update_or_create(
+
+                        usuario=usuario_obj,
+
+                        defaults={
+                            'curso': curso_obj,
+                            'fecha_nacimiento':
+                                fecha_nacimiento,
+                            'telefono':
+                                telefono,
+                            'direccion':
+                                direccion,
+                            'fecha_ingreso':
+                                fecha_ingreso,
+                            'activo':
+                                True,
+                        }
                     )
+
+                # =================================================
+                # CONTADORES
+                # =================================================
+
+                if usuario_creado:
                     creados += 1
+                else:
+                    actualizados += 1
 
-            messages.success(request, f"Éxito: {creados} alumnos creados. ({omitidos} omitidos por usuario existente)")
+            # =====================================================
+            # ERROR DE UNA FILA
+            # =====================================================
 
-        except Exception as e:
-            print("ERROR EN VISTA:", str(e))  # Muestra el error en la terminal
-            messages.error(request, f"Error al procesar el Excel: {str(e)}")
+            except Exception as e:
 
-    return redirect('listar_cursos')  # Asegúrate de colocar el name de tu URL
+                errores.append(
+                    f'Fila {fila_excel}: {str(e)}'
+                )
+
+                print(
+                    f'ERROR FILA {fila_excel}:',
+                    repr(e)
+                )
+
+                continue
+
+        # =========================================================
+        # RESULTADO
+        # =========================================================
+
+        if errores:
+
+            print('\nERRORES DE IMPORTACIÓN:')
+
+            for error in errores:
+                print(error)
+
+            mensaje = (
+                f'Importación terminada. '
+                f'{creados} creados, '
+                f'{actualizados} actualizados y '
+                f'{len(errores)} con errores.'
+            )
+
+            messages.warning(
+                request,
+                mensaje
+            )
+
+        else:
+
+            messages.success(
+                request,
+                f'Importación completada correctamente. '
+                f'{creados} alumnos creados y '
+                f'{actualizados} actualizados.'
+            )
+
+    except Exception as e:
+
+        print(
+            'ERROR GENERAL EN IMPORTACIÓN:',
+            repr(e)
+        )
+
+        messages.error(
+            request,
+            f'Error al procesar el Excel: {str(e)}'
+        )
+
+    return redirect('listar_cursos')

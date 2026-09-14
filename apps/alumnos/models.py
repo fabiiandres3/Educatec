@@ -17,13 +17,6 @@ class Alumnos(models.Model):
         related_name="alumno"
     )
 
-    codigo = models.CharField(
-        max_length=20,
-        unique=True,
-        blank=True,
-        null=True
-    )
-
     curso = models.ForeignKey(
         Cursos,
         on_delete=models.SET_NULL,
