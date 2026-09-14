@@ -109,11 +109,15 @@ def Editar_alumno(request, alumno_id):
     )
 
 
-def Eliminar_alumno(request, docente_id):
-    alumno = get_object_or_404(Alumnos, usuario_id=docente_id)
+def Eliminar_alumno(request, alumno_id):
+    alumno = get_object_or_404(
+        Alumnos,
+        usuario_id=alumno_id
+    )
 
     if request.method == "POST":
-        alumno.usuario.delete()  # Elimina Usuario y Docente si la relación es CASCADE
+        alumno.usuario.delete()
+
         return redirect("listar_alumnos")
 
     return render(

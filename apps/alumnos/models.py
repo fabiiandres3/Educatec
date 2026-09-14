@@ -60,7 +60,6 @@ class Alumnos(models.Model):
 
         return (
             f"{self.usuario.get_full_name()} "
-            f"({self.codigo or 'Sin código'})"
         )
 
 

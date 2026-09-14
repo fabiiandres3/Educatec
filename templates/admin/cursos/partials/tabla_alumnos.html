@@ -10,6 +10,7 @@
                 <th>Curso</th>
                 <th>Teléfono</th>
                 <th>Estado</th>
+                <th class="th-acciones" style="display: none;">Acciones</th>
             </tr>
         </thead>
 
@@ -57,12 +58,32 @@
                         {% endif %}
                     </td>
 
+                    <td class="td-acciones" style="display: none; text-align: center;">
+
+                        <a
+                            href="{% url 'editar_alumno' alumno.usuario.id %}"
+                            class="tabla-accion-btn tabla-accion-edit"
+                            title="Editar alumno"
+                        >
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+
+                        <a
+                            href="{% url 'eliminar_alumno' alumno.usuario.id %}"
+                            class="tabla-accion-btn tabla-accion-delete"
+                            title="Eliminar alumno"
+                        >
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+
+                    </td>
+
                 </tr>
 
             {% empty %}
 
                 <tr>
-                    <td colspan="8" class="text-center">
+                    <td colspan="7" class="text-center">
                         No hay alumnos registrados.
                     </td>
                 </tr>

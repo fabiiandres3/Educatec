@@ -4,7 +4,7 @@ import pandas as pd
 from django.db.models import Count
 from django.contrib import messages
 
-from apps.user.models import Usuario
+from apps.user.models import Usuario, Roles
 from apps.alumnos.models import Alumnos
 
 from .forms import CursosForm
@@ -262,25 +262,14 @@ def asignar_alumno_curso(
 
 
 
-import pandas as pd
 
-from django.contrib import messages
-from django.db import transaction
-from django.shortcuts import redirect
 
-from apps.user.models import Usuario
-from apps.alumnos.models import Alumnos
-from apps.cursos.models import Cursos
 
 
 def cargar_alumnos_excel(request):
 
     if request.method != 'POST':
         return redirect('listar_cursos')
-
-    # =========================================================
-    # ARCHIVO
-    # =========================================================
 
     if 'archivo_excel' not in request.FILES:
         messages.error(
@@ -299,7 +288,6 @@ def cargar_alumnos_excel(request):
 
         df = pd.read_excel(archivo)
 
-        # Normalizar encabezados
         df.columns = [
             str(col).strip().lower()
             for col in df.columns
@@ -319,8 +307,6 @@ def cargar_alumnos_excel(request):
 
         # =====================================================
         # COLUMNAS OBLIGATORIAS
-        #
-        # PASSWORD YA NO ES NECESARIO
         # =====================================================
 
         columnas_requeridas = {
@@ -328,6 +314,7 @@ def cargar_alumnos_excel(request):
             'first_name',
             'last_name',
             'email',
+            'rol',
             'curso',
             'fecha_nacimiento',
             'telefono',
@@ -348,27 +335,41 @@ def cargar_alumnos_excel(request):
 
             messages.error(
                 request,
-                f'Faltan columnas obligatorias: '
-                f'{faltantes_texto}'
+                f'No se pudo importar el archivo porque '
+                f'faltan las columnas: {faltantes_texto}.'
             )
 
             return redirect('listar_cursos')
-
-        # =====================================================
-        # REEMPLAZAR NaN
-        # =====================================================
 
         df = df.where(
             pd.notnull(df),
             None
         )
 
+        # =====================================================
+        # BUSCAR ROL ALUMNO
+        # =====================================================
+
+        rol_alumno = Roles.objects.filter(
+            nombre__iexact='alumno'
+        ).first()
+
+        if not rol_alumno:
+
+            messages.error(
+                request,
+                'No se pudieron registrar los alumnos porque '
+                'el rol "Alumno" no existe en el sistema.'
+            )
+
+            return redirect('listar_cursos')
+
         creados = 0
         actualizados = 0
         errores = []
 
         # =====================================================
-        # PROCESAR FILAS
+        # PROCESAR CADA FILA
         # =====================================================
 
         for numero_fila, row in df.iterrows():
@@ -385,15 +386,13 @@ def cargar_alumnos_excel(request):
 
                 if username is None:
                     raise ValueError(
-                        'username vacío'
+                        'el username está vacío'
                     )
 
                 if isinstance(username, float):
 
                     if username.is_integer():
-                        username = str(
-                            int(username)
-                        )
+                        username = str(int(username))
                     else:
                         username = str(username)
 
@@ -404,16 +403,14 @@ def cargar_alumnos_excel(request):
 
                 if not username:
                     raise ValueError(
-                        'username vacío'
+                        'el username está vacío'
                     )
 
                 # =================================================
                 # NOMBRE
                 # =================================================
 
-                first_name = row.get(
-                    'first_name'
-                )
+                first_name = row.get('first_name')
 
                 first_name = (
                     str(first_name).strip()
@@ -425,15 +422,20 @@ def cargar_alumnos_excel(request):
                 # APELLIDO
                 # =================================================
 
-                last_name = row.get(
-                    'last_name'
-                )
+                last_name = row.get('last_name')
 
                 last_name = (
                     str(last_name).strip()
                     if last_name is not None
                     else ''
                 )
+
+                nombre_alumno = (
+                    f'{first_name} {last_name}'
+                ).strip()
+
+                if not nombre_alumno:
+                    nombre_alumno = username
 
                 # =================================================
                 # EMAIL
@@ -443,29 +445,25 @@ def cargar_alumnos_excel(request):
 
                 if email is None:
                     raise ValueError(
-                        'email vacío'
+                        'el email está vacío'
                     )
 
-                email = str(
-                    email
-                ).strip().lower()
+                email = str(email).strip().lower()
 
                 if not email:
                     raise ValueError(
-                        'email vacío'
+                        'el email está vacío'
                     )
 
                 # =================================================
                 # CURSO
                 # =================================================
 
-                curso_nombre = row.get(
-                    'curso'
-                )
+                curso_nombre = row.get('curso')
 
                 if curso_nombre is None:
                     raise ValueError(
-                        'curso vacío'
+                        'el curso está vacío'
                     )
 
                 curso_nombre = str(
@@ -478,8 +476,7 @@ def cargar_alumnos_excel(request):
 
                 if not curso_obj:
                     raise ValueError(
-                        f"el curso '{curso_nombre}' "
-                        f"no existe"
+                        f'el curso "{curso_nombre}" no existe'
                     )
 
                 # =================================================
@@ -492,26 +489,30 @@ def cargar_alumnos_excel(request):
 
                 if fecha_nacimiento is not None:
 
-                    fecha_nacimiento = pd.to_datetime(
-                        fecha_nacimiento,
-                        dayfirst=True,
-                        errors='raise'
-                    ).date()
+                    try:
+
+                        fecha_nacimiento = pd.to_datetime(
+                            fecha_nacimiento,
+                            dayfirst=True,
+                            errors='raise'
+                        ).date()
+
+                    except Exception:
+
+                        raise ValueError(
+                            'la fecha de nacimiento '
+                            'no tiene un formato válido'
+                        )
 
                 # =================================================
                 # TELÉFONO
                 # =================================================
 
-                telefono = row.get(
-                    'telefono'
-                )
+                telefono = row.get('telefono')
 
                 if telefono is not None:
 
-                    if isinstance(
-                        telefono,
-                        float
-                    ):
+                    if isinstance(telefono, float):
 
                         if telefono.is_integer():
 
@@ -536,9 +537,7 @@ def cargar_alumnos_excel(request):
                 # DIRECCIÓN
                 # =================================================
 
-                direccion = row.get(
-                    'direccion'
-                )
+                direccion = row.get('direccion')
 
                 direccion = (
                     str(direccion).strip()
@@ -556,78 +555,76 @@ def cargar_alumnos_excel(request):
 
                 if fecha_ingreso is not None:
 
-                    fecha_ingreso = pd.to_datetime(
-                        fecha_ingreso,
-                        dayfirst=True,
-                        errors='raise'
-                    ).date()
+                    try:
+
+                        fecha_ingreso = pd.to_datetime(
+                            fecha_ingreso,
+                            dayfirst=True,
+                            errors='raise'
+                        ).date()
+
+                    except Exception:
+
+                        raise ValueError(
+                            'la fecha de ingreso '
+                            'no tiene un formato válido'
+                        )
 
                 # =================================================
-                # BUSCAR USUARIO POR USERNAME
+                # BUSCAR USUARIO
                 # =================================================
 
                 usuario_username = Usuario.objects.filter(
                     username=username
                 ).first()
 
-                # =================================================
-                # BUSCAR USUARIO POR EMAIL
-                # =================================================
-
                 usuario_email = Usuario.objects.filter(
                     email__iexact=email
                 ).first()
 
                 # =================================================
-                # CASO 1
-                #
-                # Username existe
+                # USUARIO EXISTENTE POR USERNAME
                 # =================================================
 
                 if usuario_username:
 
                     usuario_obj = usuario_username
 
-                    # ---------------------------------------------
                     # El email pertenece a otro usuario
-                    # ---------------------------------------------
-
                     if (
                         usuario_email and
                         usuario_email.pk != usuario_obj.pk
                     ):
 
                         raise ValueError(
-                            f"el email '{email}' "
-                            f"ya pertenece a otro usuario"
+                            f'el email "{email}" ya está '
+                            f'registrado con otro usuario'
                         )
 
                     usuario_obj.email = email
                     usuario_obj.first_name = first_name
                     usuario_obj.last_name = last_name
 
+                    # Asignar rol Alumno
+                    usuario_obj.rol = rol_alumno
+
                     usuario_obj.save()
 
                     usuario_creado = False
 
                 # =================================================
-                # CASO 2
-                #
-                # Username no existe pero email sí existe
+                # EMAIL EXISTENTE CON OTRO USERNAME
                 # =================================================
 
                 elif usuario_email:
 
                     raise ValueError(
-                        f"el email '{email}' "
-                        f"ya está registrado con "
-                        f"otro username"
+                        f'el email "{email}" ya está '
+                        f'registrado con otro username'
                     )
 
                 # =================================================
-                # CASO 3
-                #
-                # Usuario completamente nuevo
+                # CREAR USUARIO NUEVO
                 # =================================================
 
                 else:
@@ -637,16 +634,10 @@ def cargar_alumnos_excel(request):
                         email=email,
                         first_name=first_name,
                         last_name=last_name,
+                        rol=rol_alumno,
                     )
 
-                    # ---------------------------------------------
-                    # NO usamos password del Excel.
-                    #
-                    # El usuario queda sin contraseña utilizable.
-                    # Luego podrá establecerla mediante recuperación
-                    # de contraseña si tienes ese sistema configurado.
-                    # ---------------------------------------------
-
+                    # No se utiliza contraseña desde Excel
                     usuario_obj.set_unusable_password()
 
                     usuario_obj.save()
@@ -660,9 +651,7 @@ def cargar_alumnos_excel(request):
                 with transaction.atomic():
 
                     Alumnos.objects.update_or_create(
-
                         usuario=usuario_obj,
-
                         defaults={
                             'curso': curso_obj,
                             'fecha_nacimiento':
@@ -688,14 +677,21 @@ def cargar_alumnos_excel(request):
                     actualizados += 1
 
             # =====================================================
-            # ERROR DE UNA FILA
+            # ERROR DE ESTA FILA
             # =====================================================
 
             except Exception as e:
 
-                errores.append(
-                    f'Fila {fila_excel}: {str(e)}'
+                mensaje_error = str(e)
+
+                mensaje = (
+                    f'El registro "{nombre_alumno}" '
+                    f'no se pudo registrar al curso '
+                    f'"{curso_nombre}" porque '
+                    f'{mensaje_error}.'
                 )
+
+                errores.append(mensaje)
 
                 print(
                     f'ERROR FILA {fila_excel}:',
@@ -704,37 +700,52 @@ def cargar_alumnos_excel(request):
 
                 continue
 
-        # =========================================================
-        # RESULTADO
-        # =========================================================
+        # =====================================================
+        # RESULTADO FINAL
+        # =====================================================
 
-        if errores:
+        print('\nERRORES DE IMPORTACIÓN:')
 
-            print('\nERRORES DE IMPORTACIÓN:')
+        for error in errores:
+            print(error)
 
-            for error in errores:
-                print(error)
+        # =====================================================
+        # TODO CORRECTO
+        # =====================================================
 
-            mensaje = (
-                f'Importación terminada. '
-                f'{creados} creados, '
-                f'{actualizados} actualizados y '
-                f'{len(errores)} con errores.'
-            )
-
-            messages.warning(
-                request,
-                mensaje
-            )
-
-        else:
+        if not errores:
 
             messages.success(
                 request,
                 f'Importación completada correctamente. '
-                f'{creados} alumnos creados y '
-                f'{actualizados} actualizados.'
+                f'{creados} alumnos registrados y '
+                f'{actualizados} alumnos actualizados.'
             )
+
+        # =====================================================
+        # HUBO ERRORES
+        # =====================================================
+
+        else:
+
+            messages.warning(
+                request,
+                f'Importación finalizada: '
+                f'{creados} registrados, '
+                f'{actualizados} actualizados y '
+                f'{len(errores)} con errores.'
+            )
+
+            for error in errores:
+
+                messages.error(
+                    request,
+                    error
+                )
+
+    # =========================================================
+    # ERROR GENERAL
+    # =========================================================
 
     except Exception as e:
 
@@ -745,7 +756,9 @@ def cargar_alumnos_excel(request):
 
         messages.error(
             request,
-            f'Error al procesar el Excel: {str(e)}'
+            f'No se pudo procesar el archivo Excel '
+            f'porque ocurrió un error: {str(e)}.'
         )
 
     return redirect('listar_cursos')
+
