@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
+import pandas as pd
 from django.db.models import Count
 from django.contrib import messages
 
@@ -8,6 +10,8 @@ from apps.alumnos.models import Alumnos
 from .forms import CursosForm
 from .models import Cursos
 
+
+from apps.clases.models import Clases
 
 # ==========================================
 # LISTAR CURSOS + ALUMNOS
@@ -252,3 +256,74 @@ def asignar_alumno_curso(
     )
 
     return redirect("listar_cursos")
+
+
+
+def cargar_alumnos_excel(request):
+    if request.method == 'POST':
+        if 'archivo_excel' not in request.FILES:
+            messages.error(request, "No se adjuntó ningún archivo Excel.")
+            return redirect('cursos')
+
+        file = request.FILES['archivo_excel']
+
+        try:
+            df = pd.read_excel(file)
+            print("Filas detectadas en el Excel:", len(df))  # Imprime en consola de terminal
+
+            # Reemplazar valores nulos
+            df = df.where(pd.notnull(df), None)
+
+            creados = 0
+            omitidos = 0
+
+            with transaction.atomic():
+                for index, row in df.iterrows():
+                    # Convertir username
+                    val_username = row.get('username')
+                    if val_username is None:
+                        continue
+                    
+                    username = str(int(val_username) if isinstance(val_username, float) else val_username).strip()
+                    email = str(row.get('email')).strip() if row.get('email') else None
+
+                    if not username or not email:
+                        continue
+
+                    if Usuario.objects.filter(username=username).exists():
+                        omitidos += 1
+                        continue
+
+                    usuario = Usuario.objects.create_user(
+                        username=username,
+                        email=email,
+                        password=str(row.get('password', 'Alumno2026*')),
+                        first_name=str(row.get('first_name', '') or ''),
+                        last_name=str(row.get('last_name', '') or '')
+                    )
+
+                    curso_id = row.get('curso_id')
+                    clase_id = row.get('clase_id')
+
+                    curso_obj = Cursos.objects.filter(id=int(curso_id)).first() if curso_id and pd.notnull(curso_id) else None
+                    clase_obj = Clases.objects.filter(id=int(clase_id)).first() if clase_id and pd.notnull(clase_id) else None
+
+                    Alumnos.objects.create(
+                        usuario=usuario,
+                        codigo=str(row.get('codigo')).strip() if row.get('codigo') and pd.notnull(row.get('codigo')) else None,
+                        curso=curso_obj,
+                        clase=clase_obj,
+                        fecha_nacimiento=row.get('fecha_nacimiento') if pd.notnull(row.get('fecha_nacimiento')) else None,
+                        telefono=str(row.get('telefono')).strip() if row.get('telefono') and pd.notnull(row.get('telefono')) else None,
+                        direccion=str(row.get('direccion')).strip() if row.get('direccion') and pd.notnull(row.get('direccion')) else None,
+                        fecha_ingreso=row.get('fecha_ingreso') if pd.notnull(row.get('fecha_ingreso')) else None
+                    )
+                    creados += 1
+
+            messages.success(request, f"Éxito: {creados} alumnos creados. ({omitidos} omitidos por usuario existente)")
+
+        except Exception as e:
+            print("ERROR EN VISTA:", str(e))  # Muestra el error en la terminal
+            messages.error(request, f"Error al procesar el Excel: {str(e)}")
+
+    return redirect('listar_cursos')  # Asegúrate de colocar el name de tu URL

@@ -3,1059 +3,940 @@
 {% load static %}
 
 {% block title %}
-Cursos
+  Cursos
 {% endblock %}
 
 {% block content %}
-
-<link rel="stylesheet" href="{% static 'css/cursos/cursos.css' %}">
-
-<style>
-
-/* =========================================================
-   CONTENEDOR PRINCIPAL
-========================================================= */
-
-.cursos-wrapper {
-    max-width: 1350px;
-    margin: 0 auto;
-    padding: 10px 5px 50px;
-}
-
-
-/* =========================================================
-   ENCABEZADO
-========================================================= */
-
-.cursos-hero {
-    position: relative;
-    overflow: hidden;
-    border-radius: 24px;
-    padding: 35px 40px;
-    margin-bottom: 28px;
-
-    background: linear-gradient(
-        135deg,
-        #2563eb,
-        #4f46e5,
-        #7c3aed
-    );
-
-    color: white;
-
-    box-shadow:
-        0 15px 35px rgba(37, 99, 235, .18);
-}
-
-.cursos-hero::before {
-    content: "";
-    position: absolute;
-
-    width: 260px;
-    height: 260px;
-
-    border-radius: 50%;
-
-    background: rgba(255,255,255,.08);
-
-    right: -80px;
-    top: -130px;
-}
-
-.cursos-hero::after {
-    content: "";
-
-    position: absolute;
-
-    width: 180px;
-    height: 180px;
-
-    border-radius: 50%;
-
-    background: rgba(255,255,255,.06);
-
-    left: 45%;
-    bottom: -120px;
-}
-
-.cursos-hero-content {
-    position: relative;
-    z-index: 2;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-}
-
-.cursos-hero h1 {
-    font-size: 32px;
-    font-weight: 800;
-    margin: 0 0 7px;
-}
-
-.cursos-hero p {
-    margin: 0;
-    opacity: .9;
-    font-size: 15px;
-}
-
-
-/* =========================================================
-   BOTÓN CREAR
-========================================================= */
-
-.btn-crear-curso {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-
-    background: white;
-    color: #2563eb;
-
-    border: none;
-    border-radius: 12px;
-
-    padding: 12px 18px;
-
-    font-weight: 700;
-    text-decoration: none;
-
-    transition: all .2s ease;
-
-    box-shadow: 0 8px 18px rgba(0,0,0,.12);
-}
-
-.btn-crear-curso:hover {
-    color: #1d4ed8;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 22px rgba(0,0,0,.16);
-}
-
-
-/* =========================================================
-   ESTADÍSTICAS
-========================================================= */
-
-.cursos-stats {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 18px;
-
-    margin-bottom: 28px;
-}
-
-.stat-card-curso {
-    background: white;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 18px;
-
-    padding: 20px;
-
-    display: flex;
-    align-items: center;
-    gap: 15px;
-
-    box-shadow:
-        0 7px 20px rgba(15,23,42,.05);
-}
-
-.stat-icon-curso {
-    width: 48px;
-    height: 48px;
-
-    border-radius: 14px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #eff6ff;
-    color: #2563eb;
-
-    font-size: 20px;
-}
-
-.stat-card-curso strong {
-    display: block;
-
-    color: #1e293b;
-
-    font-size: 23px;
-
-    line-height: 1.1;
-}
-
-.stat-card-curso span {
-    color: #64748b;
-
-    font-size: 13px;
-}
-
-
-/* =========================================================
-   SECCIÓN
-========================================================= */
-
-.section-card {
-    background: white;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 20px;
-
-    overflow: hidden;
-
-    box-shadow:
-        0 8px 25px rgba(15,23,42,.05);
-
-    margin-bottom: 28px;
-}
-
-.section-header {
-    padding: 22px 25px;
-
-    border-bottom: 1px solid #eef2f7;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.section-header-left {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-}
-
-.section-header-icon {
-    width: 43px;
-    height: 43px;
-
-    border-radius: 12px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #eff6ff;
-    color: #2563eb;
-}
-
-.section-header h2 {
-    margin: 0;
-
-    font-size: 18px;
-
-    font-weight: 750;
-
-    color: #172033;
-}
-
-.section-header p {
-    margin: 3px 0 0;
-
-    color: #94a3b8;
-
-    font-size: 12px;
-}
-
-.section-body {
-    padding: 25px;
-}
-
-
-/* =========================================================
-   CURSOS
-========================================================= */
-
-.cursos-container {
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fill,
-            minmax(250px, 1fr)
-        );
-
-    gap: 20px;
-}
-
-
-/* =========================================================
-   TARJETA CURSO
-========================================================= */
-
-.curso-card {
-    position: relative;
-
-    background: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 18px;
-
-    overflow: hidden;
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        border-color .2s ease;
-}
-
-.curso-card:hover {
-    transform: translateY(-5px);
-
-    border-color: #bfdbfe;
-
-    box-shadow:
-        0 14px 30px rgba(15,23,42,.10);
-}
-
-
-/* =========================================================
-   CABECERA CURSO
-========================================================= */
-
-.curso-card-header {
-    position: relative;
-
-    padding: 23px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #eff6ff,
-            #eef2ff
-        );
-}
-
-.curso-card-header::after {
-    content: "";
-
-    position: absolute;
-
-    width: 80px;
-    height: 80px;
-
-    border-radius: 50%;
-
-    background: rgba(37,99,235,.07);
-
-    right: -20px;
-    top: -25px;
-}
-
-.curso-icon {
-    width: 43px;
-    height: 43px;
-
-    border-radius: 12px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: white;
-
-    color: #2563eb;
-
-    margin-bottom: 14px;
-
-    box-shadow:
-        0 5px 12px rgba(37,99,235,.10);
-}
-
-.curso-card-header h3 {
-    position: relative;
-    z-index: 2;
-
-    margin: 0;
-
-    color: #172033;
-
-    font-size: 19px;
-
-    font-weight: 750;
-}
-
-
-/* =========================================================
-   CUERPO
-========================================================= */
-
-.curso-card-body {
-    padding: 20px 23px;
-}
-
-.curso-alumnos {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 10px;
-}
-
-.curso-alumnos-label {
-    color: #64748b;
-
-    font-size: 13px;
-}
-
-.curso-alumnos-number {
-    color: #1e293b;
-
-    font-weight: 750;
-
-    font-size: 15px;
-}
-
-
-/* =========================================================
-   BARRA CAPACIDAD
-========================================================= */
-
-.capacidad-bar {
-    height: 7px;
-
-    width: 100%;
-
-    border-radius: 20px;
-
-    background: #e2e8f0;
-
-    overflow: hidden;
-}
-
-.capacidad-progress {
-    height: 100%;
-
-    border-radius: 20px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #2563eb,
-            #6366f1
-        );
-
-    transition: width .3s ease;
-}
-
-.capacidad-text {
-    margin-top: 8px;
-
-    color: #94a3b8;
-
-    font-size: 11px;
-}
-
-
-/* =========================================================
-   ACCIONES
-========================================================= */
-
-.curso-card-actions {
-    padding: 15px 23px;
-
-    border-top: 1px solid #f1f5f9;
-
-    display: flex;
-
-    gap: 8px;
-}
-
-.curso-action {
-    width: 38px;
-    height: 38px;
-
-    border-radius: 10px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    text-decoration: none;
-
-    transition: .2s ease;
-}
-
-.curso-action.edit {
-    background: #fef3c7;
-    color: #d97706;
-}
-
-.curso-action.delete {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
-.curso-action:hover {
-    transform: translateY(-2px);
-}
-
-
-/* =========================================================
-   ESTADO VACÍO
-========================================================= */
-
-.empty-cursos {
-    text-align: center;
-
-    padding: 55px 20px;
-
-    color: #64748b;
-}
-
-.empty-cursos-icon {
-    width: 70px;
-    height: 70px;
-
-    border-radius: 20px;
-
-    background: #eff6ff;
-
-    color: #2563eb;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    margin: 0 auto 18px;
-
-    font-size: 27px;
-}
-
-.empty-cursos h3 {
-    color: #334155;
-
-    font-size: 18px;
-
-    font-weight: 700;
-
-    margin-bottom: 6px;
-}
-
-.empty-cursos p {
-    font-size: 13px;
-
-    margin-bottom: 20px;
-}
-
-
-/* =========================================================
-   FILTRO ALUMNOS
-========================================================= */
-
-.filtro-container {
-    background: #f8fafc;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 15px;
-
-    padding: 18px;
-
-    margin-bottom: 22px;
-}
-
-.filtro-label {
-    display: block;
-
-    font-size: 13px;
-
-    font-weight: 700;
-
-    color: #334155;
-
-    margin-bottom: 8px;
-}
-
-.filtro-select {
-    border-radius: 11px;
-
-    border: 1px solid #dbe2ea;
-
-    padding: 11px 13px;
-
-    background: white;
-
-    transition: .2s ease;
-}
-
-.filtro-select:focus {
-    border-color: #4f46e5;
-
-    box-shadow:
-        0 0 0 4px rgba(79,70,229,.10);
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 900px) {
-
-    .cursos-stats {
-        grid-template-columns: 1fr;
+  <link rel="stylesheet" href="{% static 'css/cursos/cursos.css' %}" />
+
+  <style>
+    /* =========================================================
+    CONTENEDOR PRINCIPAL
+    ========================================================= */
+    
+    .cursos-wrapper {
+      max-width: 1350px;
+      margin: 0 auto;
+      padding: 10px 5px 50px;
     }
-
+    
+    /* =========================================================
+    ENCABEZADO
+    ========================================================= */
+    
+    .cursos-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 35px 40px;
+      margin-bottom: 28px;
+    
+      background: linear-gradient(135deg, #2563eb, #4f46e5, #7c3aed);
+    
+      color: white;
+    
+      box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18);
+    }
+    
+    .cursos-hero::before {
+      content: '';
+      position: absolute;
+    
+      width: 260px;
+      height: 260px;
+    
+      border-radius: 50%;
+    
+      background: rgba(255, 255, 255, 0.08);
+    
+      right: -80px;
+      top: -130px;
+    }
+    
+    .cursos-hero::after {
+      content: '';
+    
+      position: absolute;
+    
+      width: 180px;
+      height: 180px;
+    
+      border-radius: 50%;
+    
+      background: rgba(255, 255, 255, 0.06);
+    
+      left: 45%;
+      bottom: -120px;
+    }
+    
     .cursos-hero-content {
+      position: relative;
+      z-index: 2;
+    
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .cursos-hero h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin: 0 0 7px;
+    }
+    
+    .cursos-hero p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 15px;
+    }
+    
+    /* =========================================================
+    BOTÓN CREAR / REGISTRAR
+    ========================================================= */
+    
+    .btn-crear-curso {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+    
+      background: white;
+      color: #2563eb;
+    
+      border: none;
+      border-radius: 12px;
+    
+      padding: 12px 18px;
+    
+      font-weight: 700;
+      text-decoration: none;
+    
+      transition: all 0.2s ease;
+    
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    }
+    
+    .btn-crear-curso:hover {
+      color: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(0, 0, 0, 0.16);
+    }
+    
+    .btn-registrar-alumno {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+    
+      background: #2563eb;
+      color: white;
+    
+      border: none;
+      border-radius: 11px;
+    
+      padding: 11px 18px;
+    
+      font-weight: 700;
+      text-decoration: none;
+    
+      transition: all 0.2s ease;
+    
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+      height: fit-content;
+      cursor: pointer;
+    }
+    
+    .btn-registrar-alumno:hover {
+      background: #1d4ed8;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    }
+    
+    /* =========================================================
+    ESTADÍSTICAS
+    ========================================================= */
+    
+    .cursos-stats {
+      display: grid;
+    
+      grid-template-columns: repeat(3, 1fr);
+    
+      gap: 18px;
+    
+      margin-bottom: 28px;
+    }
+    
+    .stat-card-curso {
+      background: white;
+    
+      border: 1px solid #e5e7eb;
+    
+      border-radius: 18px;
+    
+      padding: 20px;
+    
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    
+      box-shadow: 0 7px 20px rgba(15, 23, 42, 0.05);
+    }
+    
+    .stat-icon-curso {
+      width: 48px;
+      height: 48px;
+    
+      border-radius: 14px;
+    
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    
+      background: #eff6ff;
+      color: #2563eb;
+    
+      font-size: 20px;
+    }
+    
+    .stat-card-curso strong {
+      display: block;
+    
+      color: #1e293b;
+    
+      font-size: 23px;
+    
+      line-height: 1.1;
+    }
+    
+    .stat-card-curso span {
+      color: #64748b;
+    
+      font-size: 13px;
+    }
+    
+    /* =========================================================
+    SECCIÓN
+    ========================================================= */
+    
+    .section-card {
+      background: white;
+    
+      border: 1px solid #e5e7eb;
+    
+      border-radius: 20px;
+    
+      overflow: hidden;
+    
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.05);
+    
+      margin-bottom: 28px;
+    }
+    
+    .section-header {
+      padding: 22px 25px;
+    
+      border-bottom: 1px solid #eef2f7;
+    
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+    
+    .section-header-icon {
+      width: 43px;
+      height: 43px;
+    
+      border-radius: 12px;
+    
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    
+      background: #eff6ff;
+      color: #2563eb;
+    }
+    
+    .section-header h2 {
+      margin: 0;
+    
+      font-size: 18px;
+    
+      font-weight: 750;
+    
+      color: #172033;
+    }
+    
+    .section-header p {
+      margin: 3px 0 0;
+    
+      color: #94a3b8;
+    
+      font-size: 12px;
+    }
+    
+    .section-body {
+      padding: 25px;
+    }
+    
+    /* =========================================================
+    CURSOS
+    ========================================================= */
+    
+    .cursos-container {
+      display: grid;
+    
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    
+      gap: 20px;
+    }
+    
+    /* =========================================================
+    TARJETA CURSO
+    ========================================================= */
+    
+    .curso-card {
+      position: relative;
+    
+      background: #ffffff;
+    
+      border: 1px solid #e5e7eb;
+    
+      border-radius: 18px;
+    
+      overflow: hidden;
+    
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    
+    .curso-card:hover {
+      transform: translateY(-5px);
+    
+      border-color: #bfdbfe;
+    
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
+    }
+    
+    /* =========================================================
+    CABECERA CURSO
+    ========================================================= */
+    
+    .curso-card-header {
+      position: relative;
+    
+      padding: 23px;
+    
+      background: linear-gradient(135deg, #eff6ff, #eef2ff);
+    }
+    
+    .curso-card-header::after {
+      content: '';
+    
+      position: absolute;
+    
+      width: 80px;
+      height: 80px;
+    
+      border-radius: 50%;
+    
+      background: rgba(37, 99, 235, 0.07);
+    
+      right: -20px;
+      top: -25px;
+    }
+    
+    .curso-icon {
+      width: 43px;
+      height: 43px;
+    
+      border-radius: 12px;
+    
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    
+      background: white;
+    
+      color: #2563eb;
+    
+      margin-bottom: 14px;
+    
+      box-shadow: 0 5px 12px rgba(37, 99, 235, 0.1);
+    }
+    
+    .curso-card-header h3 {
+      position: relative;
+      z-index: 2;
+    
+      margin: 0;
+    
+      color: #172033;
+    
+      font-size: 19px;
+    
+      font-weight: 750;
+    }
+    
+    /* =========================================================
+    CUERPO
+    ========================================================= */
+    
+    .curso-card-body {
+      padding: 20px 23px;
+    }
+    
+    .curso-alumnos {
+      display: flex;
+    
+      align-items: center;
+    
+      justify-content: space-between;
+    
+      margin-bottom: 10px;
+    }
+    
+    .curso-alumnos-label {
+      color: #64748b;
+    
+      font-size: 13px;
+    }
+    
+    .curso-alumnos-number {
+      color: #1e293b;
+    
+      font-weight: 750;
+    
+      font-size: 15px;
+    }
+    
+    /* =========================================================
+    BARRA CAPACIDAD
+    ========================================================= */
+    
+    .capacidad-bar {
+      height: 7px;
+    
+      width: 100%;
+    
+      border-radius: 20px;
+    
+      background: #e2e8f0;
+    
+      overflow: hidden;
+    }
+    
+    .capacidad-progress {
+      height: 100%;
+    
+      border-radius: 20px;
+    
+      background: linear-gradient(90deg, #2563eb, #6366f1);
+    
+      transition: width 0.3s ease;
+    }
+    
+    .capacidad-text {
+      margin-top: 8px;
+    
+      color: #94a3b8;
+    
+      font-size: 11px;
+    }
+    
+    /* =========================================================
+    ACCIONES
+    ========================================================= */
+    
+    .curso-card-actions {
+      padding: 15px 23px;
+    
+      border-top: 1px solid #f1f5f9;
+    
+      display: flex;
+    
+      gap: 8px;
+    }
+    
+    .curso-action {
+      width: 38px;
+      height: 38px;
+    
+      border-radius: 10px;
+    
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    
+      text-decoration: none;
+    
+      transition: 0.2s ease;
+    }
+    
+    .curso-action.edit {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    
+    .curso-action.delete {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .curso-action:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* =========================================================
+    ESTADO VACÍO
+    ========================================================= */
+    
+    .empty-cursos {
+      text-align: center;
+    
+      padding: 55px 20px;
+    
+      color: #64748b;
+    }
+    
+    .empty-cursos-icon {
+      width: 70px;
+      height: 70px;
+    
+      border-radius: 20px;
+    
+      background: #eff6ff;
+    
+      color: #2563eb;
+    
+      display: flex;
+    
+      align-items: center;
+    
+      justify-content: center;
+    
+      margin: 0 auto 18px;
+    
+      font-size: 27px;
+    }
+    
+    .empty-cursos h3 {
+      color: #334155;
+    
+      font-size: 18px;
+    
+      font-weight: 700;
+    
+      margin-bottom: 6px;
+    }
+    
+    .empty-cursos p {
+      font-size: 13px;
+    
+      margin-bottom: 20px;
+    }
+    
+    /* =========================================================
+    FILTRO Y ACCIONES ALUMNOS
+    ========================================================= */
+    
+    .filtro-actions-wrapper {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+      padding: 18px;
+    }
+    
+    .filtro-container {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    
+    .filtro-label {
+      display: block;
+    
+      font-size: 13px;
+    
+      font-weight: 700;
+    
+      color: #334155;
+    
+      margin-bottom: 8px;
+    }
+    
+    .filtro-select {
+      border-radius: 11px;
+    
+      border: 1px solid #dbe2ea;
+    
+      padding: 11px 13px;
+    
+      background: white;
+    
+      transition: 0.2s ease;
+    
+      width: 100%;
+    }
+    
+    .filtro-select:focus {
+      border-color: #4f46e5;
+    
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+    
+    /* =========================================================
+    RESPONSIVE
+    ========================================================= */
+    
+    @media (max-width: 900px) {
+      .cursos-stats {
+        grid-template-columns: 1fr;
+      }
+    
+      .cursos-hero-content {
         flex-direction: column;
         align-items: flex-start;
+      }
     }
-
-}
-
-@media (max-width: 600px) {
-
-    .cursos-wrapper {
+    
+    @media (max-width: 600px) {
+      .cursos-wrapper {
         padding: 5px 0 35px;
-    }
-
-    .cursos-hero {
+      }
+    
+      .cursos-hero {
         padding: 27px 22px;
-    }
-
-    .cursos-hero h1 {
+      }
+    
+      .cursos-hero h1 {
         font-size: 26px;
-    }
-
-    .section-body {
+      }
+    
+      .section-body {
         padding: 18px;
-    }
-
-    .section-header {
+      }
+    
+      .section-header {
         padding: 18px;
-    }
-
-    .cursos-container {
+      }
+    
+      .cursos-container {
         grid-template-columns: 1fr;
+      }
+    
+      .filtro-actions-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    
+      .btn-registrar-alumno {
+        justify-content: center;
+      }
     }
+    
+    /* =========================================================
+    BOTÓN AGREGAR EN TARJETA
+    ========================================================= */
+    
+    .btn-add-curso {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 5;
+    
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+    
+      background: white;
+      color: #2563eb;
+    
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    
+      text-decoration: none;
+      font-size: 14px;
+    
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s ease;
+    }
+    
+    .btn-add-curso:hover {
+      background: #2563eb;
+      color: white;
+      transform: scale(1.05);
+    }
+  </style>
 
-}
+  <div class="cursos-wrapper">
+    <!--  =====================================================
+MENSAJES DE ÉXITO O ERROR
+======================================================  -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert" style="border-radius: 12px;">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
 
-</style>
+    <!--  =====================================================
+HERO
+======================================================  -->
 
-<div class="cursos-wrapper">
-
-```
-<!-- =====================================================
-     HERO
-====================================================== -->
-
-<div class="cursos-hero">
-
-    <div class="cursos-hero-content">
-
+    <div class="cursos-hero">
+      <div class="cursos-hero-content">
         <div>
+          <h1>
+            <i class="fa-solid fa-graduation-cap"></i>
+            Cursos
+          </h1>
 
-            <h1>
-                <i class="fa-solid fa-graduation-cap"></i>
-                Cursos
-            </h1>
-
-            <p>
-                Administra los cursos y consulta
-                los alumnos registrados.
-            </p>
-
+          <p>Administra los cursos y consulta los alumnos registrados.</p>
         </div>
 
+        <a href="{% url 'crear_curso' %}" class="btn-crear-curso">
+          <i class="fa-solid fa-plus"></i>
 
-        <a
-            href="{% url 'crear_curso' %}"
-            class="btn-crear-curso"
-        >
-
-            <i class="fa-solid fa-plus"></i>
-
-            Crear curso
-
+          Crear curso
         </a>
-
+      </div>
     </div>
 
-</div>
+    <!--  =====================================================
+ESTADÍSTICAS
+======================================================  -->
 
-
-<!-- =====================================================
-     ESTADÍSTICAS
-====================================================== -->
-
-<div class="cursos-stats">
-
-
-    <div class="stat-card-curso">
-
+    <div class="cursos-stats">
+      <div class="stat-card-curso">
         <div class="stat-icon-curso">
-
-            <i class="fa-solid fa-book-open"></i>
-
+          <i class="fa-solid fa-book-open"></i>
         </div>
 
         <div>
+          <strong>{{ cursos|length }}</strong>
 
-            <strong>
-                {{ cursos|length }}
-            </strong>
-
-            <span>
-                Cursos registrados
-            </span>
-
+          <span>Cursos registrados</span>
         </div>
+      </div>
 
-    </div>
-
-
-    <div class="stat-card-curso">
-
+      <div class="stat-card-curso">
         <div class="stat-icon-curso">
-
-            <i class="fa-solid fa-users"></i>
-
+          <i class="fa-solid fa-users"></i>
         </div>
 
         <div>
+          <strong>{{ alumnos|length|default:'0' }}</strong>
 
-            <strong>
-                {{ alumnos|length|default:"0" }}
-            </strong>
-
-            <span>
-                Alumnos registrados
-            </span>
-
+          <span>Alumnos registrados</span>
         </div>
+      </div>
 
-    </div>
-
-
-    <div class="stat-card-curso">
-
+      <div class="stat-card-curso">
         <div class="stat-icon-curso">
-
-            <i class="fa-solid fa-chart-line"></i>
-
+          <i class="fa-solid fa-chart-line"></i>
         </div>
 
         <div>
+          <strong>32</strong>
 
-            <strong>
-                32
-            </strong>
-
-            <span>
-                Capacidad por curso
-            </span>
-
+          <span>Capacidad por curso</span>
         </div>
-
+      </div>
     </div>
 
+    <!--  =====================================================
+CURSOS
+======================================================  -->
 
-</div>
-
-
-<!-- =====================================================
-     CURSOS
-====================================================== -->
-
-<div class="section-card">
-
-    <div class="section-header">
-
+    <div class="section-card">
+      <div class="section-header">
         <div class="section-header-left">
+          <div class="section-header-icon">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
 
-            <div class="section-header-icon">
+          <div>
+            <h2>Cursos disponibles</h2>
 
-                <i class="fa-solid fa-layer-group"></i>
-
-            </div>
-
-            <div>
-
-                <h2>
-                    Cursos disponibles
-                </h2>
-
-                <p>
-                    Gestiona los cursos de la institución
-                </p>
-
-            </div>
-
+            <p>Gestiona los cursos de la institución</p>
+          </div>
         </div>
+      </div>
 
-    </div>
-
-
-    <div class="section-body">
-
-
+      <div class="section-body">
         {% if cursos %}
+          <div class="cursos-container">
+            {% for curso in cursos %}
+              <div class="curso-card">
+                <!-- CABECERA -->
 
-            <div class="cursos-container">
-
-
-                {% for curso in cursos %}
-
-                    <div class="curso-card">
-
-
-                        <!-- CABECERA -->
-
-                        <div class="curso-card-header">
-
-                            <div class="curso-icon">
-
-                                <i class="fa-solid fa-graduation-cap"></i>
-
-                            </div>
-
-                            <h3>
-                                {{ curso.nombre }}
-                            </h3>
-
-                        </div>
-
-
-                        <!-- INFORMACIÓN -->
-
-                        <div class="curso-card-body">
-
-                            <div class="curso-alumnos">
-
-                                <span class="curso-alumnos-label">
-
-                                    <i class="fa-solid fa-users"></i>
-
-                                    Alumnos
-
-                                </span>
-
-                                <span class="curso-alumnos-number">
-
-                                    {{ curso.cantidad_alumnos }}/32
-
-                                </span>
-
-                            </div>
-
-
-                            <!-- BARRA -->
-
-                            <div class="capacidad-bar">
-
-                                <div
-                                    class="capacidad-progress"
-                                    style="
-                                        width:
-                                        {% widthratio curso.cantidad_alumnos 32 100 %}%;
-                                    "
-                                ></div>
-
-                            </div>
-
-
-                            <div class="capacidad-text">
-
-                                Capacidad utilizada del curso
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- ACCIONES -->
-
-                        <div class="curso-card-actions">
-
-
-                            <a
-                                href="{% url 'editar_curso' curso.id %}"
-                                class="curso-action edit"
-                                title="Editar curso"
-                            >
-
-                                <i class="fa-solid fa-pen"></i>
-
-                            </a>
-
-
-                            <a
-                                href="{% url 'eliminar_curso' curso.id %}"
-                                class="curso-action delete"
-                                title="Eliminar curso"
-                            >
-
-                                <i class="fa-solid fa-trash"></i>
-
-                            </a>
-
-
-                        </div>
-
-
-                    </div>
-
-                {% endfor %}
-
-
-            </div>
-
-
-        {% else %}
-
-
-            <div class="empty-cursos">
-
-                <div class="empty-cursos-icon">
-
+                <div class="curso-card-header">
+                  <div class="curso-icon">
                     <i class="fa-solid fa-graduation-cap"></i>
+                  </div>
 
+                  <h3>{{ curso.nombre }}</h3>
                 </div>
 
+                <!-- INFORMACIÓN -->
 
-                <h3>
-                    No hay cursos todavía
-                </h3>
+                <div class="curso-card-body">
+                  <div class="curso-alumnos">
+                    <span class="curso-alumnos-label">
+                      <i class="fa-solid fa-users"></i>
 
+                      Alumnos
+                    </span>
 
-                <p>
-                    Comienza creando el primer curso
-                    de la institución.
-                </p>
+                    <span class="curso-alumnos-number">{{ curso.cantidad_alumnos }}/32</span>
+                  </div>
 
+                  <!-- BARRA -->
 
-                <a
-                    href="{% url 'crear_curso' %}"
-                    class="btn btn-primary"
-                >
+                  <div class="capacidad-bar">
+                    <div class="capacidad-progress" style="
+width:
+{% widthratio curso.cantidad_alumnos 32 100 %}%;
+"></div>
+                  </div>
 
-                    <i class="fa-solid fa-plus"></i>
+                  <div class="capacidad-text">Capacidad utilizada del curso</div>
+                </div>
 
-                    Crear primer curso
+                <!-- ACCIONES -->
 
-                </a>
+                <div class="curso-card-actions">
+                  <a href="{% url 'editar_curso' curso.id %}" class="curso-action edit" title="Editar curso"><i class="fa-solid fa-pen"></i></a>
 
+                  <a href="{% url 'eliminar_curso' curso.id %}" class="curso-action delete" title="Eliminar curso"><i class="fa-solid fa-trash"></i></a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-cursos">
+            <div class="empty-cursos-icon">
+              <i class="fa-solid fa-graduation-cap"></i>
             </div>
 
+            <h3>No hay cursos todavía</h3>
 
+            <p>Comienza creando el primer curso de la institución.</p>
+
+            <a href="{% url 'crear_curso' %}" class="btn btn-primary">
+              <i class="fa-solid fa-plus"></i>
+
+              Crear primer curso
+            </a>
+          </div>
         {% endif %}
-
-
+      </div>
     </div>
 
-</div>
+    <!--  =====================================================
+ALUMNOS
+======================================================  -->
 
-
-<!-- =====================================================
-     ALUMNOS
-====================================================== -->
-
-<div class="section-card">
-
-    <div class="section-header">
-
+    <div class="section-card">
+      <div class="section-header">
         <div class="section-header-left">
+          <div class="section-header-icon">
+            <i class="fa-solid fa-users"></i>
+          </div>
 
-            <div class="section-header-icon">
+          <div>
+            <h2>Alumnos registrados</h2>
 
-                <i class="fa-solid fa-users"></i>
-
-            </div>
-
-            <div>
-
-                <h2>
-                    Alumnos registrados
-                </h2>
-
-                <p>
-                    Consulta y filtra los estudiantes
-                    por curso.
-                </p>
-
-            </div>
-
+            <p>Consulta y filtra los estudiantes por curso.</p>
+          </div>
         </div>
+      </div>
 
-    </div>
+      <div class="section-body">
+        <!-- CONTENEDOR FILTRO Y BOTÓN MODAL -->
 
+        <div class="filtro-actions-wrapper">
+          <div class="filtro-container">
+            <label for="filtroCurso" class="filtro-label">
+              <i class="fa-solid fa-filter"></i>
 
-    <div class="section-body">
-
-
-        <!-- FILTRO -->
-
-        <div class="filtro-container">
-
-            <label
-                for="filtroCurso"
-                class="filtro-label"
-            >
-
-                <i class="fa-solid fa-filter"></i>
-
-                Filtrar alumnos por curso
-
+              Filtrar alumnos por curso
             </label>
 
+            <select id="filtroCurso" class="form-select filtro-select">
+              <option value="">Todos los cursos</option>
 
-            <select
-                id="filtroCurso"
-                class="form-select filtro-select"
-            >
-
-                <option value="">
-                    Todos los cursos
-                </option>
-
-
-                {% for curso in cursos %}
-
-                    <option value="{{ curso.id }}">
-
-                        {{ curso.nombre }}
-
-                    </option>
-
-                {% endfor %}
-
-
+              {% for curso in cursos %}
+                <option value="{{ curso.id }}">{{ curso.nombre }}</option>
+              {% endfor %}
             </select>
+          </div>
 
+          <!-- BOTÓN QUE DISPARA EL MODAL DE EXCEL -->
+          <button type="button" class="btn-registrar-alumno" data-bs-toggle="modal" data-bs-target="#modalCargaExcel">
+            <i class="fa-solid fa-file-excel"></i>
+
+            Registrar alumnos
+          </button>
         </div>
-
 
         <!-- TABLA -->
 
         {% include 'admin/cursos/partials/tabla_alumnos.html' %}
-
-
+      </div>
     </div>
+  </div>
 
-</div>
-```
+  <!--  =========================================================
+MODAL PARA CARGAR EXCEL
+=========================================================  -->
 
-</div>
+  <div class="modal fade" id="modalCargaExcel" tabindex="-1" aria-labelledby="modalCargaExcelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius: 18px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+        <div class="modal-header" style="border-bottom: 1px solid #eef2f7; padding: 20px 25px;">
+          <h5 class="modal-title" id="modalCargaExcelLabel" style="font-weight: 750; color: #172033; font-size: 18px;"><i class="fa-solid fa-file-excel text-success me-2"></i> Registrar Alumnos desde Excel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
 
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
+        <form action="{% url 'cargar_alumnos_excel' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
 
-<script src="{% static 'js/cursos/cursos.js' %}"></script>
+          <div class="modal-body" style="padding: 25px;">
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">
+              Sube un archivo Excel (<code>.xlsx</code> o <code>.xls</code>) respetando la estructura de columnas de usuario y alumno.
+            </p>
 
+            <div class="mb-3">
+              <label for="archivoExcel" class="form-label" style="font-size: 13px; font-weight: 700; color: #334155;">Seleccionar archivo Excel</label>
+              <input class="form-control" type="file" id="archivoExcel" name="archivo_excel" accept=".xlsx, .xls" required style="border-radius: 10px; padding: 10px;" />
+            </div>
+          </div>
+
+          <div class="modal-footer" style="border-top: 1px solid #eef2f7; padding: 15px 25px;">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px; font-weight: 600;">Cancelar</button>
+            <button type="submit" class="btn btn-primary" style="background: #2563eb; border: none; border-radius: 10px; font-weight: 700; padding: 10px 20px;"><i class="fa-solid fa-upload me-1"></i> Cargar alumnos</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!--  =========================================================
+JAVASCRIPT
+=========================================================  -->
+
+  <script src="{% static 'js/cursos/cursos.js' %}"></script>
 {% endblock %}

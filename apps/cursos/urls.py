@@ -75,4 +75,6 @@ urlpatterns = [
         name="asignar_alumno_curso"
     ),
 
+    path('cursos/cargar-excel/', views.cargar_alumnos_excel, name='cargar_alumnos_excel'),
+
 ]

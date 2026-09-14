@@ -50,6 +50,7 @@ pip install reportlab
 pip install openpyxl
 pip install django-extensions
 pip install pydotplus
+pip install pandas openpyxl
 ```
 
 ## 5. Instalar Graphviz (requerido por django-extensions)
