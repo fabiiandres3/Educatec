@@ -1,0 +1,1026 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}
+Planificador de Horario
+{% endblock %}
+
+{% block content %}
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #f4f6f9;
+    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
+  }
+
+  .horario-wrapper {
+    padding: 12px 24px;
+  }
+
+  .breadcrumb {
+    font-size: 11px;
+    color: #6c757d;
+    margin-bottom: 8px;
+  }
+
+  .header-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a253c;
+    margin-bottom: 2px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 12px;
+  }
+
+  /* =========================================================
+     BARRA DE FILTROS
+     ========================================================= */
+
+  .filters-bar {
+    background: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    margin-bottom: 12px;
+    border: 1px solid #e9ecef;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .filter-group label {
+    font-size: 10px;
+    color: #6c757d;
+    font-weight: 600;
+  }
+
+  .filter-group select {
+    padding: 4px 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    min-width: 120px;
+    height: 28px;
+    outline: none;
+  }
+
+  .filter-group select:focus {
+    border-color: #0066ff;
+    box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.1);
+  }
+
+  .btn-blue {
+    background-color: #0066ff;
+    color: white;
+    border: none;
+    padding: 0 14px;
+    height: 28px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: auto;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-blue:hover {
+    background-color: #0052cc;
+  }
+
+  /* =========================================================
+     CONTENEDOR PRINCIPAL
+     ========================================================= */
+
+  .horario-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    gap: 12px;
+    align-items: start;
+  }
+
+  /* =========================================================
+     TARJETA DEL HORARIO
+     ========================================================= */
+
+  .schedule-card {
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+    overflow-x: auto;
+  }
+
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(5, minmax(120px, 1fr));
+    text-align: center;
+    min-width: 700px;
+  }
+
+  .grid-header {
+    font-weight: 600;
+    padding: 6px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-right: 1px solid #e9ecef;
+    font-size: 11px;
+    color: #495057;
+    min-height: 28px;
+  }
+
+  .grid-header:first-child {
+    border-left: 1px solid #e9ecef;
+  }
+
+  /* =========================================================
+     COLUMNA DE HORAS
+     ========================================================= */
+
+  .time-column {
+    border-left: 1px solid #e9ecef;
+  }
+
+  .time-slot {
+    border-bottom: 1px solid #e9ecef;
+    border-right: 1px solid #e9ecef;
+    font-size: 10px;
+    color: #495057;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fafafa;
+  }
+
+  /* =========================================================
+     COLUMNAS DE DÍAS
+     ========================================================= */
+
+  .day-column {
+    border-right: 1px solid #e9ecef;
+    position: relative;
+  }
+
+  .cell {
+    height: 40px;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  /* =========================================================
+     TARJETAS DE CLASE
+     ========================================================= */
+
+  .class-card {
+    position: absolute;
+    width: calc(100% - 6px);
+    left: 3px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    text-align: left;
+    font-size: 9px;
+    line-height: 1.2;
+    box-sizing: border-box;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .class-card strong {
+    display: block;
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+
+  .matematica {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-left: 3px solid #3b82f6;
+  }
+
+  .fisica {
+    background-color: #dcfce7;
+    color: #166534;
+    border-left: 3px solid #22c55e;
+  }
+
+  .programacion {
+    background-color: #f3e8ff;
+    color: #6b21a8;
+    border-left: 3px solid #a855f7;
+  }
+
+  .quimica {
+    background-color: #ffe4e6;
+    color: #9f1239;
+    border-left: 3px solid #f43f5e;
+  }
+
+  .taller {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border-left: 3px solid #eab308;
+  }
+
+  /* =========================================================
+     PANEL LATERAL
+     ========================================================= */
+
+  .side-card {
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+  }
+
+  .side-card h3 {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #1a253c;
+  }
+
+  .teacher-item {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .teacher-item:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    background-color: #475569;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .teacher-info {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .teacher-info strong {
+    display: block;
+    font-size: 11px;
+    color: #1f2937;
+  }
+
+  .teacher-info span {
+    font-size: 10px;
+    color: #6c757d;
+  }
+
+  .tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .tag {
+    background-color: #f1f5f9;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    color: #475569;
+  }
+
+  /* =========================================================
+     CAJA INFORMATIVA
+     ========================================================= */
+
+  .info-box {
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    padding: 8px;
+    margin-top: 10px;
+    font-size: 10px;
+    color: #1e40af;
+    line-height: 1.3;
+  }
+
+  /* =========================================================
+     BOTÓN SECUNDARIO
+     ========================================================= */
+
+  .btn-secondary {
+    width: 100%;
+    background: white;
+    border: 1px solid #ced4da;
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-top: 10px;
+    cursor: pointer;
+    color: #495057;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+  }
+
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+
+  @media (max-width: 1000px) {
+    .horario-container {
+      grid-template-columns: 1fr;
+    }
+
+    .side-card {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .horario-wrapper {
+      padding: 10px;
+    }
+
+    .filters-bar {
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .btn-blue {
+      margin-left: 0;
+    }
+  }
+</style>
+
+
+<div class="horario-wrapper">
+
+  <!-- =======================================================
+       ENCABEZADO
+       ======================================================= -->
+
+  <div class="breadcrumb">
+    Inicio &gt; Cursos &gt; 3°A - Matemática Aplicada &gt; Horarios del curso
+  </div>
+
+  <h1 class="header-title">
+    Curso: 3°A - Matemática Aplicada
+  </h1>
+
+  <p class="subtitle">
+    Horario semanal del curso y docentes asignados
+  </p>
+
+
+  <!-- =======================================================
+       FILTROS
+       ======================================================= -->
+
+  <div class="filters-bar">
+
+    <div class="filter-group">
+      <label for="cicloLectivo">
+        Ciclo lectivo
+      </label>
+
+      <select id="cicloLectivo">
+        <option value="2025">2025</option>
+      </select>
+    </div>
+
+
+    <div class="filter-group">
+      <label for="curso">
+        Curso
+      </label>
+
+      <select id="curso">
+        <option value="3A">
+          3°A
+        </option>
+      </select>
+    </div>
+
+
+    <div class="filter-group">
+      <label for="turno">
+        Turno
+      </label>
+
+      <select id="turno">
+        <option value="manana">
+          Mañana
+        </option>
+
+        <option value="tarde">
+          Tarde
+        </option>
+      </select>
+    </div>
+
+
+    <button type="button" class="btn-blue">
+      Ver horario
+    </button>
+
+  </div>
+
+
+  <!-- =======================================================
+       CONTENIDO PRINCIPAL
+       ======================================================= -->
+
+  <div class="horario-container">
+
+
+    <!-- =====================================================
+         HORARIO
+         ===================================================== -->
+
+    <div class="schedule-card">
+
+      <div class="schedule-grid">
+
+        <!-- CABECERA -->
+
+        <div class="grid-header">
+          Hora
+        </div>
+
+        <div class="grid-header">
+          Lunes
+        </div>
+
+        <div class="grid-header">
+          Martes
+        </div>
+
+        <div class="grid-header">
+          Miércoles
+        </div>
+
+        <div class="grid-header">
+          Jueves
+        </div>
+
+        <div class="grid-header">
+          Viernes
+        </div>
+
+
+        <!-- =================================================
+             HORAS
+             ================================================= -->
+
+        <div class="time-column">
+
+          <div class="time-slot">
+            07:00 - 08:00
+          </div>
+
+          <div class="time-slot">
+            08:00 - 09:00
+          </div>
+
+          <div class="time-slot">
+            09:00 - 10:00
+          </div>
+
+          <div class="time-slot">
+            10:00 - 11:00
+          </div>
+
+          <div class="time-slot">
+            11:00 - 12:00
+          </div>
+
+          <div class="time-slot">
+            12:00 - 13:00
+          </div>
+
+          <div class="time-slot">
+            13:00 - 14:00
+          </div>
+
+          <div class="time-slot">
+            14:00 - 15:00
+          </div>
+
+          <div class="time-slot">
+            15:00 - 16:00
+          </div>
+
+          <div class="time-slot">
+            16:00 - 17:00
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             LUNES
+             ================================================= -->
+
+        <div class="day-column">
+
+          <div class="cell"></div>
+
+          <div
+            class="class-card matematica"
+            style="top: 40px; height: 80px;"
+          >
+            <strong>
+              Matemática Aplicada
+            </strong>
+
+            Prof. María González<br>
+            Aula 101
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <div
+            class="class-card matematica"
+            style="top: 280px; height: 80px;"
+          >
+            <strong>
+              Matemática Aplicada
+            </strong>
+
+            Prof. María González<br>
+            Aula 101
+          </div>
+
+          <div class="cell"></div>
+
+        </div>
+
+
+        <!-- =================================================
+             MARTES
+             ================================================= -->
+
+        <div class="day-column">
+
+          <div
+            class="class-card fisica"
+            style="top: 0px; height: 80px;"
+          >
+            <strong>
+              Física
+            </strong>
+
+            Prof. Carlos Ruiz<br>
+            Aula 202
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <div
+            class="class-card programacion"
+            style="top: 160px; height: 80px;"
+          >
+            <strong>
+              Programación
+            </strong>
+
+            Prof. Juan Pérez<br>
+            Lab 3
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <div
+            class="class-card taller"
+            style="top: 320px; height: 80px;"
+          >
+            <strong>
+              Taller de Ingeniería
+            </strong>
+
+            Prof. Ana Torres<br>
+            Aula 105
+          </div>
+
+          <div class="cell"></div>
+
+        </div>
+
+
+        <!-- =================================================
+             MIÉRCOLES
+             ================================================= -->
+
+        <div class="day-column">
+
+          <div class="cell"></div>
+
+          <div
+            class="class-card matematica"
+            style="top: 40px; height: 80px;"
+          >
+            <strong>
+              Matemática Aplicada
+            </strong>
+
+            Prof. María González<br>
+            Aula 101
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <div
+            class="class-card quimica"
+            style="top: 200px; height: 80px;"
+          >
+            <strong>
+              Química
+            </strong>
+
+            Prof. Lucía Fernández<br>
+            Aula 203
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+        </div>
+
+
+        <!-- =================================================
+             JUEVES
+             ================================================= -->
+
+        <div class="day-column">
+
+          <div
+            class="class-card fisica"
+            style="top: 0px; height: 80px;"
+          >
+            <strong>
+              Física
+            </strong>
+
+            Prof. Carlos Ruiz<br>
+            Aula 202
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <div
+            class="class-card programacion"
+            style="top: 120px; height: 80px;"
+          >
+            <strong>
+              Programación
+            </strong>
+
+            Prof. Juan Pérez<br>
+            Lab 3
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <div
+            class="class-card taller"
+            style="top: 280px; height: 80px;"
+          >
+            <strong>
+              Taller de Ingeniería
+            </strong>
+
+            Prof. Ana Torres<br>
+            Aula 105
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+        </div>
+
+
+        <!-- =================================================
+             VIERNES
+             ================================================= -->
+
+        <div class="day-column">
+
+          <div class="cell"></div>
+
+          <div
+            class="class-card matematica"
+            style="top: 40px; height: 80px;"
+          >
+            <strong>
+              Matemática Aplicada
+            </strong>
+
+            Prof. María González<br>
+            Aula 101
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <div
+            class="class-card quimica"
+            style="top: 200px; height: 80px;"
+          >
+            <strong>
+              Química
+            </strong>
+
+            Prof. Lucía Fernández<br>
+            Aula 203
+          </div>
+
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <div
+            class="class-card fisica"
+            style="top: 360px; height: 40px;"
+          >
+            <strong>
+              Física
+            </strong>
+
+            Prof. Carlos Ruiz<br>
+            Aula 202
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PANEL DE DOCENTES
+         ===================================================== -->
+
+    <div class="side-card">
+
+      <h3>
+        Docentes asignados al curso
+      </h3>
+
+
+      <!-- DOCENTE 1 -->
+
+      <div class="teacher-item">
+
+        <div class="avatar">
+          👤
+        </div>
+
+        <div class="teacher-info">
+
+          <strong>
+            María González
+          </strong>
+
+          <span>
+            Matemática Aplicada
+          </span>
+
+          <div class="tags">
+
+            <span class="tag">
+              Lun 08:00 - 10:00
+            </span>
+
+            <span class="tag">
+              Mié 08:00 - 10:00
+            </span>
+
+            <span class="tag">
+              Vie 08:00 - 10:00
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- DOCENTE 2 -->
+
+      <div class="teacher-item">
+
+        <div class="avatar">
+          👤
+        </div>
+
+        <div class="teacher-info">
+
+          <strong>
+            Carlos Ruiz
+          </strong>
+
+          <span>
+            Física
+          </span>
+
+          <div class="tags">
+
+            <span class="tag">
+              Mar 07:00 - 09:00
+            </span>
+
+            <span class="tag">
+              Jue 07:00 - 09:00
+            </span>
+
+            <span class="tag">
+              Vie 16:00 - 17:00
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- DOCENTE 3 -->
+
+      <div class="teacher-item">
+
+        <div class="avatar">
+          👤
+        </div>
+
+        <div class="teacher-info">
+
+          <strong>
+            Juan Pérez
+          </strong>
+
+          <span>
+            Programación
+          </span>
+
+          <div class="tags">
+
+            <span class="tag">
+              Mar 11:00 - 13:00
+            </span>
+
+            <span class="tag">
+              Jue 10:00 - 12:00
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- DOCENTE 4 -->
+
+      <div class="teacher-item">
+
+        <div class="avatar">
+          👤
+        </div>
+
+        <div class="teacher-info">
+
+          <strong>
+            Lucía Fernández
+          </strong>
+
+          <span>
+            Química
+          </span>
+
+          <div class="tags">
+
+            <span class="tag">
+              Mié 12:00 - 14:00
+            </span>
+
+            <span class="tag">
+              Vie 12:00 - 14:00
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- DOCENTE 5 -->
+
+      <div class="teacher-item">
+
+        <div class="avatar">
+          👤
+        </div>
+
+        <div class="teacher-info">
+
+          <strong>
+            Ana Torres
+          </strong>
+
+          <span>
+            Taller de Ingeniería
+          </span>
+
+          <div class="tags">
+
+            <span class="tag">
+              Mar 15:00 - 17:00
+            </span>
+
+            <span class="tag">
+              Jue 15:00 - 17:00
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           INFORMACIÓN
+           ================================================= -->
+
+      <div class="info-box">
+        ℹ️ El horario mostrado corresponde a los docentes
+        asignados al curso 3°A - Matemática Aplicada.
+        Puedes editar o modificar las asignaciones desde
+        el botón de configuración.
+      </div>
+
+
+      <!-- =================================================
+           BOTÓN
+           ================================================= -->
+
+      <button
+        type="button"
+        class="btn-secondary"
+      >
+        ⚙️ Gestionar asignaciones
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

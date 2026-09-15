@@ -52,4 +52,6 @@ urlpatterns = [
         name="eliminar_horario"
     ),
 
+    path("calendario/", views.calendario, name="calendario"),
+
 ]

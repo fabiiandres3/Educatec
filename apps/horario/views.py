@@ -213,3 +213,10 @@ def eliminar_horario(request, id):
         )
 
     return redirect("listar_horarios")
+
+
+def calendario(request):
+    return render(
+            request,
+            "admin/horario/calendario.html"
+        )

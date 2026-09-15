@@ -1805,3 +1805,10 @@ def ver_respuestas(request, tarea_id, alumno_id):
             "puntos_totales": puntos_totales,
         }
     )
+
+
+def calendario(request):
+    return render(
+            request,
+            "admin/horario/calendario.html"
+        )
