@@ -604,7 +604,7 @@ def Editar_usuario(request, usuario_id):
         usuario_form = EditarUsuarioForm(instance=usuario)
 
     return render(
-        request, "admin/docente/editar_docente.html", {"usuario_form": usuario_form}
+        request, "admin/usuarios/editar_usuario.html", {"usuario_form": usuario_form}
     )
 
 

@@ -47,6 +47,268 @@
     {% block extra_css %}
     {% endblock %}
 
+
+    <!-- =====================================================
+         ESTILO CERRAR SESIÓN
+    ====================================================== -->
+
+    <style>
+
+        .logout-item {
+            margin-top: 10px;
+            padding: 0 !important;
+        }
+
+
+        .logout-item form {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+
+        .logout-button {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: inherit;
+
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 18px;
+
+            margin: 0;
+
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition:
+                background-color 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        .logout-button i {
+            width: 20px;
+            min-width: 20px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        .logout-button span {
+            display: inline-block;
+        }
+
+
+        /*
+         * Hover
+         */
+
+        .logout-button:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #ff5c5c;
+        }
+
+
+        /*
+         * Icono al pasar el mouse
+         */
+
+        .logout-button:hover i {
+            color: #ff5c5c;
+        }
+
+
+        /*
+         * Efecto de presión
+         */
+
+        .logout-button:active {
+            transform: scale(0.98);
+        }
+
+
+        /*
+         * Evita el borde azul del navegador
+         */
+
+        .logout-button:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+
+        .logout-button:focus-visible {
+            outline: 2px solid rgba(255, 92, 92, 0.5);
+            outline-offset: -2px;
+        }
+
+    </style>
+
+    <style>
+
+    .logout-item {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100%;
+        list-style: none;
+    }
+
+    .logout-item form {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .logout-button {
+        width: 100%;
+        height: auto;
+
+        margin: 0 !important;
+        padding: 12px 18px !important;
+
+        border: none;
+        outline: none;
+
+        background: transparent;
+        color: inherit;
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+
+        text-align: left;
+
+        cursor: pointer;
+
+        box-sizing: border-box;
+
+        transition:
+            background-color 0.2s ease,
+            color 0.2s ease;
+    }
+
+    .logout-button i {
+        width: 20px;
+        min-width: 20px;
+
+        margin: 0;
+        padding: 0;
+
+        text-align: center;
+    }
+
+    .logout-button span {
+        margin: 0;
+        padding: 0;
+    }
+
+    .logout-button:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        color: #ff5c5c;
+    }
+
+    .logout-button:hover i {
+        color: #ff5c5c;
+    }
+
+    .logout-button:focus,
+    .logout-button:active {
+        outline: none;
+        box-shadow: none;
+    }
+
+</style>
+
+
+<style>
+    /* CERRAR SESIÓN */
+    .sidebar .menu .logout-item {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        display: block !important;
+    }
+
+    .sidebar .menu .logout-item form {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .sidebar .menu .logout-item .logout-button {
+        /* Mismo espacio que un li normal */
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 12px 18px !important;
+
+        /* Quitar apariencia de botón */
+        border: 0 !important;
+        outline: 0 !important;
+        background: transparent !important;
+
+        /* Misma alineación */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        /* Misma separación */
+        gap: 12px !important;
+
+        /* Texto */
+        text-align: left !important;
+        font-family: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        line-height: normal !important;
+
+        color: inherit !important;
+
+        box-sizing: border-box !important;
+
+        cursor: pointer;
+    }
+
+    .sidebar .menu .logout-item .logout-button i {
+        width: 20px !important;
+        min-width: 20px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: center !important;
+    }
+
+    .sidebar .menu .logout-item .logout-button span {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .sidebar .menu .logout-item .logout-button:hover {
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: #ff5c5c !important;
+    }
+
+    .sidebar .menu .logout-item .logout-button:hover i {
+        color: #ff5c5c !important;
+    }
+</style>
+
 </head>
 
 
@@ -62,7 +324,9 @@
     <aside class="sidebar">
 
 
-        <!-- LOGO -->
+        <!-- =================================================
+             LOGO
+        ================================================== -->
 
         <div class="logo">
 
@@ -75,12 +339,16 @@
         </div>
 
 
-        <!-- MENÚ -->
+        <!-- =================================================
+             MENÚ
+        ================================================== -->
 
         <ul class="menu">
 
 
-            <!-- INICIO -->
+            <!-- =================================================
+                 INICIO
+            ================================================== -->
 
             <li
                 class="{% block active_inicio %}{% endblock %}"
@@ -89,30 +357,55 @@
 
                 <i class="fa-solid fa-house"></i>
 
-                Inicio
+                <span>
+                    Inicio
+                </span>
 
             </li>
 
 
-            <!-- MATERIAS -->
+            <!-- =================================================
+                 MATERIAS
+            ================================================== -->
 
-            <!--  <li
+            <!--
+
+            <li
                 class="{% block active_materias %}{% endblock %}"
                 onclick="window.location='{% url 'materias_alumnos' %}'"
             >
 
                 <i class="fa-solid fa-book-open"></i>
 
-                Materias
+                <span>
+                    Materias
+                </span>
 
-            </li>-->
-
-            <li onclick="window.location.href='{% url "listar_tareas_alumno" %}'">
-                <i class="fa-solid fa-book-open"></i>
-                Tareas
             </li>
 
-            <!-- CALIFICACIONES -->
+            -->
+
+
+            <!-- =================================================
+                 TAREAS
+            ================================================== -->
+
+            <li
+                onclick="window.location.href='{% url "listar_tareas_alumno" %}'"
+            >
+
+                <i class="fa-solid fa-book-open"></i>
+
+                <span>
+                    Tareas
+                </span>
+
+            </li>
+
+
+            <!-- =================================================
+                 CALIFICACIONES
+            ================================================== -->
 
             <li
                 class="{% block active_calificaciones %}{% endblock %}"
@@ -121,12 +414,16 @@
 
                 <i class="fa-solid fa-chart-column"></i>
 
-                Calificaciones
+                <span>
+                    Calificaciones
+                </span>
 
             </li>
 
 
-            <!-- ASISTENCIA -->
+            <!-- =================================================
+                 ASISTENCIA
+            ================================================== 
 
             <li
                 class="{% block active_asistencia %}{% endblock %}"
@@ -135,12 +432,16 @@
 
                 <i class="fa-solid fa-calendar-check"></i>
 
-                Asistencia
+                <span>
+                    Asistencia
+                </span>
 
-            </li>
+            </li>-->
 
 
-            <!-- EVENTOS -->
+            <!-- =================================================
+                 EVENTOS
+            ================================================== -->
 
             <li
                 class="{% block active_eventos %}{% endblock %}"
@@ -149,26 +450,38 @@
 
                 <i class="fa-solid fa-calendar-days"></i>
 
-                Eventos
+                <span>
+                    Eventos
+                </span>
 
             </li>
 
 
-            <!-- LOGROS -->
+            <!-- =================================================
+                 LOGROS
+            ================================================== -->
 
-            <!--<li
+            <!--
+
+            <li
                 class="{% block active_logros %}{% endblock %}"
                 onclick="window.location='{% url 'logros_alumnos' %}'"
             >
 
                 <i class="fa-solid fa-trophy"></i>
 
-                Logros
+                <span>
+                    Logros
+                </span>
 
-            </li>-->
+            </li>
+
+            -->
 
 
-            <!-- CONFIGURACIÓN -->
+            <!-- =================================================
+                 CONFIGURACIÓN
+            ================================================== -->
 
             <li
                 class="{% block active_configuracion %}{% endblock %}"
@@ -177,41 +490,25 @@
 
                 <i class="fa-solid fa-gear"></i>
 
-                Configuración
+                <span>
+                    Configuración
+                </span>
 
             </li>
 
 
-            <!-- =====================================================
+            <!-- =================================================
                  CERRAR SESIÓN
-            ====================================================== -->
+            ================================================== -->
 
             <li class="logout-item">
 
-                <form
-                    method="POST"
-                    action="{% url 'cerrar_sesion' %}"
-                >
-
-                    {% csrf_token %}
-
-                    <button
-                        type="submit"
-                        class="logout-button"
-                    >
-
-                        <i class="fa-solid fa-right-from-bracket"></i>
-
-                        <span>
-                            Cerrar Sesión
-                        </span>
-
-                    </button>
-
-                </form>
-
+            <li id="logoutBtn" onclick="cerrarSesion()">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Cerrar Sesión
             </li>
 
+        </li>
 
         </ul>
 
@@ -241,6 +538,28 @@
 <script
     src="{% static 'js/paneles/dashboard_alumnos.js' %}"
 ></script>
+
+<script>
+    function cerrarSesion() {
+        fetch("{% url 'cerrar_sesion' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "{% url 'login' %}";
+            } else {
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error("Error al cerrar sesión:", error);
+        });
+    }
+</script>
 
 
 {% block extra_js %}

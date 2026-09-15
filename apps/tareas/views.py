@@ -47,7 +47,7 @@ def Crear_tarea(request):
         
         eventos = Evento.objects.filter(
             publicado=True
-            ).order_by("fecha", "hora")
+            ).order_by("fecha", "hora_inicio")
 
     return render(
     request,

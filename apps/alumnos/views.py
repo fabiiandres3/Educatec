@@ -62,7 +62,7 @@ def Editar_alumno(request, alumno_id):
                     pk=alumno.pk
                 ).count()
 
-                if cantidad_alumnos >= 3:
+                if cantidad_alumnos >= 32:
 
                     messages.error(
                         request,

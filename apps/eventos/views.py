@@ -258,7 +258,8 @@ def listar_eventos_alumno(request):
     eventos = (
         Evento.objects
         .filter(
-            publicado=True
+            publicado=True,
+            publico__in=["todos", "alumnos"]
         )
         .order_by(
             "fecha",
@@ -284,7 +285,7 @@ def listar_eventos_docente(request):
     eventos = (
         Evento.objects
         .filter(
-            publico="docentes",
+            publico__in=["todos", "docentes"],
             publicado=True
         )
         .order_by(
