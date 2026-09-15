@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from .forms import EventoForm
 from .models import Evento
+from django.http import JsonResponse
 
 
 
@@ -10,7 +11,7 @@ def listar_eventos(request):
 
     eventos = Evento.objects.all().order_by(
         "fecha",
-        "hora"
+        "hora_inicio"
     )
 
     return render(
@@ -21,7 +22,29 @@ def listar_eventos(request):
         }
     )
 
+
 def crear_evento(request):
+
+    # =========================================================
+    # MOSTRAR FORMULARIO
+    # =========================================================
+
+    if request.method == "GET":
+
+        form = EventoForm()
+
+        return render(
+            request,
+            "admin/eventos/form_evento.html",
+            {
+                "form": form,
+            }
+        )
+
+
+    # =========================================================
+    # PROCESAR FORMULARIO
+    # =========================================================
 
     if request.method == "POST":
 
@@ -32,24 +55,47 @@ def crear_evento(request):
 
         if form.is_valid():
 
-            form.save()
+            evento = form.save()
 
-            return redirect(
-                "listar_eventos"
-            )
+            return JsonResponse({
+                "success": True,
+                "type": "success",
+                "message": (
+                    f"El evento '{evento.titulo}' "
+                    "se creó correctamente."
+                )
+            })
 
-    else:
 
-        form = EventoForm()
+        # =====================================================
+        # ERRORES DEL FORMULARIO
+        # =====================================================
 
-    return render(
-        request,
-        "admin/eventos/form_evento.html",
-        {
-            "form": form,
-        }
-    )
+        errores = []
 
+        for campo, mensajes in form.errors.items():
+
+            for mensaje in mensajes:
+
+                errores.append(str(mensaje))
+
+
+        return JsonResponse({
+            "success": False,
+            "type": "warning",
+            "message": " ".join(errores)
+        })
+
+
+    # =========================================================
+    # OTROS MÉTODOS
+    # =========================================================
+
+    return JsonResponse({
+        "success": False,
+        "type": "error",
+        "message": "Método no permitido."
+    }, status=405)
 
 def editar_evento(request, evento_id):
 

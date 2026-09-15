@@ -32,7 +32,12 @@ class Evento(models.Model):
 
     fecha = models.DateField()
 
-    hora = models.TimeField(
+    hora_inicio = models.TimeField(
+        null=True,
+        blank=True
+    )
+
+    hora_fin = models.TimeField(
         null=True,
         blank=True
     )
@@ -74,21 +79,75 @@ class Evento(models.Model):
         hoy = timezone.localdate()
         ahora = timezone.localtime().time()
 
-        # No permitir crear eventos en fechas anteriores
+        # ==========================================
+        # FECHA
+        # ==========================================
+
         if self.fecha and self.fecha < hoy:
             raise ValidationError({
                 "fecha": "No puedes crear un evento en una fecha que ya pasó."
             })
 
-        # Si el evento es para hoy, la hora debe ser futura
+        # ==========================================
+        # VALIDAR HORAS
+        # ==========================================
+
+        if self.hora_inicio and self.hora_fin:
+
+            if self.hora_fin <= self.hora_inicio:
+                raise ValidationError({
+                    "hora_fin": "La hora de finalización debe ser posterior a la hora de inicio."
+                })
+
+        # ==========================================
+        # SI ES HOY, LA HORA DE INICIO DEBE SER FUTURA
+        # ==========================================
+
         if (
             self.fecha == hoy
-            and self.hora
-            and self.hora <= ahora
+            and self.hora_inicio
+            and self.hora_inicio <= ahora
         ):
             raise ValidationError({
-                "hora": "No puedes crear un evento con una hora que ya pasó."
+                "hora_inicio": "No puedes crear un evento con una hora de inicio que ya pasó."
             })
+
+        # ==========================================
+        # EVITAR CRUCE DE EVENTOS
+        # ==========================================
+
+        if (
+            self.fecha
+            and self.hora_inicio
+            and self.hora_fin
+        ):
+
+            eventos = Evento.objects.filter(
+                fecha=self.fecha,
+                hora_inicio__lt=self.hora_fin,
+                hora_fin__gt=self.hora_inicio,
+            )
+
+            # Si estamos editando un evento, no debe compararse
+            # consigo mismo.
+            if self.pk:
+                eventos = eventos.exclude(pk=self.pk)
+
+            if eventos.exists():
+
+                evento = eventos.first()
+
+                raise ValidationError({
+                    "hora_inicio": (
+                        f"El horario seleccionado se cruza con otro evento: "
+                        f"'{evento.titulo}' "
+                        f"({evento.hora_inicio.strftime('%I:%M %p')} - "
+                        f"{evento.hora_fin.strftime('%I:%M %p')})."
+                    ),
+                    "hora_fin": (
+                        "Selecciona un horario que no se cruce con otro evento."
+                    ),
+                })
 
     def __str__(self):
         return self.titulo

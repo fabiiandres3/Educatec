@@ -1,620 +1,732 @@
 {% extends 'admin/base_admin.html' %}
+{% load static %}
 
 {% block title %}Eventos{% endblock %}
 
 {% block content %}
 
 <style>
+    /* =========================================================
+       CONTENEDOR
+    ========================================================= */
 
     .eventos-page {
-        padding: 10px 5px 30px;
+        width: 100%;
+        max-width: 1450px;
+        margin: 0 auto;
+        padding: 30px 35px 50px;
+        box-sizing: border-box;
     }
 
-    /* HEADER */
-    .page-header {
+    /* =========================================================
+       ENCABEZADO
+    ========================================================= */
+
+    .eventos-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 20px;
-        margin-bottom: 25px;
-        flex-wrap: wrap;
+        margin-bottom: 28px;
     }
 
-    .page-title {
+    .eventos-title-area {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .eventos-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #006eff, #004dcc);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+        box-shadow: 0 8px 22px rgba(0, 110, 255, .22);
+    }
+
+    .eventos-title-area h1 {
         margin: 0;
-        font-size: 28px;
-        font-weight: 700;
-        color: #1f2937;
+        font-size: 30px;
+        font-weight: 750;
+        color: #111827;
+        letter-spacing: -0.5px;
     }
 
-    .page-subtitle {
+    .eventos-title-area p {
         margin: 5px 0 0;
         color: #6b7280;
         font-size: 14px;
     }
 
-    /* CONTADOR */
-    .stats-card {
-        display: flex;
-        align-items: center;
-        gap: 14px;
+    /* =========================================================
+       CONTADOR
+    ========================================================= */
+
+    .eventos-count {
+        min-width: 120px;
+        padding: 13px 20px;
+        border-radius: 14px;
         background: #ffffff;
         border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        padding: 13px 18px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, .04);
     }
 
-    .stats-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #eef2ff;
-        color: #4f46e5;
-        font-size: 19px;
-    }
-
-    .stats-number {
-        font-size: 21px;
-        font-weight: 700;
-        color: #111827;
+    .eventos-count-number {
+        display: block;
+        font-size: 25px;
+        font-weight: 750;
+        color: #006eff;
         line-height: 1;
     }
 
-    .stats-label {
-        font-size: 12px;
+    .eventos-count-label {
+        display: block;
+        margin-top: 5px;
         color: #6b7280;
-        margin-top: 4px;
+        font-size: 12px;
     }
 
-    /* TOOLBAR */
-    .toolbar {
+    /* =========================================================
+       BARRA DE HERRAMIENTAS
+    ========================================================= */
+
+    .eventos-toolbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 15px;
-        margin-bottom: 18px;
-        flex-wrap: wrap;
-    }
-
-    .search-box {
-        position: relative;
-        width: 300px;
-        max-width: 100%;
-    }
-
-    .search-box input {
-        width: 100%;
-        height: 42px;
-        border: 1px solid #d1d5db;
-        border-radius: 10px;
-        padding: 0 14px 0 40px;
-        outline: none;
-        font-size: 14px;
-        box-sizing: border-box;
-        transition: all 0.2s ease;
-    }
-
-    .search-box input:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-    }
-
-    /* BOTÓN CREAR */
-    .btn-create {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        height: 42px;
-        padding: 0 17px;
-        border-radius: 10px;
-        background: #4f46e5;
-        border: 1px solid #4f46e5;
-        color: #ffffff;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 600;
-        transition: all 0.2s ease;
-    }
-
-    .btn-create:hover {
-        background: #4338ca;
-        border-color: #4338ca;
-        color: #ffffff;
-        transform: translateY(-1px);
-    }
-
-    /* GRID DE EVENTOS */
-    .eventos-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 20px;
-    }
-
-    /* CARD EVENTO */
-    .evento-card {
+        padding: 17px;
+        margin-bottom: 28px;
         background: #ffffff;
         border: 1px solid #e5e7eb;
         border-radius: 16px;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, .04);
+    }
+
+    .eventos-search {
+        position: relative;
+        flex: 1;
+        max-width: 500px;
+    }
+
+    .eventos-search i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-size: 15px;
+    }
+
+    .eventos-search input {
+        width: 100%;
+        height: 45px;
+        padding: 0 18px 0 43px;
+        border: 1px solid #e5e7eb;
+        border-radius: 11px;
+        outline: none;
+        background: #f9fafb;
+        color: #111827;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: .2s;
+    }
+
+    .eventos-search input:focus {
+        border-color: #006eff;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(0, 110, 255, .10);
+    }
+
+    .btn-crear-evento {
+        height: 45px;
+        padding: 0 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        border: none;
+        border-radius: 11px;
+        background: #006eff;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: .2s;
+        box-shadow: 0 5px 14px rgba(0, 110, 255, .20);
+    }
+
+    .btn-crear-evento:hover {
+        background: #005bd1;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 7px 18px rgba(0, 110, 255, .28);
+    }
+
+    /* =========================================================
+       GRID
+    ========================================================= */
+
+    .eventos-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    /* =========================================================
+       TARJETA
+    ========================================================= */
+
+    .evento-card {
         overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease;
-        display: flex;
-        flex-direction: column;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        box-shadow: 0 7px 22px rgba(0, 0, 0, .055);
+        transition: transform .22s ease, box-shadow .22s ease;
     }
 
     .evento-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 32px rgba(0, 0, 0, .10);
     }
 
-    /* IMAGEN */
-    .evento-image-container {
-        position: relative;
-        width: 100%;
-        height: 210px;
-        background: #f3f4f6;
-        overflow: hidden;
-    }
+    /* =========================================================
+       IMAGEN
+    ========================================================= */
 
     .evento-image {
+        position: relative;
+        height: 205px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #eaf2ff, #dce9ff);
+    }
+
+    .evento-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform 0.3s ease;
+        transition: transform .35s ease;
     }
 
-    .evento-card:hover .evento-image {
-        transform: scale(1.03);
+    .evento-card:hover .evento-image img {
+        transform: scale(1.04);
     }
 
-    .evento-image-empty {
+    .evento-image-placeholder {
         width: 100%;
         height: 100%;
         display: flex;
-        align-items: center;
+        flex-direction: column;
         justify-content: center;
-        color: #9ca3af;
-        font-size: 40px;
+        align-items: center;
+        color: #6b7280;
+        gap: 9px;
     }
 
-    /* TIPO */
+    .evento-image-placeholder i {
+        font-size: 38px;
+        color: #006eff;
+        opacity: .65;
+    }
+
+    .evento-image-placeholder span {
+        font-size: 13px;
+    }
+
+    /* =========================================================
+       BADGES SOBRE IMAGEN
+    ========================================================= */
+
     .evento-tipo {
         position: absolute;
-        top: 12px;
-        left: 12px;
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 10px;
-        border-radius: 8px;
-        background: rgba(79, 70, 229, 0.95);
-        color: #ffffff;
+        top: 14px;
+        left: 14px;
+        padding: 6px 11px;
+        border-radius: 20px;
+        background: rgba(17, 24, 39, .82);
+        backdrop-filter: blur(5px);
+        color: white;
         font-size: 11px;
-        font-weight: 600;
+        font-weight: 650;
+        text-transform: uppercase;
+        letter-spacing: .3px;
     }
 
-    /* CONTENIDO */
-    .evento-body {
-        padding: 18px;
+    .evento-fecha-badge {
+        position: absolute;
+        right: 14px;
+        bottom: 14px;
+        width: 55px;
+        height: 55px;
+        border-radius: 13px;
+        background: white;
         display: flex;
         flex-direction: column;
-        flex: 1;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .16);
     }
 
-    .evento-title {
-        margin: 0 0 8px;
-        font-size: 18px;
+    .evento-fecha-dia {
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1;
+        color: #111827;
+    }
+
+    .evento-fecha-mes {
+        margin-top: 4px;
+        font-size: 10px;
         font-weight: 700;
-        color: #1f2937;
+        text-transform: uppercase;
+        color: #006eff;
+    }
+
+    /* =========================================================
+       CUERPO
+    ========================================================= */
+
+    .evento-body {
+        padding: 21px;
+    }
+
+    .evento-body h2 {
+        margin: 0 0 9px;
+        color: #111827;
+        font-size: 18px;
+        font-weight: 750;
         line-height: 1.3;
     }
 
     .evento-description {
-        margin: 0 0 15px;
+        margin: 0 0 18px;
         color: #6b7280;
         font-size: 13px;
-        line-height: 1.5;
+        line-height: 1.6;
+        min-height: 42px;
     }
 
-    /* INFORMACIÓN */
+    /* =========================================================
+       INFORMACIÓN
+    ========================================================= */
+
     .evento-info {
         display: flex;
         flex-direction: column;
-        gap: 9px;
-        margin-bottom: 15px;
+        gap: 10px;
+        padding-top: 15px;
+        border-top: 1px solid #f0f1f3;
     }
 
-    .evento-info-item {
+    .evento-info-row {
         display: flex;
         align-items: center;
-        gap: 9px;
-        color: #64748b;
-        font-size: 13px;
+        gap: 10px;
+        color: #4b5563;
+        font-size: 12.5px;
     }
 
-    .evento-info-item i {
-        width: 16px;
-        color: #4f46e5;
-        text-align: center;
-    }
-
-    /* ESTADO */
-    .evento-status {
-        margin-top: auto;
-        margin-bottom: 15px;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
+    .evento-info-icon {
+        width: 29px;
+        height: 29px;
+        min-width: 29px;
         border-radius: 8px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .status-active {
-        background: #ecfdf5;
-        color: #047857;
-    }
-
-    .status-inactive {
-        background: #f3f4f6;
-        color: #6b7280;
-    }
-
-    /* ACCIONES */
-    .evento-actions {
+        background: #eff6ff;
+        color: #006eff;
         display: flex;
-        justify-content: flex-end;
-        gap: 7px;
-        padding-top: 14px;
-        border-top: 1px solid #f1f5f9;
-    }
-
-    .action-btn {
-        display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        padding: 8px 12px;
-        border-radius: 8px;
         font-size: 12px;
-        font-weight: 600;
+    }
+
+    .evento-info-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* =========================================================
+       PIE
+    ========================================================= */
+
+    .evento-footer {
+        margin-top: 18px;
+        padding-top: 15px;
+        border-top: 1px solid #f0f1f3;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .evento-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11.5px;
+        font-weight: 650;
+    }
+
+    .evento-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .status-publicado {
+        color: #15803d;
+    }
+
+    .status-publicado .evento-status-dot {
+        background: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, .12);
+    }
+
+    .status-no-publicado {
+        color: #b45309;
+    }
+
+    .status-no-publicado .evento-status-dot {
+        background: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, .12);
+    }
+
+    /* =========================================================
+       ACCIONES
+    ========================================================= */
+
+    .evento-actions {
+        display: flex;
+        gap: 7px;
+    }
+
+    .evento-action {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-decoration: none;
-        transition: all 0.2s ease;
+        border: none;
         cursor: pointer;
+        transition: .2s;
     }
 
-    .btn-edit {
+    .evento-edit {
+        color: #006eff;
         background: #eff6ff;
-        color: #2563eb;
-        border: 1px solid #dbeafe;
     }
 
-    .btn-edit:hover {
+    .evento-edit:hover {
         background: #dbeafe;
-        color: #1d4ed8;
+        color: #005bd1;
     }
 
-    .btn-delete {
-        background: #fef2f2;
+    .evento-delete {
         color: #dc2626;
-        border: 1px solid #fecaca;
+        background: #fef2f2;
     }
 
-    .btn-delete:hover {
+    .evento-delete:hover {
         background: #fee2e2;
         color: #b91c1c;
     }
 
-    /* ESTADO VACÍO */
-    .empty-state {
+    /* =========================================================
+       SIN EVENTOS
+    ========================================================= */
+
+    .eventos-empty {
         grid-column: 1 / -1;
+        padding: 70px 30px;
         text-align: center;
-        padding: 55px 20px;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        background: white;
+        border: 1px dashed #d1d5db;
+        border-radius: 18px;
     }
 
-    .empty-icon {
-        width: 60px;
-        height: 60px;
-        margin: 0 auto 15px;
-        border-radius: 50%;
-        background: #f3f4f6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .eventos-empty i {
+        font-size: 45px;
         color: #9ca3af;
-        font-size: 24px;
+        margin-bottom: 15px;
     }
 
-    .empty-title {
-        font-size: 16px;
-        font-weight: 600;
+    .eventos-empty h3 {
+        margin: 0 0 7px;
         color: #374151;
-        margin-bottom: 5px;
+        font-size: 18px;
     }
 
-    .empty-text {
+    .eventos-empty p {
+        margin: 0;
         color: #9ca3af;
         font-size: 13px;
     }
 
-    /* MODAL ELIMINAR */
-    .modal-eliminar {
+    /* =========================================================
+       MODAL
+    ========================================================= */
+
+    .modal-overlay {
+        display: none;
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.55);
-        display: flex;
+        z-index: 9999;
+        background: rgba(17, 24, 39, .58);
+        backdrop-filter: blur(4px);
         align-items: center;
         justify-content: center;
         padding: 20px;
-        z-index: 9999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.2s ease;
     }
 
-    .modal-eliminar.activo {
-        opacity: 1;
-        visibility: visible;
+    .modal-overlay.active {
+        display: flex;
     }
 
-    .modal-box {
+    .evento-modal {
         width: 100%;
-        max-width: 420px;
-        background: #ffffff;
+        max-width: 430px;
+        background: white;
         border-radius: 18px;
-        padding: 30px;
-        text-align: center;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
-        transform: translateY(15px) scale(0.97);
-        transition: all 0.2s ease;
+        padding: 27px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, .20);
+        animation: modalEntrada .2s ease;
     }
 
-    .modal-eliminar.activo .modal-box {
-        transform: translateY(0) scale(1);
+    @keyframes modalEntrada {
+        from {
+            opacity: 0;
+            transform: translateY(10px) scale(.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
 
     .modal-icon {
-        width: 62px;
-        height: 62px;
-        margin: 0 auto 18px;
-        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        border-radius: 13px;
         background: #fef2f2;
         color: #dc2626;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 25px;
+        font-size: 20px;
+        margin-bottom: 17px;
     }
 
-    .modal-title {
-        font-size: 21px;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 10px;
+    .evento-modal h3 {
+        margin: 0 0 8px;
+        color: #111827;
+        font-size: 19px;
     }
 
-    .modal-text {
+    .evento-modal p {
+        margin: 0;
         color: #6b7280;
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1.6;
-        margin-bottom: 24px;
-    }
-
-    .modal-text strong {
-        color: #374151;
     }
 
     .modal-actions {
         display: flex;
-        justify-content: center;
-        gap: 10px;
+        justify-content: flex-end;
+        gap: 9px;
+        margin-top: 25px;
     }
 
     .modal-btn {
-        min-width: 120px;
-        height: 42px;
-        padding: 0 16px;
+        height: 40px;
+        padding: 0 17px;
         border-radius: 9px;
+        border: none;
+        cursor: pointer;
         font-size: 13px;
         font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
     }
 
-    .btn-cancelar {
+    .modal-cancelar {
         background: #f3f4f6;
         color: #374151;
-        border: 1px solid #e5e7eb;
     }
 
-    .btn-cancelar:hover {
+    .modal-cancelar:hover {
         background: #e5e7eb;
     }
 
-    .btn-confirmar {
+    .modal-confirmar {
         background: #dc2626;
-        color: #ffffff;
-        border: 1px solid #dc2626;
+        color: white;
     }
 
-    .btn-confirmar:hover {
+    .modal-confirmar:hover {
         background: #b91c1c;
-        border-color: #b91c1c;
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 1100px) {
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
 
+    @media (max-width: 1100px) {
         .eventos-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
-
     }
 
-    @media (max-width: 768px) {
-
-        .page-title {
-            font-size: 23px;
+    @media (max-width: 760px) {
+        .eventos-page {
+            padding: 22px 18px 40px;
         }
 
-        .stats-card {
-            width: 100%;
+        .eventos-header {
+            align-items: flex-start;
         }
 
-        .toolbar {
+        .eventos-count {
+            display: none;
+        }
+
+        .eventos-toolbar {
+            flex-direction: column;
             align-items: stretch;
         }
 
-        .search-box {
-            width: 100%;
+        .eventos-search {
+            max-width: none;
         }
 
-        .btn-create {
-            width: 100%;
+        .btn-crear-evento {
             justify-content: center;
         }
 
         .eventos-grid {
             grid-template-columns: 1fr;
         }
-
-        .evento-image-container {
-            height: 230px;
-        }
-
-        .modal-box {
-            padding: 25px 20px;
-        }
-
-        .modal-actions {
-            flex-direction: column;
-        }
-
-        .modal-btn {
-            width: 100%;
-        }
-
     }
 
+    @media (max-width: 480px) {
+        .eventos-title-area h1 {
+            font-size: 24px;
+        }
+
+        .eventos-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 13px;
+        }
+
+        .evento-image {
+            height: 190px;
+        }
+    }
 </style>
 
 
-<div class="container-fluid eventos-page">
+<div class="eventos-page">
 
-    <!-- ENCABEZADO -->
-    <div class="page-header">
+    <!-- =====================================================
+         ENCABEZADO
+    ====================================================== -->
 
-        <div>
+    <div class="eventos-header">
 
-            <h1 class="page-title">
-                Eventos
-            </h1>
+        <div class="eventos-title-area">
 
-            <p class="page-subtitle">
-                Gestiona los eventos del colegio.
-            </p>
-
-        </div>
-
-
-        <!-- CONTADOR -->
-        <div class="stats-card">
-
-            <div class="stats-icon">
+            <div class="eventos-icon">
                 <i class="fas fa-calendar-alt"></i>
             </div>
 
             <div>
-
-                <div class="stats-number">
-                    {{ eventos|length }}
-                </div>
-
-                <div class="stats-label">
-                    Eventos registrados
-                </div>
-
+                <h1>Eventos</h1>
+                <p>Administra los eventos y actividades de Educatec</p>
             </div>
 
+        </div>
+
+        <div class="eventos-count">
+            <span class="eventos-count-number">
+                {{ eventos|length }}
+            </span>
+
+            <span class="eventos-count-label">
+                Evento{{ eventos|length|pluralize }}
+            </span>
         </div>
 
     </div>
 
 
-    <!-- TOOLBAR -->
-    <div class="toolbar">
+    <!-- =====================================================
+         HERRAMIENTAS
+    ====================================================== -->
 
-        <div class="search-box">
+    <div class="eventos-toolbar">
 
-            <i class="fas fa-search search-icon"></i>
+        <div class="eventos-search">
+
+            <i class="fas fa-search"></i>
 
             <input
                 type="text"
-                id="searchEvento"
+                id="buscarEvento"
                 placeholder="Buscar evento..."
                 autocomplete="off"
             >
 
         </div>
 
-
-        <a
-            href="{% url 'crear_evento' %}"
-            class="btn-create"
-        >
-
+        <a href="{% url 'crear_evento' %}" class="btn-crear-evento">
             <i class="fas fa-plus"></i>
-
             Crear evento
-
         </a>
 
     </div>
 
 
-    <!-- EVENTOS -->
-    <div class="eventos-grid">
+    <!-- =====================================================
+         EVENTOS
+    ====================================================== -->
+
+    <div class="eventos-grid" id="eventosGrid">
 
         {% for evento in eventos %}
 
-        <div class="evento-card evento-row">
+        <article
+            class="evento-card"
+            data-titulo="{{ evento.titulo|lower }}"
+            data-descripcion="{{ evento.descripcion|lower }}"
+        >
 
             <!-- IMAGEN -->
-            <div class="evento-image-container">
+
+            <div class="evento-image">
 
                 {% if evento.imagen %}
 
                     <img
                         src="{{ evento.imagen.url }}"
-                        class="evento-image"
                         alt="{{ evento.titulo }}"
                     >
 
                 {% else %}
 
-                    <div class="evento-image-empty">
+                    <div class="evento-image-placeholder">
 
-                        <i class="fas fa-calendar-alt"></i>
+                        <i class="fas fa-calendar-day"></i>
+
+                        <span>Sin imagen</span>
 
                     </div>
 
@@ -622,52 +734,109 @@
 
 
                 <!-- TIPO -->
+
                 <span class="evento-tipo">
-
                     {{ evento.get_tipo_display }}
-
                 </span>
+
+
+                <!-- FECHA -->
+
+                <div class="evento-fecha-badge">
+
+                    <span class="evento-fecha-dia">
+                        {{ evento.fecha|date:"d" }}
+                    </span>
+
+                    <span class="evento-fecha-mes">
+                        {{ evento.fecha|date:"M" }}
+                    </span>
+
+                </div>
 
             </div>
 
 
-            <!-- CONTENIDO -->
+            <!-- CUERPO -->
+
             <div class="evento-body">
 
-                <h3 class="evento-title">
-
+                <h2>
                     {{ evento.titulo }}
-
-                </h3>
+                </h2>
 
 
                 <p class="evento-description">
 
-                    {{ evento.descripcion|truncatechars:100 }}
+                    {% if evento.descripcion %}
+                        {{ evento.descripcion|truncatechars:110 }}
+                    {% else %}
+                        Sin descripción disponible.
+                    {% endif %}
 
                 </p>
 
 
                 <!-- INFORMACIÓN -->
+
                 <div class="evento-info">
 
-                    <div class="evento-info-item">
+                    <!-- FECHA -->
 
-                        <i class="fas fa-calendar"></i>
+                    <div class="evento-info-row">
 
-                        <span>
+                        <div class="evento-info-icon">
+                            <i class="far fa-calendar"></i>
+                        </div>
+
+                        <span class="evento-info-text">
                             {{ evento.fecha|date:"d/m/Y" }}
                         </span>
 
                     </div>
 
 
-                    <div class="evento-info-item">
+                    <!-- HORARIO -->
 
-                        <i class="fas fa-map-marker-alt"></i>
+                    <div class="evento-info-row">
 
-                        <span>
-                            {{ evento.lugar|default:"Sin lugar" }}
+                        <div class="evento-info-icon">
+                            <i class="far fa-clock"></i>
+                        </div>
+
+                        <span class="evento-info-text">
+
+                            {% if evento.hora_inicio and evento.hora_fin %}
+
+                                {{ evento.hora_inicio|time:"h:i A" }}
+                                -
+                                {{ evento.hora_fin|time:"h:i A" }}
+
+                            {% elif evento.hora_inicio %}
+
+                                {{ evento.hora_inicio|time:"h:i A" }}
+
+                            {% else %}
+
+                                Sin horario
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- PÚBLICO -->
+
+                    <div class="evento-info-row">
+
+                        <div class="evento-info-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+
+                        <span class="evento-info-text">
+                            {{ evento.get_publico_display }}
                         </span>
 
                     </div>
@@ -675,96 +844,79 @@
                 </div>
 
 
-                <!-- ESTADO -->
-                <div class="evento-status">
+                <!-- FOOTER -->
 
-                    {% if evento.activo %}
+                <div class="evento-footer">
 
-                        <span class="status-badge status-active">
+                    {% if evento.publicado %}
 
-                            <i class="fas fa-check-circle"></i>
+                        <div class="evento-status status-publicado">
 
-                            Activo
+                            <span class="evento-status-dot"></span>
 
-                        </span>
+                            Publicado
+
+                        </div>
 
                     {% else %}
 
-                        <span class="status-badge status-inactive">
+                        <div class="evento-status status-no-publicado">
 
-                            <i class="fas fa-times-circle"></i>
+                            <span class="evento-status-dot"></span>
 
-                            Inactivo
+                            No publicado
 
-                        </span>
+                        </div>
 
                     {% endif %}
 
-                </div>
+
+                    <div class="evento-actions">
+
+                        <!-- EDITAR -->
+
+                        <a
+                            href="{% url 'editar_evento' evento.id %}"
+                            class="evento-action evento-edit"
+                            title="Editar evento"
+                        >
+                            <i class="fas fa-pen"></i>
+                        </a>
 
 
-                <!-- ACCIONES -->
-                <div class="evento-actions">
+                        <!-- ELIMINAR -->
 
-                    <!-- EDITAR -->
-                    <a
-                        href="{% url 'editar_evento' evento.id %}"
-                        class="action-btn btn-edit"
-                        title="Editar evento"
-                    >
+                        <button
+                            type="button"
+                            class="evento-action evento-delete"
+                            title="Eliminar evento"
+                            onclick="abrirModalEliminar(
+                                '{{ evento.id }}',
+                                '{{ evento.titulo|escapejs }}'
+                            )"
+                        >
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
 
-                        <i class="fas fa-edit"></i>
-
-                        Editar
-
-                    </a>
-
-
-                    <!-- ELIMINAR -->
-                    <button
-                        type="button"
-                        class="action-btn btn-delete"
-                        title="Eliminar evento"
-                        onclick="abrirModalEliminarEvento(
-                            '{{ evento.id }}',
-                            '{{ evento.titulo|escapejs }}'
-                        )"
-                    >
-
-                        <i class="fas fa-trash-alt"></i>
-
-                        Eliminar
-
-                    </button>
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
-
+        </article>
 
         {% empty %}
 
-        <div class="empty-state">
+        <div class="eventos-empty">
 
-            <div class="empty-icon">
+            <i class="far fa-calendar-times"></i>
 
-                <i class="fas fa-calendar-alt"></i>
+            <h3>No hay eventos registrados</h3>
 
-            </div>
-
-            <div class="empty-title">
-
-                No hay eventos registrados
-
-            </div>
-
-            <div class="empty-text">
-
-                Cuando se creen eventos aparecerán aquí.
-
-            </div>
+            <p>
+                Cuando crees un evento aparecerá aquí.
+            </p>
 
         </div>
 
@@ -775,108 +927,92 @@
 </div>
 
 
-<!-- MODAL ELIMINAR EVENTO -->
-<div id="modalEliminarEvento" class="modal-eliminar">
+<!-- =========================================================
+     MODAL ELIMINAR
+========================================================== -->
 
-    <div class="modal-box">
+<div
+    class="modal-overlay"
+    id="modalEliminar"
+    onclick="cerrarModalFuera(event)"
+>
+
+    <div
+        class="evento-modal"
+        onclick="event.stopPropagation()"
+    >
 
         <div class="modal-icon">
-
             <i class="fas fa-trash-alt"></i>
-
         </div>
 
+        <h3>Eliminar evento</h3>
 
-        <div class="modal-title">
-
-            ¿Eliminar evento?
-
-        </div>
-
-
-        <div class="modal-text">
-
-            Estás a punto de eliminar el evento
-
-            <strong id="nombreEvento">
-                este evento
-            </strong>.
-
-            <br>
-
+        <p>
+            ¿Estás seguro de que deseas eliminar
+            <strong id="nombreEventoEliminar"></strong>?
             Esta acción no se puede deshacer.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="modal-btn modal-cancelar"
+                onclick="cerrarModalEliminar()"
+            >
+                Cancelar
+            </button>
+
+            <a
+                href="#"
+                id="btnConfirmarEliminar"
+                class="modal-btn modal-confirmar"
+            >
+                Eliminar
+            </a>
 
         </div>
-
-
-        <form
-            id="formEliminarEvento"
-            method="POST"
-        >
-
-            {% csrf_token %}
-
-            <div class="modal-actions">
-
-                <button
-                    type="button"
-                    class="modal-btn btn-cancelar"
-                    onclick="cerrarModalEliminarEvento()"
-                >
-
-                    Cancelar
-
-                </button>
-
-
-                <button
-                    type="submit"
-                    class="modal-btn btn-confirmar"
-                >
-
-                    Eliminar
-
-                </button>
-
-            </div>
-
-        </form>
 
     </div>
 
 </div>
 
 
-<!-- BUSCADOR + MODAL -->
 <script>
 
-document.addEventListener("DOMContentLoaded", function () {
+    /* =========================================================
+       BUSCADOR
+    ========================================================= */
 
-    /* BUSCADOR */
-    const searchInput = document.getElementById("searchEvento");
+    const buscador = document.getElementById("buscarEvento");
 
-    const rows = document.querySelectorAll(".evento-row");
+    if (buscador) {
 
+        buscador.addEventListener("input", function () {
 
-    if (searchInput) {
-
-        searchInput.addEventListener("input", function () {
-
-            const search = this.value
+            const texto = this.value
                 .toLowerCase()
                 .trim();
 
+            const tarjetas = document.querySelectorAll(
+                ".evento-card"
+            );
 
-            rows.forEach(function (row) {
+            tarjetas.forEach(function (tarjeta) {
 
-                const content = row.textContent
-                    .toLowerCase();
+                const titulo =
+                    tarjeta.dataset.titulo || "";
 
+                const descripcion =
+                    tarjeta.dataset.descripcion || "";
 
-                row.style.display =
-                    content.includes(search)
-                        ? ""
-                        : "none";
+                const coincide =
+                    titulo.includes(texto) ||
+                    descripcion.includes(texto);
+
+                tarjeta.style.display =
+                    coincide ? "" : "none";
 
             });
 
@@ -885,75 +1021,72 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* CERRAR MODAL AL HACER CLICK FUERA */
-    const modal = document.getElementById("modalEliminarEvento");
+    /* =========================================================
+       MODAL ELIMINAR
+    ========================================================= */
+
+    function abrirModalEliminar(id, titulo) {
+
+        const modal =
+            document.getElementById("modalEliminar");
+
+        const nombre =
+            document.getElementById(
+                "nombreEventoEliminar"
+            );
+
+        const confirmar =
+            document.getElementById(
+                "btnConfirmarEliminar"
+            );
+
+        nombre.textContent = `"${titulo}"`;
+
+        confirmar.href =
+            `/eventos/${id}/eliminar/`;
+
+        modal.classList.add("active");
+
+        document.body.style.overflow = "hidden";
+    }
 
 
-    if (modal) {
+    function cerrarModalEliminar() {
 
-        modal.addEventListener("click", function (event) {
+        const modal =
+            document.getElementById("modalEliminar");
 
-            if (event.target === modal) {
+        modal.classList.remove("active");
 
-                cerrarModalEliminarEvento();
+        document.body.style.overflow = "";
+    }
 
-            }
 
-        });
+    function cerrarModalFuera(event) {
+
+        if (
+            event.target.id === "modalEliminar"
+        ) {
+            cerrarModalEliminar();
+        }
 
     }
 
 
-    /* CERRAR MODAL CON ESC */
-    document.addEventListener("keydown", function (event) {
+    /* =========================================================
+       ESCAPE
+    ========================================================= */
 
-        if (event.key === "Escape") {
+    document.addEventListener(
+        "keydown",
+        function (event) {
 
-            cerrarModalEliminarEvento();
+            if (event.key === "Escape") {
+                cerrarModalEliminar();
+            }
 
         }
-
-    });
-
-});
-
-
-function abrirModalEliminarEvento(id, nombre) {
-
-    const modal =
-        document.getElementById("modalEliminarEvento");
-
-
-    const nombreEvento =
-        document.getElementById("nombreEvento");
-
-
-    const formulario =
-        document.getElementById("formEliminarEvento");
-
-
-    nombreEvento.textContent =
-        nombre.trim() || "este evento";
-
-
-    formulario.action =
-        "{% url 'eliminar_evento' 0 %}".replace("0", id);
-
-
-    modal.classList.add("activo");
-
-}
-
-
-function cerrarModalEliminarEvento() {
-
-    const modal =
-        document.getElementById("modalEliminarEvento");
-
-
-    modal.classList.remove("activo");
-
-}
+    );
 
 </script>
 

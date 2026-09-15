@@ -6,44 +6,135 @@ Crear Evento
 
 {% block content %}
 
-<div class="container py-5">
+<!-- Custom Styling Injection -->
+<style>
+
+    .form-fields-wrapper .errorlist {
+        display: none;
+    }
+    .card-modern {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        background: #ffffff;
+    }
+    
+    .form-section-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    /* Estilizado para los campos generados por Django */
+    .card-body form p {
+        margin-bottom: 1.25rem;
+    }
+
+    .card-body form label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #2b2d42;
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .card-body form input[type="text"],
+    .card-body form input[type="date"],
+    .card-body form input[type="time"],
+    .card-body form input[type="number"],
+    .card-body form input[type="email"],
+    .card-body form input[type="file"],
+    .card-body form select,
+    .card-body form textarea {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .card-body form input:focus,
+    .card-body form select:focus,
+    .card-body form textarea:focus {
+        background-color: #ffffff;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+        outline: none;
+    }
+
+    .card-body form textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn-custom-primary {
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: transform 0.1s ease;
+    }
+
+    .btn-custom-primary:active {
+        transform: scale(0.98);
+    }
+</style>
+
+<div class="container py-4">
+
+    <!-- Navegación contextual (Breadcrumb) -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'listar_eventos' %}" class="text-decoration-none">Eventos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Nuevo Evento</li>
+        </ol>
+    </nav>
 
     <div class="row justify-content-center">
 
-        <div class="col-lg-8">
+        <div class="col-lg-9 col-xl-8">
 
-            <div class="card border-0 shadow-sm">
+            <div class="card card-modern">
 
-                <div class="card-body p-4">
+                <div class="card-body p-4 p-md-5">
 
-                    <h2 class="mb-4">
-                        Crear evento
-                    </h2>
+                    <!-- Cabecera -->
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 me-3">
+                            <i class="bi bi-calendar-plus fs-3"></i>
+                        </div>
+                        <div>
+                            <h2 class="h3 fw-bold mb-1">Crear nuevo evento</h2>
+                            <p class="text-muted small mb-0">Completa la información requerida para publicar el evento.</p>
+                        </div>
+                    </div>
 
-                    <form
-                        method="POST"
-                        enctype="multipart/form-data"
-                    >
+                    <hr class="my-4 text-secondary opacity-25">
+
+                    <!-- Formulario -->
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
 
                         {% csrf_token %}
 
-                        {{ form.as_p }}
+                        <!-- Renderizado del formulario Django -->
+                        <div class="form-fields-wrapper">
+                            {{ form.as_p }}
+                        </div>
 
-                        <div class="d-flex gap-2 mt-4">
+                        <!-- Acciones -->
+                        <div class="d-flex align-items-center justify-content-end gap-2 mt-4 pt-3 border-top">
 
-                            <button
-                                type="submit"
-                                class="btn btn-primary"
-                            >
-                                Crear evento
-                            </button>
-
-                            <a
-                                href="{% url 'listar_eventos' %}"
-                                class="btn btn-secondary"
-                            >
+                            <a href="{% url 'listar_eventos' %}" class="btn btn-light px-4 text-secondary">
                                 Cancelar
                             </a>
+
+                            <button type="submit" class="btn btn-primary btn-custom-primary">
+                                <i class="bi bi-check-lg me-1"></i> Publicar Evento
+                            </button>
 
                         </div>
 
@@ -59,33 +150,34 @@ Crear Evento
 
 </div>
 
-
+<!-- JavaScript para control dinámico de horarios -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
     const fechaInput = document.getElementById("id_fecha");
-    const horaInput = document.getElementById("id_hora");
+    const horaInicioInput = document.getElementById("id_hora_inicio");
+    const horaFinInput = document.getElementById("id_hora_fin");
 
-    if (!fechaInput || !horaInput) {
+    if (!fechaInput || !horaInicioInput || !horaFinInput) {
         return;
     }
-
 
     function actualizarHoraMinima() {
 
         const ahora = new Date();
 
         const año = ahora.getFullYear();
-        const mes = String(ahora.getMonth() + 1).padStart(2, "0");
-        const dia = String(ahora.getDate()).padStart(2, "0");
+
+        const mes = String(
+            ahora.getMonth() + 1
+        ).padStart(2, "0");
+
+        const dia = String(
+            ahora.getDate()
+        ).padStart(2, "0");
 
         const hoy = `${año}-${mes}-${dia}`;
 
-
-        /*
-         * Si seleccionó HOY:
-         * la hora mínima será la hora y minuto actual.
-         */
         if (fechaInput.value === hoy) {
 
             const horas = String(
@@ -96,61 +188,489 @@ document.addEventListener("DOMContentLoaded", function () {
                 ahora.getMinutes()
             ).padStart(2, "0");
 
-            horaInput.min = `${horas}:${minutos}`;
+            const horaActual = `${horas}:${minutos}`;
 
-        }
+            horaInicioInput.min = horaActual;
 
+        } else {
 
-        /*
-         * Si seleccionó una fecha futura,
-         * quitamos la restricción de hora.
-         */
-        else if (fechaInput.value > hoy) {
-
-            horaInput.removeAttribute("min");
-
-        }
-
-
-        /*
-         * Si no hay fecha seleccionada,
-         * tampoco restringimos la hora.
-         */
-        else {
-
-            horaInput.removeAttribute("min");
-
+            horaInicioInput.removeAttribute("min");
         }
     }
 
-
-    /*
-     * Cuando cambia la fecha
-     */
     fechaInput.addEventListener(
         "change",
         actualizarHoraMinima
     );
 
-
-    /*
-     * Ejecutar al cargar la página
-     */
     actualizarHoraMinima();
 
-
-    /*
-     * Actualizar cada minuto.
-     *
-     * Así, si la página permanece abierta,
-     * la restricción también avanza.
-     */
     setInterval(
         actualizarHoraMinima,
         60000
     );
+});
+</script>
+
+<style>
+
+    /* =========================================================
+       CONTENEDOR DE NOTIFICACIONES
+    ========================================================= */
+
+    #notificaciones-container {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        z-index: 9999;
+
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        width: min(400px, calc(100vw - 40px));
+    }
+
+
+    /* =========================================================
+       NOTIFICACIÓN
+    ========================================================= */
+
+    .notificacion-evento {
+        position: relative;
+
+        display: flex;
+        align-items: flex-start;
+
+        padding: 16px 45px 16px 18px;
+
+        border-radius: 12px;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.15);
+
+        border-left: 5px solid;
+
+        animation: aparecerNotificacion 0.25s ease;
+    }
+
+
+    /* =========================================================
+       COLORES
+    ========================================================= */
+
+    .notificacion-evento.exito {
+        border-left-color: #198754;
+    }
+
+    .notificacion-evento.warning {
+        border-left-color: #fd7e14;
+    }
+
+    .notificacion-evento.error {
+        border-left-color: #dc3545;
+    }
+
+
+    /* =========================================================
+       ICONO
+    ========================================================= */
+
+    .notificacion-icono {
+        font-size: 1.35rem;
+        margin-right: 12px;
+        line-height: 1;
+    }
+
+    .notificacion-evento.exito .notificacion-icono {
+        color: #198754;
+    }
+
+    .notificacion-evento.warning .notificacion-icono {
+        color: #fd7e14;
+    }
+
+    .notificacion-evento.error .notificacion-icono {
+        color: #dc3545;
+    }
+
+
+    /* =========================================================
+       TEXTO
+    ========================================================= */
+
+    .notificacion-contenido {
+        flex: 1;
+    }
+
+    .notificacion-titulo {
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 3px;
+        color: #212529;
+    }
+
+    .notificacion-mensaje {
+        font-size: 0.88rem;
+        color: #6c757d;
+        line-height: 1.4;
+    }
+
+
+    /* =========================================================
+       BOTÓN X
+    ========================================================= */
+
+    .notificacion-cerrar {
+        position: absolute;
+
+        top: 10px;
+        right: 10px;
+
+        width: 28px;
+        height: 28px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: none;
+        background: transparent;
+
+        color: #6c757d;
+
+        font-size: 1.15rem;
+
+        border-radius: 50%;
+
+        cursor: pointer;
+
+        transition: all 0.2s ease;
+    }
+
+    .notificacion-cerrar:hover {
+        background: #f1f3f5;
+        color: #212529;
+    }
+
+
+    /* =========================================================
+       ANIMACIÓN
+    ========================================================= */
+
+    @keyframes aparecerNotificacion {
+
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+    }
+
+
+    @keyframes desaparecerNotificacion {
+
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+    }
+
+
+    .notificacion-saliendo {
+        animation: desaparecerNotificacion 0.2s ease forwards;
+    }
+
+</style>
+
+
+<!-- =========================================================
+     CONTENEDOR
+========================================================= -->
+
+<div id="notificaciones-container"></div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const formulario = document.querySelector(
+        "form.needs-validation"
+    );
+
+    const contenedor = document.getElementById(
+        "notificaciones-container"
+    );
+
+
+    /* =========================================================
+       MOSTRAR NOTIFICACIÓN
+    ========================================================= */
+
+    function mostrarNotificacion(
+        mensaje,
+        tipo = "exito"
+    ) {
+
+        let titulo = "Éxito";
+        let icono = "bi-check-circle-fill";
+
+        if (tipo === "warning") {
+
+            titulo = "Horario no disponible";
+            icono = "bi-exclamation-triangle-fill";
+
+        }
+
+        if (tipo === "error") {
+
+            titulo = "Error";
+            icono = "bi-x-circle-fill";
+
+        }
+
+
+        const notificacion = document.createElement("div");
+
+        notificacion.className =
+            `notificacion-evento ${tipo}`;
+
+
+        notificacion.innerHTML = `
+
+            <div class="notificacion-icono">
+                <i class="bi ${icono}"></i>
+            </div>
+
+            <div class="notificacion-contenido">
+
+                <div class="notificacion-titulo">
+                    ${titulo}
+                </div>
+
+                <div class="notificacion-mensaje">
+                    ${mensaje}
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="notificacion-cerrar"
+                aria-label="Cerrar notificación"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        `;
+
+
+        contenedor.appendChild(notificacion);
+
+
+        /* =====================================================
+           BOTÓN CERRAR
+        ===================================================== */
+
+        const botonCerrar =
+            notificacion.querySelector(
+                ".notificacion-cerrar"
+            );
+
+
+        botonCerrar.addEventListener(
+            "click",
+            function () {
+
+                notificacion.classList.add(
+                    "notificacion-saliendo"
+                );
+
+                setTimeout(function () {
+
+                    notificacion.remove();
+
+                }, 200);
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       ENVIAR FORMULARIO SIN RECARGAR
+    ========================================================= */
+
+    if (formulario) {
+
+        formulario.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const botonEnviar =
+                    formulario.querySelector(
+                        'button[type="submit"]'
+                    );
+
+
+                const textoOriginal =
+                    botonEnviar.innerHTML;
+
+
+                botonEnviar.disabled = true;
+
+                botonEnviar.innerHTML = `
+                    <span
+                        class="spinner-border spinner-border-sm me-1"
+                    ></span>
+                    Guardando...
+                `;
+
+
+                try {
+
+                    const datos =
+                        new FormData(formulario);
+
+
+                    const respuesta =
+                        await fetch(
+                            formulario.action ||
+                            window.location.href,
+                            {
+                                method: "POST",
+
+                                body: datos,
+
+                                headers: {
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                }
+                            }
+                        );
+
+
+                    const resultado =
+                        await respuesta.json();
+
+
+                    /* =========================================
+                       EVENTO CREADO
+                    ========================================= */
+
+                    if (resultado.success) {
+
+                        mostrarNotificacion(
+                            resultado.message,
+                            "exito"
+                        );
+
+
+                        /*
+                         * Limpiamos el formulario después
+                         * de crear correctamente.
+                         */
+
+                        formulario.reset();
+
+
+                        /*
+                         * Volvemos a colocar la fecha mínima
+                         * después de resetear.
+                         */
+
+                        const fechaInput =
+                            document.getElementById(
+                                "id_fecha"
+                            );
+
+                        if (fechaInput) {
+
+                            const ahora = new Date();
+
+                            const año =
+                                ahora.getFullYear();
+
+                            const mes =
+                                String(
+                                    ahora.getMonth() + 1
+                                ).padStart(2, "0");
+
+                            const dia =
+                                String(
+                                    ahora.getDate()
+                                ).padStart(2, "0");
+
+                            fechaInput.min =
+                                `${año}-${mes}-${dia}`;
+
+                        }
+
+                    }
+
+
+                    /* =========================================
+                       ERROR
+                    ========================================= */
+
+                    else {
+
+                        mostrarNotificacion(
+                            resultado.message,
+                            resultado.type || "warning"
+                        );
+
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Error:",
+                        error
+                    );
+
+
+                    mostrarNotificacion(
+                        "Ocurrió un error al comunicarse con el servidor.",
+                        "error"
+                    );
+
+
+                } finally {
+
+                    botonEnviar.disabled = false;
+
+                    botonEnviar.innerHTML =
+                        textoOriginal;
+
+                }
+
+            }
+        );
+
+    }
 
 });
+
 </script>
 
 {% endblock %}

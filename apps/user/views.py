@@ -81,7 +81,7 @@ def index(request):
 
     eventos = eventos.order_by(
         "fecha",
-        "hora"
+        "hora_inicio"
     )
 
     return render(
