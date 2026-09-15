@@ -5,13 +5,26 @@ from apps.cursos.models import Cursos
 from apps.clases.models import Clases
 
 
-class Docente(models.Model):
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name="docente")
+MAX_CURSOS_POR_DOCENTE = 3
 
-    telefono = models.IntegerField('telefono', blank=True, null=True)
-    direccion = models.CharField(max_length=100)
-    curso = models.ForeignKey(Cursos, on_delete=models.SET_NULL, null=True, blank=True)
-    clase = models.ForeignKey(Clases, on_delete=models.SET_NULL, null=True, blank=True)
+
+class Docente(models.Model):
+
+    usuario = models.OneToOneField(
+        Usuario,
+        on_delete=models.CASCADE,
+        related_name="docente"
+    )
+
+    telefono = models.IntegerField(
+        "telefono",
+        blank=True,
+        null=True
+    )
+
+    direccion = models.CharField(
+        max_length=100
+    )
 
     class Meta:
         verbose_name = "Docente"
@@ -19,9 +32,6 @@ class Docente(models.Model):
 
     def __str__(self):
         return f"{self.usuario.first_name} {self.usuario.last_name}"
-
-
-MAX_CURSOS_POR_DOCENTE = 3
 
 
 class AsignacionDocente(models.Model):

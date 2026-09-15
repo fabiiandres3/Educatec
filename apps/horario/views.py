@@ -148,7 +148,7 @@ def crear_horario(request):
 
     return render(
         request,
-        "horarios/crear_horario.html",
+        "admin/horario/crear_horario.html",
         {
             "form": form
         }

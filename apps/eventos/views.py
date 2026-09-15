@@ -99,10 +99,6 @@ def crear_evento(request):
 
 
 
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
-
-
 def editar_evento(request, evento_id):
 
     evento = get_object_or_404(
@@ -150,6 +146,7 @@ def editar_evento(request, evento_id):
         errores = []
 
         for campo, mensajes in form.errors.items():
+
             for mensaje in mensajes:
                 errores.append(str(mensaje))
 
@@ -164,7 +161,6 @@ def editar_evento(request, evento_id):
         "type": "error",
         "message": "Método no permitido."
     }, status=405)
-
 
 def eliminar_evento(request, evento_id):
 

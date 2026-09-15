@@ -1,7 +1,10 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
-from apps.docentes.models import Docente
+from apps.docentes.models import Docente, AsignacionDocente
+
+from apps.cursos.models import Cursos
+from apps.clases.models import Clases
 
 
 class Periodo(models.Model):
@@ -94,6 +97,20 @@ class Horario(models.Model):
         related_name="horarios"
     )
 
+    curso = models.ForeignKey(
+        Cursos,
+        on_delete=models.CASCADE,
+        related_name="horarios"
+    )
+
+    clase = models.ForeignKey(
+        Clases,
+        on_delete=models.CASCADE,
+        related_name="horarios",
+        null=True,
+        blank=True,
+    )
+
     dia = models.CharField(
         max_length=20,
         choices=DIAS_SEMANA
@@ -108,10 +125,6 @@ class Horario(models.Model):
 
     hora_fin = models.TimeField()
 
-    activo = models.BooleanField(
-        default=True
-    )
-
     creado_en = models.DateTimeField(
         auto_now_add=True
     )
@@ -121,14 +134,43 @@ class Horario(models.Model):
     )
 
     class Meta:
+
         ordering = [
             "dia",
             "hora_inicio"
         ]
 
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "periodo",
+                    "docente",
+                    "dia",
+                    "hora_inicio",
+                    "hora_fin",
+                ],
+                name="unique_horario_docente"
+            )
+        ]
+
     def __str__(self):
+
         return (
             f"{self.docente} - "
+            f"{self.curso} - "
+            f"{self.clase} - "
             f"{self.get_dia_display()} - "
-            f"{self.hora_inicio} a {self.hora_fin}"
+            f"{self.hora_inicio.strftime('%H:%M')} - "
+            f"{self.hora_fin.strftime('%H:%M')}"
         )
+
+@property
+def esta_activo(self):
+
+    hoy = timezone.localdate()
+
+    return (
+        self.periodo.activo
+        and self.periodo.fecha_inicio <= hoy
+        and self.periodo.fecha_fin >= hoy
+    )
