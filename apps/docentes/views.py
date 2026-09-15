@@ -262,13 +262,27 @@ def crear_tareas_docente(request):
     )
 
     # =========================================================
-    # CURSOS DEL DOCENTE
+    # ASIGNACIONES DEL DOCENTE
     # =========================================================
 
+    asignaciones = (
+        AsignacionDocente.objects
+        .filter(docente=docente)
+        .select_related(
+            "clase",
+            "clase__curso"
+        )
+    )
+
+    # Cursos únicos del docente
     cursos = []
 
-    if docente.curso:
-        cursos = [docente.curso]
+    for asignacion in asignaciones:
+
+        curso = asignacion.clase.curso
+
+        if curso and curso not in cursos:
+            cursos.append(curso)
 
     # =========================================================
     # POST
@@ -281,9 +295,7 @@ def crear_tareas_docente(request):
             request.FILES
         )
 
-        curso_id = request.POST.get(
-            "curso"
-        )
+        curso_id = request.POST.get("curso")
 
         if not curso_id:
 
@@ -295,23 +307,27 @@ def crear_tareas_docente(request):
         else:
 
             # =================================================
-            # VERIFICAR CURSO
+            # BUSCAR ASIGNACIÓN DEL DOCENTE
             # =================================================
 
-            if not docente.curso:
-
-                messages.error(
-                    request,
-                    "No tienes ningún curso asignado."
+            asignacion = (
+                AsignacionDocente.objects
+                .filter(
+                    docente=docente,
+                    clase__curso_id=curso_id
                 )
+                .select_related(
+                    "clase",
+                    "clase__curso"
+                )
+                .first()
+            )
 
-            elif str(curso_id) != str(
-                docente.curso.id
-            ):
+            if not asignacion:
 
                 messages.error(
                     request,
-                    "No puedes asignar tareas a un curso que no tienes asignado."
+                    "No tienes ese curso asignado."
                 )
 
             elif tarea_form.is_valid():
@@ -326,19 +342,9 @@ def crear_tareas_docente(request):
                         commit=False
                     )
 
-                    # IMPORTANTE:
-                    # La tarea pertenece al docente
-
                     tarea.docente = docente
-
-                    # Curso del docente
-
-                    tarea.curso = docente.curso
-
-                    # Clase del docente
-
-                    if docente.clase:
-                        tarea.clase = docente.clase
+                    tarea.curso = asignacion.clase.curso
+                    tarea.clase = asignacion.clase
 
                     tarea.save()
 
@@ -438,12 +444,6 @@ def editar_tarea_docente(
 
     # =========================================================
     # OBTENER TAREA
-    #
-    # IMPORTANTE:
-    # La tarea debe pertenecer al docente.
-    #
-    # Ya NO usamos:
-    # tarea.curso == docente.curso
     # =========================================================
 
     tarea = get_object_or_404(
@@ -453,15 +453,30 @@ def editar_tarea_docente(
     )
 
     # =========================================================
+    # ASIGNACIONES DEL DOCENTE
+    # =========================================================
+
+    asignaciones = (
+        AsignacionDocente.objects
+        .filter(docente=docente)
+        .select_related(
+            "clase",
+            "clase__curso"
+        )
+    )
+
+    # =========================================================
     # CURSOS DISPONIBLES
     # =========================================================
 
     cursos = []
 
-    if docente.curso:
-        cursos = [
-            docente.curso
-        ]
+    for asignacion in asignaciones:
+
+        curso = asignacion.clase.curso
+
+        if curso and curso not in cursos:
+            cursos.append(curso)
 
     # =========================================================
     # POST
@@ -474,10 +489,6 @@ def editar_tarea_docente(
             request.FILES,
             instance=tarea
         )
-
-        # =====================================================
-        # CURSO SELECCIONADO
-        # =====================================================
 
         curso_id = request.POST.get(
             "curso"
@@ -493,22 +504,23 @@ def editar_tarea_docente(
         else:
 
             # =================================================
-            # OBTENER CURSO
+            # BUSCAR ASIGNACIÓN
             # =================================================
 
-            curso = get_object_or_404(
-                Cursos,
-                id=curso_id
+            asignacion = (
+                AsignacionDocente.objects
+                .filter(
+                    docente=docente,
+                    clase__curso_id=curso_id
+                )
+                .select_related(
+                    "clase",
+                    "clase__curso"
+                )
+                .first()
             )
 
-            # =================================================
-            # VERIFICAR QUE SEA EL CURSO DEL DOCENTE
-            # =================================================
-
-            if (
-                not docente.curso
-                or curso.id != docente.curso.id
-            ):
+            if not asignacion:
 
                 messages.error(
                     request,
@@ -529,27 +541,15 @@ def editar_tarea_docente(
                             commit=False
                         )
 
-                        # =====================================
-                        # MANTENER PROPIETARIO
-                        # =====================================
-
                         tarea_editada.docente = docente
 
-                        # =====================================
-                        # CURSO
-                        # =====================================
+                        tarea_editada.curso = (
+                            asignacion.clase.curso
+                        )
 
-                        tarea_editada.curso = curso
-
-                        # =====================================
-                        # CLASE
-                        # =====================================
-
-                        if docente.clase:
-
-                            tarea_editada.clase = (
-                                docente.clase
-                            )
+                        tarea_editada.clase = (
+                            asignacion.clase
+                        )
 
                         tarea_editada.save()
 
@@ -557,11 +557,9 @@ def editar_tarea_docente(
                         # IMÁGENES NUEVAS
                         # =====================================
 
-                        imagenes = request.FILES.getlist(
+                        for imagen in request.FILES.getlist(
                             "imagenes"
-                        )
-
-                        for imagen in imagenes:
+                        ):
 
                             Imagen.objects.create(
                                 tarea=tarea_editada,
@@ -572,11 +570,9 @@ def editar_tarea_docente(
                         # ARCHIVOS NUEVOS
                         # =====================================
 
-                        archivos = request.FILES.getlist(
+                        for archivo in request.FILES.getlist(
                             "archivos"
-                        )
-
-                        for archivo in archivos:
+                        ):
 
                             ArchivoTarea.objects.create(
                                 tarea=tarea_editada,
@@ -587,11 +583,9 @@ def editar_tarea_docente(
                         # VIDEOS NUEVOS
                         # =====================================
 
-                        videos = request.POST.getlist(
+                        for video_url in request.POST.getlist(
                             "videos"
-                        )
-
-                        for video_url in videos:
+                        ):
 
                             video_url = video_url.strip()
 
@@ -603,7 +597,7 @@ def editar_tarea_docente(
                                 )
 
                         # =====================================
-                        # PREGUNTAS
+                        # OBTENER ÍNDICES DE PREGUNTAS
                         # =====================================
 
                         indices = []
@@ -631,10 +625,6 @@ def editar_tarea_docente(
 
                                     continue
 
-                        # =====================================
-                        # ELIMINAR DUPLICADOS
-                        # =====================================
-
                         indices = sorted(
                             set(indices)
                         )
@@ -661,12 +651,7 @@ def editar_tarea_docente(
                                 f"pregunta_id_{indice}"
                             )
 
-                            # =================================
-                            # VALIDAR
-                            # =================================
-
                             if not enunciado:
-
                                 continue
 
                             # =================================
@@ -739,9 +724,6 @@ def editar_tarea_docente(
                                         pregunta=pregunta
                                     ).delete()
 
-                                # Marcar opciones
-                                # como incorrectas
-
                                 OpcionesRespuesta.objects.filter(
                                     pregunta=pregunta
                                 ).update(
@@ -754,13 +736,9 @@ def editar_tarea_docente(
 
                             elif tipo == "opcion":
 
-                                # Eliminar respuesta abierta
-
                                 RespuestaCorrecta.objects.filter(
                                     pregunta=pregunta
                                 ).delete()
-
-                                # Obtener opciones
 
                                 opciones = request.POST.getlist(
                                     f"opciones_{indice}[]"
@@ -777,20 +755,15 @@ def editar_tarea_docente(
                                     "D"
                                 ]
 
-                                # Opciones existentes
-
                                 opciones_existentes = list(
                                     pregunta.opciones.all()
                                 )
-
-                                # Actualizar / crear
 
                                 for i, texto_opcion in enumerate(
                                     opciones
                                 ):
 
                                     if i >= len(letras):
-
                                         break
 
                                     texto_opcion = (
@@ -798,16 +771,11 @@ def editar_tarea_docente(
                                     )
 
                                     if not texto_opcion:
-
                                         continue
 
                                     es_correcta = (
                                         letras[i] == correcta
                                     )
-
-                                    # =============================
-                                    # EXISTENTE
-                                    # =============================
 
                                     if i < len(
                                         opciones_existentes
@@ -826,10 +794,6 @@ def editar_tarea_docente(
                                         )
 
                                         opcion.save()
-
-                                    # =============================
-                                    # NUEVA
-                                    # =============================
 
                                     else:
 
@@ -861,10 +825,6 @@ def editar_tarea_docente(
                     request,
                     "Revisa los datos del formulario."
                 )
-
-    # =========================================================
-    # GET
-    # =========================================================
 
     else:
 
@@ -992,32 +952,80 @@ def listar_tareas(request):
     )
 
     # =========================================================
+    # CURSOS ASIGNADOS AL DOCENTE
+    # =========================================================
+
+    asignaciones = (
+        AsignacionDocente.objects
+        .filter(
+            docente=docente
+        )
+        .select_related(
+            "clase",
+            "clase__curso"
+        )
+    )
+
+    cursos_ids = [
+        asignacion.clase.curso_id
+        for asignacion in asignaciones
+        if asignacion.clase
+        and asignacion.clase.curso
+    ]
+
+    cursos_ids = list(
+        set(cursos_ids)
+    )
+
+    # =========================================================
     # TOTAL DE ALUMNOS
     # =========================================================
+    #
+    # Se cuentan los alumnos de TODOS los cursos
+    # asignados al docente.
+    # =========================================================
 
-    if docente.curso:
-
-        total_alumnos = (
-            Alumnos.objects
-            .filter(
-                curso=docente.curso
-            )
-            .count()
+    total_alumnos = (
+        Alumnos.objects
+        .filter(
+            curso_id__in=cursos_ids
         )
-
-    else:
-
-        total_alumnos = 0
+        .count()
+        if cursos_ids
+        else 0
+    )
 
     # =========================================================
-    # ESTADÍSTICAS
+    # ESTADÍSTICAS DE CADA TAREA
     # =========================================================
 
     for tarea in tareas:
 
+        # -----------------------------------------------------
+        # Total de alumnos del curso de ESTA tarea
+        # -----------------------------------------------------
+
+        if tarea.curso_id:
+
+            total_alumnos_tarea = (
+                Alumnos.objects
+                .filter(
+                    curso_id=tarea.curso_id
+                )
+                .count()
+            )
+
+        else:
+
+            total_alumnos_tarea = 0
+
         tarea.total_alumnos = (
-            total_alumnos
+            total_alumnos_tarea
         )
+
+        # -----------------------------------------------------
+        # Entregas
+        # -----------------------------------------------------
 
         tarea.entregas = (
             RespuestaAlumno.objects
@@ -1031,11 +1039,15 @@ def listar_tareas(request):
             .count()
         )
 
-        if total_alumnos > 0:
+        # -----------------------------------------------------
+        # Porcentaje de entrega
+        # -----------------------------------------------------
+
+        if total_alumnos_tarea > 0:
 
             tarea.porcentaje_entrega = (
                 tarea.entregas
-                / total_alumnos
+                / total_alumnos_tarea
             ) * 100
 
         else:
@@ -1046,7 +1058,9 @@ def listar_tareas(request):
     # CONTADORES
     # =========================================================
 
-    total_tareas = tareas.count()
+    total_tareas = (
+        tareas.count()
+    )
 
     tareas_activas = (
         tareas

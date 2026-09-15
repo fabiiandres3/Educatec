@@ -1,17 +1,22 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from .forms import EventoForm
 from .models import Evento
 from django.http import JsonResponse
 
 
-
+# ============================================================
+# LISTAR EVENTOS - ADMIN
+# ============================================================
 
 def listar_eventos(request):
 
-    eventos = Evento.objects.all().order_by(
-        "fecha",
-        "hora_inicio"
+    eventos = (
+        Evento.objects
+        .all()
+        .order_by(
+            "fecha",
+            "hora_inicio"
+        )
     )
 
     return render(
@@ -22,6 +27,10 @@ def listar_eventos(request):
         }
     )
 
+
+# ============================================================
+# CREAR EVENTO
+# ============================================================
 
 def crear_evento(request):
 
@@ -40,7 +49,6 @@ def crear_evento(request):
                 "form": form,
             }
         )
-
 
     # =========================================================
     # PROCESAR FORMULARIO
@@ -66,7 +74,6 @@ def crear_evento(request):
                 )
             })
 
-
         # =====================================================
         # ERRORES DEL FORMULARIO
         # =====================================================
@@ -77,15 +84,15 @@ def crear_evento(request):
 
             for mensaje in mensajes:
 
-                errores.append(str(mensaje))
-
+                errores.append(
+                    str(mensaje)
+                )
 
         return JsonResponse({
             "success": False,
             "type": "warning",
             "message": " ".join(errores)
         })
-
 
     # =========================================================
     # OTROS MÉTODOS
@@ -98,13 +105,23 @@ def crear_evento(request):
     }, status=405)
 
 
+# ============================================================
+# EDITAR EVENTO
+# ============================================================
 
-def editar_evento(request, evento_id):
+def editar_evento(
+    request,
+    evento_id
+):
 
     evento = get_object_or_404(
         Evento,
         id=evento_id
     )
+
+    # =========================================================
+    # MOSTRAR FORMULARIO
+    # =========================================================
 
     if request.method == "GET":
 
@@ -121,6 +138,10 @@ def editar_evento(request, evento_id):
                 "editar": True,
             }
         )
+
+    # =========================================================
+    # PROCESAR FORMULARIO
+    # =========================================================
 
     if request.method == "POST":
 
@@ -143,12 +164,19 @@ def editar_evento(request, evento_id):
                 )
             })
 
+        # =====================================================
+        # ERRORES DEL FORMULARIO
+        # =====================================================
+
         errores = []
 
         for campo, mensajes in form.errors.items():
 
             for mensaje in mensajes:
-                errores.append(str(mensaje))
+
+                errores.append(
+                    str(mensaje)
+                )
 
         return JsonResponse({
             "success": False,
@@ -156,13 +184,25 @@ def editar_evento(request, evento_id):
             "message": " ".join(errores)
         })
 
+    # =========================================================
+    # MÉTODO NO PERMITIDO
+    # =========================================================
+
     return JsonResponse({
         "success": False,
         "type": "error",
         "message": "Método no permitido."
     }, status=405)
 
-def eliminar_evento(request, evento_id):
+
+# ============================================================
+# ELIMINAR EVENTO
+# ============================================================
+
+def eliminar_evento(
+    request,
+    evento_id
+):
 
     evento = get_object_or_404(
         Evento,
@@ -185,12 +225,19 @@ def eliminar_evento(request, evento_id):
         }
     )
 
-def detalle_evento(request, id):
+
+# ============================================================
+# DETALLE DEL EVENTO
+# ============================================================
+
+def detalle_evento(
+    request,
+    id
+):
 
     evento = get_object_or_404(
         Evento,
-        id=id,
-        activo=True
+        id=id
     )
 
     return render(
@@ -202,10 +249,54 @@ def detalle_evento(request, id):
     )
 
 
-def listar_eventos_alumno(request): 
-    eventos = Evento.objects.filter( publicado=True ).order_by( "fecha", "hora" ) 
-    return render( request, "admin/eventos/eventos_alumnos.html", { "eventos": eventos, } ) 
+# ============================================================
+# LISTAR EVENTOS - ALUMNO
+# ============================================================
 
-def listar_eventos_docente(request): 
-    eventos = Evento.objects.filter( publicado=True ).order_by( "fecha", "hora" ) 
-    return render( request, "admin/eventos/eventos_docente.html", { "eventos": eventos, } )
+def listar_eventos_alumno(request):
+
+    eventos = (
+        Evento.objects
+        .filter(
+            publicado=True
+        )
+        .order_by(
+            "fecha",
+            "hora_inicio"
+        )
+    )
+
+    return render(
+        request,
+        "admin/eventos/eventos_alumnos.html",
+        {
+            "eventos": eventos,
+        }
+    )
+
+
+# ============================================================
+# LISTAR EVENTOS - DOCENTE
+# ============================================================
+
+def listar_eventos_docente(request):
+
+    eventos = (
+        Evento.objects
+        .filter(
+            publico="docentes",
+            publicado=True
+        )
+        .order_by(
+            "fecha",
+            "hora_inicio"
+        )
+    )
+
+    return render(
+        request,
+        "admin/eventos/eventos_docente.html",
+        {
+            "eventos": eventos,
+        }
+    )

@@ -1,19 +1,27 @@
 import json
 from datetime import date, datetime
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import JsonResponse
-from datetime import date, datetime
-
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
+
 
 from apps.asistencia.models import Asistencia
 from apps.cursos.models import Cursos
-from apps.docentes.models import Docente, AsignacionDocente, MAX_CURSOS_POR_DOCENTE
+from apps.docentes.models import (
+    Docente,
+    AsignacionDocente,
+    MAX_CURSOS_POR_DOCENTE,
+)
 from apps.eventos.models import Evento
 from apps.tareas.models import Calificacion
-from apps.alumnos.models import Acudiente, AcudienteAlumno, Alumnos
+from apps.alumnos.models import (
+    Acudiente,
+    AcudienteAlumno,
+    Alumnos,
+)
 
 from .selectors import (
     obtener_tareas_docente,
@@ -24,6 +32,7 @@ from .selectors import (
     obtener_alumnos_por_curso,
     obtener_asistencia_por_curso_fecha,
 )
+
 
 # ============================================================
 #                    DASHBOARD DOCENTE
@@ -36,8 +45,7 @@ def dashboard_docente(request):
     # --------------------------------------------------------
 
     docente = Docente.objects.select_related(
-        "curso",
-        "clase"
+        "usuario"
     ).get(
         usuario=request.user
     )
@@ -62,26 +70,33 @@ def dashboard_docente(request):
         publico__in=["todos", "docentes"]
     ).order_by(
         "fecha",
-        "hora"
+        "hora_inicio"
     )
 
     # --------------------------------------------------------
-    # TOTAL DE ALUMNOS (suma de todos los cursos asignados)
+    # TOTAL DE ALUMNOS
     # --------------------------------------------------------
 
     cursos_ids = set()
 
     for asignacion in asignaciones:
+
         if asignacion.clase and asignacion.clase.curso:
-            cursos_ids.add(asignacion.clase.curso.id)
+
+            cursos_ids.add(
+                asignacion.clase.curso.id
+            )
 
     total_alumnoss = 0
 
     for curso_id in cursos_ids:
-        total_alumnoss += contar_alumnos_curso(curso_id)
+
+        total_alumnoss += contar_alumnos_curso(
+            curso_id
+        )
 
     # --------------------------------------------------------
-    # TAREAS RECIENTES (de todas las asignaciones)
+    # TAREAS RECIENTES
     # --------------------------------------------------------
 
     tareas_recientes = []
@@ -99,7 +114,9 @@ def dashboard_docente(request):
 
     tareas_recientes = tareas_recientes[:5]
 
-    total_tareas = len(tareas_recientes)
+    total_tareas = len(
+        tareas_recientes
+    )
 
     # --------------------------------------------------------
     # ESTADÍSTICAS
@@ -139,7 +156,7 @@ def eventos_docente(request):
         publico__in=["todos", "docentes"]
     ).order_by(
         "fecha",
-        "hora"
+        "hora_inicio"
     )
 
     return render(
@@ -158,8 +175,7 @@ def eventos_docente(request):
 def cursos_docente(request):
 
     docente = Docente.objects.select_related(
-        "curso",
-        "clase"
+        "usuario"
     ).get(
         usuario=request.user
     )
@@ -205,8 +221,7 @@ def cursos_docente(request):
 def calificaciones_docente(request):
 
     docente = Docente.objects.select_related(
-        "curso",
-        "clase"
+        "usuario"
     ).get(
         usuario=request.user
     )
@@ -226,7 +241,9 @@ def calificaciones_docente(request):
     # ASIGNACIÓN SELECCIONADA
     # --------------------------------------------------------
 
-    asignacion_id = request.GET.get("asignacion")
+    asignacion_id = request.GET.get(
+        "asignacion"
+    )
 
     asignacion_sel = None
 
@@ -282,8 +299,11 @@ def calificaciones_docente(request):
         )
 
         notas_map = {
-            (calificacion.alumno_id, calificacion.tarea_id):
-            calificacion.nota
+            (
+                calificacion.alumno_id,
+                calificacion.tarea_id
+            ): calificacion.nota
+
             for calificacion in calificaciones
         }
 
@@ -317,6 +337,7 @@ def calificaciones_docente(request):
                 )
 
                 if nota is not None:
+
                     valores.append(
                         float(nota)
                     )
@@ -332,7 +353,9 @@ def calificaciones_docente(request):
                 else None
             )
 
-            alumnos.append(alumno)
+            alumnos.append(
+                alumno
+            )
 
     # --------------------------------------------------------
     # ESTADÍSTICAS
@@ -403,12 +426,10 @@ def calificaciones_docente(request):
 #                    ASISTENCIA DOCENTE
 # ============================================================
 
-
 def asistencia_docente(request):
 
     docente = Docente.objects.select_related(
-        "curso",
-        "clase"
+        "usuario"
     ).get(
         usuario=request.user
     )
@@ -432,36 +453,54 @@ def asistencia_docente(request):
 
             cursos_dict[curso.id] = curso
 
-    cursos_docente = list(cursos_dict.values())
+    cursos_docente = list(
+        cursos_dict.values()
+    )
 
-    curso_id = request.GET.get("curso")
+    curso_id = request.GET.get(
+        "curso"
+    )
 
     curso_sel = None
 
     if curso_id:
 
         try:
-            curso_sel = cursos_dict.get(int(curso_id))
-        except (ValueError, TypeError):
+
+            curso_sel = cursos_dict.get(
+                int(curso_id)
+            )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
             curso_sel = None
 
     if not curso_sel and cursos_docente:
+
         curso_sel = cursos_docente[0]
 
-    fecha_str = request.GET.get("fecha")
+    fecha_str = request.GET.get(
+        "fecha"
+    )
 
     if fecha_str:
 
         try:
+
             fecha_sel = datetime.strptime(
                 fecha_str,
                 "%Y-%m-%d"
             ).date()
 
         except ValueError:
+
             fecha_sel = hoy
 
     else:
+
         fecha_sel = hoy
 
     alumnos = []
@@ -493,22 +532,29 @@ def asistencia_docente(request):
                 alumno.id
             )
 
-            alumnos.append(alumno)
+            alumnos.append(
+                alumno
+            )
 
-        total = len(alumnos)
+        total = len(
+            alumnos
+        )
 
         presentes = sum(
-            1 for alumno in alumnos
+            1
+            for alumno in alumnos
             if alumno.estado_asistencia == "P"
         )
 
         tardanzas = sum(
-            1 for alumno in alumnos
+            1
+            for alumno in alumnos
             if alumno.estado_asistencia == "T"
         )
 
         ausentes = sum(
-            1 for alumno in alumnos
+            1
+            for alumno in alumnos
             if alumno.estado_asistencia == "A"
         )
 
@@ -530,36 +576,59 @@ def asistencia_docente(request):
         }
     )
 
+
+# ============================================================
+#                    DATOS ASISTENCIA AJAX
+# ============================================================
+
 def obtener_datos_asistencia(request):
 
     if request.method != "GET":
+
         return JsonResponse(
-            {"error": "Método no permitido"},
+            {
+                "error": "Método no permitido"
+            },
             status=405
         )
 
-    curso_id = request.GET.get("curso")
-    fecha_str = request.GET.get("fecha")
+    curso_id = request.GET.get(
+        "curso"
+    )
+
+    fecha_str = request.GET.get(
+        "fecha"
+    )
 
     if not curso_id or not fecha_str:
 
         return JsonResponse(
-            {"error": "Curso y fecha son obligatorios"},
+            {
+                "error": "Curso y fecha son obligatorios"
+            },
             status=400
         )
 
     try:
-        curso_id = int(curso_id)
+
+        curso_id = int(
+            curso_id
+        )
 
         fecha = datetime.strptime(
             fecha_str,
             "%Y-%m-%d"
         ).date()
 
-    except (ValueError, TypeError):
+    except (
+        ValueError,
+        TypeError
+    ):
 
         return JsonResponse(
-            {"error": "Datos inválidos"},
+            {
+                "error": "Datos inválidos"
+            },
             status=400
         )
 
@@ -595,43 +664,58 @@ def obtener_datos_asistencia(request):
         )
 
         if estado == "P":
+
             presentes += 1
 
         elif estado == "T":
+
             tardanzas += 1
 
         elif estado == "A":
+
             ausentes += 1
 
-        data.append({
-            "id": alumno.id,
-            "nombre": alumno.usuario.get_full_name(),
-            "codigo": alumno.codigo or "",
-            "estado": estado,
-        })
+        data.append(
+            {
+                "id": alumno.id,
+                "nombre": alumno.usuario.get_full_name(),
+                "codigo": alumno.codigo or "",
+                "estado": estado,
+            }
+        )
 
-    return JsonResponse({
-        "curso": {
-            "id": curso.id,
-            "nombre": curso.nombre,
-        },
-        "fecha": fecha.strftime("%Y-%m-%d"),
-        "alumnos": data,
-        "estadisticas": {
-            "total": len(data),
-            "presentes": presentes,
-            "tardanzas": tardanzas,
-            "ausentes": ausentes,
+    return JsonResponse(
+        {
+            "curso": {
+                "id": curso.id,
+                "nombre": curso.nombre,
+            },
+            "fecha": fecha.strftime(
+                "%Y-%m-%d"
+            ),
+            "alumnos": data,
+            "estadisticas": {
+                "total": len(data),
+                "presentes": presentes,
+                "tardanzas": tardanzas,
+                "ausentes": ausentes,
+            }
         }
-    })
+    )
 
+
+# ============================================================
+#                    GUARDAR ASISTENCIA AJAX
+# ============================================================
 
 def guardar_asistencia_ajax(request):
 
     if request.method != "POST":
 
         return JsonResponse(
-            {"error": "Método no permitido"},
+            {
+                "error": "Método no permitido"
+            },
             status=405
         )
 
@@ -641,9 +725,18 @@ def guardar_asistencia_ajax(request):
             request.body
         )
 
-        curso_id = data.get("curso_id")
-        fecha_str = data.get("fecha")
-        asistencias = data.get("asistencias", [])
+        curso_id = data.get(
+            "curso_id"
+        )
+
+        fecha_str = data.get(
+            "fecha"
+        )
+
+        asistencias = data.get(
+            "asistencias",
+            []
+        )
 
         if not curso_id or not fecha_str:
 
@@ -695,7 +788,11 @@ def guardar_asistencia_ajax(request):
                 if alumno_id not in alumnos_validos:
                     continue
 
-                if estado not in ["P", "T", "A"]:
+                if estado not in [
+                    "P",
+                    "T",
+                    "A"
+                ]:
                     continue
 
                 Asistencia.objects.update_or_create(
@@ -710,22 +807,28 @@ def guardar_asistencia_ajax(request):
                     }
                 )
 
-        return JsonResponse({
-            "success": True,
-            "message": "Asistencia guardada correctamente"
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "message": "Asistencia guardada correctamente"
+            }
+        )
 
     except json.JSONDecodeError:
 
         return JsonResponse(
-            {"error": "JSON inválido"},
+            {
+                "error": "JSON inválido"
+            },
             status=400
         )
 
     except ValueError:
 
         return JsonResponse(
-            {"error": "Fecha inválida"},
+            {
+                "error": "Fecha inválida"
+            },
             status=400
         )
 
@@ -737,6 +840,7 @@ def guardar_asistencia_ajax(request):
             },
             status=500
         )
+
 
 # ============================================================
 #                    HISTORIAL ASISTENCIA
@@ -769,9 +873,7 @@ def guardar_asistencia(request):
 def configuracion_docente(request):
 
     docente = Docente.objects.select_related(
-        "usuario",
-        "curso",
-        "clase"
+        "usuario"
     ).get(
         usuario=request.user
     )
@@ -787,15 +889,40 @@ def configuracion_docente(request):
 
         usuario = docente.usuario
 
-        nombre_completo = request.POST.get("nombre", "").strip()
-        correo = request.POST.get("correo", "").strip()
-        telefono = request.POST.get("telefono", "").strip()
+        nombre_completo = request.POST.get(
+            "nombre",
+            ""
+        ).strip()
 
-        partes = nombre_completo.split(" ", 1)
-        usuario.first_name = partes[0] if partes else ""
-        usuario.last_name = partes[1] if len(partes) > 1 else ""
+        correo = request.POST.get(
+            "correo",
+            ""
+        ).strip()
+
+        telefono = request.POST.get(
+            "telefono",
+            ""
+        ).strip()
+
+        partes = nombre_completo.split(
+            " ",
+            1
+        )
+
+        usuario.first_name = (
+            partes[0]
+            if partes
+            else ""
+        )
+
+        usuario.last_name = (
+            partes[1]
+            if len(partes) > 1
+            else ""
+        )
 
         if correo:
+
             usuario.email = correo
 
         usuario.save()
@@ -803,17 +930,33 @@ def configuracion_docente(request):
         if telefono:
 
             try:
-                docente.telefono = int(telefono)
+
+                docente.telefono = int(
+                    telefono
+                )
+
                 docente.save()
+
             except ValueError:
-                messages.error(request, "El teléfono debe contener solo números.")
+
+                messages.error(
+                    request,
+                    "El teléfono debe contener solo números."
+                )
+
         else:
+
             docente.telefono = None
             docente.save()
 
-        messages.success(request, "Perfil actualizado correctamente.")
+        messages.success(
+            request,
+            "Perfil actualizado correctamente."
+        )
 
-        return redirect("configuracion_docente")
+        return redirect(
+            "configuracion_docente"
+        )
 
     return render(
         request,
@@ -823,14 +966,17 @@ def configuracion_docente(request):
             "asignaciones": asignaciones,
         }
     )
-    
+
+
 # ============================================================
 #                    CARGA ACADÉMICA
 # ============================================================
 
 def carga_academica(request):
 
-    docentes = Docente.objects.select_related("usuario").all()
+    docentes = Docente.objects.select_related(
+        "usuario"
+    ).all()
 
     filas = []
 
@@ -872,7 +1018,7 @@ def dashboard_alumnos(request):
         publico__in=["todos", "alumnos"]
     ).order_by(
         "fecha",
-        "hora"
+        "hora_inicio"
     )
 
     return render(
@@ -949,32 +1095,16 @@ def configuracion_alumnos(request):
     )
 
 
-
 # ============================================================
 #                    DASHBOARD ACUDIENTE
-# ============================================================
-
-from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
-
-from apps.alumnos.models import (
-    Acudiente,
-    AcudienteAlumno,
-    Alumnos,
-)
-
-from apps.tareas.models import Calificacion
-from apps.asistencia.models import Asistencia
-
-
-# ============================================================
-#                    PANEL ACUDIENTE
 # ============================================================
 
 def dashboard_acudiente(request):
 
     acudiente = get_object_or_404(
-        Acudiente.objects.select_related("usuario"),
+        Acudiente.objects.select_related(
+            "usuario"
+        ),
         usuario=request.user,
         activo=True
     )
@@ -1013,8 +1143,12 @@ def dashboard_acudiente(request):
             .filter(
                 alumno=alumno.usuario
             )
-            .select_related("tarea")
-            .order_by("-id")
+            .select_related(
+                "tarea"
+            )
+            .order_by(
+                "-id"
+            )
         )
 
         notas = [
@@ -1040,16 +1174,25 @@ def dashboard_acudiente(request):
             alumno=alumno
         )
 
-        total_asistencias = asistencias.count()
+        total_asistencias = (
+            asistencias.count()
+        )
 
-        presentes = asistencias.filter(
-            estado="P"
-        ).count()
+        presentes = (
+            asistencias
+            .filter(
+                estado="P"
+            )
+            .count()
+        )
 
         porcentaje_asistencia = (
 
             round(
-                (presentes / total_asistencias) * 100,
+                (
+                    presentes
+                    / total_asistencias
+                ) * 100,
                 1
             )
 
@@ -1066,7 +1209,9 @@ def dashboard_acudiente(request):
 
         if alumno.curso:
 
-            tareas_pendientes = alumno.curso.tareas_set.count()
+            tareas_pendientes = (
+                alumno.curso.tareas_set.count()
+            )
 
         # -------------------------------------------------
         # DATOS PARA LA PLANTILLA
@@ -1086,7 +1231,9 @@ def dashboard_acudiente(request):
             relacion.parentesco
         )
 
-        alumnos.append(alumno)
+        alumnos.append(
+            alumno
+        )
 
     return render(
         request,
@@ -1141,7 +1288,9 @@ def detalle_alumno_acudiente(
             "tarea__curso",
             "tarea__clase",
         )
-        .order_by("-id")
+        .order_by(
+            "-id"
+        )
     )
 
     notas = [
@@ -1168,28 +1317,47 @@ def detalle_alumno_acudiente(
         .filter(
             alumno=alumno
         )
-        .select_related("curso")
-        .order_by("-fecha")
+        .select_related(
+            "curso"
+        )
+        .order_by(
+            "-fecha"
+        )
     )
 
     total = asistencias.count()
 
-    presentes = asistencias.filter(
-        estado="P"
-    ).count()
+    presentes = (
+        asistencias
+        .filter(
+            estado="P"
+        )
+        .count()
+    )
 
-    tardanzas = asistencias.filter(
-        estado="T"
-    ).count()
+    tardanzas = (
+        asistencias
+        .filter(
+            estado="T"
+        )
+        .count()
+    )
 
-    ausentes = asistencias.filter(
-        estado="A"
-    ).count()
+    ausentes = (
+        asistencias
+        .filter(
+            estado="A"
+        )
+        .count()
+    )
 
     porcentaje_asistencia = (
 
         round(
-            (presentes / total) * 100,
+            (
+                presentes
+                / total
+            ) * 100,
             1
         )
 
@@ -1202,6 +1370,16 @@ def detalle_alumno_acudiente(
         request,
         "paneles/acudientes/detalle_alumno.html",
         {
-           
+            "acudiente": acudiente,
+            "relacion": relacion,
+            "alumno": alumno,
+            "calificaciones": calificaciones,
+            "promedio": promedio,
+            "asistencias": asistencias,
+            "total": total,
+            "presentes": presentes,
+            "tardanzas": tardanzas,
+            "ausentes": ausentes,
+            "porcentaje_asistencia": porcentaje_asistencia,
         }
     )
