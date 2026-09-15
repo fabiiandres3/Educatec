@@ -97,12 +97,34 @@ def crear_evento(request):
         "message": "Método no permitido."
     }, status=405)
 
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+
+
 def editar_evento(request, evento_id):
 
     evento = get_object_or_404(
         Evento,
         id=evento_id
     )
+
+    if request.method == "GET":
+
+        form = EventoForm(
+            instance=evento
+        )
+
+        return render(
+            request,
+            "admin/eventos/form_evento.html",
+            {
+                "form": form,
+                "evento": evento,
+                "editar": True,
+            }
+        )
 
     if request.method == "POST":
 
@@ -114,27 +136,34 @@ def editar_evento(request, evento_id):
 
         if form.is_valid():
 
-            form.save()
+            evento = form.save()
 
-            return redirect(
-                "listar_eventos"
-            )
+            return JsonResponse({
+                "success": True,
+                "type": "success",
+                "message": (
+                    f"El evento '{evento.titulo}' "
+                    "se actualizó correctamente."
+                )
+            })
 
-    else:
+        errores = []
 
-        form = EventoForm(
-            instance=evento
-        )
+        for campo, mensajes in form.errors.items():
+            for mensaje in mensajes:
+                errores.append(str(mensaje))
 
-    return render(
-        request,
-        "admin/eventos/form_evento.html",
-        {
-            "form": form,
-            "evento": evento,
-            "editar": True,
-        }
-    )
+        return JsonResponse({
+            "success": False,
+            "type": "warning",
+            "message": " ".join(errores)
+        })
+
+    return JsonResponse({
+        "success": False,
+        "type": "error",
+        "message": "Método no permitido."
+    }, status=405)
 
 
 def eliminar_evento(request, evento_id):

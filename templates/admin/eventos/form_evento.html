@@ -90,7 +90,13 @@ Crear Evento
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'listar_eventos' %}" class="text-decoration-none">Eventos</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Nuevo Evento</li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if editar %}
+                    Editar Evento
+                {% else %}
+                    Nuevo Evento
+                {% endif %}
+            </li>
         </ol>
     </nav>
 
@@ -103,14 +109,26 @@ Crear Evento
                 <div class="card-body p-4 p-md-5">
 
                     <!-- Cabecera -->
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 me-3">
-                            <i class="bi bi-calendar-plus fs-3"></i>
-                        </div>
-                        <div>
-                            <h2 class="h3 fw-bold mb-1">Crear nuevo evento</h2>
-                            <p class="text-muted small mb-0">Completa la información requerida para publicar el evento.</p>
-                        </div>
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 me-3">
+                        <i class="bi {% if editar %}bi-pencil-square{% else %}bi-calendar-plus{% endif %} fs-3"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="h3 fw-bold mb-1">
+                            {% if editar %}
+                                Editar evento
+                            {% else %}
+                                Crear nuevo evento
+                            {% endif %}
+                        </h2>
+
+                        <p class="text-muted small mb-0">
+                            {% if editar %}
+                                Modifica la información del evento y guarda los cambios.
+                            {% else %}
+                                Completa la información requerida para publicar el evento.
+                            {% endif %}
+                        </p>
                     </div>
 
                     <hr class="my-4 text-secondary opacity-25">
@@ -133,7 +151,15 @@ Crear Evento
                             </a>
 
                             <button type="submit" class="btn btn-primary btn-custom-primary">
-                                <i class="bi bi-check-lg me-1"></i> Publicar Evento
+
+                                <i class="bi bi-check-lg me-1"></i>
+
+                                {% if editar %}
+                                    Guardar cambios
+                                {% else %}
+                                    Publicar Evento
+                                {% endif %}
+
                             </button>
 
                         </div>
@@ -404,6 +430,8 @@ document.addEventListener("DOMContentLoaded", function () {
 <div id="notificaciones-container"></div>
 
 
+
+
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -430,21 +458,18 @@ document.addEventListener("DOMContentLoaded", function () {
         let icono = "bi-check-circle-fill";
 
         if (tipo === "warning") {
-
             titulo = "Horario no disponible";
             icono = "bi-exclamation-triangle-fill";
-
         }
 
         if (tipo === "error") {
-
             titulo = "Error";
             icono = "bi-x-circle-fill";
-
         }
 
 
-        const notificacion = document.createElement("div");
+        const notificacion =
+            document.createElement("div");
 
         notificacion.className =
             `notificacion-evento ${tipo}`;
@@ -479,12 +504,10 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
 
 
-        contenedor.appendChild(notificacion);
+        contenedor.appendChild(
+            notificacion
+        );
 
-
-        /* =====================================================
-           BOTÓN CERRAR
-        ===================================================== */
 
         const botonCerrar =
             notificacion.querySelector(
@@ -513,161 +536,180 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       ENVIAR FORMULARIO SIN RECARGAR
+       FORMULARIO
     ========================================================= */
 
-    if (formulario) {
-
-        formulario.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
+    if (!formulario) {
+        return;
+    }
 
 
-                const botonEnviar =
-                    formulario.querySelector(
-                        'button[type="submit"]'
+    formulario.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const botonEnviar =
+                formulario.querySelector(
+                    'button[type="submit"]'
+                );
+
+
+            const textoOriginal =
+                botonEnviar.innerHTML;
+
+
+            botonEnviar.disabled = true;
+
+            botonEnviar.innerHTML = `
+                <span
+                    class="spinner-border spinner-border-sm me-1"
+                ></span>
+                Guardando...
+            `;
+
+
+            try {
+
+                const datos =
+                    new FormData(formulario);
+
+
+                /*
+                 * IMPORTANTE:
+                 *
+                 * formulario.action contiene:
+                 *
+                 * /eventos/crear/
+                 *
+                 * o
+                 *
+                 * /eventos/37/editar/
+                 *
+                 * dependiendo de la página actual.
+                 */
+
+                const url =
+                    formulario.action ||
+                    window.location.href;
+
+
+                const respuesta =
+                    await fetch(
+                        url,
+                        {
+                            method: "POST",
+
+                            body: datos,
+
+                            headers: {
+                                "X-Requested-With":
+                                    "XMLHttpRequest",
+
+                                "Accept":
+                                    "application/json"
+                            }
+                        }
                     );
 
 
-                const textoOriginal =
-                    botonEnviar.innerHTML;
+                /*
+                 * Intentamos obtener JSON.
+                 */
+
+                const resultado =
+                    await respuesta.json();
 
 
-                botonEnviar.disabled = true;
+                /* =================================================
+                   ÉXITO
+                ================================================= */
 
-                botonEnviar.innerHTML = `
-                    <span
-                        class="spinner-border spinner-border-sm me-1"
-                    ></span>
-                    Guardando...
-                `;
+                if (
+                    respuesta.ok &&
+                    resultado.success
+                ) {
 
-
-                try {
-
-                    const datos =
-                        new FormData(formulario);
-
-
-                    const respuesta =
-                        await fetch(
-                            formulario.action ||
-                            window.location.href,
-                            {
-                                method: "POST",
-
-                                body: datos,
-
-                                headers: {
-                                    "X-Requested-With":
-                                        "XMLHttpRequest"
-                                }
-                            }
-                        );
+                    mostrarNotificacion(
+                        resultado.message,
+                        "exito"
+                    );
 
 
-                    const resultado =
-                        await respuesta.json();
+                    /*
+                     * SI ESTAMOS EDITANDO
+                     *
+                     * No limpiamos el formulario.
+                     *
+                     * Así el usuario puede seguir
+                     * viendo los datos modificados.
+                     */
 
-
-                    /* =========================================
-                       EVENTO CREADO
-                    ========================================= */
-
-                    if (resultado.success) {
-
-                        mostrarNotificacion(
-                            resultado.message,
-                            "exito"
-                        );
-
+                    {% if editar %}
 
                         /*
-                         * Limpiamos el formulario después
-                         * de crear correctamente.
+                         * Dejamos el formulario como está.
+                         */
+
+                    {% else %}
+
+                        /*
+                         * CREAR EVENTO
+                         *
+                         * Después de crear correctamente
+                         * sí limpiamos el formulario.
                          */
 
                         formulario.reset();
 
-
-                        /*
-                         * Volvemos a colocar la fecha mínima
-                         * después de resetear.
-                         */
-
-                        const fechaInput =
-                            document.getElementById(
-                                "id_fecha"
-                            );
-
-                        if (fechaInput) {
-
-                            const ahora = new Date();
-
-                            const año =
-                                ahora.getFullYear();
-
-                            const mes =
-                                String(
-                                    ahora.getMonth() + 1
-                                ).padStart(2, "0");
-
-                            const dia =
-                                String(
-                                    ahora.getDate()
-                                ).padStart(2, "0");
-
-                            fechaInput.min =
-                                `${año}-${mes}-${dia}`;
-
-                        }
-
-                    }
-
-
-                    /* =========================================
-                       ERROR
-                    ========================================= */
-
-                    else {
-
-                        mostrarNotificacion(
-                            resultado.message,
-                            resultado.type || "warning"
-                        );
-
-                    }
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Error:",
-                        error
-                    );
-
-
-                    mostrarNotificacion(
-                        "Ocurrió un error al comunicarse con el servidor.",
-                        "error"
-                    );
-
-
-                } finally {
-
-                    botonEnviar.disabled = false;
-
-                    botonEnviar.innerHTML =
-                        textoOriginal;
+                    {% endif %}
 
                 }
 
-            }
-        );
 
-    }
+                /* =================================================
+                   ERROR DE VALIDACIÓN
+                ================================================= */
+
+                else {
+
+                    mostrarNotificacion(
+                        resultado.message ||
+                        "No se pudo guardar el evento.",
+                        resultado.type ||
+                        "warning"
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Error al guardar evento:",
+                    error
+                );
+
+
+                mostrarNotificacion(
+                    "Ocurrió un error al comunicarse con el servidor.",
+                    "error"
+                );
+
+
+            } finally {
+
+                botonEnviar.disabled = false;
+
+                botonEnviar.innerHTML =
+                    textoOriginal;
+
+            }
+
+        }
+    );
 
 });
 
