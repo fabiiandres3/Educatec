@@ -1,38 +1,497 @@
 {% extends 'admin/base_admin.html' %}
-
 {% block title %}Editar Docente{% endblock %}
+
 
 {% block content %}
 
-<div class="container mt-4">
 
-    <h2>Editar Usuario</h2>
+<style>
+    /* ===== CONTENEDOR PRINCIPAL ===== */
+    .editar-page {
+        padding: 28px 32px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 
-    <form method="post">
-        {% csrf_token %}
 
-        {% for campo in usuario_form %}
-        <div class="mb-3">
-            <label class="form-label">{{ campo.label }}</label>
+    /* ===== ENCABEZADO ===== */
+    .editar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+        gap: 20px;
+    }
 
-            {{ campo }}
 
-            {% for error in campo.errors %}
-                <div class="text-danger">{{ error }}</div>
-            {% endfor %}
+    .editar-header-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+
+    .editar-title-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        flex-shrink: 0;
+    }
+
+
+    .editar-title {
+        margin: 0;
+        color: #1f2937;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+
+    .editar-subtitle {
+        margin: 5px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+
+    /* ===== BOTÓN VOLVER ===== */
+    .btn-volver {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 14px;
+        background: #ffffff;
+        color: #4f46e5;
+        border: 1px solid #e5e7eb;
+        border-radius: 9px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+
+    .btn-volver:hover {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+        color: #4338ca;
+    }
+
+
+    /* ===== TARJETA DEL FORMULARIO ===== */
+    .editar-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+
+    /* ===== CABECERA DE LA TARJETA ===== */
+    .editar-card-header {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 18px 22px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+    }
+
+
+    .editar-card-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+
+    .editar-card-header h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+
+    .editar-card-header p {
+        margin: 3px 0 0;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+
+    /* ===== CUERPO ===== */
+    .editar-card-body {
+        padding: 25px 28px 24px;
+    }
+
+
+    /* ===== CAMPOS ===== */
+    .campo-form {
+        margin-bottom: 19px;
+    }
+
+
+    .campo-form label {
+        display: block;
+        margin-bottom: 7px;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    .campo-form input,
+    .campo-form select,
+    .campo-form textarea {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 42px;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #374151;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+
+    .campo-form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+
+    .campo-form input:hover,
+    .campo-form select:hover,
+    .campo-form textarea:hover {
+        border-color: #a5b4fc;
+    }
+
+
+    .campo-form input:focus,
+    .campo-form select:focus,
+    .campo-form textarea:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.10);
+    }
+
+
+    /* ===== CHECKBOX ===== */
+    .campo-form input[type="checkbox"] {
+        width: auto;
+        min-height: auto;
+        margin-right: 7px;
+        accent-color: #4f46e5;
+    }
+
+
+    /* ===== ERRORES ===== */
+    .campo-error {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        color: #dc2626;
+        font-size: 12px;
+    }
+
+
+    /* ===== SEPARADOR ===== */
+    .editar-separador {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 24px 0 20px;
+    }
+
+
+    /* ===== BOTONES ===== */
+    .editar-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 9px;
+    }
+
+
+    .btn-cancelar,
+    .btn-actualizar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 38px;
+        padding: 8px 15px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+
+    .btn-cancelar {
+        background: #f9fafb;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+    }
+
+
+    .btn-cancelar:hover {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+        color: #1f2937;
+    }
+
+
+    .btn-actualizar {
+        background: #4f46e5;
+        color: #ffffff;
+        border: 1px solid #4f46e5;
+    }
+
+
+    .btn-actualizar:hover {
+        background: #4338ca;
+        border-color: #4338ca;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.20);
+    }
+
+
+    /* ===== ICONOS FONT AWESOME ===== */
+    .editar-page i,
+    .editar-page .fa-solid,
+    .editar-page .fas {
+        line-height: 1;
+    }
+
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .editar-page {
+            padding: 20px 16px 30px;
+        }
+
+
+        .editar-header {
+            flex-direction: column;
+        }
+
+
+        .btn-volver {
+            width: 100%;
+            justify-content: center;
+        }
+
+
+        .editar-title {
+            font-size: 24px;
+        }
+
+
+        .editar-card-body {
+            padding: 20px;
+        }
+
+
+        .editar-actions {
+            flex-direction: column-reverse;
+        }
+
+
+        .btn-cancelar,
+        .btn-actualizar {
+            width: 100%;
+        }
+    }
+</style>
+
+
+
+
+<div class="editar-page">
+
+
+    <!-- ===== ENCABEZADO ===== -->
+    <div class="editar-header">
+
+
+        <div class="editar-header-left">
+
+
+            <div class="editar-title-icon">
+                <i class="fa-solid fa-user-gear"></i>
+            </div>
+
+
+            <div>
+                <h1 class="editar-title">
+                    Editar Usuario
+                </h1>
+
+
+                <p class="editar-subtitle">
+                    Modifica la información del usuario y guarda los cambios.
+                </p>
+            </div>
+
+
         </div>
-        {% endfor %}
 
-        <button type="submit" class="btn btn-warning">
-            Actualizar
-        </button>
 
-        <a href="{% url 'listar_usuarios' %}" class="btn btn-secondary">
-            Cancelar
+        <a href="{% url 'listar_usuarios' %}" class="btn-volver">
+            <i class="fa-solid fa-arrow-left"></i>
+            Volver a usuarios
         </a>
 
-    </form>
+
+    </div>
+
+
+
+
+    <!-- ===== TARJETA ===== -->
+    <div class="editar-card">
+
+
+        <!-- ===== CABECERA ===== -->
+        <div class="editar-card-header">
+
+
+            <div class="editar-card-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+
+            <div>
+                <h3>
+                    Información del usuario
+                </h3>
+
+
+                <p>
+                    Actualiza los datos registrados en la plataforma.
+                </p>
+            </div>
+
+
+        </div>
+
+
+
+
+        <!-- ===== FORMULARIO ===== -->
+        <div class="editar-card-body">
+
+
+            <form method="post">
+
+
+                {% csrf_token %}
+
+
+                {% for campo in usuario_form %}
+
+
+                    <div class="campo-form">
+
+
+                        <label for="{{ campo.id_for_label }}">
+                            {{ campo.label }}
+                        </label>
+
+
+                        {{ campo }}
+
+
+                        {% for error in campo.errors %}
+
+
+                            <div class="campo-error">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ error }}
+                            </div>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+
+
+                <!-- ===== SEPARADOR ===== -->
+                <div class="editar-separador"></div>
+
+
+
+
+                <!-- ===== ACCIONES ===== -->
+                <div class="editar-actions">
+
+
+                    <a href="{% url 'listar_usuarios' %}"
+                       class="btn-cancelar">
+
+
+                        <i class="fa-solid fa-xmark"></i>
+                        Cancelar
+
+
+                    </a>
+
+
+
+
+                    <button type="submit"
+                            class="btn-actualizar">
+
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Actualizar
+
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
 
 </div>
 
+
 {% endblock %}
+

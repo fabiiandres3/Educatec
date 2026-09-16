@@ -1,51 +1,633 @@
 {% extends 'admin/base_admin.html' %}
 
+
 {% block title %}
 Editar Alumno
 {% endblock %}
 
+
 {% block content %}
 
-<div class="container">
 
-<h1>Editar Alumno</h1>
+<style>
+    /* ===== CONTENEDOR PRINCIPAL ===== */
+    .editar-page {
+        padding: 28px 32px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 
-{% if messages %}
 
-    {% for message in messages %}
+    /* ===== ENCABEZADO ===== */
+    .editar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+        gap: 20px;
+    }
 
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
-             role="alert">
 
-            <div style="color: #000000">{{ message }}</div>
+    .editar-header-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
 
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-            </button>
+
+    .editar-title-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+
+    .editar-title {
+        margin: 0;
+        color: #1f2937;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+
+    .editar-subtitle {
+        margin: 5px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+
+    /* ===== BOTÓN VOLVER ===== */
+    .btn-volver {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 14px;
+        background: #ffffff;
+        color: #4f46e5;
+        border: 1px solid #e5e7eb;
+        border-radius: 9px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+
+    .btn-volver:hover {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+        color: #4338ca;
+    }
+
+
+    /* ===== TARJETA ===== */
+    .editar-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+
+    /* ===== CABECERA TARJETA ===== */
+    .editar-card-header {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 18px 22px;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+    }
+
+
+    .editar-card-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+
+    .editar-card-header h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+
+    .editar-card-header p {
+        margin: 3px 0 0;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+
+    /* ===== CUERPO ===== */
+    .editar-card-body {
+        padding: 25px 28px 24px;
+    }
+
+
+    /* ===== SECCIONES ===== */
+    .form-section {
+        margin-bottom: 25px;
+    }
+
+
+    .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 18px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+
+    .form-section-title i {
+        color: #4f46e5;
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+    }
+
+
+    .form-section-title span {
+        color: #374151;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+
+    /* ===== FORMULARIOS DJANGO ===== */
+    .django-form p {
+        margin: 0 0 18px;
+    }
+
+
+    .django-form label {
+        display: block;
+        margin-bottom: 7px;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    .django-form input,
+    .django-form select,
+    .django-form textarea {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 42px;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #374151;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+
+    .django-form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+
+    .django-form input:hover,
+    .django-form select:hover,
+    .django-form textarea:hover {
+        border-color: #a5b4fc;
+    }
+
+
+    .django-form input:focus,
+    .django-form select:focus,
+    .django-form textarea:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.10);
+    }
+
+
+    .django-form input[type="checkbox"] {
+        width: auto;
+        min-height: auto;
+        margin-right: 7px;
+        accent-color: #4f46e5;
+    }
+
+
+    .django-form .helptext {
+        display: block;
+        margin-top: 5px;
+        color: #9ca3af;
+        font-size: 11px;
+    }
+
+
+    .django-form ul.errorlist {
+        margin: 6px 0 0;
+        padding: 0;
+        list-style: none;
+        color: #dc2626;
+        font-size: 12px;
+    }
+
+
+    /* ===== MENSAJES ===== */
+    .mensaje-container {
+        margin-bottom: 20px;
+    }
+
+
+    .mensaje-container .alert {
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        font-size: 13px;
+        padding: 12px 15px;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+
+    .mensaje-container .alert div {
+        color: #374151 !important;
+    }
+
+
+    /* ===== SEPARADOR ===== */
+    .editar-separador {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 25px 0 20px;
+    }
+
+
+    /* ===== BOTONES ===== */
+    .editar-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 9px;
+    }
+
+
+    .btn-cancelar,
+    .btn-guardar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 38px;
+        padding: 8px 15px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+
+    .btn-cancelar {
+        background: #f9fafb;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+    }
+
+
+    .btn-cancelar:hover {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+        color: #1f2937;
+    }
+
+
+    .btn-guardar {
+        background: #4f46e5;
+        color: #ffffff;
+        border: 1px solid #4f46e5;
+    }
+
+
+    .btn-guardar:hover {
+        background: #4338ca;
+        border-color: #4338ca;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.20);
+    }
+
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+
+
+        .editar-page {
+            padding: 20px 16px 30px;
+        }
+
+
+        .editar-header {
+            flex-direction: column;
+        }
+
+
+        .btn-volver {
+            width: 100%;
+            justify-content: center;
+        }
+
+
+        .editar-title {
+            font-size: 24px;
+        }
+
+
+        .editar-card-body {
+            padding: 20px;
+        }
+
+
+        .editar-actions {
+            flex-direction: column-reverse;
+        }
+
+
+        .btn-cancelar,
+        .btn-guardar {
+            width: 100%;
+        }
+    }
+</style>
+
+
+
+
+<div class="editar-page">
+
+
+    <!-- ===== ENCABEZADO ===== -->
+    <div class="editar-header">
+
+
+        <div class="editar-header-left">
+
+
+            <div class="editar-title-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+
+
+            <div>
+
+
+                <h1 class="editar-title">
+                    Editar Alumno
+                </h1>
+
+
+                <p class="editar-subtitle">
+                    Modifica la información del alumno y guarda los cambios.
+                </p>
+
+
+            </div>
+
 
         </div>
 
-    {% endfor %}
 
-{% endif %}
+        <a href="{% url 'listar_usuarios' %}" class="btn-volver">
+            <i class="fas fa-arrow-left"></i>
+            Volver a usuarios
+        </a>
 
 
-<form method="POST">
+    </div>
 
-    {% csrf_token %}
 
-    {{ usuario_form.as_p }}
 
-    {{ alumno_form.as_p }}
 
-    <button type="submit" class="btn btn-primary">
-        Guardar cambios
-    </button>
+    <!-- ===== MENSAJES ===== -->
+    {% if messages %}
 
-</form>
+
+        <div class="mensaje-container">
+
+
+            {% for message in messages %}
+
+
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                     role="alert">
+
+
+                    <div>
+                        {{ message }}
+                    </div>
+
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                    </button>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    {% endif %}
+
+
+
+
+    <!-- ===== TARJETA PRINCIPAL ===== -->
+    <div class="editar-card">
+
+
+        <!-- CABECERA -->
+        <div class="editar-card-header">
+
+
+            <div class="editar-card-icon">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+
+
+            <div>
+
+
+                <h3>
+                    Información del alumno
+                </h3>
+
+
+                <p>
+                    Actualiza los datos personales y académicos registrados.
+                </p>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+        <!-- CUERPO -->
+        <div class="editar-card-body">
+
+
+            <form method="POST">
+
+
+                {% csrf_token %}
+
+
+
+
+                <!-- ===== INFORMACIÓN DEL USUARIO ===== -->
+                <div class="form-section">
+
+
+                    <div class="form-section-title">
+
+
+                        <i class="fas fa-user"></i>
+
+
+                        <span>
+                            Información de usuario
+                        </span>
+
+
+                    </div>
+
+
+                    <div class="django-form">
+
+
+                        {{ usuario_form.as_p }}
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <!-- ===== INFORMACIÓN DEL ALUMNO ===== -->
+                <div class="form-section">
+
+
+                    <div class="form-section-title">
+
+
+                        <i class="fas fa-graduation-cap"></i>
+
+
+                        <span>
+                            Información académica
+                        </span>
+
+
+                    </div>
+
+
+                    <div class="django-form">
+
+
+                        {{ alumno_form.as_p }}
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <div class="editar-separador"></div>
+
+
+
+
+                <!-- ===== ACCIONES ===== -->
+                <div class="editar-actions">
+
+
+                    <a href="{% url 'listar_usuarios' %}"
+                       class="btn-cancelar">
+
+
+                        <i class="fas fa-times"></i>
+
+
+                        Cancelar
+
+
+                    </a>
+
+
+
+
+                    <button type="submit"
+                            class="btn-guardar">
+
+
+                        <i class="fas fa-save"></i>
+
+
+                        Guardar cambios
+
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
 
 
 </div>
 
+
 {% endblock %}
+

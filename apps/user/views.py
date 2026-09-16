@@ -556,9 +556,22 @@ def verificacion(request):
 
 
 #@decorators.rol_requerido("administrador")
+@decorators.rol_requerido("administrador")
 def dashboard(request):
 
-    return render(request, "admin/dashboard.html")
+
+    usuarios_recientes = Usuario.objects.select_related("rol").order_by(
+        "-date_joined"
+    )[:10]
+
+
+    return render(
+        request,
+        "admin/dashboard.html",
+        {
+            "usuarios_recientes": usuarios_recientes,
+        }
+    )
 
 
 # =========================================================
