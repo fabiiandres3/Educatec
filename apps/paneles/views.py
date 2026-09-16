@@ -7,7 +7,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-
+from apps.clases.models import Clases
 from apps.asistencia.models import Asistencia
 from apps.cursos.models import Cursos
 from apps.docentes.models import (
@@ -16,7 +16,12 @@ from apps.docentes.models import (
     MAX_CURSOS_POR_DOCENTE,
 )
 from apps.eventos.models import Evento
-from apps.tareas.models import Calificacion
+from apps.tareas.models import (
+    Tareas,
+    Calificacion,
+    ActividadCalificacion,
+    CalificacionActividad,
+)
 from apps.alumnos.models import (
     Acudiente,
     AcudienteAlumno,
@@ -54,11 +59,11 @@ def dashboard_docente(request):
     # ASIGNACIONES DEL DOCENTE
     # --------------------------------------------------------
 
-    asignaciones = AsignacionDocente.objects.filter(
-        docente=docente
-    ).select_related(
-        "clase",
-        "clase__curso"
+    asignaciones = list(
+        AsignacionDocente.objects.filter(
+            docente=docente,
+            curso=curso
+        )
     )
 
     # --------------------------------------------------------
@@ -81,10 +86,9 @@ def dashboard_docente(request):
 
     for asignacion in asignaciones:
 
-        if asignacion.clase and asignacion.clase.curso:
-
+        if asignacion.curso:
             cursos_ids.add(
-                asignacion.clase.curso.id
+                asignacion.curso.id
             )
 
     total_alumnoss = 0
@@ -103,14 +107,31 @@ def dashboard_docente(request):
 
     for asignacion in asignaciones:
 
-        if asignacion.clase and asignacion.clase.curso:
+        if not asignacion.curso:
+            continue
+
+        # Buscar las clases del curso asignado
+        clases = Clases.objects.filter(
+            curso=asignacion.curso
+        )
+
+        for clase in clases:
 
             tareas_recientes += list(
                 obtener_tareas_docente(
-                    asignacion.clase.id,
-                    asignacion.clase.curso.id
+                    clase.id,
+                    asignacion.curso.id
                 )
             )
+
+    # Ordenar si los objetos tienen fecha de creación
+    try:
+        tareas_recientes.sort(
+            key=lambda x: x.creado_en,
+            reverse=True
+        )
+    except AttributeError:
+        pass
 
     tareas_recientes = tareas_recientes[:5]
 
@@ -138,9 +159,9 @@ def dashboard_docente(request):
             "eventos": eventos,
             "total_alumnoss": total_alumnoss,
             "total_tareas": total_tareas,
-            "tareas_recientes": tareas_recientes,
             "porcentaje_asistencia": porcentaje_asistencia,
             "promedio": promedio,
+            "tareas_recientes": tareas_recientes,
         }
     )
 
@@ -174,6 +195,26 @@ def eventos_docente(request):
 
 def cursos_docente(request):
 
+    docente = Docente.objects.get(
+        usuario=request.user
+    )
+
+    asignaciones = AsignacionDocente.objects.filter(
+        docente=docente
+    ).select_related(
+        "docente",
+        "curso"
+    )
+
+    return render(
+        request,
+        "paneles/docentes/cursos_docente.html",
+        {
+            "docente": docente,
+            "asignaciones": asignaciones,
+        }
+    )
+
     docente = Docente.objects.select_related(
         "usuario"
     ).get(
@@ -183,18 +224,18 @@ def cursos_docente(request):
     asignaciones = AsignacionDocente.objects.filter(
         docente=docente
     ).select_related(
-        "clase",
-        "clase__curso"
+        "docente",
+        "curso"
     )
 
     total_alumnos = 0
 
     for asignacion in asignaciones:
 
-        if asignacion.clase and asignacion.clase.curso:
+        if asignacion.curso:
 
             asignacion.total_alumno = contar_alumnos_curso(
-                asignacion.clase.curso.id
+                asignacion.curso.id
             )
 
             total_alumnos += asignacion.total_alumno
@@ -233,8 +274,8 @@ def calificaciones_docente(request):
     asignaciones = AsignacionDocente.objects.filter(
         docente=docente
     ).select_related(
-        "clase",
-        "clase__curso"
+        "docente",
+        "curso"
     )
 
     # --------------------------------------------------------
@@ -258,14 +299,22 @@ def calificaciones_docente(request):
         asignacion_sel = asignaciones.first()
 
     curso_actual = (
-        asignacion_sel.clase.curso
+        asignacion_sel.curso
         if asignacion_sel
         else None
     )
 
+    # AsignacionDocente ya no tiene "clase".
+    # Para obtener tareas se consultan las clases pertenecientes al curso.
+    clases_actuales = (
+        Clases.objects.filter(curso=curso_actual)
+        if curso_actual
+        else Clases.objects.none()
+    )
+
     clase_actual = (
-        asignacion_sel.clase
-        if asignacion_sel
+        clases_actuales.first()
+        if curso_actual
         else None
     )
 
@@ -276,14 +325,17 @@ def calificaciones_docente(request):
     # TAREAS DEL DOCENTE
     # --------------------------------------------------------
 
-    if curso_actual and clase_actual:
+    if curso_actual:
 
-        tareas = list(
-            obtener_tareas_docente(
-                clase_actual.id,
-                curso_actual.id
+        for clase in clases_actuales:
+            tareas.extend(
+                obtener_tareas_docente(
+                    clase.id,
+                    curso_actual.id
+                )
             )
-        )
+
+        tareas = list(tareas)
 
         tarea_ids = [
             tarea.id
@@ -439,17 +491,17 @@ def asistencia_docente(request):
     asignaciones = AsignacionDocente.objects.filter(
         docente=docente
     ).select_related(
-        "clase",
-        "clase__curso"
+        "docente",
+        "curso"
     )
 
     cursos_dict = {}
 
     for asignacion in asignaciones:
 
-        if asignacion.clase and asignacion.clase.curso:
+        if asignacion.curso:
 
-            curso = asignacion.clase.curso
+            curso = asignacion.curso
 
             cursos_dict[curso.id] = curso
 
@@ -881,8 +933,8 @@ def configuracion_docente(request):
     asignaciones = AsignacionDocente.objects.filter(
         docente=docente
     ).select_related(
-        "clase",
-        "clase__curso"
+        "docente",
+        "curso"
     )
 
     if request.method == "POST":
@@ -985,8 +1037,8 @@ def carga_academica(request):
         asignaciones = AsignacionDocente.objects.filter(
             docente=docente
         ).select_related(
-            "clase",
-            "clase__curso"
+            "docente",
+            "curso"
         )
 
         filas.append(
@@ -1042,15 +1094,190 @@ def materias_alumnos(request):
     )
 
 
+
+
 # ============================================================
 #                    CALIFICACIONES ALUMNOS
 # ============================================================
 
+@login_required
 def calificaciones_alumnos(request):
+
+    # --------------------------------------------------------
+    # OBTENER ALUMNO LOGUEADO
+    # --------------------------------------------------------
+
+    alumno = get_object_or_404(
+        Alumnos.objects.select_related(
+            "usuario",
+            "curso",
+            "clase"
+        ),
+        usuario=request.user
+    )
+
+    # --------------------------------------------------------
+    # CALIFICACIONES REALES DEL ALUMNO
+    # --------------------------------------------------------
+    # Se buscan directamente las calificaciones del usuario.
+    # De esta forma no dependemos de que la tarea tenga
+    # exactamente la misma clase o curso para mostrar la nota.
+
+    calificaciones = (
+        Calificacion.objects
+        .filter(
+            alumno=request.user
+        )
+        .select_related(
+            "tarea",
+            "tarea__docente",
+            "tarea__curso",
+            "tarea__clase"
+        )
+        .order_by(
+            "-id"
+        )
+    )
+    
+
+    # --------------------------------------------------------
+    # FILAS PARA LA TABLA NUEVA
+    # --------------------------------------------------------
+
+    filas = []
+
+    for calificacion in calificaciones:
+
+        tarea = calificacion.tarea
+
+        filas.append({
+            "tipo": "Tarea",
+            "nombre": tarea.titulo,
+            "descripcion": tarea.descripcion,
+            "docente": tarea.docente,
+            "fecha": tarea.fecha_entrega,
+            "nota": calificacion.nota,
+        })
+
+    # --------------------------------------------------------
+    # REGISTROS PARA COMPATIBILIDAD CON LA PLANTILLA
+    # --------------------------------------------------------
+    # También enviamos "registros" por si la plantilla actual
+    # utiliza esa variable.
+
+    registros = []
+
+    for calificacion in calificaciones:
+
+        registros.append({
+            "tarea": calificacion.tarea,
+            "calificacion": calificacion,
+            "nota": calificacion.nota,
+        })
+
+    # --------------------------------------------------------
+    # PROMEDIO
+    # --------------------------------------------------------
+
+    notas = [
+        float(fila["nota"])
+        for fila in filas
+        if fila["nota"] is not None
+    ]
+
+    if notas:
+
+        promedio = round(
+            sum(notas) / len(notas),
+            2
+        )
+
+    else:
+
+        promedio = None
+
+    # --------------------------------------------------------
+    # ESTADO ACADÉMICO
+    # --------------------------------------------------------
+
+    if promedio is None:
+
+        estado = "Sin calificaciones"
+
+    elif promedio >= 4.5:
+
+        estado = "Superior"
+
+    elif promedio >= 4.0:
+
+        estado = "Alto"
+
+    elif promedio >= 3.0:
+
+        estado = "Básico"
+
+    else:
+
+        estado = "Bajo"
+
+    # --------------------------------------------------------
+    # ESTADÍSTICAS
+    # --------------------------------------------------------
+
+    total_calificaciones = len(notas)
+
+    total_tareas = calificaciones.count()
+
+    tareas_calificadas = total_calificaciones
+
+    tareas_pendientes = (
+        total_tareas - tareas_calificadas
+    )
+
+    # --------------------------------------------------------
+    # CONTEXTO
+    # --------------------------------------------------------
+
+    context = {
+
+        "alumno": alumno,
+
+        "curso": alumno.curso,
+
+        "clase": alumno.clase,
+
+        # Tabla actual
+        "filas": filas,
+
+        # Compatibilidad con versiones anteriores
+        "registros": registros,
+
+        # Calificaciones originales
+        "calificaciones": calificaciones,
+
+        # Estadísticas
+        "promedio": promedio,
+
+        "estado": estado,
+
+        "total_calificaciones": total_calificaciones,
+
+        "total_tareas": total_tareas,
+
+        "tareas_calificadas": tareas_calificadas,
+
+        "tareas_pendientes": tareas_pendientes,
+
+    }
+
+    # --------------------------------------------------------
+    # RENDER
+    # --------------------------------------------------------
 
     return render(
         request,
-        "paneles/alumnos/calificaciones_alumnos.html"
+        "paneles/alumnos/calificaciones_alumnos.html",
+        context
     )
 
 

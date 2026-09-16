@@ -5,364 +5,442 @@
 {% block content %}
 
 <style>
-    .editar-docente-page {
-        padding: 10px 5px 35px;
+    /* =========================================================
+       CONTENEDOR PRINCIPAL
+    ========================================================= */
+
+    .edit-docente-page {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px 60px;
+        box-sizing: border-box;
     }
 
-    /* HEADER */
-    .page-header {
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .edit-page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 25px;
         gap: 20px;
-        flex-wrap: wrap;
+        margin-bottom: 28px;
     }
 
-    .page-title {
+    .edit-page-title {
         margin: 0;
-        font-size: 28px;
-        font-weight: 700;
-        color: #1f2937;
+        font-size: 30px;
+        font-weight: 800;
+        color: #1e293b;
+        letter-spacing: -0.5px;
     }
 
-    .page-subtitle {
-        margin: 5px 0 0;
-        color: #6b7280;
-        font-size: 14px;
+    .edit-page-subtitle {
+        margin: 7px 0 0;
+        color: #64748b;
+        font-size: 15px;
     }
 
-    /* CONTENEDORES */
-    .content-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        box-shadow: 0 5px 20px rgba(0,0,0,.05);
-        padding: 25px;
-        margin-bottom: 22px;
+    /* =========================================================
+       CARDS
+    ========================================================= */
+
+    .edit-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 26px;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
     }
 
-    .card-header-custom {
+    .edit-card-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 22px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #f1f5f9;
+        gap: 14px;
+        padding-bottom: 20px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid #eef2f7;
     }
 
-    .card-header-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 11px;
+    .edit-card-icon {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 13px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #eef2ff;
-        color: #4f46e5;
-        flex-shrink: 0;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 19px;
     }
 
-    .card-header-title {
+    .edit-card-title {
         margin: 0;
         font-size: 18px;
+        font-weight: 750;
+        color: #1e293b;
+    }
+
+    .edit-card-description {
+        margin: 4px 0 0;
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    /* =========================================================
+       FORMULARIO
+    ========================================================= */
+
+    .edit-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .edit-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .edit-form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .edit-label {
+        font-size: 14px;
         font-weight: 700;
-        color: #1f2937;
+        color: #334155;
     }
 
-    .card-header-text {
-        margin: 3px 0 0;
-        font-size: 13px;
-        color: #6b7280;
+    .edit-form-group input,
+    .edit-form-group select,
+    .edit-form-group textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 11px 13px;
+        background: #ffffff;
+        color: #1e293b;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s ease;
     }
 
-    /* FORMULARIO */
-    .form-group-custom {
-        margin-bottom: 18px;
+    .edit-form-group input:focus,
+    .edit-form-group select:focus,
+    .edit-form-group textarea:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
     }
 
-    .form-label-custom {
-        display: block;
-        margin-bottom: 7px;
+    .edit-field-error {
+        color: #dc2626;
         font-size: 13px;
         font-weight: 600;
-        color: #374151;
     }
 
-    .form-group-custom input,
-    .form-group-custom select,
-    .form-group-custom textarea {
-        width: 100%;
-        min-height: 42px;
-        padding: 9px 12px;
-        border: 1px solid #d1d5db;
-        border-radius: 10px;
-        outline: none;
-        box-sizing: border-box;
-        font-size: 13px;
-        color: #374151;
-        background: #fff;
-        transition: .2s;
-    }
-
-    .form-group-custom input:focus,
-    .form-group-custom select:focus,
-    .form-group-custom textarea:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,.12);
-    }
-
-    .field-error {
-        margin-top: 6px;
-        font-size: 12px;
-        color: #dc2626;
-    }
-
-    /* BOTONES */
-    .form-actions {
+    .edit-form-actions {
         display: flex;
+        justify-content: flex-end;
         gap: 10px;
         margin-top: 25px;
         padding-top: 20px;
-        border-top: 1px solid #f1f5f9;
-        flex-wrap: wrap;
+        border-top: 1px solid #eef2f7;
     }
 
-    .btn-custom {
-        height: 42px;
-        padding: 0 18px;
+    /* =========================================================
+       BOTONES
+    ========================================================= */
+
+    .edit-btn {
+        border: 0;
         border-radius: 10px;
-        border: none;
+        padding: 11px 18px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
+        font-size: 14px;
+        font-weight: 700;
         text-decoration: none;
-        font-size: 13px;
-        font-weight: 600;
         cursor: pointer;
-        transition: .2s;
+        transition: 0.2s ease;
     }
 
-    .btn-update {
-        background: #4f46e5;
-        color: #fff;
+    .edit-btn-update {
+        background: #2563eb;
+        color: white;
     }
 
-    .btn-update:hover {
-        background: #4338ca;
-        color: #fff;
+    .edit-btn-update:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
     }
 
-    .btn-cancel {
-        background: #f3f4f6;
-        color: #374151;
+    .edit-btn-cancel {
+        background: #f1f5f9;
+        color: #475569;
     }
 
-    .btn-cancel:hover {
-        background: #e5e7eb;
-        color: #1f2937;
+    .edit-btn-cancel:hover {
+        background: #e2e8f0;
     }
 
-    /* ASIGNACIONES */
+    .edit-btn-add {
+        background: #16a34a;
+        color: white;
+        margin-top: 5px;
+    }
+
+    .edit-btn-add:hover {
+        background: #15803d;
+        transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       CABECERA DE ASIGNACIONES
+    ========================================================= */
+
     .assignment-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 15px;
-        flex-wrap: wrap;
-        margin-bottom: 18px;
+        gap: 20px;
+        margin-bottom: 22px;
     }
 
     .assignment-title {
         margin: 0;
-        font-size: 18px;
-        font-weight: 700;
-        color: #1f2937;
+        font-size: 19px;
+        font-weight: 800;
+        color: #1e293b;
     }
 
     .assignment-subtitle {
-        margin: 4px 0 0;
-        font-size: 13px;
-        color: #6b7280;
+        margin: 5px 0 0;
+        font-size: 14px;
+        color: #64748b;
     }
 
     .assignment-counter {
         display: inline-flex;
         align-items: center;
-        gap: 7px;
-        padding: 7px 11px;
-        border-radius: 9px;
-        background: #eef2ff;
-        color: #4f46e5;
-        font-size: 12px;
-        font-weight: 700;
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
     }
+
+    /* =========================================================
+       LISTA DE CURSOS
+    ========================================================= */
 
     .assignment-list {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        margin-bottom: 22px;
     }
 
     .assignment-item {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         gap: 15px;
-        padding: 14px 16px;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid #e2e8f0;
+        border-radius: 13px;
         background: #f8fafc;
+        transition: 0.2s ease;
+    }
+
+    .assignment-item:hover {
+        border-color: #bfdbfe;
+        background: #f8fbff;
+        transform: translateY(-1px);
     }
 
     .assignment-info {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 13px;
         min-width: 0;
     }
 
     .assignment-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        background: #eef2ff;
-        color: #4f46e5;
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        border-radius: 11px;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
+        background: #dbeafe;
+        color: #2563eb;
     }
 
     .assignment-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #1f2937;
+        font-size: 15px;
+        font-weight: 750;
+        color: #1e293b;
+        word-break: break-word;
     }
 
     .assignment-class {
         margin-top: 3px;
+        color: #64748b;
         font-size: 12px;
-        color: #6b7280;
     }
 
-    .btn-remove {
-        width: 36px;
-        height: 36px;
-        border: none;
+    .btn-remove-assignment {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        border: 0;
         border-radius: 9px;
-        background: #fef2f2;
-        color: #dc2626;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: .2s;
-        flex-shrink: 0;
-    }
-
-    .btn-remove:hover {
         background: #fee2e2;
-        color: #b91c1c;
-    }
-
-    /* SIN ASIGNACIONES */
-    .empty-assignments {
-        text-align: center;
-        padding: 35px 20px;
-        border: 1px dashed #d1d5db;
-        border-radius: 12px;
-        color: #9ca3af;
-        margin-bottom: 22px;
-    }
-
-    .empty-assignments-icon {
-        width: 52px;
-        height: 52px;
-        margin: 0 auto 12px;
-        border-radius: 50%;
-        background: #f3f4f6;
+        color: #dc2626;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .btn-remove-assignment:hover {
+        background: #fecaca;
+        color: #b91c1c;
+        transform: scale(1.05);
+    }
+
+    /* =========================================================
+       AGREGAR CURSO
+    ========================================================= */
+
+    .add-assignment-box {
+        margin-top: 24px;
+        padding: 20px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+    }
+
+    .add-assignment-title {
+        margin: 0 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #334155;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .add-assignment-title i {
+        color: #16a34a;
+    }
+
+    .add-course-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 15px;
+    }
+
+    .add-course-field {
+        flex: 1;
+    }
+
+    /* =========================================================
+       ESTADO VACÍO
+    ========================================================= */
+
+    .empty-assignments {
+        text-align: center;
+        padding: 35px 20px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 14px;
+        background: #f8fafc;
+    }
+
+    .empty-assignments-icon {
+        width: 55px;
+        height: 55px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
     }
 
     .empty-assignments p {
         margin: 0;
-        font-size: 13px;
+        color: #64748b;
+        font-size: 14px;
     }
 
-    /* AGREGAR ASIGNACION */
-    .add-assignment {
-        padding-top: 22px;
-        border-top: 1px solid #f1f5f9;
-    }
+    /* =========================================================
+       LIMITE
+    ========================================================= */
 
-    .add-title {
-        margin: 0 0 15px;
-        font-size: 15px;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .btn-add {
-        background: #059669;
-        color: #fff;
-    }
-
-    .btn-add:hover {
-        background: #047857;
-        color: #fff;
-    }
-
-    /* LIMITE */
     .limit-warning {
+        margin-top: 20px;
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 13px 15px;
-        border-radius: 10px;
-        background: #fffbeb;
-        border: 1px solid #fde68a;
-        color: #92400e;
-        font-size: 13px;
-        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 11px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        font-size: 14px;
     }
 
-    /* MODAL */
-    .modal-eliminar {
-        display: none;
+    /* =========================================================
+       MODAL
+    ========================================================= */
+
+    .assignment-modal-overlay {
         position: fixed;
         inset: 0;
         z-index: 9999;
-        background: rgba(15, 23, 42, .55);
+        display: none;
         align-items: center;
         justify-content: center;
         padding: 20px;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(4px);
     }
 
-    .modal-eliminar.activo {
+    .assignment-modal-overlay.active {
         display: flex;
     }
 
-    .modal-box {
+    .assignment-modal {
         width: 100%;
-        max-width: 420px;
-        background: #fff;
+        max-width: 430px;
+        background: white;
         border-radius: 18px;
         padding: 28px;
         text-align: center;
-        box-shadow: 0 20px 50px rgba(0,0,0,.2);
-        animation: aparecerModal .2s ease;
+        box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+        animation: modalIn 0.2s ease;
     }
 
-    @keyframes aparecerModal {
+    @keyframes modalIn {
         from {
             opacity: 0;
-            transform: translateY(-10px) scale(.98);
+            transform: translateY(10px) scale(0.98);
         }
 
         to {
@@ -374,131 +452,164 @@
     .modal-icon {
         width: 60px;
         height: 60px;
-        margin: 0 auto 17px;
+        margin: 0 auto 15px;
         border-radius: 50%;
-        background: #fef2f2;
-        color: #dc2626;
         display: flex;
         align-items: center;
         justify-content: center;
+        background: #fee2e2;
+        color: #dc2626;
         font-size: 23px;
     }
 
     .modal-title {
+        margin: 0;
+        color: #1e293b;
         font-size: 20px;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 8px;
+        font-weight: 800;
     }
 
     .modal-text {
-        font-size: 13px;
+        margin: 10px 0 23px;
+        color: #64748b;
+        font-size: 14px;
         line-height: 1.6;
-        color: #6b7280;
-        margin-bottom: 22px;
     }
 
     .modal-text strong {
-        color: #1f2937;
+        color: #1e293b;
     }
 
     .modal-actions {
         display: flex;
-        gap: 10px;
         justify-content: center;
+        gap: 10px;
     }
 
     .modal-btn {
-        min-width: 110px;
-        height: 40px;
-        border: none;
-        border-radius: 9px;
-        font-size: 13px;
-        font-weight: 600;
+        border: 0;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-size: 14px;
+        font-weight: 750;
         cursor: pointer;
+        transition: 0.2s ease;
     }
 
-    .btn-modal-cancel {
-        background: #f3f4f6;
-        color: #374151;
+    .modal-cancel {
+        background: #f1f5f9;
+        color: #475569;
     }
 
-    .btn-modal-confirm {
+    .modal-cancel:hover {
+        background: #e2e8f0;
+    }
+
+    .modal-confirm {
         background: #dc2626;
-        color: #fff;
+        color: white;
     }
 
-    .btn-modal-confirm:hover {
+    .modal-confirm:hover {
         background: #b91c1c;
     }
 
-    /* RESPONSIVE */
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
     @media (max-width: 768px) {
-        .editar-docente-page {
-            padding: 5px 0 25px;
+
+        .edit-docente-page {
+            padding: 20px 12px 40px;
         }
 
-        .content-card {
-            padding: 18px;
-        }
-
-        .page-title {
+        .edit-page-title {
             font-size: 24px;
         }
 
-        .assignment-item {
+        .edit-page-header {
             align-items: flex-start;
         }
 
-        .assignment-info {
-            align-items: flex-start;
+        .edit-card {
+            padding: 20px;
+            border-radius: 14px;
         }
 
-        .modal-actions {
+        .edit-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .edit-form-group.full-width {
+            grid-column: auto;
+        }
+
+        .edit-form-actions {
             flex-direction: column;
         }
 
-        .modal-btn {
+        .edit-btn {
+            width: 100%;
+        }
+
+        .assignment-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .add-course-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .add-course-form .edit-btn {
             width: 100%;
         }
     }
 </style>
 
 
-<div class="editar-docente-page">
+<div class="edit-docente-page">
 
-    <!-- HEADER -->
-    <div class="page-header">
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="edit-page-header">
 
         <div>
-            <h1 class="page-title">
+            <h1 class="edit-page-title">
                 Editar Docente
             </h1>
 
-            <p class="page-subtitle">
-                Actualiza la información del docente y administra sus asignaciones.
+            <p class="edit-page-subtitle">
+                Actualiza la información del docente y administra sus cursos asignados.
             </p>
         </div>
 
     </div>
 
 
-    <!-- INFORMACION DEL DOCENTE -->
-    <div class="content-card">
+    <!-- =====================================================
+         INFORMACIÓN DEL DOCENTE
+    ====================================================== -->
 
-        <div class="card-header-custom">
+    <div class="edit-card">
 
-            <div class="card-header-icon">
+        <div class="edit-card-header">
+
+            <div class="edit-card-icon">
                 <i class="fas fa-user-edit"></i>
             </div>
 
             <div>
-                <h3 class="card-header-title">
+                <h3 class="edit-card-title">
                     Información del docente
                 </h3>
 
-                <p class="card-header-text">
-                    Modifica los datos personales y académicos.
+                <p class="edit-card-description">
+                    Modifica los datos personales del docente.
                 </p>
             </div>
 
@@ -509,66 +620,70 @@
 
             {% csrf_token %}
 
-            {% for campo in usuario_form %}
+            <div class="edit-form-grid">
 
-                <div class="form-group-custom">
+                {% for campo in usuario_form %}
 
-                    <label class="form-label-custom">
-                        {{ campo.label }}
-                    </label>
+                    <div class="edit-form-group">
 
-                    {{ campo }}
+                        <label class="edit-label" for="{{ campo.id_for_label }}">
+                            {{ campo.label }}
+                        </label>
 
-                    {% for error in campo.errors %}
-                        <div class="field-error">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
+                        {{ campo }}
 
-                </div>
+                        {% for error in campo.errors %}
+                            <div class="edit-field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
 
-            {% endfor %}
+                    </div>
 
-
-            {% for campo in docente_form %}
-
-                <div class="form-group-custom">
-
-                    <label class="form-label-custom">
-                        {{ campo.label }}
-                    </label>
-
-                    {{ campo }}
-
-                    {% for error in campo.errors %}
-                        <div class="field-error">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
-
-                </div>
-
-            {% endfor %}
+                {% endfor %}
 
 
-            <div class="form-actions">
+                {% for campo in docente_form %}
 
-                <button
-                    type="submit"
-                    name="guardar_docente"
-                    class="btn-custom btn-update"
-                >
-                    <i class="fas fa-save"></i>
-                    Actualizar
-                </button>
+                    <div class="edit-form-group">
+
+                        <label class="edit-label" for="{{ campo.id_for_label }}">
+                            {{ campo.label }}
+                        </label>
+
+                        {{ campo }}
+
+                        {% for error in campo.errors %}
+                            <div class="edit-field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div class="edit-form-actions">
 
                 <a
                     href="{% url 'listar_docentes' %}"
-                    class="btn-custom btn-cancel"
+                    class="edit-btn edit-btn-cancel"
                 >
                     <i class="fas fa-arrow-left"></i>
                     Cancelar
                 </a>
+
+                <button
+                    type="submit"
+                    name="guardar_docente"
+                    class="edit-btn edit-btn-update"
+                >
+                    <i class="fas fa-save"></i>
+                    Actualizar docente
+                </button>
 
             </div>
 
@@ -577,30 +692,39 @@
     </div>
 
 
-    <!-- ASIGNACIONES -->
-    <div class="content-card">
+    <!-- =====================================================
+         CURSOS ASIGNADOS
+    ====================================================== -->
+
+    <div class="edit-card">
 
         <div class="assignment-header">
 
             <div>
                 <h3 class="assignment-title">
-                    Cursos / Materias asignadas
+                    Cursos asignados
                 </h3>
 
                 <p class="assignment-subtitle">
-                    Administra las clases asignadas a este docente.
+                    Este docente puede tener hasta {{ max_asignaciones }} cursos asignados.
                 </p>
             </div>
 
             <div class="assignment-counter">
                 <i class="fas fa-layer-group"></i>
-                {{ asignaciones|length }} / {{ max_asignaciones }}
+
+                <span>
+                    {{ asignaciones|length }} / {{ max_asignaciones }}
+                </span>
             </div>
 
         </div>
 
 
-        <!-- LISTA DE ASIGNACIONES -->
+        <!-- =================================================
+             CURSOS EXISTENTES
+        ================================================== -->
+
         {% if asignaciones %}
 
             <div class="assignment-list">
@@ -618,11 +742,11 @@
                             <div>
 
                                 <div class="assignment-name">
-                                    {{ a.clase.curso.nombre }}
+                                    {{ a.curso.nombre }}
                                 </div>
 
                                 <div class="assignment-class">
-                                    {{ a.clase.titulo }}
+                                    Curso asignado al docente
                                 </div>
 
                             </div>
@@ -630,14 +754,13 @@
                         </div>
 
 
-                        <!-- QUITAR -->
                         <button
                             type="button"
-                            class="btn-remove"
-                            title="Quitar asignación"
+                            class="btn-remove-assignment"
+                            title="Quitar curso"
                             onclick="abrirModalEliminarAsignacion(
                                 '{{ a.id }}',
-                                '{{ a.clase.curso.nombre|escapejs }} — {{ a.clase.titulo|escapejs }}'
+                                '{{ a.curso.nombre|escapejs }}'
                             )"
                         >
                             <i class="fas fa-trash-alt"></i>
@@ -658,7 +781,7 @@
                 </div>
 
                 <p>
-                    Sin asignaciones todavía.
+                    Este docente todavía no tiene cursos asignados.
                 </p>
 
             </div>
@@ -666,32 +789,38 @@
         {% endif %}
 
 
-        <!-- AGREGAR ASIGNACION -->
+        <!-- =================================================
+             AGREGAR CURSO
+        ================================================== -->
+
         {% if asignaciones|length < max_asignaciones %}
 
-            <div class="add-assignment">
+            <div class="add-assignment-box">
 
-                <h4 class="add-title">
+                <h4 class="add-assignment-title">
                     <i class="fas fa-plus-circle"></i>
-                    Agregar nueva asignación
+                    Agregar nuevo curso
                 </h4>
 
 
-                <form method="post">
+                <form method="post" class="add-course-form">
 
                     {% csrf_token %}
 
-                    <div class="form-group-custom">
+                    <div class="edit-form-group add-course-field">
 
-                        <label class="form-label-custom">
-                            {{ asignacion_form.clase.label }}
+                        <label
+                            class="edit-label"
+                            for="{{ asignacion_form.curso.id_for_label }}"
+                        >
+                            {{ asignacion_form.curso.label }}
                         </label>
 
-                        {{ asignacion_form.clase }}
+                        {{ asignacion_form.curso }}
 
-                        {% for error in asignacion_form.clase.errors %}
+                        {% for error in asignacion_form.curso.errors %}
 
-                            <div class="field-error">
+                            <div class="edit-field-error">
                                 {{ error }}
                             </div>
 
@@ -703,10 +832,10 @@
                     <button
                         type="submit"
                         name="agregar_asignacion"
-                        class="btn-custom btn-add"
+                        class="edit-btn edit-btn-add"
                     >
                         <i class="fas fa-plus"></i>
-                        Agregar asignación
+                        Asignar curso
                     </button>
 
                 </form>
@@ -722,7 +851,7 @@
                 <span>
                     Este docente ya alcanzó el máximo de
                     <strong>{{ max_asignaciones }}</strong>
-                    asignaciones.
+                    cursos asignados.
                 </span>
 
             </div>
@@ -734,32 +863,42 @@
 </div>
 
 
-<!-- MODAL ELIMINAR ASIGNACION -->
-<div id="modalEliminarAsignacion" class="modal-eliminar">
+<!-- =========================================================
+     MODAL ELIMINAR ASIGNACIÓN
+========================================================= -->
 
-    <div class="modal-box">
+<div
+    id="modalEliminarAsignacion"
+    class="assignment-modal-overlay"
+    onclick="cerrarModalSiClickFuera(event)"
+>
+
+    <div
+        class="assignment-modal"
+        onclick="event.stopPropagation()"
+    >
 
         <div class="modal-icon">
             <i class="fas fa-trash-alt"></i>
         </div>
 
-        <div class="modal-title">
-            ¿Quitar asignación?
-        </div>
+        <h3 class="modal-title">
+            ¿Quitar curso?
+        </h3>
 
         <div class="modal-text">
 
-            Estás a punto de quitar la asignación:
+            Estás a punto de quitar el curso:
 
             <br>
 
             <strong id="nombreAsignacion">
-                esta asignación
+                este curso
             </strong>
 
-            <br>
+            <br><br>
 
-            Esta acción no se puede deshacer.
+            El curso dejará de estar asignado a este docente.
 
         </div>
 
@@ -775,7 +914,7 @@
 
                 <button
                     type="button"
-                    class="modal-btn btn-modal-cancel"
+                    class="modal-btn modal-cancel"
                     onclick="cerrarModalEliminarAsignacion()"
                 >
                     Cancelar
@@ -783,9 +922,10 @@
 
                 <button
                     type="submit"
-                    class="modal-btn btn-modal-confirm"
+                    class="modal-btn modal-confirm"
                 >
-                    Quitar
+                    <i class="fas fa-trash-alt"></i>
+                    Quitar curso
                 </button>
 
             </div>
@@ -799,75 +939,81 @@
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function () {
+    /* =========================================================
+       MODAL ELIMINAR ASIGNACIÓN
+    ========================================================= */
 
-    const modal = document.getElementById("modalEliminarAsignacion");
+    function abrirModalEliminarAsignacion(id, nombre) {
 
-    if (modal) {
+        const modal = document.getElementById(
+            "modalEliminarAsignacion"
+        );
 
-        modal.addEventListener("click", function (event) {
+        const nombreElemento = document.getElementById(
+            "nombreAsignacion"
+        );
 
-            if (event.target === modal) {
-                cerrarModalEliminarAsignacion();
-            }
+        const formulario = document.getElementById(
+            "formEliminarAsignacion"
+        );
 
-        });
+
+        nombreElemento.textContent = nombre;
+
+
+        /*
+         * IMPORTANTE:
+         *
+         * Cambia esta URL solamente si tu urls.py utiliza
+         * otro nombre para la vista de eliminar asignación.
+         */
+
+        formulario.action = "{% url 'eliminar_asignacion_docente' 0 %}"
+            .replace("/0/", "/" + id + "/");
+
+
+        modal.classList.add("active");
+
+        document.body.style.overflow = "hidden";
+    }
+
+
+    function cerrarModalEliminarAsignacion() {
+
+        const modal = document.getElementById(
+            "modalEliminarAsignacion"
+        );
+
+        modal.classList.remove("active");
+
+        document.body.style.overflow = "";
+    }
+
+
+    function cerrarModalSiClickFuera(event) {
+
+        if (
+            event.target.id ===
+            "modalEliminarAsignacion"
+        ) {
+            cerrarModalEliminarAsignacion();
+        }
 
     }
 
 
-    document.addEventListener("keydown", function (event) {
+    document.addEventListener(
+        "keydown",
+        function(event) {
 
-        if (event.key === "Escape") {
-            cerrarModalEliminarAsignacion();
+            if (event.key === "Escape") {
+                cerrarModalEliminarAsignacion();
+            }
+
         }
-
-    });
-
-});
-
-
-function abrirModalEliminarAsignacion(id, nombre) {
-
-    const modal = document.getElementById(
-        "modalEliminarAsignacion"
     );
-
-    const nombreAsignacion = document.getElementById(
-        "nombreAsignacion"
-    );
-
-    const formulario = document.getElementById(
-        "formEliminarAsignacion"
-    );
-
-
-    nombreAsignacion.textContent =
-        nombre.trim() || "esta asignación";
-
-
-    formulario.action =
-        "{% url 'eliminar_asignacion_docente' 0 %}".replace(
-            "0",
-            id
-        );
-
-
-    modal.classList.add("activo");
-
-}
-
-
-function cerrarModalEliminarAsignacion() {
-
-    const modal = document.getElementById(
-        "modalEliminarAsignacion"
-    );
-
-    modal.classList.remove("activo");
-
-}
 
 </script>
 
 {% endblock %}
+

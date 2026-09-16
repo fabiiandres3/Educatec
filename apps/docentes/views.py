@@ -57,7 +57,6 @@ def Listar_docentes(request):
 
 
 def Editar_docente(request, docente_id):
-
     docente = get_object_or_404(
         Docente,
         usuario_id=docente_id
@@ -68,18 +67,14 @@ def Editar_docente(request, docente_id):
     asignaciones = (
         AsignacionDocente.objects
         .filter(docente=docente)
-        .select_related(
-            "clase",
-            "clase__curso"
-        )
+        .select_related("curso")
     )
 
     if request.method == "POST":
 
-        # =====================================================
-        # GUARDAR DATOS BÁSICOS
-        # =====================================================
-
+        # ==========================================================
+        # GUARDAR DATOS DEL DOCENTE
+        # ==========================================================
         if "guardar_docente" in request.POST:
 
             usuario_form = EditarUsuarioForm(
@@ -92,17 +87,18 @@ def Editar_docente(request, docente_id):
                 instance=docente
             )
 
+            asignacion_form = AsignacionDocenteForm()
+
             if (
                 usuario_form.is_valid()
                 and docente_form.is_valid()
             ):
-
                 usuario_form.save()
                 docente_form.save()
 
                 messages.success(
                     request,
-                    "Datos del docente actualizados."
+                    "Datos del docente actualizados correctamente."
                 )
 
                 return redirect(
@@ -110,12 +106,9 @@ def Editar_docente(request, docente_id):
                     docente_id=docente_id
                 )
 
-            asignacion_form = AsignacionDocenteForm()
-
-        # =====================================================
-        # AGREGAR ASIGNACIÓN
-        # =====================================================
-
+        # ==========================================================
+        # AGREGAR CURSO AL DOCENTE
+        # ==========================================================
         elif "agregar_asignacion" in request.POST:
 
             usuario_form = EditarUsuarioForm(
@@ -139,13 +132,7 @@ def Editar_docente(request, docente_id):
                 nueva.docente = docente
 
                 try:
-
                     nueva.save()
-
-                    messages.success(
-                        request,
-                        "Asignación agregada correctamente."
-                    )
 
                     return redirect(
                         "editar_docente",
@@ -159,6 +146,9 @@ def Editar_docente(request, docente_id):
                         e.messages[0]
                     )
 
+        # ==========================================================
+        # POST DESCONOCIDO
+        # ==========================================================
         else:
 
             usuario_form = EditarUsuarioForm(
@@ -194,6 +184,7 @@ def Editar_docente(request, docente_id):
             "max_asignaciones": MAX_CURSOS_POR_DOCENTE,
         }
     )
+
 
 
 def Eliminar_asignacion_docente(
@@ -269,8 +260,8 @@ def crear_tareas_docente(request):
         AsignacionDocente.objects
         .filter(docente=docente)
         .select_related(
-            "clase",
-            "clase__curso"
+            "docente",
+            "curso"
         )
     )
 
@@ -279,7 +270,7 @@ def crear_tareas_docente(request):
 
     for asignacion in asignaciones:
 
-        curso = asignacion.clase.curso
+        curso = asignacion.curso
 
         if curso and curso not in cursos:
             cursos.append(curso)
@@ -314,11 +305,11 @@ def crear_tareas_docente(request):
                 AsignacionDocente.objects
                 .filter(
                     docente=docente,
-                    clase__curso_id=curso_id
+                    curso_id=curso_id
                 )
                 .select_related(
-                    "clase",
-                    "clase__curso"
+                    "docente",
+                    "curso"
                 )
                 .first()
             )
@@ -343,8 +334,7 @@ def crear_tareas_docente(request):
                     )
 
                     tarea.docente = docente
-                    tarea.curso = asignacion.clase.curso
-                    tarea.clase = asignacion.clase
+                    tarea.curso = asignacion.curso
 
                     tarea.save()
 
@@ -458,10 +448,12 @@ def editar_tarea_docente(
 
     asignaciones = (
         AsignacionDocente.objects
-        .filter(docente=docente)
+        .filter(
+            docente=docente
+        )
         .select_related(
-            "clase",
-            "clase__curso"
+            "docente",
+            "curso"
         )
     )
 
@@ -473,7 +465,7 @@ def editar_tarea_docente(
 
     for asignacion in asignaciones:
 
-        curso = asignacion.clase.curso
+        curso = asignacion.curso
 
         if curso and curso not in cursos:
             cursos.append(curso)
@@ -511,11 +503,11 @@ def editar_tarea_docente(
                 AsignacionDocente.objects
                 .filter(
                     docente=docente,
-                    clase__curso_id=curso_id
+                    curso_id=curso_id
                 )
                 .select_related(
-                    "clase",
-                    "clase__curso"
+                    "docente",
+                    "curso"
                 )
                 .first()
             )
@@ -543,12 +535,9 @@ def editar_tarea_docente(
 
                         tarea_editada.docente = docente
 
+                        # La asignación ahora es por CURSO
                         tarea_editada.curso = (
-                            asignacion.clase.curso
-                        )
-
-                        tarea_editada.clase = (
-                            asignacion.clase
+                            asignacion.curso
                         )
 
                         tarea_editada.save()
@@ -961,18 +950,19 @@ def listar_tareas(request):
             docente=docente
         )
         .select_related(
-            "clase",
-            "clase__curso"
+            "docente",
+            "curso"
         )
     )
 
+    # AsignacionDocente ahora tiene directamente el campo curso
     cursos_ids = [
-        asignacion.clase.curso_id
+        asignacion.curso_id
         for asignacion in asignaciones
-        if asignacion.clase
-        and asignacion.clase.curso
+        if asignacion.curso_id
     ]
 
+    # Eliminar cursos duplicados
     cursos_ids = list(
         set(cursos_ids)
     )

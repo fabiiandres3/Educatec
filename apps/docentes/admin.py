@@ -7,5 +7,7 @@ admin.site.register(Docente)
 
 @admin.register(AsignacionDocente)
 class AsignacionDocenteAdmin(admin.ModelAdmin):
-    list_display = ("docente", "clase")
-    list_filter = ("docente",)
+    list_display = (
+        "docente",
+        "curso",
+    )

@@ -6,7 +6,6 @@ class DocenteForm(forms.ModelForm):
 
     class Meta:
         model = Docente
-
         fields = [
             "usuario",
             "telefono",
@@ -14,20 +13,17 @@ class DocenteForm(forms.ModelForm):
         ]
 
         widgets = {
-
             "usuario": forms.Select(
                 attrs={
                     "class": "form-control"
                 }
             ),
-
             "telefono": forms.NumberInput(
                 attrs={
                     "class": "form-control",
                     "placeholder": "Teléfono"
                 }
             ),
-
             "direccion": forms.TextInput(
                 attrs={
                     "class": "form-control",
@@ -38,6 +34,19 @@ class DocenteForm(forms.ModelForm):
 
 
 class AsignacionDocenteForm(forms.ModelForm):
+
     class Meta:
         model = AsignacionDocente
-        fields = ["clase"]
+        fields = ["curso"]
+
+        widgets = {
+            "curso": forms.Select(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+        }
+
+        labels = {
+            "curso": "Curso"
+        }

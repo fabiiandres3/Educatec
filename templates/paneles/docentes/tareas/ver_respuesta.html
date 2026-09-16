@@ -17,7 +17,6 @@
 {% endblock %}
 
 
-
 {% block content %}
 
 <div class="answer-page">
@@ -48,9 +47,7 @@
 
 
             <h1>
-
                 {{ alumno.get_full_name|default:alumno.username }}
-
             </h1>
 
 
@@ -153,7 +150,6 @@
 
             </div>
 
-
         </div>
 
     </div>
@@ -186,22 +182,25 @@
         </div>
 
 
-
         <div class="grade-number">
 
             <strong>
 
-                {{ puntos_obtenidos }}
+                {% if nota_final is not None %}
+
+                    {{ nota_final|floatformat:2 }}
+
+                {% else %}
+
+                    —
+
+                {% endif %}
 
             </strong>
 
 
             <span>
-
-                /
-
-                {{ puntos_totales }}
-
+                / 5.00
             </span>
 
         </div>
@@ -241,9 +240,13 @@
             {{ total_preguntas }}
 
             {% if total_preguntas == 1 %}
+
                 pregunta
+
             {% else %}
+
                 preguntas
+
             {% endif %}
 
         </span>
@@ -263,6 +266,7 @@
 
 
             {% with pregunta=item.pregunta %}
+
             {% with respuesta=item.respuesta %}
 
 
@@ -285,11 +289,8 @@
 
                         <div class="question-title">
 
-
                             <span>
-
                                 Pregunta {{ forloop.counter }}
-
                             </span>
 
 
@@ -373,13 +374,10 @@
                                             {% if respuesta and respuesta.opcion_seleccionada_id == opcion.id %}
 
                                                 <span>
-
                                                     Respuesta seleccionada
-
                                                 </span>
 
                                             {% endif %}
-
 
                                         </div>
 
@@ -407,9 +405,7 @@
 
 
                                 <strong>
-
                                     Respuesta del estudiante
-
                                 </strong>
 
 
@@ -428,6 +424,7 @@
                                                 Correcta
 
                                             </span>
+
 
                                         {% else %}
 
@@ -495,6 +492,7 @@
 
                                 <div class="answer-box">
 
+
                                     {% if respuesta.opcion_seleccionada %}
 
                                         {{ respuesta.opcion_seleccionada.opcion }}
@@ -504,6 +502,7 @@
                                         Sin respuesta
 
                                     {% endif %}
+
 
                                 </div>
 
@@ -563,7 +562,7 @@
 
                             <form
                                 method="POST"
-                                action=""
+                                action="{% url 'evaluar_respuesta' tarea.id %}"
                             >
 
                                 {% csrf_token %}
@@ -611,7 +610,7 @@
 
                                     <button
                                         type="button"
-                                        class="evaluation-btn incorrect-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida == 0 %}selected{% endif %}"
+                                        class="evaluation-btn incorrect-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida == 1 %}selected{% endif %}"
                                         onclick="selectEvaluation(this, 'incorrect')"
                                     >
 
@@ -627,7 +626,7 @@
 
                                     <button
                                         type="button"
-                                        class="evaluation-btn partial-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida > 0 %}selected{% endif %}"
+                                        class="evaluation-btn partial-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida > 1 %}selected{% endif %}"
                                         onclick="selectEvaluation(this, 'partial')"
                                     >
 
@@ -669,7 +668,7 @@
 
 
                                         <label>
-                                            Puntos obtenidos
+                                            Nota obtenida
                                         </label>
 
 
@@ -680,19 +679,17 @@
                                                 type="number"
                                                 name="nota"
                                                 min="0"
-                                                max="{{ pregunta.puntaje }}"
+                                                max="5"
                                                 step="0.1"
-                                                value="{{ respuesta.nota_obtenida }}"
+                                                value="{% if respuesta.nota_obtenida is not None %}{{ respuesta.nota_obtenida }}{% else %}0{% endif %}"
+                                                required
                                             >
 
 
                                             <span>
-
-                                                /
-
-                                                {{ pregunta.puntaje }}
-
+                                                / 5.0
                                             </span>
+
 
                                         </div>
 
@@ -713,19 +710,29 @@
                                                 current-status
 
                                                 {% if not respuesta.calificada %}
+
                                                     status-pending
 
                                                 {% elif respuesta.es_correcta %}
+
                                                     status-correct
 
-                                                {% elif respuesta.nota_obtenida > 0 %}
+                                                {% elif respuesta.nota_obtenida == 1 %}
+
+                                                    status-incorrect
+
+                                                {% elif respuesta.nota_obtenida > 1 %}
+
                                                     status-partial
 
                                                 {% else %}
-                                                    status-incorrect
+
+                                                    status-pending
+
                                                 {% endif %}
                                             "
                                         >
+
 
                                             {% if not respuesta.calificada %}
 
@@ -735,15 +742,20 @@
 
                                                 Correcta
 
-                                            {% elif respuesta.nota_obtenida > 0 %}
+                                            {% elif respuesta.nota_obtenida == 1 %}
+
+                                                Incorrecta
+
+                                            {% elif respuesta.nota_obtenida > 1 %}
 
                                                 Parcial
 
                                             {% else %}
 
-                                                Incorrecta
+                                                Pendiente
 
                                             {% endif %}
+
 
                                         </strong>
 
@@ -769,6 +781,7 @@
                                         name="comentario"
                                         placeholder="Escribe una observación para el estudiante..."
                                     ></textarea>
+
 
                                 </div>
 
@@ -798,6 +811,7 @@
 
                             </form>
 
+
                         </div>
 
 
@@ -814,6 +828,7 @@
 
                         <span>
 
+
                             {% if respuesta %}
 
                                 Puntos obtenidos
@@ -824,6 +839,7 @@
 
                             {% endif %}
 
+
                         </span>
 
 
@@ -832,7 +848,7 @@
 
                             {% if respuesta %}
 
-                                {{ respuesta.nota_obtenida }}
+                                {{ respuesta.nota_obtenida|default:"0.00" }}
 
                                 /
 
@@ -851,6 +867,7 @@
 
                         </strong>
 
+
                     </div>
 
 
@@ -858,6 +875,7 @@
 
 
             {% endwith %}
+
             {% endwith %}
 
 
@@ -869,6 +887,7 @@
 
                 <div class="question-content">
 
+
                     <h3>
                         No hay preguntas para esta tarea.
                     </h3>
@@ -878,7 +897,9 @@
                         Esta tarea todavía no tiene preguntas registradas.
                     </p>
 
+
                 </div>
+
 
             </div>
 
@@ -924,9 +945,19 @@
 
 function selectEvaluation(button, type) {
 
+
+    /*
+     * Buscar el bloque de evaluación
+     * de esta pregunta.
+     */
+
     const evaluationArea =
         button.closest(".evaluation-area");
 
+
+    /*
+     * Buscar todos los botones.
+     */
 
     const buttons =
         evaluationArea.querySelectorAll(
@@ -934,17 +965,32 @@ function selectEvaluation(button, type) {
         );
 
 
+    /*
+     * Buscar el texto que muestra
+     * el estado actual.
+     */
+
     const status =
         evaluationArea.querySelector(
             ".current-status"
         );
 
 
+    /*
+     * Buscar el campo donde se guarda
+     * la nota.
+     */
+
     const pointsInput =
         evaluationArea.querySelector(
-            ".points-input input"
+            'input[name="nota"]'
         );
 
+
+    /*
+     * Buscar el estado que se enviará
+     * a Django.
+     */
 
     const stateInput =
         evaluationArea.querySelector(
@@ -953,7 +999,7 @@ function selectEvaluation(button, type) {
 
 
     /*
-     * Quitar selección anterior
+     * Quitar selección anterior.
      */
 
     buttons.forEach(function(btn) {
@@ -964,73 +1010,132 @@ function selectEvaluation(button, type) {
 
 
     /*
-     * Seleccionar botón actual
+     * Seleccionar el botón actual.
      */
 
     button.classList.add("selected");
 
 
     /*
-     * Guardar estado
-     * que será enviado a Django
+     * Guardar el estado.
      */
 
     stateInput.value = type;
 
 
+
     /*
-     * CORRECTA
-     */
+     =====================================================
+     CORRECTA
+     =====================================================
+
+     Siempre coloca 5.0
+    */
 
     if (type === "correct") {
 
+
         status.textContent = "Correcta";
 
-        pointsInput.value =
-            pointsInput.max;
 
+        pointsInput.value = "5.0";
+
+
+        pointsInput.dispatchEvent(
+            new Event("change", {
+                bubbles: true
+            })
+        );
+
+
+        return;
     }
 
 
-    /*
-     * INCORRECTA
-     */
 
-    else if (type === "incorrect") {
+    /*
+     =====================================================
+     INCORRECTA
+     =====================================================
+
+     Siempre coloca 1.0
+    */
+
+    if (type === "incorrect") {
+
 
         status.textContent = "Incorrecta";
 
-        pointsInput.value = 0;
 
+        pointsInput.value = "1.0";
+
+
+        pointsInput.dispatchEvent(
+            new Event("change", {
+                bubbles: true
+            })
+        );
+
+
+        return;
     }
 
 
-    /*
-     * PARCIAL
-     */
 
-    else if (type === "partial") {
+    /*
+     =====================================================
+     PARCIAL
+     =====================================================
+
+     Siempre coloca 2.5
+    */
+
+    if (type === "partial") {
+
 
         status.textContent = "Parcial";
 
-        pointsInput.value =
-            (
-                parseFloat(pointsInput.max) / 2
-            ).toFixed(2);
 
+        pointsInput.value = "2.5";
+
+
+        pointsInput.dispatchEvent(
+            new Event("change", {
+                bubbles: true
+            })
+        );
+
+
+        return;
     }
 
 
-    /*
-     * PENDIENTE
-     */
 
-    else if (type === "pending") {
+    /*
+     =====================================================
+     PENDIENTE
+     =====================================================
+
+     Coloca 0.0
+    */
+
+    if (type === "pending") {
+
 
         status.textContent = "Pendiente";
 
-        pointsInput.value = 0;
 
+        pointsInput.value = "0.0";
+
+
+        pointsInput.dispatchEvent(
+            new Event("change", {
+                bubbles: true
+            })
+        );
+
+
+        return;
     }
 
 }
