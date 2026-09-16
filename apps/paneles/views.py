@@ -61,8 +61,7 @@ def dashboard_docente(request):
 
     asignaciones = list(
         AsignacionDocente.objects.filter(
-            docente=docente,
-            curso=curso
+            docente=docente
         )
     )
 
@@ -193,27 +192,8 @@ def eventos_docente(request):
 #                    CURSOS DOCENTE
 # ============================================================
 
+
 def cursos_docente(request):
-
-    docente = Docente.objects.get(
-        usuario=request.user
-    )
-
-    asignaciones = AsignacionDocente.objects.filter(
-        docente=docente
-    ).select_related(
-        "docente",
-        "curso"
-    )
-
-    return render(
-        request,
-        "paneles/docentes/cursos_docente.html",
-        {
-            "docente": docente,
-            "asignaciones": asignaciones,
-        }
-    )
 
     docente = Docente.objects.select_related(
         "usuario"
@@ -221,11 +201,11 @@ def cursos_docente(request):
         usuario=request.user
     )
 
-    asignaciones = AsignacionDocente.objects.filter(
-        docente=docente
-    ).select_related(
-        "docente",
-        "curso"
+    asignaciones = (
+        AsignacionDocente.objects
+        .filter(docente=docente)
+        .select_related("curso")
+        .prefetch_related("curso__clases")
     )
 
     total_alumnos = 0
@@ -240,9 +220,12 @@ def cursos_docente(request):
 
             total_alumnos += asignacion.total_alumno
 
+            asignacion.materias = asignacion.curso.clases.all()
+
         else:
 
             asignacion.total_alumno = 0
+            asignacion.materias = []
 
     return render(
         request,
@@ -253,7 +236,6 @@ def cursos_docente(request):
             "total_alumnos": total_alumnos,
         }
     )
-
 
 # ============================================================
 #                    CALIFICACIONES DOCENTE

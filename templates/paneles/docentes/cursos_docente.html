@@ -3,6 +3,7 @@
 {% block active_cursos %}active{% endblock %}
 
 {% block content %}
+
 <div class="topbar">
   <div class="welcome">
     <h2>Mis Grados</h2>
@@ -30,16 +31,19 @@
     <h3>{{ asignaciones|length }}</h3>
     <p>Grados</p>
   </div>
+
   <div class="stat-card">
     <div class="icon green"><i class="fa-solid fa-users"></i></div>
     <h3>{{ total_alumnos }}</h3>
     <p>alumno</p>
   </div>
+
   <div class="stat-card">
     <div class="icon orange"><i class="fa-solid fa-chart-line"></i></div>
     <h3>{{ promedio_general|default:"—" }}</h3>
     <p>Promedio</p>
   </div>
+
   <div class="stat-card">
     <div class="icon purple"><i class="fa-solid fa-book"></i></div>
     <h3>{{ asignaciones|length }}</h3>
@@ -49,6 +53,7 @@
 
 <div class="section-card">
   <h4 style="margin:0 0 16px;">Grados Asignados</h4>
+
   <table>
     <thead>
       <tr>
@@ -58,31 +63,68 @@
         <th>Materia</th>
       </tr>
     </thead>
-    <tbody>
-      {% for a in asignaciones %}
-      <tr>
-        <td><strong>{{ a.clase.curso.nombre }}</strong></td>
-        <td>{{ a.total_alumno }}</td>
-        <td style="display:flex;gap:8px;">
-          <a href="{% url 'calificaciones_docente' %}?asignacion={{ a.id }}"
-             class="btn-save" style="font-size:13px;padding:7px 14px;">
-            <i class="fa-solid fa-star-half-stroke"></i> Calificaciones
-          </a>
-          <a href="{% url 'asistencia_docente' %}?curso={{ a.clase.curso.id }}"
-             class="btn-save" style="font-size:13px;padding:7px 14px;">
-            <i class="fa-solid fa-clipboard-check"></i> Asistencia
-          </a>
-        </td>
-        <td>{{ a.clase.titulo }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="4" style="text-align:center;color:#6b7280;padding:30px 0;">
-          No hay grados asignados.
-        </td>
-      </tr>
+
+```
+<tbody>
+
+  {% for a in asignaciones %}
+
+  <tr>
+
+    <td>
+      <strong>{{ a.curso.nombre }}</strong>
+    </td>
+
+    <td>
+      {{ a.total_alumno }}
+    </td>
+
+    <td style="display:flex;gap:8px;">
+
+      <a href="{% url 'calificaciones_docente' %}?asignacion={{ a.id }}"
+         class="btn-save"
+         style="font-size:13px;padding:7px 14px;">
+        <i class="fa-solid fa-star-half-stroke"></i> Calificaciones
+      </a>
+
+      <a href="{% url 'asistencia_docente' %}?curso={{ a.curso.id }}"
+         class="btn-save"
+         style="font-size:13px;padding:7px 14px;">
+        <i class="fa-solid fa-clipboard-check"></i> Asistencia
+      </a>
+
+    </td>
+
+    <td>
+
+      {% for materia in a.materias %}
+
+        {{ materia.titulo }}{% if not forloop.last %}, {% endif %}
+
       {% endfor %}
-    </tbody>
+
+      {% if not a.materias %}
+        —
+      {% endif %}
+
+    </td>
+
+  </tr>
+
+  {% empty %}
+
+  <tr>
+    <td colspan="4" style="text-align:center;color:#6b7280;padding:30px 0;">
+      No hay grados asignados.
+    </td>
+  </tr>
+
+  {% endfor %}
+
+</tbody>
+```
+
   </table>
 </div>
+
 {% endblock %}
