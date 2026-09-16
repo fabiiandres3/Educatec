@@ -667,6 +667,90 @@ def crear_horario_curso(request, periodo_id, curso_id):
             "listar_horario"
         )
 
+    # =====================================================
+    # OBTENER DOCENTES ASIGNADOS AL CURSO
+    # =====================================================
+
+    asignaciones = (
+        AsignacionDocente.objects
+        .filter(
+            curso=curso
+        )
+        .select_related(
+            "docente__usuario",
+            "curso",
+        )
+    )
+
+    dias = [
+        ("lunes", "Lunes"),
+        ("martes", "Martes"),
+        ("miercoles", "Miércoles"),
+        ("jueves", "Jueves"),
+        ("viernes", "Viernes"),
+    ]
+
+    horas_manana = [
+        ("06:00", "07:00"),
+        ("07:00", "08:00"),
+        ("08:00", "09:00"),
+        ("09:00", "10:00"),
+        ("10:00", "11:00"),
+        ("11:00", "12:00"),
+    ]
+
+    horas_tarde = [
+        ("12:30", "13:30"),
+        ("13:30", "14:30"),
+        ("14:30", "15:30"),
+        ("15:30", "16:30"),
+        ("16:30", "17:00"),
+    ]
+
+    return render(
+        request,
+        "admin/horario/crear_horario_curso.html.html",
+        {
+            "periodo": periodo,
+            "curso": curso,
+            "asignaciones": asignaciones,
+            "dias": dias,
+            "horas_manana": horas_manana,
+            "horas_tarde": horas_tarde,
+        },
+    )
+
+
+    periodo = get_object_or_404(
+        Periodo,
+        id=periodo_id
+    )
+
+    curso = get_object_or_404(
+        Cursos,
+        id=curso_id
+    )
+
+    # =====================================================
+    # VALIDAR SI YA EXISTE HORARIO
+    # =====================================================
+
+    horario_existente = Horario.objects.filter(
+        periodo_id=periodo_id,
+        curso_id=curso_id
+    ).exists()
+
+    if horario_existente:
+
+        messages.warning(
+            request,
+            "Este curso ya tiene un horario creado para este período."
+        )
+
+        return redirect(
+            "listar_horario"
+        )
+
     asignaciones = (
         AsignacionDocente.objects
         .filter(
