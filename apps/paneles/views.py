@@ -16,7 +16,12 @@ from apps.docentes.models import (
     MAX_CURSOS_POR_DOCENTE,
 )
 from apps.eventos.models import Evento
-from apps.tareas.models import Calificacion
+from apps.tareas.models import (
+    Tareas,
+    Calificacion,
+    ActividadCalificacion,
+    CalificacionActividad,
+)
 from apps.alumnos.models import (
     Acudiente,
     AcudienteAlumno,
@@ -1042,15 +1047,190 @@ def materias_alumnos(request):
     )
 
 
+
+
 # ============================================================
 #                    CALIFICACIONES ALUMNOS
 # ============================================================
 
+@login_required
 def calificaciones_alumnos(request):
+
+    # --------------------------------------------------------
+    # OBTENER ALUMNO LOGUEADO
+    # --------------------------------------------------------
+
+    alumno = get_object_or_404(
+        Alumnos.objects.select_related(
+            "usuario",
+            "curso",
+            "clase"
+        ),
+        usuario=request.user
+    )
+
+    # --------------------------------------------------------
+    # CALIFICACIONES REALES DEL ALUMNO
+    # --------------------------------------------------------
+    # Se buscan directamente las calificaciones del usuario.
+    # De esta forma no dependemos de que la tarea tenga
+    # exactamente la misma clase o curso para mostrar la nota.
+
+    calificaciones = (
+        Calificacion.objects
+        .filter(
+            alumno=request.user
+        )
+        .select_related(
+            "tarea",
+            "tarea__docente",
+            "tarea__curso",
+            "tarea__clase"
+        )
+        .order_by(
+            "-id"
+        )
+    )
+    
+
+    # --------------------------------------------------------
+    # FILAS PARA LA TABLA NUEVA
+    # --------------------------------------------------------
+
+    filas = []
+
+    for calificacion in calificaciones:
+
+        tarea = calificacion.tarea
+
+        filas.append({
+            "tipo": "Tarea",
+            "nombre": tarea.titulo,
+            "descripcion": tarea.descripcion,
+            "docente": tarea.docente,
+            "fecha": tarea.fecha_entrega,
+            "nota": calificacion.nota,
+        })
+
+    # --------------------------------------------------------
+    # REGISTROS PARA COMPATIBILIDAD CON LA PLANTILLA
+    # --------------------------------------------------------
+    # También enviamos "registros" por si la plantilla actual
+    # utiliza esa variable.
+
+    registros = []
+
+    for calificacion in calificaciones:
+
+        registros.append({
+            "tarea": calificacion.tarea,
+            "calificacion": calificacion,
+            "nota": calificacion.nota,
+        })
+
+    # --------------------------------------------------------
+    # PROMEDIO
+    # --------------------------------------------------------
+
+    notas = [
+        float(fila["nota"])
+        for fila in filas
+        if fila["nota"] is not None
+    ]
+
+    if notas:
+
+        promedio = round(
+            sum(notas) / len(notas),
+            2
+        )
+
+    else:
+
+        promedio = None
+
+    # --------------------------------------------------------
+    # ESTADO ACADÉMICO
+    # --------------------------------------------------------
+
+    if promedio is None:
+
+        estado = "Sin calificaciones"
+
+    elif promedio >= 4.5:
+
+        estado = "Superior"
+
+    elif promedio >= 4.0:
+
+        estado = "Alto"
+
+    elif promedio >= 3.0:
+
+        estado = "Básico"
+
+    else:
+
+        estado = "Bajo"
+
+    # --------------------------------------------------------
+    # ESTADÍSTICAS
+    # --------------------------------------------------------
+
+    total_calificaciones = len(notas)
+
+    total_tareas = calificaciones.count()
+
+    tareas_calificadas = total_calificaciones
+
+    tareas_pendientes = (
+        total_tareas - tareas_calificadas
+    )
+
+    # --------------------------------------------------------
+    # CONTEXTO
+    # --------------------------------------------------------
+
+    context = {
+
+        "alumno": alumno,
+
+        "curso": alumno.curso,
+
+        "clase": alumno.clase,
+
+        # Tabla actual
+        "filas": filas,
+
+        # Compatibilidad con versiones anteriores
+        "registros": registros,
+
+        # Calificaciones originales
+        "calificaciones": calificaciones,
+
+        # Estadísticas
+        "promedio": promedio,
+
+        "estado": estado,
+
+        "total_calificaciones": total_calificaciones,
+
+        "total_tareas": total_tareas,
+
+        "tareas_calificadas": tareas_calificadas,
+
+        "tareas_pendientes": tareas_pendientes,
+
+    }
+
+    # --------------------------------------------------------
+    # RENDER
+    # --------------------------------------------------------
 
     return render(
         request,
-        "paneles/alumnos/calificaciones_alumnos.html"
+        "paneles/alumnos/calificaciones_alumnos.html",
+        context
     )
 
 

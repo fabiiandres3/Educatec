@@ -20,11 +20,7 @@ urlpatterns = [
         name="cursos_docente"
     ),
 
-    path(
-        "docente/calificaciones/",
-        views.calificaciones_docente,
-        name="calificaciones_docente"
-    ),
+
 
     # =========================================================
     # ASISTENCIA DOCENTE
@@ -86,11 +82,7 @@ urlpatterns = [
         name="materias_alumnos"
     ),
 
-    path(
-        "alumno/calificaciones/",
-        views.calificaciones_alumnos,
-        name="calificaciones_alumnos"
-    ),
+
 
     path(
         "alumno/asistencia/",

@@ -56,12 +56,18 @@ def Respuesta_alumno(request, tarea):
 
         tipo = request.POST.get(f"tipo_{indice}")
 
-        pregunta = get_object_or_404(Pregunta, tarea=tarea, descripcion=enunciado)
+        pregunta = get_object_or_404(
+            Pregunta,
+            tarea=tarea,
+            descripcion=enunciado
+        )
 
         if tipo == "texto":
+
             respuesta_texto = request.POST.get(f"respuesta_{indice}")
 
             if respuesta_texto:
+
                 RespuestaAlumno.objects.create(
                     alumno=request.user,
                     pregunta=pregunta,
@@ -70,10 +76,17 @@ def Respuesta_alumno(request, tarea):
                 )
 
         elif tipo == "opcion":
-            opcion_id = request.POST.get(f"opcion_seleccionada_{indice}")
+
+            opcion_id = request.POST.get(
+                f"opcion_seleccionada_{indice}"
+            )
 
             if opcion_id:
-                opcion = get_object_or_404(OpcionesRespuesta, id=opcion_id)
+
+                opcion = get_object_or_404(
+                    OpcionesRespuesta,
+                    id=opcion_id
+                )
 
                 respuesta = RespuestaAlumno.objects.create(
                     alumno=request.user,
@@ -92,33 +105,93 @@ def Respuesta_alumno(request, tarea):
 
         indice += 1
 
-    # Guardar la nota final
-    nota = calcular_nota_final(request.user, tarea)
+    # =========================================================
+    # CALCULAR Y GUARDAR LA CALIFICACIÓN FINAL
+    # =========================================================
 
-    calificacion, creada = Calificacion.objects.get_or_create(
+    nota = calcular_nota_final(
+        request.user,
+        tarea
+    )
+
+    # IMPORTANTE:
+    # Si ya existe la calificación, la actualiza.
+    # Si no existe, la crea.
+
+    Calificacion.objects.update_or_create(
         alumno=request.user,
         tarea=tarea,
-        defaults={"nota": nota},
+        defaults={
+            "nota": nota
+        }
     )
 
 
 def calcular_nota_final(alumno, tarea):
-    respuestas = RespuestaAlumno.objects.filter(alumno=alumno, pregunta__tarea=tarea)
+
+    respuestas = RespuestaAlumno.objects.filter(
+        alumno=alumno,
+        pregunta__tarea=tarea
+    )
+
+    # ---------------------------------------------------------
+    # SI NO HAY RESPUESTAS
+    # ---------------------------------------------------------
 
     if not respuestas.exists():
         return 0.0
 
-    # Si hay preguntas abiertas sin calificar, no mostrar nota aún
-    if respuestas.filter(pregunta__tipo="texto", calificada=False).exists():
+
+    # ---------------------------------------------------------
+    # SI HAY PREGUNTAS DE TEXTO SIN CALIFICAR
+    # ---------------------------------------------------------
+
+    if respuestas.filter(
+        pregunta__tipo="texto",
+        calificada=False
+    ).exists():
+
         return 0.0
 
-    puntos_obtenidos = respuestas.aggregate(total=Sum("nota_obtenida"))["total"] or 0
 
-    puntos_totales = tarea.preguntas.aggregate(total=Sum("puntaje"))["total"] or 0
+    # ---------------------------------------------------------
+    # PUNTOS OBTENIDOS
+    # ---------------------------------------------------------
+
+    puntos_obtenidos = respuestas.aggregate(
+        total=Sum("nota_obtenida")
+    )["total"] or 0
+
+
+    # ---------------------------------------------------------
+    # PUNTOS TOTALES DE LA TAREA
+    # ---------------------------------------------------------
+
+    puntos_totales = tarea.preguntas.aggregate(
+        total=Sum("puntaje")
+    )["total"] or 0
+
+
+    # ---------------------------------------------------------
+    # EVITAR DIVISIÓN POR CERO
+    # ---------------------------------------------------------
 
     if puntos_totales == 0:
         return 0.0
 
-    nota = (float(puntos_obtenidos) / float(puntos_totales)) * 4 + 1
+
+    # ---------------------------------------------------------
+    # CONVERTIR DIRECTAMENTE A ESCALA 0.0 - 5.0
+    # ---------------------------------------------------------
+
+    nota = (
+        float(puntos_obtenidos)
+        / float(puntos_totales)
+    ) * 5
+
+
+    # ---------------------------------------------------------
+    # REDONDEAR A DOS DECIMALES
+    # ---------------------------------------------------------
 
     return round(nota, 2)
