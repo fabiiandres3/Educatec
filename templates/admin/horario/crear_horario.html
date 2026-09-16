@@ -1,430 +1,327 @@
 {% extends "admin/dashboard.html" %}
 
 {% block title %}
-Planificador de Horario
+Crear horario
 {% endblock %}
 
 {% block content %}
+
 <style>
-  :root {
-    --primary: #4f46e5;
-    --primary-light: #eeef2;
-    --primary-hover: #4338ca;
-    --bg-surface: #ffffff;
-    --bg-subtle: #f8fafc;
-    --border-color: #e2e8f0;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --radius-lg: 12px;
-    --radius-md: 8px;
-  }
 
-  .calendar-wrapper {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 1.5rem;
-    font-family: system-ui, -apple-system, sans-serif;
-  }
-
-  /* Control Superior */
-  .calendar-topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--bg-surface);
-    padding: 1.25rem 1.5rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-    margin-bottom: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  }
-
-  .topbar-info h1 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin: 0;
-  }
-
-  .topbar-info p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin: 0.2rem 0 0 0;
-  }
-
-  .global-selects {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .global-selects select {
-    padding: 0.5rem 0.8rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    font-size: 0.85rem;
-    background: var(--bg-surface);
-  }
-
-  /* Grid del Calendario Semanal */
-  .week-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 0.75rem;
-  }
-
-  @media (max-width: 1024px) {
-    .week-grid {
-      grid-template-columns: repeat(3, 1fr);
+    .crear-horario {
+        padding: 25px;
     }
-  }
 
-  @media (max-width: 640px) {
-    .week-grid {
-      grid-template-columns: 1fr;
+    .crear-header {
+        margin-bottom: 25px;
     }
-  }
 
-  /* Columna por Día */
-  .day-column {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    display: flex;
-    flex-direction: column;
-    min-height: 450px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-  }
+    .crear-header h2 {
+        margin: 0;
+        font-size: 28px;
+        color: #1f2937;
+    }
 
-  .day-header {
-    background: var(--bg-subtle);
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border-color);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+    .crear-header p {
+        margin-top: 7px;
+        color: #6b7280;
+    }
 
-  .day-title {
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--text-main);
-  }
+    .crear-card {
+        max-width: 850px;
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 25px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, .08);
+    }
 
-  .btn-add-slot {
-    background: #e0e7ff;
-    color: var(--primary);
-    border: none;
-    border-radius: 50%;
-    width: 26px;
-    height: 26px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
 
-  .btn-add-slot:hover {
-    background: var(--primary);
-    color: white;
-  }
+    .campo {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-  .day-slots {
-    padding: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    flex-grow: 1;
-  }
+    .campo label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #374151;
+    }
 
-  /* Tarjeta de Evento / Clase programada */
-  .slot-card {
-    background: #f8fafc;
-    border-left: 4px solid var(--primary);
-    border-top: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 0.75rem;
-    font-size: 0.8rem;
-    position: relative;
-  }
+    .campo select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        background: #fff;
+        color: #374151;
+        font-size: 14px;
+        outline: none;
+    }
 
-  .slot-time {
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 0.25rem;
-  }
+    .campo select:focus {
+        border-color: #f39c12;
+        box-shadow: 0 0 0 3px rgba(243, 156, 18, .12);
+    }
 
-  .slot-subject {
-    font-weight: 600;
-    color: var(--text-main);
-    font-size: 0.85rem;
-  }
+    .acciones {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+    }
 
-  .slot-detail {
-    color: var(--text-muted);
-    margin-top: 0.2rem;
-  }
+    .btn {
+        border: none;
+        border-radius: 9px;
+        padding: 11px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-  /* Ventana Modal para Crear Clase */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(15, 23, 42, 0.4);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-  }
+    .btn-cancelar {
+        background: #e5e7eb;
+        color: #374151;
+    }
 
-  .modal-overlay.active {
-    display: flex;
-  }
+    .btn-cancelar:hover {
+        background: #d1d5db;
+    }
 
-  .modal-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    width: 100%;
-    max-width: 480px;
-    padding: 1.5rem;
-    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-  }
+    .btn-crear {
+        background: #f39c12;
+        color: #ffffff;
+    }
 
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.25rem;
-  }
+    .btn-crear:hover {
+        background: #d68910;
+    }
 
-  .modal-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--text-main);
-  }
+    .info {
+        max-width: 850px;
+        margin-top: 18px;
+        padding: 15px 18px;
+        border-radius: 10px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        font-size: 14px;
+    }
 
-  .btn-close {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: var(--text-muted);
-  }
+    @media (max-width: 700px) {
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    margin-bottom: 1rem;
-  }
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
 
-  .form-group label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-main);
-  }
+        .acciones {
+            flex-direction: column;
+        }
 
-  .form-group select, 
-  .form-group input {
-    width: 100%;
-    padding: 0.55rem 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    font-size: 0.85rem;
-    box-sizing: border-box;
-  }
+        .btn {
+            justify-content: center;
+        }
 
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-  }
+    }
 
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-  }
-
-  .btn {
-    padding: 0.55rem 1rem;
-    border-radius: var(--radius-md);
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-  }
-
-  .btn-cancel {
-    background: var(--bg-subtle);
-    color: var(--text-muted);
-  }
-
-  .btn-save {
-    background: var(--primary);
-    color: white;
-  }
-
-  .btn-save:hover {
-    background: var(--primary-hover);
-  }
 </style>
 
-<div class="calendar-wrapper">
 
-  <!-- BARRA SUPERIOR -->
-  <div class="calendar-topbar">
-    <div class="topbar-info">
-      <h1>📅 Planificador Semanal de Horarios</h1>
-      <p>Haz clic en el botón '+' del día correspondiente para programar una clase.</p>
+<div class="crear-horario">
+
+    <div class="crear-header">
+
+        <h2>
+            <i class="fas fa-calendar-plus"></i>
+            Crear horario
+        </h2>
+
+        <p>
+            Selecciona el período y el curso para comenzar.
+        </p>
+
     </div>
 
-    <!-- Campos generales (Período) si aplica -->
-    <div class="global-selects">
-      <div class="form-group" style="margin: 0;">
-        <label>Período académico</label>
-        {{ form.periodo }}
-      </div>
-    </div>
-  </div>
 
-  <!-- CALENDARIO SEMANAL -->
-  <div class="week-grid">
+    <div class="crear-card">
 
-    <!-- LUNES -->
-    <div class="day-column" data-day="lunes">
-      <div class="day-header">
-        <span class="day-title">Lunes</span>
-        <button class="btn-add-slot" onclick="openModal('lunes', 'Lunes')">+</button>
-      </div>
-      <div class="day-slots" id="slots-lunes"></div>
-    </div>
+        <div class="form-grid">
 
-    <!-- MARTES -->
-    <div class="day-column" data-day="martes">
-      <div class="day-header">
-        <span class="day-title">Martes</span>
-        <button class="btn-add-slot" onclick="openModal('martes', 'Martes')">+</button>
-      </div>
-      <div class="day-slots" id="slots-martes"></div>
-    </div>
+            <!-- PERÍODO -->
 
-    <!-- MIÉRCOLES -->
-    <div class="day-column" data-day="miercoles">
-      <div class="day-header">
-        <span class="day-title">Miércoles</span>
-        <button class="btn-add-slot" onclick="openModal('miercoles', 'Miércoles')">+</button>
-      </div>
-      <div class="day-slots" id="slots-miercoles"></div>
-    </div>
+            <div class="campo">
 
-    <!-- JUEVES -->
-    <div class="day-column" data-day="jueves">
-      <div class="day-header">
-        <span class="day-title">Jueves</span>
-        <button class="btn-add-slot" onclick="openModal('jueves', 'Jueves')">+</button>
-      </div>
-      <div class="day-slots" id="slots-jueves"></div>
-    </div>
+                <label for="periodo">
+                    Período
+                </label>
 
-    <!-- VIERNES -->
-    <div class="day-column" data-day="viernes">
-      <div class="day-header">
-        <span class="day-title">Viernes</span>
-        <button class="btn-add-slot" onclick="openModal('viernes', 'Viernes')">+</button>
-      </div>
-      <div class="day-slots" id="slots-viernes"></div>
-    </div>
+                <select id="periodo">
 
-    <!-- SÁBADO -->
-    <div class="day-column" data-day="sabado">
-      <div class="day-header">
-        <span class="day-title">Sábado</span>
-        <button class="btn-add-slot" onclick="openModal('sabado', 'Sábado')">+</button>
-      </div>
-      <div class="day-slots" id="slots-sabado"></div>
-    </div>
+                    <option value="">
+                        Seleccionar período
+                    </option>
 
-  </div>
-</div>
+                    {% for periodo in periodos %}
 
-<!-- MODAL PARA ASIGNAR CLASE EN EL DÍA SELECCIONADO -->
-<div class="modal-overlay" id="slotModal">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3 id="modalTitle">Asignar Clase - Lunes</h3>
-      <button class="btn-close" onclick="closeModal()">✕</button>
-    </div>
+                        <option value="{{ periodo.id }}">
+                            {{ periodo }}
+                        </option>
 
-    <form method="post" id="horarioForm">
-      {% csrf_token %}
+                    {% empty %}
 
-      <!-- Campo oculto para registrar el día exacto -->
-      <input type="hidden" name="dia" id="selectedDayInput" value="">
+                        <option value="" disabled>
+                            No hay períodos registrados
+                        </option>
 
-      <div class="form-group">
-        <label for="{{ form.docente.id_for_label }}">Docente</label>
-        {{ form.docente }}
-      </div>
+                    {% endfor %}
 
-      <div class="form-group">
-        <label for="{{ form.curso.id_for_label }}">Curso / Grado</label>
-        {{ form.curso }}
-      </div>
+                </select>
 
-      <div class="form-group">
-        <label for="{{ form.clase.id_for_label }}">Materia / Clase</label>
-        {{ form.clase }}
-      </div>
+            </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="{{ form.hora_inicio.id_for_label }}">Hora Inicio</label>
-          {{ form.hora_inicio }}
+
+            <!-- CURSO -->
+
+            <div class="campo">
+
+                <label for="curso">
+                    Curso
+                </label>
+
+                <select id="curso">
+
+                    <option value="">
+                        Seleccionar curso
+                    </option>
+
+                    {% for curso in cursos %}
+
+                        <option value="{{ curso.id }}">
+                            {{ curso.nombre }}
+                        </option>
+
+                    {% empty %}
+
+                        <option value="" disabled>
+                            No hay cursos registrados
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
         </div>
 
-        <div class="form-group">
-          <label for="{{ form.hora_fin.id_for_label }}">Hora Fin</label>
-          {{ form.hora_fin }}
-        </div>
-      </div>
 
-      <div class="modal-actions">
-        <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
-        <button type="submit" class="btn btn-save">Guardar Clase</button>
-      </div>
-    </form>
-  </div>
+        <div class="acciones">
+
+            <a
+                href="{% url 'listar_horario' %}"
+                class="btn btn-cancelar"
+            >
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+
+            <button
+                type="button"
+                id="btnCrearHorario"
+                class="btn btn-crear"
+            >
+                <i class="fas fa-calendar-plus"></i>
+                Crear horario
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <i class="fas fa-info-circle"></i>
+
+        Selecciona un período y un curso.
+        Luego podrás crear el horario semanal del curso.
+
+    </div>
+
 </div>
+
 
 <script>
-  const modal = document.getElementById('slotModal');
-  const modalTitle = document.getElementById('modalTitle');
-  const selectedDayInput = document.getElementById('selectedDayInput');
 
-  function openModal(dayKey, dayName) {
-    selectedDayInput.value = dayKey;
-    modalTitle.textContent = `Asignar clase — ${dayName}`;
-    modal.classList.add('active');
-  }
+document.addEventListener("DOMContentLoaded", function () {
 
-  function closeModal() {
-    modal.classList.remove('active');
-  }
+    const periodo =
+        document.getElementById("periodo");
 
-  // Cerrar modal haciendo clic fuera de él
-  window.onclick = function(event) {
-    if (event.target === modal) {
-      closeModal();
-    }
-  }
+    const curso =
+        document.getElementById("curso");
+
+    const boton =
+        document.getElementById("btnCrearHorario");
+
+
+    boton.addEventListener("click", function () {
+
+        const periodoId =
+            periodo.value;
+
+        const cursoId =
+            curso.value;
+
+
+        if (!periodoId) {
+
+            alert("Selecciona un período.");
+
+            periodo.focus();
+
+            return;
+        }
+
+
+        if (!cursoId) {
+
+            alert("Selecciona un curso.");
+
+            curso.focus();
+
+            return;
+        }
+
+
+        const urlBase =
+            "{% url 'crear_horario_curso' 0 0 %}";
+
+
+        const url =
+            urlBase.replace(
+                "0/0/",
+                periodoId + "/" + cursoId + "/"
+            );
+
+
+        window.location.href = url;
+
+    });
+
+});
+
 </script>
+
 {% endblock %}

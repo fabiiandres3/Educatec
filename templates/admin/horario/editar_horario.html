@@ -1,0 +1,2006 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}
+Editar horario
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   CONTENEDOR
+   ========================================================= */
+
+.editar-horario {
+    width: 100%;
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.editar-header {
+    margin-bottom: 22px;
+}
+
+.editar-header h2 {
+    margin: 0;
+    font-size: 28px;
+    color: #1f2937;
+}
+
+.editar-header p {
+    margin-top: 7px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+   ========================================================= */
+
+.info-grid {
+    width: 100%;
+    max-width: 1100px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.info-card {
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    padding: 15px 18px;
+
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, .06);
+}
+
+.info-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #9ca3af;
+
+    text-transform: uppercase;
+}
+
+.info-value {
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #1f2937;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.horario-card {
+    width: 100%;
+    max-width: 1100px;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, .08);
+
+    box-sizing: border-box;
+}
+
+.horario-card-header {
+    margin-bottom: 18px;
+}
+
+.horario-card-header h3 {
+    margin: 0;
+
+    font-size: 18px;
+
+    color: #1f2937;
+}
+
+.horario-card-header p {
+    margin: 6px 0 0;
+
+    font-size: 13px;
+
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+.tabla-contenedor {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.tabla-horario {
+    width: 100%;
+
+    min-width: 850px;
+
+    border-collapse: collapse;
+
+    table-layout: fixed;
+}
+
+
+/* =========================================================
+   COLUMNAS
+   ========================================================= */
+
+.tabla-horario col.col-hora {
+    width: 105px;
+}
+
+.tabla-horario col.col-dia {
+    width: calc(
+        (100% - 105px) / 5
+    );
+}
+
+
+/* =========================================================
+   CABECERA
+   ========================================================= */
+
+.tabla-horario th {
+    height: 48px;
+
+    padding: 10px;
+
+    border: 1px solid #e5e7eb;
+
+    background: #f8fafc;
+
+    color: #374151;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-align: center;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CELDAS
+   ========================================================= */
+
+.tabla-horario td {
+    height: 105px;
+
+    padding: 6px;
+
+    border: 1px solid #e5e7eb;
+
+    background: #ffffff;
+
+    vertical-align: top;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   COLUMNA HORA
+   ========================================================= */
+
+.tabla-horario td.hora {
+    width: 105px;
+
+    padding: 10px 5px;
+
+    background: #f8fafc;
+
+    text-align: center;
+
+    vertical-align: middle;
+}
+
+.hora-inicio {
+    display: block;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #374151;
+}
+
+.hora-fin {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 11px;
+
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   HORARIO EXISTENTE
+   ========================================================= */
+
+.celda-horario {
+    width: 100%;
+
+    min-height: 90px;
+
+    padding: 9px;
+
+    border-radius: 8px;
+
+    background: #fff7ed;
+
+    border-left: 4px solid #f39c12;
+
+    box-sizing: border-box;
+}
+
+.clase-nombre {
+    margin-bottom: 5px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    line-height: 1.3;
+
+    color: #9a3412;
+}
+
+.docente-nombre {
+    margin-bottom: 5px;
+
+    font-size: 11px;
+
+    line-height: 1.3;
+
+    color: #374151;
+}
+
+.horario-hora {
+    font-size: 10px;
+
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   BOTÓN EDITAR
+   ========================================================= */
+
+.btn-editar-celda {
+    width: 28px;
+
+    height: 28px;
+
+    margin-top: 7px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #f39c12;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.btn-editar-celda:hover {
+    background: #d68910;
+}
+
+
+/* =========================================================
+   PANEL EDITAR
+   ========================================================= */
+
+.panel-edicion {
+    display: none;
+
+    margin-top: 8px;
+
+    padding-top: 8px;
+
+    border-top: 1px solid #fed7aa;
+}
+
+.panel-edicion select,
+.panel-edicion input {
+    width: 100%;
+
+    height: 31px;
+
+    margin-bottom: 5px;
+
+    padding: 0 7px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    font-size: 10px;
+
+    outline: none;
+
+    box-sizing: border-box;
+}
+
+.panel-edicion select:focus,
+.panel-edicion input:focus {
+    border-color: #f39c12;
+
+    box-shadow:
+        0 0 0 2px rgba(
+            243,
+            156,
+            18,
+            .10
+        );
+}
+
+
+/* =========================================================
+   CELDA VACÍA
+   ========================================================= */
+
+.celda-vacia {
+    width: 100%;
+
+    min-height: 90px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+}
+
+
+/* =========================================================
+   BOTÓN +
+   ========================================================= */
+
+.btn-agregar-celda {
+    width: 34px;
+
+    height: 34px;
+
+    padding: 0;
+
+    border: 1px dashed #d1d5db;
+
+    border-radius: 8px;
+
+    background: #f9fafb;
+
+    color: #9ca3af;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        color .15s ease,
+        transform .15s ease;
+}
+
+.btn-agregar-celda:hover {
+    background: #fff7ed;
+
+    border-color: #f39c12;
+
+    color: #f39c12;
+
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   PANEL NUEVO HORARIO
+   ========================================================= */
+
+.panel-nuevo {
+    display: none;
+
+    width: 100%;
+
+    padding: 9px;
+
+    border-radius: 8px;
+
+    background: #fff7ed;
+
+    border: 1px solid #fed7aa;
+
+    box-sizing: border-box;
+}
+
+.panel-nuevo-titulo {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #9a3412;
+}
+
+.panel-nuevo select,
+.panel-nuevo input {
+    width: 100%;
+
+    height: 31px;
+
+    margin-bottom: 5px;
+
+    padding: 0 7px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    font-size: 10px;
+
+    outline: none;
+
+    box-sizing: border-box;
+}
+
+.panel-nuevo select:focus,
+.panel-nuevo input:focus {
+    border-color: #f39c12;
+
+    box-shadow:
+        0 0 0 2px rgba(
+            243,
+            156,
+            18,
+            .10
+        );
+}
+
+
+/* =========================================================
+   BOTÓN CANCELAR NUEVO
+   ========================================================= */
+
+.btn-cerrar-nuevo {
+    width: 100%;
+
+    height: 28px;
+
+    margin-top: 2px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #e5e7eb;
+
+    color: #374151;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.btn-cerrar-nuevo:hover {
+    background: #d1d5db;
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.acciones {
+    width: 100%;
+    max-width: 1100px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.btn {
+    border: none;
+
+    border-radius: 9px;
+
+    padding: 11px 18px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.btn-cancelar {
+    background: #e5e7eb;
+
+    color: #374151;
+}
+
+.btn-cancelar:hover {
+    background: #d1d5db;
+}
+
+.btn-guardar {
+    background: #f39c12;
+
+    color: #ffffff;
+}
+
+.btn-guardar:hover {
+    background: #d68910;
+}
+
+
+/* =========================================================
+   SIN HORARIOS
+   ========================================================= */
+
+.sin-horarios {
+    padding: 50px 20px;
+
+    text-align: center;
+
+    color: #6b7280;
+}
+
+.sin-horarios i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    font-size: 35px;
+
+    color: #9ca3af;
+}
+
+.sin-horarios strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #374151;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .editar-horario {
+        padding: 15px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .acciones {
+        flex-direction: column;
+    }
+
+    .btn {
+        justify-content: center;
+    }
+
+}
+
+</style>
+
+
+<div class="editar-horario">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+         ===================================================== -->
+
+    <div class="editar-header">
+
+        <h2>
+
+            <i class="fas fa-calendar-edit"></i>
+
+            Editar horario
+
+        </h2>
+
+        <p>
+
+            Modifica o agrega horarios al curso.
+
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         INFORMACIÓN
+         ===================================================== -->
+
+    <div class="info-grid">
+
+
+        <div class="info-card">
+
+            <span class="info-label">
+                Período
+            </span>
+
+            <span class="info-value">
+
+                {{ periodo }}
+
+            </span>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <span class="info-label">
+                Curso
+            </span>
+
+            <span class="info-value">
+
+                {{ curso.nombre }}
+
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         HORARIO
+         ===================================================== -->
+
+    <div class="horario-card">
+
+
+        <div class="horario-card-header">
+
+            <h3>
+
+                <i class="fas fa-calendar-week"></i>
+
+                Horario semanal
+
+            </h3>
+
+            <p>
+
+                Pulsa <strong>+</strong> en una casilla vacía
+                para agregar un nuevo docente.
+
+            </p>
+
+        </div>
+
+
+        {% if horarios_data %}
+
+
+        <form
+            method="POST"
+            id="formEditarHorario"
+        >
+
+            {% csrf_token %}
+
+
+            <!-- IDs DE NUEVOS HORARIOS -->
+
+            <input
+                type="hidden"
+                name="nuevos_horarios"
+                id="nuevosHorarios"
+                value=""
+            >
+
+
+            <div class="tabla-contenedor">
+
+
+                <table class="tabla-horario">
+
+
+                    <colgroup>
+
+                        <col class="col-hora">
+
+                        <col class="col-dia">
+                        <col class="col-dia">
+                        <col class="col-dia">
+                        <col class="col-dia">
+                        <col class="col-dia">
+
+                    </colgroup>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Hora
+                            </th>
+
+                            <th>
+                                Lunes
+                            </th>
+
+                            <th>
+                                Martes
+                            </th>
+
+                            <th>
+                                Miércoles
+                            </th>
+
+                            <th>
+                                Jueves
+                            </th>
+
+                            <th>
+                                Viernes
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="tablaHorarioBody">
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 BOTONES
+                 ================================================= -->
+
+            <div class="acciones">
+
+
+                <a
+                    href="{% url 'listar_horarios' %}"
+                    class="btn btn-cancelar"
+                >
+
+                    <i class="fas fa-times"></i>
+
+                    Cancelar
+
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-guardar"
+                >
+
+                    <i class="fas fa-save"></i>
+
+                    Guardar cambios
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+        {% else %}
+
+
+        <div class="sin-horarios">
+
+            <i class="fas fa-calendar-xmark"></i>
+
+            <strong>
+
+                No hay horarios registrados
+
+            </strong>
+
+            <span>
+
+                Puedes regresar y crear el primer horario
+                para este curso.
+
+            </span>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     DATOS PARA JAVASCRIPT
+     ========================================================= -->
+
+{{ horarios_data|json_script:"horarios-data" }}
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* =====================================================
+           DATOS
+           ===================================================== */
+
+        const datos =
+            document.getElementById(
+                "horarios-data"
+            );
+
+
+        const tbody =
+            document.getElementById(
+                "tablaHorarioBody"
+            );
+
+
+        if (!datos || !tbody) {
+
+            return;
+
+        }
+
+
+        let horarios = [];
+
+
+        try {
+
+            horarios =
+                JSON.parse(
+                    datos.textContent
+                );
+
+        } catch (error) {
+
+            console.error(
+                "Error leyendo horarios:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        /* =====================================================
+           DÍAS
+           ===================================================== */
+
+        const dias = [
+
+            "lunes",
+            "martes",
+            "miercoles",
+            "jueves",
+            "viernes"
+
+        ];
+
+
+        /* =====================================================
+           FRANJAS
+           ===================================================== */
+
+        const bloques = [
+
+            {
+                inicio: "06:00",
+                fin: "07:00"
+            },
+
+            {
+                inicio: "07:00",
+                fin: "08:00"
+            },
+
+            {
+                inicio: "08:00",
+                fin: "09:00"
+            },
+
+            {
+                inicio: "09:00",
+                fin: "10:00"
+            },
+
+            {
+                inicio: "10:00",
+                fin: "11:00"
+            },
+
+            {
+                inicio: "11:00",
+                fin: "12:00"
+            },
+
+            {
+                inicio: "12:30",
+                fin: "13:30"
+            },
+
+            {
+                inicio: "13:30",
+                fin: "14:30"
+            },
+
+            {
+                inicio: "14:30",
+                fin: "15:30"
+            },
+
+            {
+                inicio: "15:30",
+                fin: "16:30"
+            },
+
+            {
+                inicio: "16:30",
+                fin: "17:00"
+            }
+
+        ];
+
+
+        /* =====================================================
+           NORMALIZAR
+           ===================================================== */
+
+        function normalizar(valor) {
+
+            return String(
+                valor || ""
+            )
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            );
+
+        }
+
+
+        /* =====================================================
+           MINUTOS
+           ===================================================== */
+
+        function minutos(hora) {
+
+            if (!hora) {
+
+                return null;
+
+            }
+
+
+            const partes =
+                String(hora).split(":");
+
+
+            if (partes.length < 2) {
+
+                return null;
+
+            }
+
+
+            return (
+                parseInt(
+                    partes[0],
+                    10
+                ) * 60
+
+                +
+
+                parseInt(
+                    partes[1],
+                    10
+                )
+            );
+
+        }
+
+
+        /* =====================================================
+           ESCAPAR HTML
+           ===================================================== */
+
+        function escapeHTML(valor) {
+
+            return String(
+                valor || ""
+            )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+        }
+
+
+        /* =====================================================
+           BUSCAR HORARIO
+           ===================================================== */
+
+        function buscarHorario(
+            dia,
+            inicio,
+            fin
+        ) {
+
+            const inicioBloque =
+                minutos(inicio);
+
+            const finBloque =
+                minutos(fin);
+
+
+            return horarios.find(
+                function (horario) {
+
+
+                    if (
+                        normalizar(
+                            horario.dia
+                        ) !== dia
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    const inicioHorario =
+                        minutos(
+                            horario.horaInicio
+                        );
+
+
+                    const finHorario =
+                        minutos(
+                            horario.horaFin
+                        );
+
+
+                    if (
+                        inicioHorario === null ||
+                        finHorario === null
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    return (
+
+                        inicioHorario <
+                        finBloque
+
+                        &&
+
+                        finHorario >
+                        inicioBloque
+
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           CELDA EXISTENTE
+           ===================================================== */
+
+        function crearCeldaExistente(
+            horario
+        ) {
+
+            return `
+
+                <td>
+
+                    <div
+                        class="celda-horario"
+                    >
+
+
+                        <div
+                            class="clase-nombre"
+                        >
+
+                            ${escapeHTML(
+                                horario.claseNombre ||
+                                "Clase"
+                            )}
+
+                        </div>
+
+
+                        <div
+                            class="docente-nombre"
+                        >
+
+                            <i
+                                class="fas fa-user"
+                            ></i>
+
+                            ${escapeHTML(
+                                horario.docenteNombre ||
+                                "Docente"
+                            )}
+
+                        </div>
+
+
+                        <div
+                            class="horario-hora"
+                        >
+
+                            ${escapeHTML(
+                                horario.horaInicio
+                            )}
+
+                            -
+
+                            ${escapeHTML(
+                                horario.horaFin
+                            )}
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="btn-editar-celda"
+                            data-id="${horario.id}"
+                            title="Editar horario"
+                        >
+
+                            <i
+                                class="fas fa-edit"
+                            ></i>
+
+                        </button>
+
+
+                        <div
+                            class="panel-edicion"
+                            id="panel-edicion-${horario.id}"
+                        >
+
+
+                            <!-- DOCENTE -->
+
+                            <select
+                                name="horario_${horario.id}_docente"
+                            >
+
+                                <option value="">
+                                    Seleccionar docente
+                                </option>
+
+                                {% for docente in docentes %}
+                                    <option value="{{ docente.id }}">
+                                        {{ docente }}
+                                    </option>
+                                {% endfor %}
+
+                            </select>
+
+
+                            <!-- CLASE -->
+
+                            <select
+                                name="horario_${horario.id}_clase"
+                            >
+
+                                <option value="">
+                                    Seleccionar clase
+                                </option>
+
+                                {% for clase in clases %}
+
+                                    <option
+                                        value="{{ clase.id }}"
+                                    >
+
+                                        {{ clase }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+
+                            <!-- DÍA -->
+
+                            <select
+                                name="horario_${horario.id}_dia"
+                            >
+
+                                <option
+                                    value="lunes"
+                                    ${normalizar(horario.dia) === "lunes" ? "selected" : ""}
+                                >
+                                    Lunes
+                                </option>
+
+                                <option
+                                    value="martes"
+                                    ${normalizar(horario.dia) === "martes" ? "selected" : ""}
+                                >
+                                    Martes
+                                </option>
+
+                                <option
+                                    value="miercoles"
+                                    ${normalizar(horario.dia) === "miercoles" ? "selected" : ""}
+                                >
+                                    Miércoles
+                                </option>
+
+                                <option
+                                    value="jueves"
+                                    ${normalizar(horario.dia) === "jueves" ? "selected" : ""}
+                                >
+                                    Jueves
+                                </option>
+
+                                <option
+                                    value="viernes"
+                                    ${normalizar(horario.dia) === "viernes" ? "selected" : ""}
+                                >
+                                    Viernes
+                                </option>
+
+                            </select>
+
+
+                            <!-- JORNADA -->
+
+                            <select
+                                name="horario_${horario.id}_jornada"
+                            >
+
+                                <option
+                                    value="manana"
+                                    ${normalizar(horario.jornada) === "manana" ? "selected" : ""}
+                                >
+                                    Mañana
+                                </option>
+
+                                <option
+                                    value="tarde"
+                                    ${normalizar(horario.jornada) === "tarde" ? "selected" : ""}
+                                >
+                                    Tarde
+                                </option>
+
+                            </select>
+
+
+                            <!-- HORA INICIO -->
+
+                            <input
+                                type="time"
+                                name="horario_${horario.id}_hora_inicio"
+                                value="${escapeHTML(
+                                    horario.horaInicio
+                                )}"
+                            >
+
+
+                            <!-- HORA FIN -->
+
+                            <input
+                                type="time"
+                                name="horario_${horario.id}_hora_fin"
+                                value="${escapeHTML(
+                                    horario.horaFin
+                                )}"
+                            >
+
+
+                        </div>
+
+
+                    </div>
+
+                </td>
+
+            `;
+
+        }
+
+
+        /* =====================================================
+           CELDA VACÍA
+           ===================================================== */
+
+        function crearCeldaVacia(
+            dia,
+            inicio,
+            fin
+        ) {
+
+
+            const id =
+                dia +
+                "_" +
+                inicio.replace(
+                    ":",
+                    ""
+                );
+
+
+            return `
+
+                <td>
+
+                    <div
+                        class="celda-vacia"
+                        id="celda-${id}"
+                    >
+
+
+                        <button
+                            type="button"
+                            class="btn-agregar-celda"
+                            data-id="${id}"
+                            data-dia="${dia}"
+                            data-inicio="${inicio}"
+                            data-fin="${fin}"
+                            title="Agregar horario"
+                        >
+
+                            <i
+                                class="fas fa-plus"
+                            ></i>
+
+                        </button>
+
+
+                        <div
+                            class="panel-nuevo"
+                            id="panel-nuevo-${id}"
+                        >
+
+
+                            <span
+                                class="panel-nuevo-titulo"
+                            >
+
+                                Nuevo horario
+
+                            </span>
+
+
+                            <!-- DOCENTE -->
+
+                            <select
+                                name="nuevo_${id}_docente"
+                            >
+
+                                <option value="">
+                                    Seleccionar docente
+                                </option>
+
+                                {% for docente in docentes %}
+
+                                    <option
+                                        value="{{ docente.docente_id }}"
+                                    >
+
+                                        {{ docente.docente }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+
+                            <!-- CLASE -->
+
+                            <select
+                                name="nuevo_${id}_clase"
+                            >
+
+                                <option value="">
+                                    Seleccionar clase
+                                </option>
+
+                                {% for clase in clases %}
+
+                                    <option
+                                        value="{{ clase.id }}"
+                                    >
+
+                                        {{ clase }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+
+                            <!-- JORNADA -->
+
+                            <select
+                                name="nuevo_${id}_jornada"
+                            >
+
+                                <option value="manana">
+
+                                    Mañana
+
+                                </option>
+
+                                <option value="tarde">
+
+                                    Tarde
+
+                                </option>
+
+                            </select>
+
+
+                            <!-- HORA INICIO -->
+
+                            <input
+                                type="time"
+                                name="nuevo_${id}_hora_inicio"
+                                value="${inicio}"
+                            >
+
+
+                            <!-- HORA FIN -->
+
+                            <input
+                                type="time"
+                                name="nuevo_${id}_hora_fin"
+                                value="${fin}"
+                            >
+
+
+                            <!-- DÍA -->
+
+                            <input
+                                type="hidden"
+                                name="nuevo_${id}_dia"
+                                value="${dia}"
+                            >
+
+
+                            <button
+                                type="button"
+                                class="btn-cerrar-nuevo"
+                                data-id="${id}"
+                            >
+
+                                Cancelar
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+                </td>
+
+            `;
+
+        }
+
+
+        /* =====================================================
+           GENERAR TABLA
+           ===================================================== */
+
+        function generarTabla() {
+
+            tbody.innerHTML = "";
+
+
+            bloques.forEach(
+                function (bloque) {
+
+
+                    const fila =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    /* -----------------------------------------
+                       HORA
+                       ----------------------------------------- */
+
+                    const celdaHora =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    celdaHora.className =
+                        "hora";
+
+
+                    celdaHora.innerHTML = `
+
+                        <span
+                            class="hora-inicio"
+                        >
+
+                            ${bloque.inicio}
+
+                        </span>
+
+                        <span
+                            class="hora-fin"
+                        >
+
+                            ${bloque.fin}
+
+                        </span>
+
+                    `;
+
+
+                    fila.appendChild(
+                        celdaHora
+                    );
+
+
+                    /* -----------------------------------------
+                       DÍAS
+                       ----------------------------------------- */
+
+                    dias.forEach(
+                        function (dia) {
+
+
+                            const horario =
+                                buscarHorario(
+                                    dia,
+                                    bloque.inicio,
+                                    bloque.fin
+                                );
+
+
+                            if (horario) {
+
+                                fila.insertAdjacentHTML(
+                                    "beforeend",
+                                    crearCeldaExistente(
+                                        horario
+                                    )
+                                );
+
+                            } else {
+
+                                fila.insertAdjacentHTML(
+                                    "beforeend",
+                                    crearCeldaVacia(
+                                        dia,
+                                        bloque.inicio,
+                                        bloque.fin
+                                    )
+                                );
+
+                            }
+
+                        }
+                    );
+
+
+                    tbody.appendChild(
+                        fila
+                    );
+
+                }
+            );
+
+
+            activarBotones();
+
+        }
+
+
+        /* =====================================================
+           ACTIVAR BOTONES
+           ===================================================== */
+
+        function activarBotones() {
+
+
+            /* ---------------------------------------------
+               EDITAR EXISTENTE
+               --------------------------------------------- */
+
+            document
+                .querySelectorAll(
+                    ".btn-editar-celda"
+                )
+                .forEach(
+                    function (boton) {
+
+
+                        boton.addEventListener(
+                            "click",
+                            function () {
+
+
+                                const id =
+                                    this.dataset.id;
+
+
+                                const panel =
+                                    document.getElementById(
+                                        "panel-edicion-" +
+                                        id
+                                    );
+
+
+                                if (!panel) {
+
+                                    return;
+
+                                }
+
+
+                                if (
+                                    panel.style.display ===
+                                    "block"
+                                ) {
+
+                                    panel.style.display =
+                                        "none";
+
+                                } else {
+
+                                    panel.style.display =
+                                        "block";
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+
+            /* ---------------------------------------------
+               AGREGAR NUEVO
+               --------------------------------------------- */
+
+            document
+                .querySelectorAll(
+                    ".btn-agregar-celda"
+                )
+                .forEach(
+                    function (boton) {
+
+
+                        boton.addEventListener(
+                            "click",
+                            function () {
+
+
+                                const id =
+                                    this.dataset.id;
+
+
+                                const panel =
+                                    document.getElementById(
+                                        "panel-nuevo-" +
+                                        id
+                                    );
+
+
+                                const botonAgregar =
+                                    this;
+
+
+                                if (!panel) {
+
+                                    return;
+
+                                }
+
+
+                                panel.style.display =
+                                    "block";
+
+
+                                botonAgregar.style.display =
+                                    "none";
+
+
+                                /* -------------------------
+                                   REGISTRAR NUEVO
+                                   ------------------------- */
+
+                                const hidden =
+                                    document.getElementById(
+                                        "nuevosHorarios"
+                                    );
+
+
+                                if (!hidden) {
+
+                                    return;
+
+                                }
+
+
+                                let actuales =
+                                    hidden.value
+                                        ? hidden.value.split(",")
+                                        : [];
+
+
+                                if (
+                                    !actuales.includes(id)
+                                ) {
+
+                                    actuales.push(id);
+
+                                }
+
+
+                                hidden.value =
+                                    actuales.join(",");
+
+                            }
+                        );
+
+                    }
+                );
+
+
+            /* ---------------------------------------------
+               CANCELAR NUEVO
+               --------------------------------------------- */
+
+            document
+                .querySelectorAll(
+                    ".btn-cerrar-nuevo"
+                )
+                .forEach(
+                    function (boton) {
+
+
+                        boton.addEventListener(
+                            "click",
+                            function () {
+
+
+                                const id =
+                                    this.dataset.id;
+
+
+                                const panel =
+                                    document.getElementById(
+                                        "panel-nuevo-" +
+                                        id
+                                    );
+
+
+                                const botonAgregar =
+                                    document.querySelector(
+                                        `.btn-agregar-celda[data-id="${id}"]`
+                                    );
+
+
+                                if (panel) {
+
+                                    panel.style.display =
+                                        "none";
+
+                                }
+
+
+                                if (botonAgregar) {
+
+                                    botonAgregar.style.display =
+                                        "flex";
+
+                                }
+
+
+                                /* -------------------------
+                                   QUITAR DEL LISTADO
+                                   ------------------------- */
+
+                                const hidden =
+                                    document.getElementById(
+                                        "nuevosHorarios"
+                                    );
+
+
+                                if (!hidden) {
+
+                                    return;
+
+                                }
+
+
+                                let actuales =
+                                    hidden.value
+                                        ? hidden.value.split(",")
+                                        : [];
+
+
+                                actuales =
+                                    actuales.filter(
+                                        function (valor) {
+
+                                            return valor !== id;
+
+                                        }
+                                    );
+
+
+                                hidden.value =
+                                    actuales.join(",");
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =====================================================
+           INICIAR
+           ===================================================== */
+
+        generarTabla();
+
+
+    }
+);
+
+</script>
+
+{% endblock %}

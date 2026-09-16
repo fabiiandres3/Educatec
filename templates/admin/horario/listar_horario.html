@@ -1,0 +1,1527 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}
+    Horarios del curso
+{% endblock %}
+
+{% block content %}
+
+<style>
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+.btn-crear {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.btn-crear:hover {
+    background: #15803d;
+}
+
+.course-schedule {
+    width: 100%;
+    padding: 20px 18px 24px 8px;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.course-schedule *,
+.course-schedule *::before,
+.course-schedule *::after {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.schedule-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.schedule-title {
+    margin: 0;
+    font-size: 27px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.schedule-subtitle {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   FILTROS
+   ========================================================= */
+
+.schedule-filters {
+    display: flex;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.filter-group select {
+    min-width: 170px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1f2937;
+    outline: none;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.filter-group select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.schedule-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.btn-horario {
+    height: 40px;
+    padding: 0 15px;
+    border-radius: 8px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.btn-horario:hover {
+    transform: translateY(-1px);
+}
+
+.btn-editar {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.btn-editar:hover {
+    background: #1d4ed8;
+}
+
+.btn-limpiar {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.btn-limpiar:hover {
+    background: #e5e7eb;
+}
+
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+.schedule-layout {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 12px;
+    align-items: start;
+}
+
+
+/* =========================================================
+   TARJETA DE HORARIO
+   ========================================================= */
+
+.schedule-card {
+    width: 100%;
+    min-width: 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.schedule-card-header {
+    min-height: 58px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.schedule-card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.schedule-card-info {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+
+.schedule-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.schedule-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.schedule-table col.time-column {
+    width: 105px;
+}
+
+.schedule-table col.day-column {
+    width: calc((100% - 105px) / 5);
+}
+
+.schedule-table th,
+.schedule-table td {
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.schedule-table th:last-child,
+.schedule-table td:last-child {
+    border-right: none;
+}
+
+.schedule-table thead th {
+    height: 48px;
+    padding: 8px;
+    background: #f8fafc;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.schedule-table tbody td {
+    height: 76px;
+    padding: 6px;
+    vertical-align: top;
+    background: #ffffff;
+}
+
+.schedule-table .time-cell {
+    padding: 10px 7px;
+    vertical-align: middle;
+    text-align: center;
+    background: #f8fafc;
+}
+
+.time-main {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.time-end {
+    display: block;
+    margin-top: 3px;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   CELDA DE HORARIO
+   ========================================================= */
+
+.schedule-item {
+    width: 100%;
+    min-height: 63px;
+    padding: 8px;
+    border-radius: 8px;
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    overflow: hidden;
+}
+
+.schedule-item-title {
+    margin: 0 0 4px;
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #1e3a8a;
+}
+
+.schedule-item-teacher {
+    margin: 0 0 3px;
+    font-size: 11px;
+    line-height: 1.3;
+    color: #374151;
+}
+
+.schedule-item-time {
+    font-size: 10px;
+    color: #6b7280;
+}
+
+.empty-cell {
+    width: 100%;
+    height: 100%;
+    min-height: 63px;
+}
+
+
+/* =========================================================
+   MENSAJE SIN RESULTADOS
+   ========================================================= */
+
+.no-schedule {
+    display: none;
+    padding: 45px 20px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.no-schedule i {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 30px;
+    color: #9ca3af;
+}
+
+.no-schedule strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #374151;
+}
+
+
+/* =========================================================
+   TARJETA DOCENTES
+   ========================================================= */
+
+.teachers-card {
+    width: 220px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.teachers-header {
+    padding: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.teachers-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.teachers-subtitle {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.teachers-list {
+    padding: 7px;
+}
+
+.teacher-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 8px;
+    border-radius: 8px;
+}
+
+.teacher-item:hover {
+    background: #f9fafb;
+}
+
+.teacher-avatar {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 12px;
+}
+
+.teacher-name {
+    min-width: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #374151;
+    word-break: break-word;
+}
+
+.no-teachers {
+    padding: 18px 10px;
+    text-align: center;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .schedule-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .teachers-card {
+        width: 100%;
+    }
+
+    .teachers-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+
+    .course-schedule {
+        padding: 15px 10px;
+    }
+
+    .schedule-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .schedule-filters {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+
+    .schedule-actions {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .btn-horario {
+        flex: 1;
+    }
+
+    .teachers-list {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+
+<div class="course-schedule">
+
+    <!-- =====================================================
+         ENCABEZADO
+         ===================================================== -->
+
+    <div class="schedule-header">
+
+        <div>
+            <h1 class="schedule-title">
+                Horarios del curso
+            </h1>
+
+            <p class="schedule-subtitle">
+                Consulta y administra los horarios asignados a cada curso.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FILTROS
+         ===================================================== -->
+
+    <div class="schedule-filters">
+
+        <!-- PERÍODO -->
+
+        <div class="filter-group">
+
+            <label for="periodoSelect">
+                Período
+            </label>
+
+            <select id="periodoSelect">
+
+                <option value="">
+                    Seleccionar período
+                </option>
+
+                {% for periodo in periodos %}
+
+                    <option value="{{ periodo.id }}">
+                        Período {{ periodo.numero }} - {{ periodo.anio }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- CURSO -->
+
+        <div class="filter-group">
+
+            <label for="cursoSelect">
+                Curso
+            </label>
+
+            <select id="cursoSelect">
+
+                <option value="">
+                    Seleccionar curso
+                </option>
+
+                {% for curso in cursos %}
+
+                    <option value="{{ curso.id }}">
+                        {{ curso.nombre }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- JORNADA -->
+
+        <div class="filter-group">
+
+            <label for="jornadaSelect">
+                Jornada
+            </label>
+
+            <select id="jornadaSelect">
+
+                <option value="">
+                    Todas
+                </option>
+
+                <option value="manana">
+                    Mañana
+                </option>
+
+                <option value="tarde">
+                    Tarde
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- BOTONES -->
+
+        <div class="schedule-actions">
+
+            <!-- CREAR HORARIO -->
+            <a
+                href="{% url 'crear_horario' %}"
+                class="btn-horario btn-crear"
+            >
+                <i class="fas fa-plus"></i>
+                Crear
+            </a>
+
+            <!-- EDITAR HORARIO -->
+            <a
+                href="#"
+                class="btn-horario btn-editar"
+                id="btnEditarHorario"
+            >
+                <i class="fas fa-edit"></i>
+                Editar
+            </a>
+
+            <!-- LIMPIAR -->
+            <button
+                type="button"
+                class="btn-horario btn-limpiar"
+                id="btnLimpiar"
+            >
+                <i class="fas fa-rotate-left"></i>
+                Limpiar
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         LAYOUT
+         ===================================================== -->
+
+    <div class="schedule-layout">
+
+
+        <!-- =================================================
+             TABLA
+             ================================================= -->
+
+        <div class="schedule-card">
+
+            <div class="schedule-card-header">
+
+                <div>
+
+                    <h2
+                        class="schedule-card-title"
+                        id="scheduleTitle"
+                    >
+                        Selecciona un período y un curso
+                    </h2>
+
+                    <span
+                        class="schedule-card-info"
+                        id="scheduleInfo"
+                    >
+                        El horario aparecerá aquí.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="schedule-table-wrapper">
+
+                <table class="schedule-table">
+
+                    <colgroup>
+
+                        <col class="time-column">
+
+                        <col class="day-column">
+                        <col class="day-column">
+                        <col class="day-column">
+                        <col class="day-column">
+                        <col class="day-column">
+
+                    </colgroup>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Hora
+                            </th>
+
+                            <th>
+                                Lunes
+                            </th>
+
+                            <th>
+                                Martes
+                            </th>
+
+                            <th>
+                                Miércoles
+                            </th>
+
+                            <th>
+                                Jueves
+                            </th>
+
+                            <th>
+                                Viernes
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="scheduleBody">
+                    </tbody>
+
+                </table>
+
+
+                <div
+                    class="no-schedule"
+                    id="noSchedule"
+                >
+
+                    <i class="fas fa-calendar-xmark"></i>
+
+                    <strong>
+                        No hay horarios registrados
+                    </strong>
+
+                    <span>
+                        No se encontraron horarios para los filtros seleccionados.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             DOCENTES
+             ================================================= -->
+
+        <div class="teachers-card">
+
+            <div class="teachers-header">
+
+                <h3 class="teachers-title">
+                    Docentes
+                </h3>
+
+                <p class="teachers-subtitle">
+                    Docentes con horario asignado
+                </p>
+
+            </div>
+
+
+            <div class="teachers-list">
+
+                {% regroup horarios by docente as docentes %}
+
+                {% for docente in docentes %}
+
+                    <div class="teacher-item">
+
+                        <div class="teacher-avatar">
+
+                            <i class="fas fa-user"></i>
+
+                        </div>
+
+                        <div class="teacher-name">
+
+                            {{ docente.grouper }}
+
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <div class="no-teachers">
+                        No hay docentes registrados.
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     DATOS DE DJANGO PARA JAVASCRIPT
+     ========================================================= -->
+
+{{ horarios_data|json_script:"horarios-data" }}
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =====================================================
+       ELEMENTOS
+       ===================================================== */
+
+    const periodoSelect = document.getElementById("periodoSelect");
+    const cursoSelect = document.getElementById("cursoSelect");
+    const jornadaSelect = document.getElementById("jornadaSelect");
+
+    const btnEditar = document.getElementById("btnEditarHorario");
+    const btnLimpiar = document.getElementById("btnLimpiar");
+
+    const scheduleBody = document.getElementById("scheduleBody");
+    const noSchedule = document.getElementById("noSchedule");
+
+    const scheduleTitle = document.getElementById("scheduleTitle");
+    const scheduleInfo = document.getElementById("scheduleInfo");
+
+
+    /* =====================================================
+       DATOS
+       ===================================================== */
+
+    let horariosBD = [];
+
+    const datosElement = document.getElementById("horarios-data");
+
+    if (datosElement) {
+
+        try {
+
+            horariosBD = JSON.parse(
+                datosElement.textContent
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error leyendo horarios_data:",
+                error
+            );
+
+            horariosBD = [];
+        }
+    }
+
+
+    /* =====================================================
+       DÍAS
+       ===================================================== */
+
+    const dias = [
+        "lunes",
+        "martes",
+        "miercoles",
+        "jueves",
+        "viernes"
+    ];
+
+
+    /* =====================================================
+       JORNADAS
+       ===================================================== */
+
+    const jornadas = {
+
+        manana: [
+            {
+                inicio: "06:00",
+                fin: "07:00"
+            },
+            {
+                inicio: "07:00",
+                fin: "08:00"
+            },
+            {
+                inicio: "08:00",
+                fin: "09:00"
+            },
+            {
+                inicio: "09:00",
+                fin: "10:00"
+            },
+            {
+                inicio: "10:00",
+                fin: "11:00"
+            },
+            {
+                inicio: "11:00",
+                fin: "12:00"
+            }
+        ],
+
+        tarde: [
+            {
+                inicio: "12:30",
+                fin: "13:30"
+            },
+            {
+                inicio: "13:30",
+                fin: "14:30"
+            },
+            {
+                inicio: "14:30",
+                fin: "15:30"
+            },
+            {
+                inicio: "15:30",
+                fin: "16:30"
+            },
+            {
+                inicio: "16:30",
+                fin: "17:00"
+            }
+        ]
+
+    };
+
+
+    /* =====================================================
+       NORMALIZAR TEXTO
+       ===================================================== */
+
+    function normalizarTexto(valor) {
+
+        return String(valor ?? "")
+            .trim()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+    }
+
+
+    /* =====================================================
+       NORMALIZAR JORNADA
+       ===================================================== */
+
+    function normalizarJornada(valor) {
+
+        const texto = normalizarTexto(valor);
+
+        if (
+            texto === "manana" ||
+            texto === "mañana" ||
+            texto === "morning"
+        ) {
+            return "manana";
+        }
+
+        if (
+            texto === "tarde" ||
+            texto === "afternoon"
+        ) {
+            return "tarde";
+        }
+
+        return texto;
+    }
+
+
+    /* =====================================================
+       NORMALIZAR DÍA
+       ===================================================== */
+
+    function normalizarDia(valor) {
+
+        const texto = normalizarTexto(valor);
+
+        const mapa = {
+
+            "lunes": "lunes",
+
+            "martes": "martes",
+
+            "miercoles": "miercoles",
+            "miércoles": "miercoles",
+
+            "jueves": "jueves",
+
+            "viernes": "viernes"
+
+        };
+
+        return mapa[texto] || texto;
+    }
+
+
+    /* =====================================================
+       CONVERTIR HORA A MINUTOS
+       ===================================================== */
+
+    function horaAMinutos(hora) {
+
+        if (!hora) {
+            return null;
+        }
+
+        const partes = String(hora).split(":");
+
+        if (partes.length < 2) {
+            return null;
+        }
+
+        const horas = parseInt(partes[0], 10);
+        const minutos = parseInt(partes[1], 10);
+
+        if (
+            Number.isNaN(horas) ||
+            Number.isNaN(minutos)
+        ) {
+            return null;
+        }
+
+        return (horas * 60) + minutos;
+    }
+
+
+    /* =====================================================
+       COMPROBAR SOLAPAMIENTO
+       ===================================================== */
+
+    function horarioCoincide(
+        horario,
+        horaInicio,
+        horaFin
+    ) {
+
+        const inicioHorario = horaAMinutos(
+            horario.horaInicio
+        );
+
+        const finHorario = horaAMinutos(
+            horario.horaFin
+        );
+
+        const inicioFila = horaAMinutos(
+            horaInicio
+        );
+
+        const finFila = horaAMinutos(
+            horaFin
+        );
+
+        if (
+            inicioHorario === null ||
+            finHorario === null ||
+            inicioFila === null ||
+            finFila === null
+        ) {
+            return false;
+        }
+
+        return (
+            inicioHorario < finFila &&
+            finHorario > inicioFila
+        );
+    }
+
+
+    /* =====================================================
+       OBTENER HORARIOS FILTRADOS
+       ===================================================== */
+
+    function obtenerHorariosFiltrados() {
+
+        const periodo = periodoSelect.value;
+        const curso = cursoSelect.value;
+        const jornada = normalizarJornada(
+            jornadaSelect.value
+        );
+
+
+        return horariosBD.filter(function (horario) {
+
+            const coincidePeriodo =
+                !periodo ||
+                String(horario.periodo) === String(periodo);
+
+
+            const coincideCurso =
+                !curso ||
+                String(horario.curso) === String(curso);
+
+
+            const coincideJornada =
+                !jornada ||
+                normalizarJornada(horario.jornada) === jornada;
+
+
+            return (
+                coincidePeriodo &&
+                coincideCurso &&
+                coincideJornada
+            );
+
+        });
+
+    }
+
+
+    /* =====================================================
+       CREAR CELDA DE HORARIO
+       ===================================================== */
+
+    function crearHorarioHTML(horario) {
+
+        const cursoNombre =
+            horario.cursoNombre || "Curso";
+
+        const claseNombre =
+            horario.claseNombre || "";
+
+        const docenteNombre =
+            horario.docenteNombre || "Docente sin asignar";
+
+        const horaInicio =
+            horario.horaInicio || "";
+
+        const horaFin =
+            horario.horaFin || "";
+
+
+        return `
+            <div class="schedule-item">
+
+                <p class="schedule-item-title">
+                    ${escapeHTML(claseNombre || cursoNombre)}
+                </p>
+
+                <p class="schedule-item-teacher">
+                    <i class="fas fa-user"></i>
+                    ${escapeHTML(docenteNombre)}
+                </p>
+
+                <div class="schedule-item-time">
+                    ${escapeHTML(horaInicio)}
+                    -
+                    ${escapeHTML(horaFin)}
+                </div>
+
+            </div>
+        `;
+    }
+
+
+    /* =====================================================
+       ESCAPAR HTML
+       ===================================================== */
+
+    function escapeHTML(valor) {
+
+        return String(valor ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =====================================================
+       CREAR TABLA
+       ===================================================== */
+
+    function renderizarHorario() {
+
+        scheduleBody.innerHTML = "";
+
+        const horariosFiltrados =
+            obtenerHorariosFiltrados();
+
+
+        /* -------------------------------------------------
+           SIN FILTROS
+           ------------------------------------------------- */
+
+        if (
+            !periodoSelect.value ||
+            !cursoSelect.value
+        ) {
+
+            noSchedule.style.display = "block";
+
+            scheduleTitle.textContent =
+                "Selecciona un período y un curso";
+
+            scheduleInfo.textContent =
+                "El horario aparecerá aquí.";
+
+            return;
+        }
+
+
+        /* -------------------------------------------------
+           NO HAY RESULTADOS
+           ------------------------------------------------- */
+
+        if (horariosFiltrados.length === 0) {
+
+            noSchedule.style.display = "block";
+
+            scheduleTitle.textContent =
+                "Sin horarios";
+
+            scheduleInfo.textContent =
+                "No existen horarios para los filtros seleccionados.";
+
+            return;
+        }
+
+
+        noSchedule.style.display = "none";
+
+
+        /* -------------------------------------------------
+           INFORMACIÓN
+           ------------------------------------------------- */
+
+        const cursoSeleccionado =
+            cursoSelect.options[
+                cursoSelect.selectedIndex
+            ]?.text || "Curso";
+
+
+        const periodoSeleccionado =
+            periodoSelect.options[
+                periodoSelect.selectedIndex
+            ]?.text || "Período";
+
+
+        scheduleTitle.textContent =
+            cursoSeleccionado;
+
+
+        scheduleInfo.textContent =
+            periodoSeleccionado;
+
+
+        /* -------------------------------------------------
+           JORNADAS A MOSTRAR
+           ------------------------------------------------- */
+
+        let bloques = [];
+
+
+        if (jornadaSelect.value) {
+
+            bloques =
+                jornadas[
+                    normalizarJornada(
+                        jornadaSelect.value
+                    )
+                ] || [];
+
+        } else {
+
+            bloques = [
+                ...jornadas.manana,
+                ...jornadas.tarde
+            ];
+
+        }
+
+
+        /* -------------------------------------------------
+           GENERAR FILAS
+           ------------------------------------------------- */
+
+        bloques.forEach(function (bloque) {
+
+            const fila =
+                document.createElement("tr");
+
+
+            /* ---------------------------------------------
+               COLUMNA HORA
+               --------------------------------------------- */
+
+            const horaCell =
+                document.createElement("td");
+
+            horaCell.className =
+                "time-cell";
+
+
+            horaCell.innerHTML = `
+
+                <span class="time-main">
+                    ${escapeHTML(bloque.inicio)}
+                </span>
+
+                <span class="time-end">
+                    ${escapeHTML(bloque.fin)}
+                </span>
+
+            `;
+
+
+            fila.appendChild(horaCell);
+
+
+            /* ---------------------------------------------
+               DÍAS
+               --------------------------------------------- */
+
+            dias.forEach(function (dia) {
+
+                const celda =
+                    document.createElement("td");
+
+
+                const horarioEncontrado =
+                    horariosFiltrados.find(
+                        function (horario) {
+
+                            return (
+                                normalizarDia(
+                                    horario.dia
+                                ) === dia
+                                &&
+                                horarioCoincide(
+                                    horario,
+                                    bloque.inicio,
+                                    bloque.fin
+                                )
+                            );
+
+                        }
+                    );
+
+
+                if (horarioEncontrado) {
+
+                    celda.innerHTML =
+                        crearHorarioHTML(
+                            horarioEncontrado
+                        );
+
+                } else {
+
+                    celda.innerHTML =
+                        `<div class="empty-cell"></div>`;
+
+                }
+
+
+                fila.appendChild(celda);
+
+            });
+
+
+            scheduleBody.appendChild(fila);
+
+        });
+
+    }
+
+
+    /* =====================================================
+       CAMBIAR FILTROS
+       ===================================================== */
+
+    periodoSelect.addEventListener(
+        "change",
+        renderizarHorario
+    );
+
+    cursoSelect.addEventListener(
+        "change",
+        renderizarHorario
+    );
+
+    jornadaSelect.addEventListener(
+        "change",
+        renderizarHorario
+    );
+
+
+    /* =====================================================
+       BOTÓN LIMPIAR
+       ===================================================== */
+
+    btnLimpiar.addEventListener(
+        "click",
+        function () {
+
+            periodoSelect.value = "";
+            cursoSelect.value = "";
+            jornadaSelect.value = "";
+
+            renderizarHorario();
+
+        }
+    );
+
+
+    /* =====================================================
+       BOTÓN EDITAR
+       ===================================================== */
+
+    btnEditar.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+
+            const periodo =
+                periodoSelect.value;
+
+            const curso =
+                cursoSelect.value;
+
+
+            /* ---------------------------------------------
+               VALIDAR PERÍODO
+               --------------------------------------------- */
+
+            if (!periodo) {
+
+                alert(
+                    "Selecciona un período antes de editar."
+                );
+
+                periodoSelect.focus();
+
+                return;
+            }
+
+
+            /* ---------------------------------------------
+               VALIDAR CURSO
+               --------------------------------------------- */
+
+            if (!curso) {
+
+                alert(
+                    "Selecciona un curso antes de editar."
+                );
+
+                cursoSelect.focus();
+
+                return;
+            }
+
+
+            /* ---------------------------------------------
+               URL GENERADA POR DJANGO
+               --------------------------------------------- */
+
+            const urlBase =
+                "{% url 'editar_horario' 0 0 %}";
+
+
+            /*
+             * Ejemplo:
+             *
+             * urlBase:
+             * /horarios/editar/0/0/
+             *
+             * resultado:
+             * /horarios/editar/3/8/
+             */
+
+
+            let url = urlBase;
+
+
+            /* ---------------------------------------------
+               REEMPLAZAR LOS DOS IDs FICTICIOS
+               --------------------------------------------- */
+
+            url = url.replace(
+                /\/0\/0\/?$/,
+                `/${encodeURIComponent(periodo)}/${encodeURIComponent(curso)}/`
+            );
+
+
+            console.log(
+                "URL base editar:",
+                urlBase
+            );
+
+            console.log(
+                "Período:",
+                periodo
+            );
+
+            console.log(
+                "Curso:",
+                curso
+            );
+
+            console.log(
+                "URL final editar:",
+                url
+            );
+
+
+            /* ---------------------------------------------
+               IR A EDITAR
+               --------------------------------------------- */
+
+            window.location.href = url;
+
+        }
+    );
+
+
+    /* =====================================================
+       INICIALIZAR
+       ===================================================== */
+
+    renderizarHorario();
+
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,1667 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}
+Crear horario - {{ curso.nombre }}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+        /* =====================================================
+       NOTIFICACIONES
+       ===================================================== */
+
+    .notificacion {
+        position: fixed;
+        top: 25px;
+        right: 25px;
+        width: min(390px, calc(100vw - 40px));
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 16px 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, .15);
+        border: 1px solid #e5e7eb;
+        z-index: 99999;
+        transform: translateX(120%);
+        opacity: 0;
+        transition: .35s ease;
+        overflow: hidden;
+    }
+
+    .notificacion.mostrar {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .notificacion-icono {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+    }
+
+    .notificacion-contenido {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notificacion-titulo {
+        margin: 0 0 4px;
+        font-size: 14px;
+        font-weight: 800;
+        color: #1f2937;
+    }
+
+    .notificacion-mensaje {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #6b7280;
+    }
+
+    .notificacion-cerrar {
+        border: none;
+        background: transparent;
+        color: #9ca3af;
+        cursor: pointer;
+        font-size: 17px;
+        padding: 2px;
+        line-height: 1;
+    }
+
+    .notificacion-cerrar:hover {
+        color: #374151;
+    }
+
+    /* ÉXITO */
+
+    .notificacion.exito {
+        border-left: 4px solid #16a34a;
+    }
+
+    .notificacion.exito .notificacion-icono {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    /* ERROR */
+
+    .notificacion.error {
+        border-left: 4px solid #dc2626;
+    }
+
+    .notificacion.error .notificacion-icono {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    /* ADVERTENCIA */
+
+    .notificacion.advertencia {
+        border-left: 4px solid #f59e0b;
+    }
+
+    .notificacion.advertencia .notificacion-icono {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    /* INFORMACIÓN */
+
+    .notificacion.info {
+        border-left: 4px solid #2563eb;
+    }
+
+    .notificacion.info .notificacion-icono {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    /* BARRA DE TIEMPO */
+
+    .notificacion-barra {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        width: 100%;
+        transform-origin: left;
+    }
+
+    .notificacion.exito .notificacion-barra {
+        background: #16a34a;
+    }
+
+    .notificacion.error .notificacion-barra {
+        background: #dc2626;
+    }
+
+    .notificacion.advertencia .notificacion-barra {
+        background: #f59e0b;
+    }
+
+    .notificacion.info .notificacion-barra {
+        background: #2563eb;
+    }
+
+    @keyframes reducirBarra {
+        from {
+            transform: scaleX(1);
+        }
+
+        to {
+            transform: scaleX(0);
+        }
+    }
+
+    @media (max-width: 600px) {
+
+        .notificacion {
+            top: 15px;
+            right: 15px;
+            width: calc(100vw - 30px);
+        }
+
+    }
+
+    .horario-container {
+        padding: 20px;
+    }
+
+    .horario-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .horario-titulo h2 {
+        margin: 0;
+        color: #1f2937;
+        font-size: 27px;
+    }
+
+    .horario-titulo p {
+        margin: 6px 0 0;
+        color: #6b7280;
+    }
+
+    .informacion {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        background: #f3f4f6;
+        color: #374151;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .tabla-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, .08);
+        overflow: hidden;
+    }
+
+    .tabla-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .tabla-horario {
+        width: 100%;
+        min-width: 900px;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .tabla-horario th {
+        background: #f8fafc;
+        padding: 15px 8px;
+        border-right: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .tabla-horario th:first-child {
+        width: 120px;
+    }
+
+    .tabla-horario td {
+        height: 75px;
+        padding: 0;
+        border-right: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .hora {
+        background: #f9fafb;
+        text-align: center;
+        padding: 8px !important;
+        font-size: 12px;
+        font-weight: 700;
+        color: #4b5563;
+    }
+
+    .celda-horario {
+        position: relative;
+        background: #fff;
+        cursor: pointer;
+        transition: .18s;
+    }
+
+    .celda-horario:hover {
+        background: #fff7ed;
+    }
+
+    .celda-horario::after {
+        content: "+";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        color: #9ca3af;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        opacity: 0;
+        transition: .18s;
+    }
+
+    .celda-horario:hover::after {
+        opacity: 1;
+    }
+
+    .jornada td {
+        height: auto;
+        padding: 9px;
+        background: #f8fafc;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: #6b7280;
+        letter-spacing: .4px;
+    }
+
+    .contenido-celda {
+        min-height: 75px;
+        padding: 8px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+    }
+
+    .docente {
+        font-size: 13px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .clase {
+        font-size: 11px;
+        color: #6b7280;
+    }
+
+    .nota {
+        font-size: 10px;
+        color: #4b5563;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .acciones {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 18px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 9px;
+        padding: 11px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-cancelar {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-guardar {
+        background: #f39c12;
+        color: #fff;
+    }
+
+    .btn-guardar:hover {
+        background: #d68910;
+    }
+
+
+    /* =========================
+       MODAL
+       ========================= */
+
+    .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, .55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 20px;
+    }
+
+    .modal.activo {
+        display: flex;
+    }
+
+    .modal-contenido {
+        width: 100%;
+        max-width: 500px;
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 20px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: #1f2937;
+    }
+
+    .cerrar {
+        border: none;
+        background: transparent;
+        font-size: 24px;
+        cursor: pointer;
+        color: #6b7280;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .campo {
+        margin-bottom: 16px;
+    }
+
+    .campo label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+    }
+
+    .campo input,
+    .campo select,
+    .campo textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .campo input:focus,
+    .campo select:focus,
+    .campo textarea:focus {
+        border-color: #f39c12;
+        box-shadow: 0 0 0 3px rgba(243, 156, 18, .12);
+    }
+
+    .campo textarea {
+        min-height: 75px;
+        resize: vertical;
+    }
+
+    .bloqueado {
+        background: #f9fafb;
+        color: #6b7280;
+    }
+
+    .colores {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .color {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .color.seleccionado {
+        border-color: #111827;
+        box-shadow: 0 0 0 2px #fff;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .modal-footer-derecha {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-eliminar {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 14px;
+        background: #fee2e2;
+        color: #b91c1c;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-modal-cancelar {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 14px;
+        background: #e5e7eb;
+        color: #374151;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-modal-guardar {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 16px;
+        background: #f39c12;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+</style>
+
+
+<div class="horario-container">
+
+
+    <!-- CABECERA -->
+
+    <div class="horario-header">
+
+        <div class="horario-titulo">
+
+            <h2>
+                <i class="fas fa-calendar-plus"></i>
+                Crear horario
+            </h2>
+
+            <p>
+                Selecciona una celda para asignar un horario.
+            </p>
+
+        </div>
+
+
+        <div class="informacion">
+
+            <div class="badge">
+                <i class="fas fa-calendar"></i>
+                {{ periodo }}
+            </div>
+
+            <div class="badge">
+                <i class="fas fa-book"></i>
+                {{ curso.nombre }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLA -->
+
+    <div class="tabla-card">
+
+        <div class="tabla-wrapper">
+
+            <table class="tabla-horario">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Hora</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <!-- MAÑANA -->
+
+                    <tr class="jornada">
+
+                        <td colspan="6">
+                            <i class="fas fa-sun"></i>
+                            JORNADA MAÑANA · 06:00 - 12:00
+                        </td>
+
+                    </tr>
+
+
+                    {% for hora_inicio, hora_fin in horas_manana %}
+
+                    <tr>
+
+                        <td class="hora">
+
+                            {{ hora_inicio }} - {{ hora_fin }}
+
+                        </td>
+
+
+                        {% for dia in dias %}
+
+                        <td
+                            class="celda-horario"
+                            data-dia="{{ dia.0 }}"
+                            data-dia-nombre="{{ dia.1 }}"
+                            data-jornada="manana"
+                            data-hora-inicio="{{ hora_inicio }}"
+                            data-hora-fin="{{ hora_fin }}"
+                        >
+
+                            <div class="contenido-celda"></div>
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                    <!-- TARDE -->
+
+                    <tr class="jornada">
+
+                        <td colspan="6">
+                            <i class="fas fa-cloud-sun"></i>
+                            JORNADA TARDE · 12:30 - 17:00
+                        </td>
+
+                    </tr>
+
+
+                    {% for hora_inicio, hora_fin in horas_tarde %}
+
+                    <tr>
+
+                        <td class="hora">
+
+                            {{ hora_inicio }} - {{ hora_fin }}
+
+                        </td>
+
+
+                        {% for dia in dias %}
+
+                        <td
+                            class="celda-horario"
+                            data-dia="{{ dia.0 }}"
+                            data-dia-nombre="{{ dia.1 }}"
+                            data-jornada="tarde"
+                            data-hora-inicio="{{ hora_inicio }}"
+                            data-hora-fin="{{ hora_fin }}"
+                        >
+
+                            <div class="contenido-celda"></div>
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- BOTONES -->
+
+        <div class="acciones">
+
+            <a
+                href="{% url 'listar_horario' %}"
+                class="btn btn-cancelar"
+            >
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+
+            <button
+                type="button"
+                id="btnGuardarHorario"
+                class="btn btn-guardar"
+            >
+                <i class="fas fa-save"></i>
+                Guardar horario
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================================
+     NOTIFICACIÓN
+     ===================================================== -->
+
+<div
+    id="notificacion"
+    class="notificacion"
+    role="alert"
+    aria-live="polite"
+>
+
+    <div class="notificacion-icono" id="notificacionIcono">
+        <i class="fas fa-check"></i>
+    </div>
+
+    <div class="notificacion-contenido">
+
+        <h4
+            class="notificacion-titulo"
+            id="notificacionTitulo"
+        >
+            Éxito
+        </h4>
+
+        <p
+            class="notificacion-mensaje"
+            id="notificacionMensaje"
+        >
+            Operación realizada correctamente.
+        </p>
+
+    </div>
+
+    <button
+        type="button"
+        class="notificacion-cerrar"
+        id="cerrarNotificacion"
+        aria-label="Cerrar notificación"
+    >
+        <i class="fas fa-times"></i>
+    </button>
+
+    <div
+        class="notificacion-barra"
+        id="notificacionBarra"
+    ></div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL
+     ===================================================== -->
+
+<div
+    id="modalHorario"
+    class="modal"
+>
+
+    <div class="modal-contenido">
+
+
+        <div class="modal-header">
+
+            <h3>
+                <i class="fas fa-clock"></i>
+                Asignar horario
+            </h3>
+
+            <button
+                type="button"
+                class="cerrar"
+                id="cerrarModal"
+            >
+                &times;
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+
+            <div class="campo">
+
+                <label>
+                    Día
+                </label>
+
+                <input
+                    type="text"
+                    id="modalDia"
+                    class="bloqueado"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Horario
+                </label>
+
+                <input
+                    type="text"
+                    id="modalHora"
+                    class="bloqueado"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="modalDocente">
+                    Docente
+                </label>
+
+                <select id="modalDocente">
+
+                    <option value="">
+                        Seleccionar docente
+                    </option>
+
+                    {% for asignacion in asignaciones %}
+
+                    <option
+                        value="{{ asignacion.docente.id }}"
+                    >
+                        {{ asignacion.docente.usuario.get_full_name }}
+                    </option>
+
+                    {% empty %}
+
+                    <option value="" disabled>
+                        No hay docentes asignados
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="modalClase">
+                    Clase
+                </label>
+
+                <select id="modalClase">
+
+                    <option value="">
+                        Seleccionar clase
+                    </option>
+
+                    {% for asignacion in asignaciones %}
+
+                    <option
+                        value="{{ asignacion.clase.id }}"
+                    >
+                        {{ asignacion.clase.titulo }}
+                    </option>
+
+                    {% empty %}
+
+                    <option value="" disabled>
+                        No hay clases disponibles
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="modalNota">
+                    Nota
+                </label>
+
+                <textarea
+                    id="modalNota"
+                    placeholder="Nota opcional..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Color
+                </label>
+
+                <div class="colores">
+
+                    <button
+                        type="button"
+                        class="color seleccionado"
+                        data-color="#007AFF"
+                        style="background:#007AFF"
+                    ></button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#34C759"
+                        style="background:#34C759"
+                    ></button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#FF9500"
+                        style="background:#FF9500"
+                    ></button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#FF3B30"
+                        style="background:#FF3B30"
+                    ></button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#AF52DE"
+                        style="background:#AF52DE"
+                    ></button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#5856D6"
+                        style="background:#5856D6"
+                    ></button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#00C7BE"
+                        style="background:#00C7BE"
+                    ></button>
+
+                    <button
+                        type="button"
+                        class="color"
+                        data-color="#FF2D55"
+                        style="background:#FF2D55"
+                    ></button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                id="btnEliminar"
+                class="btn-eliminar"
+            >
+                <i class="fas fa-trash"></i>
+                Eliminar
+            </button>
+
+
+            <div class="modal-footer-derecha">
+
+                <button
+                    type="button"
+                    id="btnCancelarModal"
+                    class="btn-modal-cancelar"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    id="btnGuardarCelda"
+                    class="btn-modal-guardar"
+                >
+                    <i class="fas fa-check"></i>
+                    Guardar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* ==========================================
+       ELEMENTOS
+       ========================================== */
+
+    const modal =
+        document.getElementById("modalHorario");
+
+    const cerrarModal =
+        document.getElementById("cerrarModal");
+
+    const cancelarModal =
+        document.getElementById("btnCancelarModal");
+
+    const guardarCelda =
+        document.getElementById("btnGuardarCelda");
+
+    const eliminarCelda =
+        document.getElementById("btnEliminar");
+
+    const guardarHorario =
+        document.getElementById("btnGuardarHorario");
+
+    const modalDia =
+        document.getElementById("modalDia");
+
+    const modalHora =
+        document.getElementById("modalHora");
+
+    const modalDocente =
+        document.getElementById("modalDocente");
+
+    const modalClase =
+        document.getElementById("modalClase");
+
+    const modalNota =
+        document.getElementById("modalNota");
+
+
+    let celdaActual = null;
+
+    let colorActual = "#007AFF";
+
+    const horarios = {};
+
+
+    /* ==========================================
+       COLORES
+       ========================================== */
+
+    document
+        .querySelectorAll(".color")
+        .forEach(function (color) {
+
+            color.addEventListener(
+                "click",
+                function () {
+
+                    document
+                        .querySelectorAll(".color")
+                        .forEach(function (item) {
+
+                            item.classList.remove(
+                                "seleccionado"
+                            );
+
+                        });
+
+
+                    color.classList.add(
+                        "seleccionado"
+                    );
+
+
+                    colorActual =
+                        color.dataset.color;
+
+                }
+            );
+
+        });
+
+
+    /* ==========================================
+       SELECCIONAR CELDA
+       ========================================== */
+
+    document
+        .querySelectorAll(".celda-horario")
+        .forEach(function (celda) {
+
+
+            celda.addEventListener(
+                "click",
+                function () {
+
+                    celdaActual = celda;
+
+
+                    const dia =
+                        celda.dataset.dia;
+
+                    const diaNombre =
+                        celda.dataset.diaNombre;
+
+                    const jornada =
+                        celda.dataset.jornada;
+
+                    const horaInicio =
+                        celda.dataset.horaInicio;
+
+                    const horaFin =
+                        celda.dataset.horaFin;
+
+
+                    const clave =
+                        `${dia}_${jornada}_${horaInicio}_${horaFin}`;
+
+
+                    const datos =
+                        horarios[clave];
+
+
+                    modalDia.value =
+                        diaNombre;
+
+
+                    modalHora.value =
+                        `${horaInicio} - ${horaFin}`;
+
+
+                    if (datos) {
+
+                        modalDocente.value =
+                            datos.docente;
+
+                        modalClase.value =
+                            datos.clase;
+
+                        modalNota.value =
+                            datos.nota;
+
+                        seleccionarColor(
+                            datos.color
+                        );
+
+                    } else {
+
+                        modalDocente.value =
+                            "";
+
+                        modalClase.value =
+                            "";
+
+                        modalNota.value =
+                            "";
+
+                        seleccionarColor(
+                            "#007AFF"
+                        );
+
+                    }
+
+
+                    modal.classList.add(
+                        "activo"
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* ==========================================
+       GUARDAR CELDA
+       ========================================== */
+
+    guardarCelda.addEventListener(
+        "click",
+        function () {
+
+
+            if (!celdaActual) {
+                return;
+            }
+
+
+            const docente =
+                modalDocente.value;
+
+            const clase =
+                modalClase.value;
+
+
+            if (!docente) {
+
+                alert(
+                    "Selecciona un docente."
+                );
+
+                return;
+
+            }
+
+
+            if (!clase) {
+
+                alert(
+                    "Selecciona una clase."
+                );
+
+                return;
+
+            }
+
+
+            const dia =
+                celdaActual.dataset.dia;
+
+            const jornada =
+                celdaActual.dataset.jornada;
+
+            const horaInicio =
+                celdaActual.dataset.horaInicio;
+
+            const horaFin =
+                celdaActual.dataset.horaFin;
+
+
+            const clave =
+                `${dia}_${jornada}_${horaInicio}_${horaFin}`;
+
+
+            horarios[clave] = {
+
+                periodo:
+                    "{{ periodo.id }}",
+
+                curso:
+                    "{{ curso.id }}",
+
+                docente:
+                    docente,
+
+                clase:
+                    clase,
+
+                dia:
+                    dia,
+
+                jornada:
+                    jornada,
+
+                horaInicio:
+                    horaInicio,
+
+                horaFin:
+                    horaFin,
+
+                nota:
+                    modalNota.value.trim(),
+
+                color:
+                    colorActual
+
+            };
+
+
+            pintarCelda(
+                celdaActual,
+                horarios[clave]
+            );
+
+
+            modal.classList.remove(
+                "activo"
+            );
+
+        }
+    );
+
+
+    /* ==========================================
+       PINTAR CELDA
+       ========================================== */
+
+    function pintarCelda(celda, datos) {
+
+
+        const docenteOption =
+            modalDocente.querySelector(
+                `option[value="${datos.docente}"]`
+            );
+
+
+        const claseOption =
+            modalClase.querySelector(
+                `option[value="${datos.clase}"]`
+            );
+
+
+        const docenteNombre =
+            docenteOption
+                ? docenteOption.textContent.trim()
+                : "Docente";
+
+
+        const claseNombre =
+            claseOption
+                ? claseOption.textContent.trim()
+                : "Clase";
+
+
+        const contenido =
+            celda.querySelector(
+                ".contenido-celda"
+            );
+
+
+        contenido.innerHTML = "";
+
+
+        const docenteElemento =
+            document.createElement("div");
+
+        docenteElemento.className =
+            "docente";
+
+        docenteElemento.textContent =
+            docenteNombre;
+
+
+        const claseElemento =
+            document.createElement("div");
+
+        claseElemento.className =
+            "clase";
+
+        claseElemento.textContent =
+            claseNombre;
+
+
+        contenido.appendChild(
+            docenteElemento
+        );
+
+        contenido.appendChild(
+            claseElemento
+        );
+
+
+        if (datos.nota) {
+
+            const notaElemento =
+                document.createElement("div");
+
+            notaElemento.className =
+                "nota";
+
+            notaElemento.textContent =
+                datos.nota;
+
+            contenido.appendChild(
+                notaElemento
+            );
+
+        }
+
+
+        celda.style.background =
+            datos.color + "22";
+
+        celda.style.borderLeft =
+            `4px solid ${datos.color}`;
+
+    }
+
+
+    /* ==========================================
+       ELIMINAR
+       ========================================== */
+
+    eliminarCelda.addEventListener(
+        "click",
+        function () {
+
+
+            if (!celdaActual) {
+                return;
+            }
+
+
+            const dia =
+                celdaActual.dataset.dia;
+
+            const jornada =
+                celdaActual.dataset.jornada;
+
+            const horaInicio =
+                celdaActual.dataset.horaInicio;
+
+            const horaFin =
+                celdaActual.dataset.horaFin;
+
+
+            const clave =
+                `${dia}_${jornada}_${horaInicio}_${horaFin}`;
+
+
+            delete horarios[clave];
+
+
+            celdaActual
+                .querySelector(
+                    ".contenido-celda"
+                )
+                .innerHTML = "";
+
+
+            celdaActual.style.background =
+                "";
+
+            celdaActual.style.borderLeft =
+                "";
+
+
+            modal.classList.remove(
+                "activo"
+            );
+
+        }
+    );
+
+
+    /* ==========================================
+       CERRAR
+       ========================================== */
+
+    cerrarModal.addEventListener(
+        "click",
+        cerrar
+    );
+
+
+    cancelarModal.addEventListener(
+        "click",
+        cerrar
+    );
+
+
+    modal.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target === modal
+            ) {
+
+                cerrar();
+
+            }
+
+        }
+    );
+
+
+    function cerrar() {
+
+        modal.classList.remove(
+            "activo"
+        );
+
+        celdaActual = null;
+
+    }
+
+
+    /* ==========================================
+       GUARDAR HORARIO
+       ========================================== */
+
+    guardarHorario.addEventListener(
+    "click",
+    async function () {
+
+        const datos = Object.values(horarios);
+
+        if (datos.length === 0) {
+
+            alert("Debes asignar al menos un horario.");
+
+            return;
+        }
+
+
+        guardarHorario.disabled = true;
+
+        guardarHorario.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+
+        try {
+
+            const formData = new FormData();
+
+            formData.append(
+                "horarios",
+                JSON.stringify(datos)
+            );
+
+
+            const respuesta = await fetch(
+                "{% url 'guardar_horario_ajax' %}",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-CSRFToken": obtenerCSRF()
+                    },
+
+                    body: formData
+                }
+            );
+
+
+            const resultado =
+                await respuesta.json();
+
+
+            console.log(
+                "Respuesta del servidor:",
+                resultado
+            );
+
+
+            if (!respuesta.ok || !resultado.ok) {
+
+                throw new Error(
+                    resultado.mensaje ||
+                    "No se pudo guardar el horario."
+                );
+
+            }
+
+
+            alert(
+                resultado.mensaje
+            );
+
+
+            /*
+             * Después de guardar correctamente,
+             * volvemos a la lista de horarios.
+             */
+
+            window.location.href =
+                "{% url 'listar_horario' %}";
+
+
+        } catch (error) {
+
+            console.error(
+                "Error guardando horario:",
+                error
+            );
+
+
+            alert(
+                error.message ||
+                "Ocurrió un error al guardar."
+            );
+
+
+            guardarHorario.disabled = false;
+
+            guardarHorario.innerHTML =
+                '<i class="fas fa-save"></i> Guardar horario';
+
+        }
+
+    }
+);
+
+    /* ==========================================
+       COLOR
+       ========================================== */
+
+    function seleccionarColor(color) {
+
+        colorActual = color;
+
+
+        document
+            .querySelectorAll(".color")
+            .forEach(function (item) {
+
+                item.classList.toggle(
+                    "seleccionado",
+                    item.dataset.color === color
+                );
+
+            });
+
+    }
+
+});
+
+function obtenerCSRF() {
+
+    const cookies =
+        document.cookie.split(";");
+
+
+    for (let cookie of cookies) {
+
+        cookie = cookie.trim();
+
+
+        if (cookie.startsWith("csrftoken=")) {
+
+            return decodeURIComponent(
+                cookie.substring(
+                    "csrftoken=".length
+                )
+            );
+
+        }
+
+    }
+
+
+    return "";
+}
+
+</script>
+
+{% endblock %}

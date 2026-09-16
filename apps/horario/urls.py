@@ -1,8 +1,13 @@
 from django.urls import path
+
 from . import views
 
 
 urlpatterns = [
+
+    # =========================================================
+    # PERIODOS
+    # =========================================================
 
     path(
         "periodos/",
@@ -28,8 +33,13 @@ urlpatterns = [
         name="eliminar_periodo"
     ),
 
+
+    # =========================================================
+    # HORARIOS
+    # =========================================================
+
     path(
-        "",
+        "listar_horario",
         views.listar_horarios,
         name="listar_horarios"
     ),
@@ -41,17 +51,49 @@ urlpatterns = [
     ),
 
     path(
-        "editar/<int:id>/",
-        views.editar_horario,
-        name="editar_horario"
-    ),
-
-    path(
         "eliminar/<int:id>/",
         views.eliminar_horario,
         name="eliminar_horario"
     ),
 
-    path("calendario/", views.calendario, name="calendario"),
+
+    # =========================================================
+    # PLANIFICADOR VISUAL
+    # =========================================================
+
+    path(
+        "listar_horario/",
+        views.listar_horario,
+        name="listar_horario"
+    ),
+
+    path(
+        "crear_horario/",
+        views.crear_horario,
+        name="crear_horario"
+    ),
+
+    path(
+        "crear/<int:periodo_id>/<int:curso_id>/",
+        views.crear_horario_curso,
+        name="crear_horario_curso",
+    ),
+
+    path(
+        "editar/<int:periodo_id>/<int:curso_id>/",
+        views.editar_horario,
+        name="editar_horario"
+    ),
+
+
+    # =========================================================
+    # AJAX
+    # =========================================================
+
+    path(
+        "guardar_horario_ajax/",
+        views.guardar_horario_ajax,
+        name="guardar_horario_ajax",
+    ),
 
 ]
