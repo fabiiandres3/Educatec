@@ -844,18 +844,18 @@ Crear horario - {{ curso.nombre }}
                         Seleccionar docente
                     </option>
 
-                    {% for asignacion in asignaciones %}
+                    {% for docente in docentes %}
 
                     <option
-                        value="{{ asignacion.docente.id }}"
+                        value="{{ docente.id }}"
                     >
-                        {{ asignacion.docente.usuario.get_full_name }}
+                        {{ docente.usuario.get_full_name }}
                     </option>
 
                     {% empty %}
 
                     <option value="" disabled>
-                        No hay docentes asignados
+                        No hay docentes registrados
                     </option>
 
                     {% endfor %}

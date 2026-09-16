@@ -668,6 +668,19 @@ def crear_horario_curso(request, periodo_id, curso_id):
         )
 
     # =====================================================
+    # OBTENER TODOS LOS DOCENTES
+    # =====================================================
+
+    docentes = (
+        Docente.objects
+        .select_related("usuario")
+        .order_by(
+            "usuario__first_name",
+            "usuario__last_name"
+        )
+    )
+
+    # =====================================================
     # OBTENER DOCENTES ASIGNADOS AL CURSO
     # =====================================================
 
@@ -713,6 +726,7 @@ def crear_horario_curso(request, periodo_id, curso_id):
         {
             "periodo": periodo,
             "curso": curso,
+            "docentes": docentes,
             "asignaciones": asignaciones,
             "dias": dias,
             "horas_manana": horas_manana,
