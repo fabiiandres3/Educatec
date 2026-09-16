@@ -9,6 +9,10 @@ from apps.cursos.models import Cursos
 from apps.docentes.models import Docente
 
 
+# ============================================================
+# TAREAS
+# ============================================================
+
 class Tareas(models.Model):
 
     docente = models.ForeignKey(
@@ -58,25 +62,41 @@ class Tareas(models.Model):
     def clean(self):
         super().clean()
 
-        # No permitir una fecha de entrega anterior a hoy
-        if self.fecha_entrega and self.fecha_entrega < timezone.localdate():
+        # ----------------------------------------------------
+        # FECHA DE ENTREGA NO PUEDE SER ANTERIOR A HOY
+        # ----------------------------------------------------
+
+        if (
+            self.fecha_entrega
+            and self.fecha_entrega < timezone.localdate()
+        ):
             raise ValidationError({
-                "fecha_entrega": "No puedes establecer una fecha de entrega que ya pasó."
+                "fecha_entrega":
+                    "No puedes establecer una fecha de entrega que ya pasó."
             })
 
-        # La fecha de entrega no puede ser anterior a la fecha de creación
+        # ----------------------------------------------------
+        # FECHA DE ENTREGA NO PUEDE SER ANTERIOR
+        # A LA FECHA DE CREACIÓN
+        # ----------------------------------------------------
+
         if (
             self.fecha_entrega
             and self.fecha_creacion
             and self.fecha_entrega < self.fecha_creacion
         ):
             raise ValidationError({
-                "fecha_entrega": "La fecha de entrega no puede ser anterior a la fecha de creación."
+                "fecha_entrega":
+                    "La fecha de entrega no puede ser anterior a la fecha de creación."
             })
 
     def __str__(self):
         return self.titulo
 
+
+# ============================================================
+# TAREA - ALUMNO
+# ============================================================
 
 class TareaAlumno(models.Model):
 
@@ -106,6 +126,10 @@ class TareaAlumno(models.Model):
         return f"{self.tarea} - {self.alumno}"
 
 
+# ============================================================
+# VIDEO
+# ============================================================
+
 class Video(models.Model):
 
     tarea = models.ForeignKey(
@@ -118,6 +142,13 @@ class Video(models.Model):
         null=True
     )
 
+    def __str__(self):
+        return str(self.video)
+
+
+# ============================================================
+# IMAGEN
+# ============================================================
 
 class Imagen(models.Model):
 
@@ -137,10 +168,14 @@ class Imagen(models.Model):
         return str(self.imagen)
 
 
+# ============================================================
+# ARCHIVO DE TAREA
+# ============================================================
+
 class ArchivoTarea(models.Model):
 
     tarea = models.ForeignKey(
-        "Tareas",
+        Tareas,
         on_delete=models.CASCADE,
         related_name="archivos"
     )
@@ -158,6 +193,10 @@ class ArchivoTarea(models.Model):
     def __str__(self):
         return f"{self.tarea} - {self.archivo.name}"
 
+
+# ============================================================
+# PREGUNTA
+# ============================================================
 
 class Pregunta(models.Model):
 
@@ -192,6 +231,10 @@ class Pregunta(models.Model):
         return f"{self.descripcion} - {self.tipo} - puntaje"
 
 
+# ============================================================
+# OPCIONES DE RESPUESTA
+# ============================================================
+
 class OpcionesRespuesta(models.Model):
 
     pregunta = models.ForeignKey(
@@ -212,6 +255,10 @@ class OpcionesRespuesta(models.Model):
         return f"{self.opcion} - {self.es_correcta}"
 
 
+# ============================================================
+# RESPUESTA CORRECTA
+# ============================================================
+
 class RespuestaCorrecta(models.Model):
 
     pregunta = models.OneToOneField(
@@ -227,6 +274,10 @@ class RespuestaCorrecta(models.Model):
     def __str__(self):
         return self.respuesta
 
+
+# ============================================================
+# RESPUESTA DEL ALUMNO
+# ============================================================
 
 class RespuestaAlumno(models.Model):
 
@@ -270,6 +321,13 @@ class RespuestaAlumno(models.Model):
         default=False
     )
 
+    def __str__(self):
+        return f"{self.alumno} - {self.pregunta}"
+
+
+# ============================================================
+# CALIFICACIÓN FINAL DE LA TAREA
+# ============================================================
 
 class Calificacion(models.Model):
 
@@ -287,3 +345,141 @@ class Calificacion(models.Model):
         max_digits=3,
         decimal_places=2
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["alumno", "tarea"],
+                name="unique_calificacion_alumno_tarea"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.alumno} - {self.tarea} - {self.nota}"
+    
+    # ============================================================
+# CALIFICACIÓN FINAL DE LA TAREA
+# ============================================================
+
+class Calificacion(models.Model):
+
+    alumno = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE
+    )
+
+    tarea = models.ForeignKey(
+        Tareas,
+        on_delete=models.CASCADE
+    )
+
+    nota = models.DecimalField(
+        max_digits=3,
+        decimal_places=2
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["alumno", "tarea"],
+                name="unique_calificacion_alumno_tarea"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.alumno} - {self.tarea} - {self.nota}"
+
+
+# ============================================================
+# ACTIVIDADES MANUALES DE CALIFICACIÓN
+# ============================================================
+
+class ActividadCalificacion(models.Model):
+
+    docente = models.ForeignKey(
+        "docentes.Docente",
+        on_delete=models.CASCADE,
+        related_name="actividades_calificacion"
+    )
+
+    curso = models.ForeignKey(
+        "cursos.Cursos",
+        on_delete=models.CASCADE,
+        related_name="actividades_calificacion"
+    )
+
+    clase = models.ForeignKey(
+        "clases.Clases",
+        on_delete=models.CASCADE,
+        related_name="actividades_calificacion"
+    )
+
+    nombre = models.CharField(
+        max_length=150
+    )
+
+    tipo = models.CharField(
+        max_length=50,
+        default="Actividad"
+    )
+
+    descripcion = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    fecha = models.DateField(
+        auto_now_add=True
+    )
+
+    activa = models.BooleanField(
+        default=True
+    )
+
+    class Meta:
+        ordering = ["fecha", "id"]
+        verbose_name = "Actividad de calificación"
+        verbose_name_plural = "Actividades de calificación"
+
+    def __str__(self):
+        return self.nombre
+
+
+# ============================================================
+# CALIFICACIÓN DE ACTIVIDAD MANUAL
+# ============================================================
+
+class CalificacionActividad(models.Model):
+
+    actividad = models.ForeignKey(
+        ActividadCalificacion,
+        on_delete=models.CASCADE,
+        related_name="calificaciones"
+    )
+
+    alumno = models.ForeignKey(
+        "user.Usuario",
+        on_delete=models.CASCADE,
+        related_name="calificaciones_actividades"
+    )
+
+    nota = models.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["actividad", "alumno"],
+                name="unique_calificacion_actividad_alumno"
+            )
+        ]
+
+        verbose_name = "Calificación de actividad"
+        verbose_name_plural = "Calificaciones de actividades"
+
+    def __str__(self):
+        return f"{self.alumno} - {self.actividad} - {self.nota}"

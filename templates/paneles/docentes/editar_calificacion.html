@@ -1,0 +1,611 @@
+{% extends 'paneles/docentes/base.html' %}
+
+{% block title %}
+Editar calificación
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .editar-page {
+        min-height: calc(100vh - 70px);
+        background: #f5f7fb;
+        padding: 35px;
+    }
+
+
+    /* =====================================================
+       CONTENEDOR
+    ===================================================== */
+
+    .editar-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+
+    /* =====================================================
+       VOLVER
+    ===================================================== */
+
+    .volver {
+
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        text-decoration: none;
+
+        color: #64748b;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        margin-bottom: 18px;
+
+        transition: .2s;
+    }
+
+
+    .volver:hover {
+        color: #2f6fed;
+    }
+
+
+    /* =====================================================
+       CARD
+    ===================================================== */
+
+    .editar-card {
+
+        background: white;
+
+        border: 1px solid #e2e8f0;
+
+        border-radius: 18px;
+
+        overflow: hidden;
+
+        box-shadow:
+            0 8px 30px rgba(15, 23, 42, .07);
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .editar-header {
+
+        padding: 25px 28px;
+
+        background: linear-gradient(
+            135deg,
+            #f7faff,
+            #eef4ff
+        );
+
+        border-bottom: 1px solid #e5eaf1;
+    }
+
+
+    .editar-header-top {
+
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+
+    .editar-icon {
+
+        width: 48px;
+        height: 48px;
+
+        border-radius: 13px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #2f6fed;
+
+        color: white;
+
+        font-size: 18px;
+    }
+
+
+    .editar-header h1 {
+
+        margin: 0;
+
+        color: #17233a;
+
+        font-size: 21px;
+
+        font-weight: 800;
+    }
+
+
+    .editar-header p {
+
+        margin: 4px 0 0;
+
+        color: #718096;
+
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       INFORMACIÓN
+    ===================================================== */
+
+    .informacion {
+
+        padding: 25px 28px 5px;
+    }
+
+
+    .info-row {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 20px;
+
+        padding: 13px 0;
+
+        border-bottom: 1px solid #edf0f5;
+    }
+
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+
+    .info-label {
+
+        font-size: 12px;
+
+        color: #8a95a7;
+
+        font-weight: 600;
+    }
+
+
+    .info-value {
+
+        font-size: 14px;
+
+        color: #29364b;
+
+        font-weight: 700;
+
+        text-align: right;
+    }
+
+
+    /* =====================================================
+       FORMULARIO
+    ===================================================== */
+
+    .form-section {
+
+        padding: 25px 28px 30px;
+    }
+
+
+    .form-section label {
+
+        display: block;
+
+        margin-bottom: 9px;
+
+        font-size: 13px;
+
+        font-weight: 750;
+
+        color: #334155;
+    }
+
+
+    .nota-input {
+
+        width: 100%;
+
+        box-sizing: border-box;
+
+        border: 1px solid #d7dee8;
+
+        border-radius: 12px;
+
+        padding: 15px;
+
+        font-size: 25px;
+
+        font-weight: 800;
+
+        text-align: center;
+
+        color: #26364d;
+
+        outline: none;
+
+        transition: .2s;
+    }
+
+
+    .nota-input:focus {
+
+        border-color: #2f6fed;
+
+        box-shadow:
+            0 0 0 4px rgba(47,111,237,.10);
+    }
+
+
+    .ayuda {
+
+        margin-top: 8px;
+
+        text-align: center;
+
+        color: #98a1af;
+
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+       BOTONES
+    ===================================================== */
+
+    .acciones {
+
+        display: flex;
+
+        justify-content: flex-end;
+
+        gap: 10px;
+
+        margin-top: 25px;
+    }
+
+
+    .btn-cancelar {
+
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        padding: 11px 17px;
+
+        border-radius: 10px;
+
+        border: 1px solid #dce2eb;
+
+        background: white;
+
+        color: #56657b;
+
+        text-decoration: none;
+
+        font-size: 13px;
+
+        font-weight: 700;
+
+        transition: .2s;
+    }
+
+
+    .btn-cancelar:hover {
+
+        background: #f5f7fa;
+
+        color: #334155;
+    }
+
+
+    .btn-guardar {
+
+        border: none;
+
+        padding: 11px 19px;
+
+        border-radius: 10px;
+
+        background: #2f6fed;
+
+        color: white;
+
+        font-size: 13px;
+
+        font-weight: 750;
+
+        cursor: pointer;
+
+        transition: .2s;
+    }
+
+
+    .btn-guardar:hover {
+
+        background: #245dcc;
+
+        transform: translateY(-1px);
+    }
+
+
+    /* =====================================================
+       MENSAJES
+    ===================================================== */
+
+    .mensaje {
+
+        margin: 20px 28px 0;
+
+        padding: 11px 14px;
+
+        border-radius: 9px;
+
+        background: #fff4df;
+
+        border: 1px solid #f3dfb7;
+
+        color: #996200;
+
+        font-size: 12px;
+
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 600px) {
+
+        .editar-page {
+            padding: 18px;
+        }
+
+        .editar-header,
+        .informacion,
+        .form-section {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .info-row {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-value {
+            text-align: left;
+        }
+
+        .acciones {
+            flex-direction: column;
+        }
+
+        .btn-cancelar,
+        .btn-guardar {
+            width: 100%;
+        }
+
+    }
+
+</style>
+
+
+<div class="editar-page">
+
+    <div class="editar-container">
+
+
+        <!-- =================================================
+             VOLVER
+        ================================================== -->
+
+        <a
+            href="{% url 'calificaciones_docente' %}"
+            class="volver"
+        >
+
+            <i class="fas fa-arrow-left"></i>
+
+            Volver al libro de calificaciones
+
+        </a>
+
+
+        <!-- =================================================
+             CARD
+        ================================================== -->
+
+        <div class="editar-card">
+
+
+            <!-- =============================================
+                 HEADER
+            ============================================== -->
+
+            <div class="editar-header">
+
+                <div class="editar-header-top">
+
+                    <div class="editar-icon">
+
+                        <i class="fas fa-pen"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h1>
+                            Editar calificación
+                        </h1>
+
+                        <p>
+                            Modifica la nota registrada para este estudiante.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 INFORMACIÓN
+            ============================================== -->
+
+            <div class="informacion">
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Estudiante
+                    </span>
+
+                    <span class="info-value">
+
+                        {{ alumno.first_name }}
+                        {{ alumno.last_name }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Tarea
+                    </span>
+
+                    <span class="info-value">
+
+                        {{ tarea.titulo }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Nota actual
+                    </span>
+
+                    <span class="info-value">
+
+                        {{ calificacion.nota|floatformat:2 }}
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =============================================
+                 FORMULARIO
+            ============================================== -->
+
+            <form
+                method="POST"
+                class="form-section"
+            >
+
+                {% csrf_token %}
+
+
+                <label for="nota">
+
+                    Nueva calificación
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="nota"
+                    name="nota"
+                    class="nota-input"
+                    value="{{ calificacion.nota }}"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    required
+                    autofocus
+                >
+
+
+                <div class="ayuda">
+
+                    La calificación debe estar entre
+                    <strong>0.00</strong> y
+                    <strong>5.00</strong>.
+
+                </div>
+
+
+                <!-- =========================================
+                     BOTONES
+                ========================================== -->
+
+                <div class="acciones">
+
+
+                    <a
+                        href="{% url 'calificaciones_docente' %}"
+                        class="btn-cancelar"
+                    >
+
+                        Cancelar
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="btn-guardar"
+                    >
+
+                        <i class="fas fa-save"></i>
+
+                        Guardar calificación
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

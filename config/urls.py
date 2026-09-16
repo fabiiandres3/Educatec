@@ -62,6 +62,11 @@ urlpatterns = [
             "",
             include("apps.horario.urls")
         ),
+    
+    path(
+    "",
+    include("apps.calificaciones.urls")
+),
 
 
     # =========================================================

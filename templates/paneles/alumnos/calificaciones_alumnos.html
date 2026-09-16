@@ -1,86 +1,869 @@
 {% extends 'paneles/alumnos/base.html' %}
-{% block title %}Mis Calificaciones{% endblock %}
-{% block active_calificaciones %}active{% endblock %}
+
+{% block title %}
+Mis Calificaciones
+{% endblock %}
+
+{% block active_calificaciones %}
+active
+{% endblock %}
 
 {% block content %}
-<div class="topbar">
-    <div class="welcome">
-        <h2>Mis Calificaciones</h2>
-        <p>{{ alumnos.curso }} — Año 2026</p>
+
+<style>
+
+    .calificaciones-page {
+        padding: 30px;
+        background: #f5f7fb;
+        min-height: calc(100vh - 70px);
+    }
+
+    /* =====================================================
+       ENCABEZADO
+    ===================================================== */
+
+    .calificaciones-header {
+        margin-bottom: 25px;
+    }
+
+    .calificaciones-header h1 {
+        margin: 0;
+        color: #172033;
+        font-size: 32px;
+        font-weight: 800;
+    }
+
+    .calificaciones-header p {
+        margin-top: 6px;
+        margin-bottom: 0;
+        color: #718096;
+        font-size: 15px;
+    }
+
+
+    /* =====================================================
+       INFORMACIÓN DEL ALUMNO
+    ===================================================== */
+
+    .alumno-info {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    .info-label {
+        color: #94a3b8;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        color: #172033;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       TARJETAS
+    ===================================================== */
+
+    .estadisticas {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+        margin-bottom: 25px;
+    }
+
+    .estadistica-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    .estadistica-contenido {
+        display: flex;
+        align-items: center;
+    }
+
+    .estadistica-icono {
+        width: 55px;
+        height: 55px;
+        border-radius: 14px;
+        background: #eef2ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 16px;
+        font-size: 25px;
+    }
+
+    .estadistica-titulo {
+        color: #718096;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .estadistica-numero {
+        color: #172033;
+        font-size: 27px;
+        font-weight: 800;
+        margin: 0;
+    }
+
+
+    /* =====================================================
+       ESTADO
+    ===================================================== */
+
+    .estado-badge {
+        display: inline-block;
+        padding: 7px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .estado-superior {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .estado-alto {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .estado-basico {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .estado-bajo {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .estado-sin {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+
+    /* =====================================================
+       TABLA
+    ===================================================== */
+
+    .tabla-card {
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    .tabla-header {
+        padding: 22px 25px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .tabla-header h2 {
+        margin: 0;
+        color: #172033;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .tabla-header p {
+        margin: 5px 0 0;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .contador-notas {
+        background: #2563eb;
+        color: #ffffff;
+        padding: 8px 13px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .tabla-contenedor {
+        overflow-x: auto;
+    }
+
+    .tabla-calificaciones {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .tabla-calificaciones thead {
+        background: #f8fafc;
+    }
+
+    .tabla-calificaciones th {
+        padding: 16px;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 800;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    .tabla-calificaciones th.centro {
+        text-align: center;
+    }
+
+    .tabla-calificaciones td {
+        padding: 17px 16px;
+        color: #475569;
+        font-size: 14px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    .tabla-calificaciones tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .numero-fila {
+        color: #94a3b8;
+        font-weight: 700;
+    }
+
+    .actividad-nombre {
+        color: #172033;
+        font-weight: 700;
+    }
+
+    .actividad-descripcion {
+        color: #94a3b8;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .tipo-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .nota-badge {
+        display: inline-block;
+        min-width: 60px;
+        padding: 8px 12px;
+        border-radius: 9px;
+        background: #eef2ff;
+        color: #4338ca;
+        font-size: 15px;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .nota-aprobada {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .nota-reprobada {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+
+    /* =====================================================
+       SIN DATOS
+    ===================================================== */
+
+    .sin-datos {
+        text-align: center;
+        padding: 55px 20px !important;
+    }
+
+    .sin-datos-icono {
+        font-size: 42px;
+        margin-bottom: 15px;
+    }
+
+    .sin-datos h3 {
+        color: #334155;
+        font-size: 17px;
+        font-weight: 800;
+        margin-bottom: 6px;
+    }
+
+    .sin-datos p {
+        color: #94a3b8;
+        margin: 0;
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 900px) {
+
+        .estadisticas {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+    @media (max-width: 768px) {
+
+        .calificaciones-page {
+            padding: 20px 15px;
+        }
+
+        .calificaciones-header h1 {
+            font-size: 26px;
+        }
+
+        .alumno-info {
+            padding: 20px;
+        }
+
+        .tabla-header {
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+    }
+
+</style>
+
+
+<div class="calificaciones-page">
+
+
+    <!-- =====================================================
+         ENCABEZADO
+    ===================================================== -->
+
+    <div class="calificaciones-header">
+
+        <h1>
+            Mis Calificaciones
+        </h1>
+
+        <p>
+            Consulta las notas registradas por tus docentes.
+        </p>
+
     </div>
-    <div class="user-area">
-        <div class="notification">
-            <i class="fa-solid fa-bell"></i>
-            <span class="notification-count">0</span>
-        </div>
-        <div class="profile">
-            <img src="https://i.pravatar.cc/120?img=12" alt="Alumno">
-            <div>
-                <strong>{{ alumnos.nombre }}</strong>
-                <small>{{ alumnos.curso }}</small>
+
+
+    <!-- =====================================================
+         INFORMACIÓN DEL ALUMNO
+    ===================================================== -->
+
+    <div class="alumno-info">
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3 mb-md-0">
+
+                <div class="info-label">
+                    Estudiante
+                </div>
+
+                <div class="info-value">
+
+                    {{ alumno.usuario.get_full_name }}
+
+                </div>
+
             </div>
+
+
+            <div class="col-md-4 mb-3 mb-md-0">
+
+                <div class="info-label">
+                    Curso
+                </div>
+
+                <div class="info-value">
+
+                    {% if curso %}
+                        {{ curso }}
+                    {% else %}
+                        Sin curso asignado
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="info-label">
+                    Clase
+                </div>
+
+                <div class="info-value">
+
+                    {% if clase %}
+                        {{ clase }}
+                    {% else %}
+                        Sin clase asignada
+                    {% endif %}
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
+
+
+    <!-- =====================================================
+         ESTADÍSTICAS
+    ===================================================== -->
+
+    <div class="estadisticas">
+
+
+        <!-- CALIFICACIONES -->
+
+        <div class="estadistica-card">
+
+            <div class="estadistica-contenido">
+
+                <div class="estadistica-icono">
+
+                    📝
+
+                </div>
+
+                <div>
+
+                    <div class="estadistica-titulo">
+                        Calificaciones
+                    </div>
+
+                    <p class="estadistica-numero">
+                        {{ calificaciones|length }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PROMEDIO -->
+
+        <div class="estadistica-card">
+
+            <div class="estadistica-contenido">
+
+                <div class="estadistica-icono">
+
+                    📊
+
+                </div>
+
+                <div>
+
+                    <div class="estadistica-titulo">
+                        Promedio
+                    </div>
+
+                    <p class="estadistica-numero">
+
+                        {% if promedio is not None %}
+                            {{ promedio }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ESTADO -->
+
+        <div class="estadistica-card">
+
+            <div class="estadistica-contenido">
+
+                <div class="estadistica-icono">
+
+                    🎓
+
+                </div>
+
+                <div>
+
+                    <div class="estadistica-titulo">
+                        Estado académico
+                    </div>
+
+                    {% if estado == "Superior" %}
+
+                        <span class="estado-badge estado-superior">
+                            Superior
+                        </span>
+
+                    {% elif estado == "Alto" %}
+
+                        <span class="estado-badge estado-alto">
+                            Alto
+                        </span>
+
+                    {% elif estado == "Básico" %}
+
+                        <span class="estado-badge estado-basico">
+                            Básico
+                        </span>
+
+                    {% elif estado == "Bajo" %}
+
+                        <span class="estado-badge estado-bajo">
+                            Bajo
+                        </span>
+
+                    {% else %}
+
+                        <span class="estado-badge estado-sin">
+                            Sin calificaciones
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         TABLA
+    ===================================================== -->
+
+    <div class="tabla-card">
+
+
+        <!-- ENCABEZADO TABLA -->
+
+        <div class="tabla-header">
+
+            <div>
+
+                <h2>
+                    Detalle de calificaciones
+                </h2>
+
+                <p>
+                    Notas registradas en el sistema
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <span class="contador-notas">
+
+                    {{ calificaciones|length }}
+
+                    {% if calificaciones|length == 1 %}
+                        nota
+                    {% else %}
+                        notas
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABLA -->
+
+        <div class="tabla-contenedor">
+
+            <table class="tabla-calificaciones">
+
+                <thead>
+
+                    <tr>
+
+                        <th class="centro">
+                            #
+                        </th>
+
+                        <th>
+                            Actividad
+                        </th>
+
+                        <th>
+                            Tipo
+                        </th>
+
+                        <th>
+                            Docente
+                        </th>
+
+                        <th>
+                            Fecha de entrega
+                        </th>
+
+                        <th class="centro">
+                            Nota
+                        </th>
+
+                        <th class="centro">
+                            Estado
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for cal in calificaciones %}
+
+                    <tr>
+
+
+                        <!-- NUMERO -->
+
+                        <td style="text-align:center;">
+
+                            <span class="numero-fila">
+
+                                {{ forloop.counter }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ACTIVIDAD -->
+
+                        <td>
+
+                            <div class="actividad-nombre">
+
+                                {{ cal.tarea.titulo }}
+
+                            </div>
+
+
+                            {% if cal.tarea.descripcion %}
+
+                            <div class="actividad-descripcion">
+
+                                {{ cal.tarea.descripcion|truncatechars:90 }}
+
+                            </div>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- TIPO -->
+
+                        <td>
+
+                            <span class="tipo-badge">
+
+                                Tarea
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- DOCENTE -->
+
+                        <td>
+
+                            {% if cal.tarea.docente %}
+
+                                {% if cal.tarea.docente.usuario %}
+
+                                    {{ cal.tarea.docente.usuario.get_full_name }}
+
+                                {% else %}
+
+                                    {{ cal.tarea.docente }}
+
+                                {% endif %}
+
+                            {% else %}
+
+                                Sin docente
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- FECHA -->
+
+                        <td>
+
+                            {% if cal.tarea.fecha_entrega %}
+
+                                {{ cal.tarea.fecha_entrega|date:"d/m/Y" }}
+
+                            {% else %}
+
+                                Sin fecha
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- NOTA -->
+
+                        <td style="text-align:center;">
+
+                            {% if cal.nota is not None %}
+
+                                {% if cal.nota >= 3 %}
+
+                                    <span class="nota-badge nota-aprobada">
+
+                                        {{ cal.nota }}
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="nota-badge nota-reprobada">
+
+                                        {{ cal.nota }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <span class="nota-badge">
+
+                                    —
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ESTADO -->
+
+                        <td style="text-align:center;">
+
+                            {% if cal.nota is not None %}
+
+                                {% if cal.nota >= 3 %}
+
+                                    <span class="estado-badge estado-superior">
+
+                                        Aprobado
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="estado-badge estado-bajo">
+
+                                        Reprobado
+
+                                    </span>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <span class="estado-badge estado-sin">
+
+                                    Sin nota
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% empty %}
+
+
+                    <!-- SIN CALIFICACIONES -->
+
+                    <tr>
+
+                        <td colspan="7" class="sin-datos">
+
+                            <div class="sin-datos-icono">
+                                📋
+                            </div>
+
+                            <h3>
+                                No hay calificaciones registradas
+                            </h3>
+
+                            <p>
+                                Cuando un docente registre una calificación,
+                                aparecerá aquí.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="stats">
-    <div class="stat-card">
-        <div class="stat-icon blue"><i class="fa-solid fa-star"></i></div>
-        <div><h3>{{ promedio_general }}</h3><p>Promedio General</p></div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon green"><i class="fa-solid fa-check-circle"></i></div>
-        <div><h3>{{ aprobadas }}</h3><p>Materias Aprobadas</p></div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <div><h3>{{ en_riesgo }}</h3><p>En Riesgo</p></div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon purple"><i class="fa-solid fa-book"></i></div>
-        <div><h3>{{ calificaciones|length }}</h3><p>Materias</p></div>
-    </div>
-</div>
-
-<br>
-
-<div class="section-card">
-    <h4 style="margin-bottom:15px;">Boletín de Notas</h4>
-    <table style="width:100%; border-collapse:collapse;">
-        <thead style="background:#f4f7fc;">
-            <tr>
-                <th style="padding:15px; text-align:left; color:#081b3a;">Materia</th>
-                <th style="padding:15px; text-align:left; color:#081b3a;">Docente</th>
-                <th style="padding:15px; text-align:center; color:#081b3a;">Tarea</th>
-                <th style="padding:15px; text-align:center; color:#081b3a;">Parcial</th>
-                <th style="padding:15px; text-align:center; color:#081b3a;">Examen</th>
-                <th style="padding:15px; text-align:center; color:#081b3a;">Promedio</th>
-                <th style="padding:15px; text-align:center; color:#081b3a;">Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for cal in calificaciones %}
-            <tr style="border-bottom:1px solid #e5e7eb;">
-                <td style="padding:15px; font-weight:600;">{{ cal.materia }}</td>
-                <td style="padding:15px; color:#64748b;">{{ cal.docente.nombre }}</td>
-                <td style="padding:15px; text-align:center;">{{ cal.tarea }}</td>
-                <td style="padding:15px; text-align:center;">{{ cal.parcial }}</td>
-                <td style="padding:15px; text-align:center;">{{ cal.examen }}</td>
-                <td style="padding:15px; text-align:center; font-weight:bold; font-size:1.1rem; color:{% if cal.promedio >= 3.0 %}#10b981{% else %}#ef4444{% endif %};">
-                    {{ cal.promedio }}
-                </td>
-                <td style="padding:15px; text-align:center;">
-                    <span style="padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;
-                        background:{% if cal.promedio >= 3.0 %}#d1fae5{% else %}#fee2e2{% endif %};
-                        color:{% if cal.promedio >= 3.0 %}#065f46{% else %}#991b1b{% endif %};">
-                        {% if cal.promedio >= 3.0 %}Aprobado{% else %}Reprobado{% endif %}
-                    </span>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7" style="text-align:center; padding:30px; color:#64748b;">No hay calificaciones registradas.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %} 
+{% endblock %}
