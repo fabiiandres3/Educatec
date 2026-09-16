@@ -1,0 +1,112 @@
+[33mcommit 8dbe5cba079ab898ebde0f5c84480fe80fb9e485[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: david <sierrita3123@gmail.com>
+Date:   Tue Sep 15 21:00:42 2026 -0500
+
+    agargue nueva app de calificaciones
+
+ apps/alumnos/__pycache__/__init__.cpython-314.pyc  |  Bin [31m177[m -> [32m170[m bytes
+ apps/alumnos/__pycache__/admin.cpython-314.pyc     |  Bin [31m4022[m -> [32m4015[m bytes
+ apps/alumnos/__pycache__/apps.cpython-314.pyc      |  Bin [31m484[m -> [32m477[m bytes
+ apps/alumnos/__pycache__/forms.cpython-314.pyc     |  Bin [31m1845[m -> [32m1838[m bytes
+ apps/alumnos/__pycache__/models.cpython-314.pyc    |  Bin [31m4332[m -> [32m4325[m bytes
+ apps/alumnos/__pycache__/urls.cpython-314.pyc      |  Bin [31m907[m -> [32m900[m bytes
+ apps/alumnos/__pycache__/views.cpython-314.pyc     |  Bin [31m9909[m -> [32m9902[m bytes
+ .../__pycache__/0001_initial.cpython-314.pyc       |  Bin [31m2201[m -> [32m2194[m bytes
+ .../0002_rename_alumno_alumnos.cpython-314.pyc     |  Bin [31m871[m -> [32m864[m bytes
+ .../__pycache__/0003_alumnos_curso.cpython-314.pyc |  Bin [31m1060[m -> [32m1053[m bytes
+ .../__pycache__/0004_alumnos_clase.cpython-314.pyc |  Bin [31m1057[m -> [32m1050[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m188[m -> [32m181[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m180[m -> [32m173[m bytes
+ apps/asistencia/__pycache__/admin.cpython-314.pyc  |  Bin [31m224[m -> [32m217[m bytes
+ apps/asistencia/__pycache__/apps.cpython-314.pyc   |  Bin [31m493[m -> [32m486[m bytes
+ apps/asistencia/__pycache__/models.cpython-314.pyc |  Bin [31m1745[m -> [32m1738[m bytes
+ .../__pycache__/0001_initial.cpython-314.pyc       |  Bin [31m1826[m -> [32m1819[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m191[m -> [32m184[m bytes
+ apps/calificaciones/__init__.py                    |    0
+ apps/calificaciones/admin.py                       |    3 [32m+[m
+ apps/calificaciones/apps.py                        |   10 [32m+[m
+ apps/calificaciones/migrations/__init__.py         |    0
+ apps/calificaciones/models.py                      |   10 [32m+[m
+ apps/calificaciones/services.py                    |  152 [32m+[m
+ apps/calificaciones/tests.py                       |    3 [32m+[m
+ apps/calificaciones/urls.py                        |   31 [32m+[m
+ apps/calificaciones/views.py                       |  457 [32m+++[m
+ apps/clases/__pycache__/__init__.cpython-314.pyc   |  Bin [31m176[m -> [32m169[m bytes
+ apps/clases/__pycache__/admin.cpython-314.pyc      |  Bin [31m348[m -> [32m341[m bytes
+ apps/clases/__pycache__/apps.cpython-314.pyc       |  Bin [31m481[m -> [32m474[m bytes
+ apps/clases/__pycache__/forms.cpython-314.pyc      |  Bin [31m936[m -> [32m929[m bytes
+ apps/clases/__pycache__/models.cpython-314.pyc     |  Bin [31m1265[m -> [32m1258[m bytes
+ apps/clases/__pycache__/urls.cpython-314.pyc       |  Bin [31m712[m -> [32m705[m bytes
+ apps/clases/__pycache__/views.cpython-314.pyc      |  Bin [31m2138[m -> [32m2131[m bytes
+ .../__pycache__/0001_initial.cpython-314.pyc       |  Bin [31m1025[m -> [32m1018[m bytes
+ .../__pycache__/0002_clases_curso.cpython-314.pyc  |  Bin [31m1034[m -> [32m1027[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m187[m -> [32m180[m bytes
+ apps/cursos/__pycache__/__init__.cpython-314.pyc   |  Bin [31m176[m -> [32m169[m bytes
+ apps/cursos/__pycache__/admin.cpython-314.pyc      |  Bin [31m360[m -> [32m353[m bytes
+ apps/cursos/__pycache__/apps.cpython-314.pyc       |  Bin [31m481[m -> [32m474[m bytes
+ apps/cursos/__pycache__/forms.cpython-314.pyc      |  Bin [31m761[m -> [32m754[m bytes
+ apps/cursos/__pycache__/models.cpython-314.pyc     |  Bin [31m1127[m -> [32m1120[m bytes
+ apps/cursos/__pycache__/urls.cpython-314.pyc       |  Bin [31m1197[m -> [32m1190[m bytes
+ apps/cursos/__pycache__/views.cpython-314.pyc      |  Bin [31m14182[m -> [32m14175[m bytes
+ .../__pycache__/0001_initial.cpython-314.pyc       |  Bin [31m1122[m -> [32m1115[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m187[m -> [32m180[m bytes
+ apps/docentes/__pycache__/__init__.cpython-314.pyc |  Bin [31m178[m -> [32m171[m bytes
+ apps/docentes/__pycache__/admin.cpython-314.pyc    |  Bin [31m795[m -> [32m788[m bytes
+ apps/docentes/__pycache__/apps.cpython-314.pyc     |  Bin [31m487[m -> [32m480[m bytes
+ apps/docentes/__pycache__/forms.cpython-314.pyc    |  Bin [31m1614[m -> [32m1607[m bytes
+ apps/docentes/__pycache__/models.cpython-314.pyc   |  Bin [31m3627[m -> [32m3620[m bytes
+ apps/docentes/__pycache__/urls.cpython-314.pyc     |  Bin [31m2018[m -> [32m2011[m bytes
+ apps/docentes/__pycache__/views.cpython-314.pyc    |  Bin [31m26711[m -> [32m26704[m bytes
+ .../__pycache__/0001_initial.cpython-314.pyc       |  Bin [31m2126[m -> [32m2119[m bytes
+ .../0002_alter_docente_telefono.cpython-314.pyc    |  Bin [31m841[m -> [32m834[m bytes
+ .../0003_asignaciondocente.cpython-314.pyc         |  Bin [31m1626[m -> [32m1619[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m189[m -> [32m182[m bytes
+ .../__pycache__/0001_initial.cpython-314.pyc       |  Bin [31m2085[m -> [32m2078[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m188[m -> [32m181[m bytes
+ .../__pycache__/dict_extras.cpython-314.pyc        |  Bin [31m522[m -> [32m515[m bytes
+ apps/paneles/urls.py                               |   12 [32m+[m[31m-[m
+ apps/paneles/views.py                              |  184 [32m+[m[31m-[m
+ ...dcalificacion_calificacionactividad_and_more.py |   79 [32m+[m
+ .../__pycache__/0001_initial.cpython-314.pyc       |  Bin [31m6467[m -> [32m6460[m bytes
+ .../0002_tareas_clase_tareas_curso.cpython-314.pyc |  Bin [31m1317[m -> [32m1310[m bytes
+ ...0003_respuestaalumno_calificada.cpython-314.pyc |  Bin [31m841[m -> [32m834[m bytes
+ .../0004_tareas_docente.cpython-314.pyc            |  Bin [31m1086[m -> [32m1079[m bytes
+ .../0005_remove_tareas_docente.cpython-314.pyc     |  Bin [31m708[m -> [32m701[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m187[m -> [32m180[m bytes
+ apps/tareas/models.py                              |  210 [32m+[m[31m-[m
+ apps/tareas/services.py                            |  101 [32m+[m[31m-[m
+ apps/tareas/urls.py                                |   62 [32m+[m[31m-[m
+ apps/tareas/views.py                               |  612 [32m+++[m[31m-[m
+ apps/user/__pycache__/__init__.cpython-314.pyc     |  Bin [31m174[m -> [32m167[m bytes
+ apps/user/__pycache__/adapters.cpython-314.pyc     |  Bin [31m2292[m -> [32m2285[m bytes
+ apps/user/__pycache__/admin.cpython-314.pyc        |  Bin [31m789[m -> [32m782[m bytes
+ apps/user/__pycache__/apps.cpython-314.pyc         |  Bin [31m743[m -> [32m736[m bytes
+ apps/user/__pycache__/decorators.cpython-314.pyc   |  Bin [31m2099[m -> [32m2092[m bytes
+ apps/user/__pycache__/forms.cpython-314.pyc        |  Bin [31m5278[m -> [32m5271[m bytes
+ apps/user/__pycache__/models.cpython-314.pyc       |  Bin [31m1609[m -> [32m1602[m bytes
+ apps/user/__pycache__/signals.cpython-314.pyc      |  Bin [31m2426[m -> [32m2419[m bytes
+ apps/user/__pycache__/tokens.cpython-314.pyc       |  Bin [31m564[m -> [32m557[m bytes
+ apps/user/__pycache__/urls.cpython-314.pyc         |  Bin [31m1780[m -> [32m1773[m bytes
+ apps/user/__pycache__/views.cpython-314.pyc        |  Bin [31m12271[m -> [32m12264[m bytes
+ .../__pycache__/0001_initial.cpython-314.pyc       |  Bin [31m4171[m -> [32m4164[m bytes
+ .../0002_usuario_nombre_completo.cpython-314.pyc   |  Bin [31m854[m -> [32m847[m bytes
+ ..._remove_usuario_nombre_completo.cpython-314.pyc |  Bin [31m734[m -> [32m727[m bytes
+ ...004_usuario_clase_usuario_curso.cpython-314.pyc |  Bin [31m1014[m -> [32m1007[m bytes
+ ...ario_clase_remove_usuario_curso.cpython-314.pyc |  Bin [31m806[m -> [32m799[m bytes
+ ..._rol_usuario_password2_and_more.cpython-314.pyc |  Bin [31m1648[m -> [32m1641[m bytes
+ .../__pycache__/0007_usuario_rol.cpython-314.pyc   |  Bin [31m1047[m -> [32m1040[m bytes
+ ...pellido_usuario_nombre_and_more.cpython-314.pyc |  Bin [31m1371[m -> [32m1364[m bytes
+ ..._remove_usuario_nombre_and_more.cpython-314.pyc |  Bin [31m1198[m -> [32m1191[m bytes
+ ..._alter_usuario_options_and_more.cpython-314.pyc |  Bin [31m1613[m -> [32m1606[m bytes
+ .../0011_verificacioncorreo.cpython-314.pyc        |  Bin [31m1712[m -> [32m1705[m bytes
+ .../0012_delete_verificacioncorreo.cpython-314.pyc |  Bin [31m701[m -> [32m694[m bytes
+ ...st_name_alter_usuario_last_name.cpython-314.pyc |  Bin [31m1003[m -> [32m996[m bytes
+ .../__pycache__/__init__.cpython-314.pyc           |  Bin [31m185[m -> [32m178[m bytes
+ config/settings.py                                 |    1 [32m+[m
+ config/urls.py                                     |    5 [32m+[m
+ db.sqlite3                                         |  Bin [31m565248[m -> [32m606208[m bytes
+ .../paneles/alumnos/calificaciones_alumnos.html    |  931 [32m++++[m[31m-[m
+ .../paneles/docentes/calificaciones_docente.html   | 3541 [32m++++++++++++++++++[m[31m--[m
+ .../paneles/docentes/editar_calificacion.html      |  611 [32m++++[m
+ .../paneles/docentes/tareas/ver_respuesta.html     |  221 [32m+[m[31m-[m
+ 105 files changed, 6769 insertions(+), 467 deletions(-)
