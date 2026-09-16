@@ -338,6 +338,7 @@ def guardar_calificacion(request):
 @login_required
 def calificaciones_alumnos(request):
 
+
     alumno = get_object_or_404(
         Alumnos.objects.select_related(
             "usuario",
@@ -347,102 +348,80 @@ def calificaciones_alumnos(request):
         usuario=request.user
     )
 
-    tareas = Tareas.objects.filter(
-        activa=True,
-        curso_id=alumno.curso_id,
-        clase_id=alumno.clase_id
-    ).select_related(
-        "docente",
-        "clase",
-        "curso"
-    ).order_by(
-        "fecha_entrega",
-        "titulo"
-    )
 
+
+    # TODAS las calificaciones del usuario, sin filtrar por curso/clase
     calificaciones = Calificacion.objects.filter(
-        alumno=request.user,
-        tarea__in=tareas
+        alumno=request.user
     ).select_related(
-        "tarea"
-    )
+        "tarea",
+        "tarea__curso",
+        "tarea__clase",
+        "tarea__docente"
+    ).order_by("-id")
 
-    calificaciones_dict = {
-        calificacion.tarea_id: calificacion
-        for calificacion in calificaciones
-    }
+    print("TOTAL CALIFICACIONES:", calificaciones.count())
 
-    registros = []
-    notas = []
-
-    for tarea in tareas:
-
-        calificacion = calificaciones_dict.get(tarea.id)
-
-        if calificacion:
-
-            nota = calificacion.nota
-
-            notas.append(
-                Decimal(str(nota))
-            )
-
-        else:
-
-            nota = None
-
-        registros.append({
-            "tarea": tarea,
-            "calificacion": calificacion,
-            "nota": nota,
-        })
-
-    if notas:
-
-        promedio = (
-            sum(notas) / Decimal(len(notas))
-        ).quantize(
-            Decimal("0.01")
+    for cal in calificaciones:
+        print(
+            "CALIFICACION:",
+            cal.id,
+            "| ALUMNO:",
+            cal.alumno_id,
+            "| TAREA:",
+            cal.tarea_id,
+            "| NOTA:",
+            cal.nota,
+            "| CURSO TAREA:",
+            cal.tarea.curso_id,
+            "| CLASE TAREA:",
+            cal.tarea.clase_id,
         )
 
-    else:
+    registros = []
 
+    for calificacion in calificaciones:
+
+        registros.append({
+            "tarea": calificacion.tarea,
+            "calificacion": calificacion,
+            "nota": calificacion.nota,
+        })
+
+    notas = [
+        Decimal(str(cal.nota))
+        for cal in calificaciones
+        if cal.nota is not None
+    ]
+
+    if notas:
+        promedio = (
+            sum(notas) / Decimal(len(notas))
+        ).quantize(Decimal("0.01"))
+    else:
         promedio = None
 
     if promedio is None:
-
         estado = "Sin calificaciones"
-
     elif promedio >= Decimal("4.5"):
-
         estado = "Superior"
-
     elif promedio >= Decimal("4.0"):
-
         estado = "Alto"
-
     elif promedio >= Decimal("3.0"):
-
         estado = "Básico"
-
     else:
-
         estado = "Bajo"
 
-    total_tareas = tareas.count()
-
+    total_tareas = calificaciones.count()
     tareas_calificadas = len(notas)
-
-    tareas_pendientes = (
-        total_tareas - tareas_calificadas
-    )
+    tareas_pendientes = 0
 
     context = {
         "alumno": alumno,
         "curso": alumno.curso,
         "clase": alumno.clase,
         "registros": registros,
-        "tareas": tareas,
+        "calificaciones": calificaciones,
         "promedio": promedio,
         "estado": estado,
         "total_tareas": total_tareas,
