@@ -1,18 +1,21 @@
 from django.contrib import messages
 from django.db import transaction
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
 
 from apps.user.models import Usuario
-from apps.user.forms import EditarUsuarioForm
 
 from apps.docentes.models import (
     Docente,
     AsignacionDocente,
-    MAX_CURSOS_POR_DOCENTE
+    MAX_CURSOS_POR_DOCENTE,
+    MAX_MATERIAS_POR_DOCENTE
 )
 from apps.docentes.forms import (
     DocenteForm,
-    AsignacionDocenteForm
+    AsignacionDocenteForm,
+    EditarDocenteUsuarioForm
 )
 
 from apps.tareas.models import (
@@ -32,6 +35,7 @@ from apps.tareas.services import Crear_preguntas
 
 from apps.alumnos.models import Alumnos
 from apps.cursos.models import Cursos
+from apps.clases.models import Clases
 
 from django.core.exceptions import ValidationError
 from decimal import Decimal, InvalidOperation
@@ -67,7 +71,18 @@ def Editar_docente(request, docente_id):
     asignaciones = (
         AsignacionDocente.objects
         .filter(docente=docente)
-        .select_related("curso")
+        .select_related("curso", "clase")
+    )
+
+    # Materias (clases) únicas asignadas al docente
+    materias_asignadas = (
+        AsignacionDocente.objects
+        .filter(
+            docente=docente,
+            clase__isnull=False
+        )
+        .values_list("clase_id", flat=True)
+        .distinct()
     )
 
     if request.method == "POST":
@@ -77,7 +92,7 @@ def Editar_docente(request, docente_id):
         # ==========================================================
         if "guardar_docente" in request.POST:
 
-            usuario_form = EditarUsuarioForm(
+            usuario_form = EditarDocenteUsuarioForm(
                 request.POST,
                 instance=usuario
             )
@@ -107,51 +122,11 @@ def Editar_docente(request, docente_id):
                 )
 
         # ==========================================================
-        # AGREGAR CURSO AL DOCENTE
-        # ==========================================================
-        elif "agregar_asignacion" in request.POST:
-
-            usuario_form = EditarUsuarioForm(
-                instance=usuario
-            )
-
-            docente_form = DocenteForm(
-                instance=docente
-            )
-
-            asignacion_form = AsignacionDocenteForm(
-                request.POST
-            )
-
-            if asignacion_form.is_valid():
-
-                nueva = asignacion_form.save(
-                    commit=False
-                )
-
-                nueva.docente = docente
-
-                try:
-                    nueva.save()
-
-                    return redirect(
-                        "editar_docente",
-                        docente_id=docente_id
-                    )
-
-                except ValidationError as e:
-
-                    messages.error(
-                        request,
-                        e.messages[0]
-                    )
-
-        # ==========================================================
         # POST DESCONOCIDO
         # ==========================================================
         else:
 
-            usuario_form = EditarUsuarioForm(
+            usuario_form = EditarDocenteUsuarioForm(
                 instance=usuario
             )
 
@@ -163,7 +138,7 @@ def Editar_docente(request, docente_id):
 
     else:
 
-        usuario_form = EditarUsuarioForm(
+        usuario_form = EditarDocenteUsuarioForm(
             instance=usuario
         )
 
@@ -177,11 +152,226 @@ def Editar_docente(request, docente_id):
         request,
         "admin/docente/editar_docente.html",
         {
+            "docente": docente,
             "usuario_form": usuario_form,
             "docente_form": docente_form,
             "asignacion_form": asignacion_form,
             "asignaciones": asignaciones,
             "max_asignaciones": MAX_CURSOS_POR_DOCENTE,
+            "max_materias": MAX_MATERIAS_POR_DOCENTE,
+            "materias_asignadas": materias_asignadas,
+        }
+    )
+
+
+# ============================================================
+# GUARDAR DATOS DEL DOCENTE VÍA AJAX (SIN RECARGAR)
+# ============================================================
+
+@require_POST
+def guardar_docente_ajax(request, docente_id):
+
+    docente = get_object_or_404(
+        Docente,
+        usuario_id=docente_id
+    )
+
+    usuario = docente.usuario
+
+    usuario_form = EditarDocenteUsuarioForm(
+        request.POST,
+        instance=usuario
+    )
+
+    docente_form = DocenteForm(
+        request.POST,
+        instance=docente
+    )
+
+    if (
+        usuario_form.is_valid()
+        and docente_form.is_valid()
+    ):
+
+        usuario_form.save()
+        docente_form.save()
+
+        return JsonResponse(
+            {
+                "ok": True,
+                "mensaje": "Datos del docente actualizados correctamente.",
+            }
+        )
+
+    # =====================================================
+    # RECOPILAR ERRORES
+    # =====================================================
+
+    errores = {}
+
+    for campo, lista_errores in usuario_form.errors.items():
+
+        errores[campo] = [
+            str(e)
+            for e in lista_errores
+        ]
+
+    for campo, lista_errores in docente_form.errors.items():
+
+        errores[campo] = [
+            str(e)
+            for e in lista_errores
+        ]
+
+    return JsonResponse(
+        {
+            "ok": False,
+            "mensaje": "No se pudieron actualizar los datos del docente.",
+            "errores": errores,
+        },
+        status=400
+    )
+
+
+# ============================================================
+# ASIGNAR CURSO/MATERIA VÍA AJAX (SIN RECARGAR)
+# ============================================================
+
+@require_POST
+def asignar_curso_materia_ajax(request, docente_id):
+
+    docente = get_object_or_404(
+        Docente,
+        usuario_id=docente_id
+    )
+
+    curso_id = request.POST.get("curso")
+    clase_id = request.POST.get("clase")
+
+    if not curso_id:
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": "Debes seleccionar un curso."
+            },
+            status=400
+        )
+
+    if not clase_id:
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": "Debes seleccionar una materia."
+            },
+            status=400
+        )
+
+    # =====================================================
+    # VALIDAR MÁXIMO DE MATERIAS (3)
+    # =====================================================
+
+    materias_actuales = set(
+        AsignacionDocente.objects
+        .filter(
+            docente=docente,
+            clase__isnull=False
+        )
+        .values_list("clase_id", flat=True)
+        .distinct()
+    )
+
+    if (
+        int(clase_id) not in materias_actuales
+        and len(materias_actuales) >= MAX_MATERIAS_POR_DOCENTE
+    ):
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    f"El docente ya tiene asignadas "
+                    f"{MAX_MATERIAS_POR_DOCENTE} materias. "
+                    "Debe quitar una materia antes de asignar otra."
+                )
+            },
+            status=400
+        )
+
+    # =====================================================
+    # CREAR ASIGNACIÓN
+    # =====================================================
+
+    asignacion = AsignacionDocente.objects.create(
+        docente=docente,
+        curso_id=curso_id,
+        clase_id=clase_id,
+    )
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "mensaje": "Asignación creada correctamente.",
+            "asignacion": {
+                "id": asignacion.id,
+                "curso": asignacion.curso.nombre,
+                "clase": (
+                    asignacion.clase.titulo
+                    if asignacion.clase
+                    else ""
+                ),
+            },
+            "materias_count": len(
+                set(
+                    AsignacionDocente.objects
+                    .filter(
+                        docente=docente,
+                        clase__isnull=False
+                    )
+                    .values_list("clase_id", flat=True)
+                    .distinct()
+                )
+            ),
+            "max_materias": MAX_MATERIAS_POR_DOCENTE,
+        }
+    )
+
+
+# ============================================================
+# ELIMINAR ASIGNACIÓN VÍA AJAX (SIN RECARGAR)
+# ============================================================
+
+@require_POST
+def eliminar_asignacion_ajax(request, asignacion_id):
+
+    asignacion = get_object_or_404(
+        AsignacionDocente,
+        id=asignacion_id
+    )
+
+    docente = asignacion.docente
+
+    asignacion.delete()
+
+    materias_count = len(
+        set(
+            AsignacionDocente.objects
+            .filter(
+                docente=docente,
+                clase__isnull=False
+            )
+            .values_list("clase_id", flat=True)
+            .distinct()
+        )
+    )
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "mensaje": "Asignación eliminada.",
+            "materias_count": materias_count,
+            "max_materias": MAX_MATERIAS_POR_DOCENTE,
         }
     )
 

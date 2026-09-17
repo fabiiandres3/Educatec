@@ -145,15 +145,6 @@
         font-weight: 600;
     }
 
-    .edit-form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 25px;
-        padding-top: 20px;
-        border-top: 1px solid #eef2f7;
-    }
-
     /* =========================================================
        BOTONES
     ========================================================= */
@@ -195,12 +186,33 @@
     .edit-btn-add {
         background: #16a34a;
         color: white;
-        margin-top: 5px;
     }
 
     .edit-btn-add:hover {
         background: #15803d;
         transform: translateY(-1px);
+    }
+
+    .edit-btn-danger {
+        background: #dc2626;
+        color: white;
+    }
+
+    .edit-btn-danger:hover {
+        background: #b91c1c;
+    }
+
+    /* =========================================================
+       BARRA DE ACCIONES INFERIOR
+    ========================================================= */
+
+    .edit-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eef2f7;
     }
 
     /* =========================================================
@@ -241,72 +253,119 @@
         white-space: nowrap;
     }
 
-    /* =========================================================
-       LISTA DE CURSOS
-    ========================================================= */
-
-    .assignment-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+    .materias-counter {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: #f0fdf4;
+        color: #16a34a;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
     }
 
-    .assignment-item {
+    .materias-counter.full {
+        background: #fff7ed;
+        color: #ea580c;
+    }
+
+    /* =========================================================
+       SECCIONES SEPARADAS: CURSOS Y MATERIAS
+    ========================================================= */
+
+    .section-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .section-box {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 20px;
+        background: #f8fafc;
+    }
+
+    .section-box-title {
+        margin: 0 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #334155;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .section-box-title i {
+        color: #2563eb;
+    }
+
+    .section-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .section-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 15px;
-        padding: 15px;
+        gap: 10px;
+        padding: 12px 14px;
         border: 1px solid #e2e8f0;
-        border-radius: 13px;
-        background: #f8fafc;
+        border-radius: 10px;
+        background: #ffffff;
         transition: 0.2s ease;
     }
 
-    .assignment-item:hover {
+    .section-item:hover {
         border-color: #bfdbfe;
         background: #f8fbff;
-        transform: translateY(-1px);
     }
 
-    .assignment-info {
+    .section-item-info {
         display: flex;
         align-items: center;
-        gap: 13px;
+        gap: 10px;
         min-width: 0;
     }
 
-    .assignment-icon {
-        width: 42px;
-        height: 42px;
-        min-width: 42px;
-        border-radius: 11px;
+    .section-item-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: #dbeafe;
         color: #2563eb;
+        font-size: 14px;
     }
 
-    .assignment-name {
-        font-size: 15px;
-        font-weight: 750;
+    .section-item-name {
+        font-size: 14px;
+        font-weight: 700;
         color: #1e293b;
         word-break: break-word;
     }
 
-    .assignment-class {
-        margin-top: 3px;
+    .section-item-sub {
+        margin-top: 2px;
         color: #64748b;
         font-size: 12px;
     }
 
-    .btn-remove-assignment {
-        width: 38px;
-        height: 38px;
-        min-width: 38px;
+    .btn-remove-item {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
         border: 0;
-        border-radius: 9px;
+        border-radius: 8px;
         background: #fee2e2;
         color: #dc2626;
         display: flex;
@@ -316,14 +375,24 @@
         transition: 0.2s ease;
     }
 
-    .btn-remove-assignment:hover {
+    .btn-remove-item:hover {
         background: #fecaca;
         color: #b91c1c;
         transform: scale(1.05);
     }
 
+    .empty-section {
+        text-align: center;
+        padding: 25px 15px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        background: #f8fafc;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
     /* =========================================================
-       AGREGAR CURSO
+       AGREGAR ASIGNACIÓN
     ========================================================= */
 
     .add-assignment-box {
@@ -359,38 +428,7 @@
     }
 
     /* =========================================================
-       ESTADO VACÍO
-    ========================================================= */
-
-    .empty-assignments {
-        text-align: center;
-        padding: 35px 20px;
-        border: 1px dashed #cbd5e1;
-        border-radius: 14px;
-        background: #f8fafc;
-    }
-
-    .empty-assignments-icon {
-        width: 55px;
-        height: 55px;
-        margin: 0 auto 12px;
-        border-radius: 50%;
-        background: #f1f5f9;
-        color: #94a3b8;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 21px;
-    }
-
-    .empty-assignments p {
-        margin: 0;
-        color: #64748b;
-        font-size: 14px;
-    }
-
-    /* =========================================================
-       LIMITE
+       AVISOS
     ========================================================= */
 
     .limit-warning {
@@ -406,14 +444,20 @@
         font-size: 14px;
     }
 
+    .limit-warning.success {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+        color: #166534;
+    }
+
     /* =========================================================
-       MODAL
+       MODAL DE CONFIRMACIÓN
     ========================================================= */
 
-    .assignment-modal-overlay {
+    .confirm-modal-overlay {
         position: fixed;
         inset: 0;
-        z-index: 9999;
+        z-index: 99999;
         display: none;
         align-items: center;
         justify-content: center;
@@ -422,11 +466,11 @@
         backdrop-filter: blur(4px);
     }
 
-    .assignment-modal-overlay.active {
+    .confirm-modal-overlay.active {
         display: flex;
     }
 
-    .assignment-modal {
+    .confirm-modal {
         width: 100%;
         max-width: 430px;
         background: white;
@@ -437,19 +481,7 @@
         animation: modalIn 0.2s ease;
     }
 
-    @keyframes modalIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px) scale(0.98);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    .modal-icon {
+    .confirm-modal-icon {
         width: 60px;
         height: 60px;
         margin: 0 auto 15px;
@@ -457,36 +489,32 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #fee2e2;
-        color: #dc2626;
+        background: #eff6ff;
+        color: #2563eb;
         font-size: 23px;
     }
 
-    .modal-title {
+    .confirm-modal-title {
         margin: 0;
         color: #1e293b;
         font-size: 20px;
         font-weight: 800;
     }
 
-    .modal-text {
+    .confirm-modal-text {
         margin: 10px 0 23px;
         color: #64748b;
         font-size: 14px;
         line-height: 1.6;
     }
 
-    .modal-text strong {
-        color: #1e293b;
-    }
-
-    .modal-actions {
+    .confirm-modal-actions {
         display: flex;
         justify-content: center;
         gap: 10px;
     }
 
-    .modal-btn {
+    .confirm-modal-btn {
         border: 0;
         border-radius: 10px;
         padding: 11px 20px;
@@ -496,22 +524,71 @@
         transition: 0.2s ease;
     }
 
-    .modal-cancel {
+    .confirm-modal-cancel {
         background: #f1f5f9;
         color: #475569;
     }
 
-    .modal-cancel:hover {
+    .confirm-modal-cancel:hover {
         background: #e2e8f0;
     }
 
-    .modal-confirm {
-        background: #dc2626;
+    .confirm-modal-confirm {
+        background: #2563eb;
         color: white;
     }
 
-    .modal-confirm:hover {
-        background: #b91c1c;
+    .confirm-modal-confirm:hover {
+        background: #1d4ed8;
+    }
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+
+    .toast-container-custom {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast-custom {
+        min-width: 300px;
+        max-width: 400px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+        animation: toastIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .toast-custom.success {
+        background: #16a34a;
+    }
+
+    .toast-custom.error {
+        background: #dc2626;
+    }
+
+    @keyframes toastIn {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 
     /* =========================================================
@@ -558,6 +635,10 @@
             flex-direction: column;
         }
 
+        .section-grid {
+            grid-template-columns: 1fr;
+        }
+
         .add-course-form {
             flex-direction: column;
             align-items: stretch;
@@ -584,7 +665,7 @@
             </h1>
 
             <p class="edit-page-subtitle">
-                Actualiza la información del docente y administra sus cursos asignados.
+                Actualiza la información del docente y administra sus materias y cursos asignados.
             </p>
         </div>
 
@@ -616,7 +697,7 @@
         </div>
 
 
-        <form method="post">
+        <form method="post" id="formDatosDocente">
 
             {% csrf_token %}
 
@@ -677,12 +758,12 @@
                 </a>
 
                 <button
-                    type="submit"
-                    name="guardar_docente"
+                    type="button"
+                    id="btnGuardarCambios"
                     class="edit-btn edit-btn-update"
                 >
                     <i class="fas fa-save"></i>
-                    Actualizar docente
+                    Guardar cambios
                 </button>
 
             </div>
@@ -693,7 +774,7 @@
 
 
     <!-- =====================================================
-         CURSOS ASIGNADOS
+         MATERIAS Y CURSOS ASIGNADOS
     ====================================================== -->
 
     <div class="edit-card">
@@ -702,156 +783,262 @@
 
             <div>
                 <h3 class="assignment-title">
-                    Cursos asignados
+                    Materias y cursos asignados
                 </h3>
 
                 <p class="assignment-subtitle">
-                    Este docente puede tener hasta {{ max_asignaciones }} cursos asignados.
+                    Asigna materias (máximo {{ max_materias }}) y cursos sin límite a este docente.
                 </p>
             </div>
 
-            <div class="assignment-counter">
-                <i class="fas fa-layer-group"></i>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
 
-                <span>
-                    {{ asignaciones|length }} / {{ max_asignaciones }}
-                </span>
+                <div class="materias-counter {% if materias_asignadas|length >= max_materias %}full{% endif %}" id="contadorMaterias">
+                    <i class="fas fa-book"></i>
+
+                    <span>
+                        Materias: {{ materias_asignadas|length }} / {{ max_materias }}
+                    </span>
+                </div>
+
+                <div class="assignment-counter">
+                    <i class="fas fa-layer-group"></i>
+
+                    <span>
+                        Cursos: {{ asignaciones|length }} (sin límite)
+                    </span>
+                </div>
+
             </div>
 
         </div>
 
 
         <!-- =================================================
-             CURSOS EXISTENTES
+             SECCIONES SEPARADAS: CURSOS Y MATERIAS
         ================================================== -->
 
-        {% if asignaciones %}
+        <div class="section-grid">
 
-            <div class="assignment-list">
+            <!-- ==================== CURSOS ==================== -->
 
-                {% for a in asignaciones %}
+            <div class="section-box">
 
-                    <div class="assignment-item">
-
-                        <div class="assignment-info">
-
-                            <div class="assignment-icon">
-                                <i class="fas fa-book"></i>
-                            </div>
-
-                            <div>
-
-                                <div class="assignment-name">
-                                    {{ a.curso.nombre }}
-                                </div>
-
-                                <div class="assignment-class">
-                                    Curso asignado al docente
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <button
-                            type="button"
-                            class="btn-remove-assignment"
-                            title="Quitar curso"
-                            onclick="abrirModalEliminarAsignacion(
-                                '{{ a.id }}',
-                                '{{ a.curso.nombre|escapejs }}'
-                            )"
-                        >
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-
-                    </div>
-
-                {% endfor %}
-
-            </div>
-
-        {% else %}
-
-            <div class="empty-assignments">
-
-                <div class="empty-assignments-icon">
-                    <i class="fas fa-book-open"></i>
-                </div>
-
-                <p>
-                    Este docente todavía no tiene cursos asignados.
-                </p>
-
-            </div>
-
-        {% endif %}
-
-
-        <!-- =================================================
-             AGREGAR CURSO
-        ================================================== -->
-
-        {% if asignaciones|length < max_asignaciones %}
-
-            <div class="add-assignment-box">
-
-                <h4 class="add-assignment-title">
-                    <i class="fas fa-plus-circle"></i>
-                    Agregar nuevo curso
+                <h4 class="section-box-title">
+                    <i class="fas fa-layer-group"></i>
+                    Cursos asignados
                 </h4>
 
+                {% if asignaciones %}
 
-                <form method="post" class="add-course-form">
+                    <div class="section-list" id="listaCursos">
 
-                    {% csrf_token %}
+                        {% for a in asignaciones %}
 
-                    <div class="edit-form-group add-course-field">
+                            <div class="section-item" data-asignacion-id="{{ a.id }}">
 
-                        <label
-                            class="edit-label"
-                            for="{{ asignacion_form.curso.id_for_label }}"
-                        >
-                            {{ asignacion_form.curso.label }}
-                        </label>
+                                <div class="section-item-info">
 
-                        {{ asignacion_form.curso }}
+                                    <div class="section-item-icon">
+                                        <i class="fas fa-book"></i>
+                                    </div>
 
-                        {% for error in asignacion_form.curso.errors %}
+                                    <div>
+                                        <div class="section-item-name">
+                                            {{ a.curso.nombre }}
+                                        </div>
 
-                            <div class="edit-field-error">
-                                {{ error }}
+                                        {% if a.clase %}
+                                            <div class="section-item-sub">
+                                                {{ a.clase.titulo }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="btn-remove-item"
+                                    title="Quitar curso"
+                                    onclick="eliminarAsignacionAjax('{{ a.id }}', this)"
+                                >
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+
                             </div>
 
                         {% endfor %}
 
                     </div>
 
+                {% else %}
 
-                    <button
-                        type="submit"
-                        name="agregar_asignacion"
-                        class="edit-btn edit-btn-add"
-                    >
-                        <i class="fas fa-plus"></i>
-                        Asignar curso
-                    </button>
+                    <div class="empty-section" id="vacioCursos">
+                        <i class="fas fa-book-open"></i>
+                        <p>Este docente no tiene cursos asignados.</p>
+                    </div>
 
-                </form>
+                {% endif %}
 
             </div>
 
-        {% else %}
 
-            <div class="limit-warning">
+            <!-- ==================== MATERIAS ==================== -->
+
+            <div class="section-box">
+
+                <h4 class="section-box-title">
+                    <i class="fas fa-tag"></i>
+                    Materias asignadas
+                </h4>
+
+                {% if materias_asignadas %}
+
+                    <div class="section-list" id="listaMaterias">
+
+                        {% for a in asignaciones %}
+
+                            {% if a.clase %}
+
+                                <div class="section-item" data-asignacion-id="{{ a.id }}">
+
+                                    <div class="section-item-info">
+
+                                        <div class="section-item-icon">
+                                            <i class="fas fa-tag"></i>
+                                        </div>
+
+                                        <div>
+                                            <div class="section-item-name">
+                                                {{ a.clase.titulo }}
+                                            </div>
+
+                                            <div class="section-item-sub">
+                                                {{ a.curso.nombre }}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="btn-remove-item"
+                                        title="Quitar materia"
+                                        onclick="eliminarAsignacionAjax('{{ a.id }}', this)"
+                                    >
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+
+                                </div>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-section" id="vacioMaterias">
+                        <i class="fas fa-tag"></i>
+                        <p>Este docente no tiene materias asignadas.</p>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             AGREGAR ASIGNACIÓN (AJAX - SIN RECARGAR)
+        ================================================== -->
+
+        <div class="add-assignment-box">
+
+            <h4 class="add-assignment-title">
+                <i class="fas fa-plus-circle"></i>
+                Agregar materia y curso
+            </h4>
+
+
+            <form id="formAsignar" class="add-course-form">
+
+                {% csrf_token %}
+
+                <div class="edit-form-group add-course-field">
+
+                    <label
+                        class="edit-label"
+                        for="{{ asignacion_form.curso.id_for_label }}"
+                    >
+                        {{ asignacion_form.curso.label }}
+                    </label>
+
+                    {{ asignacion_form.curso }}
+
+                </div>
+
+
+                <div class="edit-form-group add-course-field">
+
+                    <label
+                        class="edit-label"
+                        for="{{ asignacion_form.clase.id_for_label }}"
+                    >
+                        {{ asignacion_form.clase.label }}
+                    </label>
+
+                    {{ asignacion_form.clase }}
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="edit-btn edit-btn-add"
+                >
+                    <i class="fas fa-plus"></i>
+                    Asignar
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- =================================================
+             AVISO DE LÍMITE DE MATERIAS
+        ================================================== -->
+
+        {% if materias_asignadas|length >= max_materias %}
+
+            <div class="limit-warning" id="avisoLimite">
 
                 <i class="fas fa-exclamation-triangle"></i>
 
                 <span>
                     Este docente ya alcanzó el máximo de
-                    <strong>{{ max_asignaciones }}</strong>
-                    cursos asignados.
+                    <strong>{{ max_materias }}</strong>
+                    materias asignadas. Debe quitar una materia antes de asignar otra.
+                </span>
+
+            </div>
+
+        {% else %}
+
+            <div class="limit-warning success" id="avisoLimite">
+
+                <i class="fas fa-check-circle"></i>
+
+                <span>
+                    Puedes asignar hasta
+                    <strong>{{ max_materias }}</strong>
+                    materias y
+                    <strong>cursos sin límite</strong>
+                    a este docente.
                 </span>
 
             </div>
@@ -864,156 +1051,431 @@
 
 
 <!-- =========================================================
-     MODAL ELIMINAR ASIGNACIÓN
-========================================================= -->
+     MODAL DE CONFIRMACIÓN
+========================================================== -->
 
 <div
-    id="modalEliminarAsignacion"
-    class="assignment-modal-overlay"
-    onclick="cerrarModalSiClickFuera(event)"
+    id="modalConfirmarGuardar"
+    class="confirm-modal-overlay"
+    onclick="cerrarModalConfirmarSiClickFuera(event)"
 >
 
     <div
-        class="assignment-modal"
+        class="confirm-modal"
         onclick="event.stopPropagation()"
     >
 
-        <div class="modal-icon">
-            <i class="fas fa-trash-alt"></i>
+        <div class="confirm-modal-icon">
+            <i class="fas fa-save"></i>
         </div>
 
-        <h3 class="modal-title">
-            ¿Quitar curso?
+        <h3 class="confirm-modal-title">
+            ¿Guardar cambios?
         </h3>
 
-        <div class="modal-text">
-
-            Estás a punto de quitar el curso:
-
-            <br>
-
-            <strong id="nombreAsignacion">
-                este curso
-            </strong>
-
+        <div class="confirm-modal-text">
+            Estás a punto de guardar los cambios realizados en los datos del docente.
             <br><br>
-
-            El curso dejará de estar asignado a este docente.
-
+            ¿Deseas continuar?
         </div>
 
+        <div class="confirm-modal-actions">
 
-        <form
-            id="formEliminarAsignacion"
-            method="post"
-        >
+            <button
+                type="button"
+                class="confirm-modal-btn confirm-modal-cancel"
+                onclick="cerrarModalConfirmarGuardar()"
+            >
+                Cancelar
+            </button>
 
-            {% csrf_token %}
+            <button
+                type="button"
+                class="confirm-modal-btn confirm-modal-confirm"
+                id="btnConfirmarGuardar"
+            >
+                <i class="fas fa-check"></i>
+                Confirmar
+            </button>
 
-            <div class="modal-actions">
-
-                <button
-                    type="button"
-                    class="modal-btn modal-cancel"
-                    onclick="cerrarModalEliminarAsignacion()"
-                >
-                    Cancelar
-                </button>
-
-                <button
-                    type="submit"
-                    class="modal-btn modal-confirm"
-                >
-                    <i class="fas fa-trash-alt"></i>
-                    Quitar curso
-                </button>
-
-            </div>
-
-        </form>
+        </div>
 
     </div>
 
 </div>
 
 
+<!-- =========================================================
+     TOASTS
+========================================================== -->
+
+<div class="toast-container-custom" id="toastContainer"></div>
+
+
 <script>
 
     /* =========================================================
-       MODAL ELIMINAR ASIGNACIÓN
+       UTILIDADES
     ========================================================= */
 
-    function abrirModalEliminarAsignacion(id, nombre) {
+    function obtenerCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
-        const modal = document.getElementById(
-            "modalEliminarAsignacion"
-        );
+    function mostrarToast(mensaje, tipo) {
+        const contenedor = document.getElementById("toastContainer");
 
-        const nombreElemento = document.getElementById(
-            "nombreAsignacion"
-        );
+        const toast = document.createElement("div");
+        toast.className = "toast-custom " + (tipo === "error" ? "error" : "success");
 
-        const formulario = document.getElementById(
-            "formEliminarAsignacion"
-        );
+        const icono = document.createElement("i");
+        icono.className = "fas " + (tipo === "error" ? "fa-times-circle" : "fa-check-circle");
 
+        const texto = document.createElement("span");
+        texto.textContent = mensaje;
 
-        nombreElemento.textContent = nombre;
+        toast.appendChild(icono);
+        toast.appendChild(texto);
 
+        contenedor.appendChild(toast);
 
-        /*
-         * IMPORTANTE:
-         *
-         * Cambia esta URL solamente si tu urls.py utiliza
-         * otro nombre para la vista de eliminar asignación.
-         */
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transition = "opacity 0.3s ease";
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
 
-        formulario.action = "{% url 'eliminar_asignacion_docente' 0 %}"
-            .replace("/0/", "/" + id + "/");
+    function actualizarContadorMaterias(count, max) {
+        const contador = document.getElementById("contadorMaterias");
 
+        if (contador) {
+            contador.innerHTML = '<i class="fas fa-book"></i><span>Materias: ' + count + ' / ' + max + '</span>';
 
-        modal.classList.add("active");
+            if (count >= max) {
+                contador.classList.add("full");
+            } else {
+                contador.classList.remove("full");
+            }
+        }
 
-        document.body.style.overflow = "hidden";
+        const aviso = document.getElementById("avisoLimite");
+
+        if (aviso) {
+            if (count >= max) {
+                aviso.className = "limit-warning";
+                aviso.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Este docente ya alcanzó el máximo de <strong>' + max + '</strong> materias asignadas. Debe quitar una materia antes de asignar otra.</span>';
+            } else {
+                aviso.className = "limit-warning success";
+                aviso.innerHTML = '<i class="fas fa-check-circle"></i><span>Puedes asignar hasta <strong>' + max + '</strong> materias y <strong>cursos sin límite</strong> a este docente.</span>';
+            }
+        }
     }
 
 
-    function cerrarModalEliminarAsignacion() {
+    /* =========================================================
+       ASIGNAR CURSO + MATERIA (AJAX - SIN RECARGAR)
+    ========================================================= */
 
-        const modal = document.getElementById(
-            "modalEliminarAsignacion"
-        );
+    document.getElementById("formAsignar").addEventListener("submit", function(event) {
 
+        event.preventDefault();
+
+        const form = this;
+
+        const cursoId = form.querySelector("[name='curso']").value;
+        const claseId = form.querySelector("[name='clase']").value;
+
+        if (!cursoId || !claseId) {
+            mostrarToast("Debes seleccionar un curso y una materia.", "error");
+            return;
+        }
+
+        const url = "{% url 'asignar_curso_materia_ajax' docente.usuario_id %}";
+
+        const formData = new FormData();
+        formData.append("curso", cursoId);
+        formData.append("clase", claseId);
+        formData.append("csrfmiddlewaretoken", obtenerCookie("csrftoken"));
+
+        fetch(url, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": obtenerCookie("csrftoken")
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.ok) {
+
+                mostrarToast(data.mensaje, "success");
+
+                // Agregar curso a la lista de cursos
+                const listaCursos = document.getElementById("listaCursos");
+                const vacioCursos = document.getElementById("vacioCursos");
+
+                if (vacioCursos) vacioCursos.remove();
+
+                if (!listaCursos) {
+                    const nuevaLista = document.createElement("div");
+                    nuevaLista.className = "section-list";
+                    nuevaLista.id = "listaCursos";
+                    document.querySelector(".section-grid .section-box:first-child").appendChild(nuevaLista);
+                }
+
+                const listaCursosFinal = document.getElementById("listaCursos");
+
+                const itemCurso = document.createElement("div");
+                itemCurso.className = "section-item";
+                itemCurso.dataset.asignacionId = data.asignacion.id;
+
+                itemCurso.innerHTML = `
+                    <div class="section-item-info">
+                        <div class="section-item-icon"><i class="fas fa-book"></i></div>
+                        <div>
+                            <div class="section-item-name">${data.asignacion.curso}</div>
+                            <div class="section-item-sub">${data.asignacion.clase}</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-remove-item" title="Quitar curso" onclick="eliminarAsignacionAjax('${data.asignacion.id}', this)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+
+                listaCursosFinal.appendChild(itemCurso);
+
+                // Agregar materia a la lista de materias
+                const listaMaterias = document.getElementById("listaMaterias");
+                const vacioMaterias = document.getElementById("vacioMaterias");
+
+                if (vacioMaterias) vacioMaterias.remove();
+
+                if (!listaMaterias) {
+                    const nuevaLista = document.createElement("div");
+                    nuevaLista.className = "section-list";
+                    nuevaLista.id = "listaMaterias";
+                    document.querySelector(".section-grid .section-box:nth-child(2)").appendChild(nuevaLista);
+                }
+
+                const listaMateriasFinal = document.getElementById("listaMaterias");
+
+                const itemMateria = document.createElement("div");
+                itemMateria.className = "section-item";
+                itemMateria.dataset.asignacionId = data.asignacion.id;
+
+                itemMateria.innerHTML = `
+                    <div class="section-item-info">
+                        <div class="section-item-icon"><i class="fas fa-tag"></i></div>
+                        <div>
+                            <div class="section-item-name">${data.asignacion.clase}</div>
+                            <div class="section-item-sub">${data.asignacion.curso}</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-remove-item" title="Quitar materia" onclick="eliminarAsignacionAjax('${data.asignacion.id}', this)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+
+                listaMateriasFinal.appendChild(itemMateria);
+
+                // Actualizar contador de materias
+                actualizarContadorMaterias(data.materias_count, data.max_materias);
+
+                // Limpiar formulario
+                form.querySelector("[name='curso']").value = "";
+                form.querySelector("[name='clase']").value = "";
+
+            } else {
+
+                mostrarToast(data.mensaje, "error");
+            }
+
+        })
+        .catch(error => {
+            mostrarToast("Error al asignar. Intenta de nuevo.", "error");
+        });
+
+    });
+
+
+    /* =========================================================
+       GUARDAR DATOS DEL DOCENTE (AJAX - SIN RECARGAR)
+    ========================================================= */
+
+    document.getElementById("btnGuardarCambios").addEventListener("click", function() {
+
+        const modal = document.getElementById("modalConfirmarGuardar");
+        modal.classList.add("active");
+        document.body.style.overflow = "hidden";
+
+    });
+
+    function cerrarModalConfirmarGuardar() {
+
+        const modal = document.getElementById("modalConfirmarGuardar");
         modal.classList.remove("active");
-
         document.body.style.overflow = "";
     }
 
+    function cerrarModalConfirmarSiClickFuera(event) {
 
-    function cerrarModalSiClickFuera(event) {
-
-        if (
-            event.target.id ===
-            "modalEliminarAsignacion"
-        ) {
-            cerrarModalEliminarAsignacion();
+        if (event.target.id === "modalConfirmarGuardar") {
+            cerrarModalConfirmarGuardar();
         }
-
     }
 
+    document.getElementById("btnConfirmarGuardar").addEventListener("click", function() {
 
-    document.addEventListener(
-        "keydown",
-        function(event) {
+        const form = document.getElementById("formDatosDocente");
 
-            if (event.key === "Escape") {
-                cerrarModalEliminarAsignacion();
+        const url = "{% url 'guardar_docente_ajax' docente.usuario_id %}";
+
+        const formData = new FormData(form);
+
+        fetch(url, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": obtenerCookie("csrftoken")
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.ok) {
+
+                cerrarModalConfirmarGuardar();
+
+                mostrarToast(data.mensaje, "success");
+
+                // Redirigir al listado de docentes
+                setTimeout(() => {
+                    window.location.href = "{% url 'listar_docentes' %}";
+                }, 1500);
+
+            } else {
+
+                cerrarModalConfirmarGuardar();
+
+                // Mostrar errores del formulario
+                let mensajeError = data.mensaje;
+
+                if (data.errores) {
+
+                    const listaErrores = [];
+
+                    for (const campo in data.errores) {
+
+                        data.errores[campo].forEach(err => {
+                            listaErrores.push(campo + ": " + err);
+                        });
+                    }
+
+                    if (listaErrores.length > 0) {
+                        mensajeError = listaErrores.join(" | ");
+                    }
+                }
+
+                mostrarToast(mensajeError, "error");
             }
 
+        })
+        .catch(error => {
+            cerrarModalConfirmarGuardar();
+            mostrarToast("Error al guardar los datos. Intenta de nuevo.", "error");
+        });
+
+    });
+
+
+    /* =========================================================
+       ELIMINAR ASIGNACIÓN (AJAX - SIN RECARGAR)
+    ========================================================= */
+
+    function eliminarAsignacionAjax(asignacionId, boton) {
+
+        if (!confirm("¿Estás seguro de que deseas quitar esta asignación?")) {
+            return;
         }
-    );
+
+        const url = "{% url 'eliminar_asignacion_ajax' 0 %}"
+            .replace("/0/", "/" + asignacionId + "/");
+
+        const formData = new FormData();
+        formData.append("csrfmiddlewaretoken", obtenerCookie("csrftoken"));
+
+        fetch(url, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": obtenerCookie("csrftoken")
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.ok) {
+
+                mostrarToast(data.mensaje, "success");
+
+                // Eliminar el item de ambas listas
+                const items = document.querySelectorAll(
+                    ".section-item[data-asignacion-id='" + asignacionId + "']"
+                );
+
+                items.forEach(item => item.remove());
+
+                // Actualizar contador de materias
+                actualizarContadorMaterias(data.materias_count, data.max_materias);
+
+                // Mostrar vacíos si no hay más items
+                const listaCursos = document.getElementById("listaCursos");
+                if (listaCursos && listaCursos.children.length === 0) {
+                    listaCursos.remove();
+                    const box = document.querySelector(".section-grid .section-box:first-child");
+                    const vacio = document.createElement("div");
+                    vacio.className = "empty-section";
+                    vacio.id = "vacioCursos";
+                    vacio.innerHTML = '<i class="fas fa-book-open"></i><p>Este docente no tiene cursos asignados.</p>';
+                    box.appendChild(vacio);
+                }
+
+                const listaMaterias = document.getElementById("listaMaterias");
+                if (listaMaterias && listaMaterias.children.length === 0) {
+                    listaMaterias.remove();
+                    const box = document.querySelector(".section-grid .section-box:nth-child(2)");
+                    const vacio = document.createElement("div");
+                    vacio.className = "empty-section";
+                    vacio.id = "vacioMaterias";
+                    vacio.innerHTML = '<i class="fas fa-tag"></i><p>Este docente no tiene materias asignadas.</p>';
+                    box.appendChild(vacio);
+                }
+
+            } else {
+
+                mostrarToast(data.mensaje, "error");
+            }
+
+        })
+        .catch(error => {
+            mostrarToast("Error al eliminar. Intenta de nuevo.", "error");
+        });
+
+    }
 
 </script>
 
 {% endblock %}
-
