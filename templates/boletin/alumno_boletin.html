@@ -1,0 +1,4 @@
+{% extends 'paneles/alumnos/base.html' %}
+{% block title %}Mis boletines{% endblock %}
+{% block active_boletines %}active{% endblock %}
+{% block content %}<div class="container-fluid py-3"><h2>Mis boletines</h2><form method="get" class="row g-2 mb-4"><div class="col-md-4"><select class="form-select" name="periodo"><option value="">Seleccione un periodo</option>{% for p in periodos %}<option value="{{ p.id }}" {% if periodo.id == p.id %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></div><div class="col-md-2"><button class="btn btn-primary">Consultar</button></div></form>{% if periodo %}{% include 'boletin/partials/detalle.html' %}<a class="btn btn-outline-danger" href="{% url 'descargar_boletin_pdf' alumno.id periodo.id %}">Descargar PDF</a>{% endif %}</div>{% endblock %}

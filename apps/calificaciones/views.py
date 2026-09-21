@@ -7,11 +7,17 @@ from django.http import JsonResponse
 
 from apps.alumnos.models import Alumnos
 from apps.docentes.models import Docente
-from apps.tareas.models import Tareas, Calificacion
+from apps.tareas.models import (
+    Tareas, Calificacion, ActividadCalificacion, CalificacionActividad,
+)
+from apps.horario.models import Periodo
+from django.utils.dateparse import parse_date
+from django.utils import timezone
 
 from .services import (
     obtener_asignaciones_docente,
     obtener_libro_calificaciones,
+    obtener_promedio_general_alumno,
 )
 
 
@@ -53,6 +59,7 @@ def calificaciones_docente(request):
 
     alumnos = []
     tareas = []
+    actividades = []
 
     # ============================================================
     # CURSO ACTUAL
@@ -70,7 +77,7 @@ def calificaciones_docente(request):
 
     if asignacion_actual:
 
-        alumnos, tareas = obtener_libro_calificaciones(
+        alumnos, tareas, actividades = obtener_libro_calificaciones(
             asignacion_actual
         )
 
@@ -106,6 +113,7 @@ def calificaciones_docente(request):
         "clase_actual": None,
 
         "tareas": tareas,
+        "actividades": actividades,
 
         "alumnos": alumnos,
 
@@ -113,7 +121,7 @@ def calificaciones_docente(request):
 
         "total_estudiantes": len(alumnos),
 
-        "total_tareas": len(tareas),
+        "total_tareas": len(tareas) + len(actividades),
 
         "total_riesgo": len(
             estudiantes_riesgo
@@ -434,13 +442,7 @@ def calificaciones_alumnos(request):
         for cal in calificaciones
         if cal.nota is not None
     ]
-
-    if notas:
-        promedio = (
-            sum(notas) / Decimal(len(notas))
-        ).quantize(Decimal("0.01"))
-    else:
-        promedio = None
+    promedio = obtener_promedio_general_alumno(alumno)
 
     if promedio is None:
         estado = "Sin calificaciones"
@@ -475,3 +477,50 @@ def calificaciones_alumnos(request):
         "paneles/alumnos/calificaciones_alumnos.html",
         context
     )
+
+
+@login_required
+def crear_actividad_calificacion(request):
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "mensaje": "Método no permitido."}, status=405)
+    docente = get_object_or_404(Docente, usuario=request.user)
+    asignacion = get_object_or_404(obtener_asignaciones_docente(docente), pk=request.POST.get("asignacion_id"))
+    nombre = (request.POST.get("nombre") or "").strip()
+    fecha = parse_date(request.POST.get("fecha") or "")
+    if not nombre:
+        return JsonResponse({"ok": False, "mensaje": "Escribe el nombre de la actividad."}, status=400)
+    if request.POST.get("fecha") and not fecha:
+        return JsonResponse({"ok": False, "mensaje": "La fecha no es válida."}, status=400)
+    periodo = None
+    if request.POST.get("periodo_id"):
+        periodo = get_object_or_404(Periodo, pk=request.POST["periodo_id"])
+    actividad = ActividadCalificacion.objects.create(
+        docente=docente, curso=asignacion.curso, clase=asignacion.clase,
+        periodo=periodo, nombre=nombre, tipo=(request.POST.get("tipo") or "Actividad")[:50],
+        descripcion=(request.POST.get("descripcion") or "").strip(),
+        fecha=fecha or timezone.localdate(),
+    )
+    return JsonResponse({"ok": True, "actividad_id": actividad.id})
+
+
+@login_required
+def guardar_calificacion_actividad(request):
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "mensaje": "Método no permitido."}, status=405)
+    docente = get_object_or_404(Docente, usuario=request.user)
+    actividad = get_object_or_404(ActividadCalificacion, pk=request.POST.get("actividad_id"), docente=docente, activa=True)
+    alumno = get_object_or_404(Alumnos, usuario_id=request.POST.get("alumno_id"), curso=actividad.curso, activo=True)
+    nota = (request.POST.get("nota") or "").strip()
+    if not nota:
+        CalificacionActividad.objects.filter(actividad=actividad, alumno_id=alumno.usuario_id).delete()
+        return JsonResponse({"ok": True, "nota": None})
+    try:
+        nota_decimal = Decimal(nota.replace(",", "."))
+    except (InvalidOperation, AttributeError):
+        return JsonResponse({"ok": False, "mensaje": "La nota no es válida."}, status=400)
+    if not Decimal("0") <= nota_decimal <= Decimal("5"):
+        return JsonResponse({"ok": False, "mensaje": "La nota debe estar entre 0.00 y 5.00."}, status=400)
+    calificacion, _ = CalificacionActividad.objects.update_or_create(
+        actividad=actividad, alumno_id=alumno.usuario_id, defaults={"nota": nota_decimal}
+    )
+    return JsonResponse({"ok": True, "nota": str(calificacion.nota)})

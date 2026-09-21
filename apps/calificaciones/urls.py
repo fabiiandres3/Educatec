@@ -27,5 +27,7 @@ urlpatterns = [
         views.guardar_calificacion,
         name="guardar_calificacion"
     ),
+    path("actividades/crear/", views.crear_actividad_calificacion, name="crear_actividad_calificacion"),
+    path("actividades/guardar-nota/", views.guardar_calificacion_actividad, name="guardar_calificacion_actividad"),
 
 ]

@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "apps.eventos",
     'apps.horario',
     "apps.calificaciones",
+    "apps.boletin",
     
 ]
 # =========================================================

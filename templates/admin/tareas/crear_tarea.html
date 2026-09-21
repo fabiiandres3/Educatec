@@ -542,6 +542,22 @@
 
                 </div>
 
+                <div class="field-group">
+
+                    {{ tarea_form.periodo.label_tag }}
+
+                    {{ tarea_form.periodo }}
+
+                    {% if tarea_form.periodo.errors %}
+
+                        <div class="error-message">
+                            {{ tarea_form.periodo.errors }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
 
                 <!-- DESCRIPCIÓN -->
 

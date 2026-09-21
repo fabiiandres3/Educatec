@@ -41,6 +41,16 @@ class Tareas(models.Model):
         null=True
     )
 
+    # Relación explícita para separar calificaciones por período. Es opcional
+    # únicamente para conservar tareas históricas que aún no tienen período.
+    periodo = models.ForeignKey(
+        "horario.Periodo",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="tareas",
+    )
+
     clase = models.ForeignKey(
         Clases,
         on_delete=models.SET_NULL,
@@ -329,33 +339,6 @@ class RespuestaAlumno(models.Model):
 # CALIFICACIÓN FINAL DE LA TAREA
 # ============================================================
 
-class Calificacion(models.Model):
-
-    alumno = models.ForeignKey(
-        Usuario,
-        on_delete=models.CASCADE
-    )
-
-    tarea = models.ForeignKey(
-        Tareas,
-        on_delete=models.CASCADE
-    )
-
-    nota = models.DecimalField(
-        max_digits=3,
-        decimal_places=2
-    )
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["alumno", "tarea"],
-                name="unique_calificacion_alumno_tarea"
-            )
-        ]
-
-    def __str__(self):
-        return f"{self.alumno} - {self.tarea} - {self.nota}"
     
     # ============================================================
 # CALIFICACIÓN FINAL DE LA TAREA
@@ -411,7 +394,19 @@ class ActividadCalificacion(models.Model):
     clase = models.ForeignKey(
         "clases.Clases",
         on_delete=models.CASCADE,
-        related_name="actividades_calificacion"
+        related_name="actividades_calificacion",
+        blank=True,
+        null=True,
+    )
+
+    # La actividad manual debe pertenecer al mismo período que las tareas;
+    # de ese modo aparece en el boletín correcto.
+    periodo = models.ForeignKey(
+        "horario.Periodo",
+        on_delete=models.SET_NULL,
+        related_name="actividades_calificacion",
+        blank=True,
+        null=True,
     )
 
     nombre = models.CharField(
@@ -428,9 +423,7 @@ class ActividadCalificacion(models.Model):
         null=True
     )
 
-    fecha = models.DateField(
-        auto_now_add=True
-    )
+    fecha = models.DateField(default=timezone.localdate)
 
     activa = models.BooleanField(
         default=True

@@ -68,6 +68,11 @@ urlpatterns = [
     include("apps.calificaciones.urls")
 ),
 
+    path(
+        "",
+        include("apps.boletin.urls")
+    ),
+
 
     # =========================================================
     # DJANGO ALLAUTH

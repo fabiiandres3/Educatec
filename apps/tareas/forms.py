@@ -2,9 +2,17 @@ from django import forms
 from django.utils import timezone
 
 from .models import Tareas, Pregunta
+from apps.horario.models import Periodo
 
 
 class TareasForm(forms.ModelForm):
+
+    periodo = forms.ModelChoiceField(
+        queryset=Periodo.objects.order_by("-anio", "numero"),
+        required=True,
+        widget=forms.Select(attrs={"class": "form-control"}),
+        empty_label="Seleccione el período académico",
+    )
 
     class Meta:
         model = Tareas
@@ -13,6 +21,7 @@ class TareasForm(forms.ModelForm):
             "titulo",
             "descripcion",
             "fecha_entrega",
+            "periodo",
             "clase",
             "curso",
         ]

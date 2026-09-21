@@ -1688,6 +1688,15 @@
 
                 {% endfor %}
 
+                {% for actividad in actividades %}
+                    <div class="calx-activity">
+                        <div class="calx-activity-icon"><i class="fas fa-pen-ruler"></i></div>
+                        <div class="calx-activity-name" title="{{ actividad.nombre }}">{{ actividad.nombre }}</div>
+                        <div class="calx-activity-meta"><i class="far fa-calendar"></i> {{ actividad.fecha|date:"d/m/Y" }}</div>
+                        <div class="calx-activity-footer"><span class="calx-type">{{ actividad.tipo }}</span><span class="calx-weight">Manual</span></div>
+                    </div>
+                {% endfor %}
+
             </div>
 
         </div>
@@ -1733,6 +1742,14 @@
 
                             </th>
 
+                        {% endfor %}
+
+                        {% for actividad in actividades %}
+                            <th class="calx-task-head">
+                                <span class="calx-task-title" title="{{ actividad.nombre }}">{{ actividad.nombre }}</span>
+                                <span class="calx-task-sub">{{ actividad.tipo }} · {{ actividad.fecha|date:"d/m/Y" }}</span>
+                                <span class="calx-manual-mark">Manual</span>
+                            </th>
                         {% endfor %}
 
                         <!-- Las columnas manuales se insertan aquí con JavaScript -->
@@ -1843,6 +1860,15 @@
 
                                 </td>
 
+                            {% endfor %}
+
+                            {% for fila in alumno.fila_actividades %}
+                                <td class="calx-manual-cell">
+                                    <input type="text" inputmode="decimal" maxlength="4" placeholder="—"
+                                        class="calx-manual-input {% if fila.nota != None %}saved{% endif %}"
+                                        data-actividad-id="{{ fila.actividad.id }}" data-alumno-id="{{ alumno.usuario_id }}"
+                                        value="{% if fila.nota != None %}{{ fila.nota|floatformat:2 }}{% endif %}">
+                                </td>
                             {% endfor %}
 
                             <!-- Las celdas de las columnas manuales se insertan aquí con JavaScript -->
@@ -2296,7 +2322,7 @@ function seleccionarTipo(element){
    Además, se guarda localmente en este navegador para que no desaparezca al recargar.
    ========================================================== */
 
-function crearColumnaVisual(){
+function crearColumnaVisualLocal(){
 
     const nombre =
         document.getElementById("nueva-columna-nombre").value.trim();
@@ -2448,7 +2474,7 @@ function agregarColumnaTabla(columna){
 }
 
 
-function guardarNotaManual(input){
+function guardarNotaManualLocal(input){
 
     let valor = input.value.trim().replace(",", ".");
 
@@ -2648,6 +2674,51 @@ function cargarColumnasManuales(){
 /* ==========================================================
    FECHA
    ========================================================== */
+
+/* Las actividades manuales se guardan en la base de datos para que también
+   participen en el promedio y en el boletín. */
+function crearColumnaVisual(){
+    const nombre = document.getElementById("nueva-columna-nombre").value.trim();
+    if(!nombre){ mostrarToast("Escribe un nombre para la columna."); return; }
+    const data = new FormData();
+    data.append("asignacion_id", "{{ asignacion_actual.id|default:'' }}");
+    data.append("nombre", nombre);
+    data.append("tipo", tipoColumnaSeleccionado);
+    data.append("fecha", document.getElementById("nueva-columna-fecha").value);
+    data.append("descripcion", document.getElementById("nueva-columna-descripcion").value.trim());
+    fetch("{% url 'crear_actividad_calificacion' %}", {
+        method:"POST", headers:{"X-CSRFToken":csrfToken()}, body:data
+    }).then(r => r.json()).then(data => {
+        if(!data.ok) throw new Error(data.mensaje || "No se pudo crear la actividad.");
+        window.location.reload();
+    }).catch(error => mostrarToast(error.message));
+}
+
+function guardarNotaManual(input){
+    const nota = input.value.trim().replace(",", ".");
+    if(nota && (isNaN(Number(nota)) || Number(nota) < 0 || Number(nota) > 5)){
+        input.classList.add("invalid"); mostrarToast("La nota debe estar entre 0 y 5."); return;
+    }
+    const data = new FormData();
+    data.append("actividad_id", input.dataset.actividadId);
+    data.append("alumno_id", input.dataset.alumnoId);
+    data.append("nota", nota);
+    fetch("{% url 'guardar_calificacion_actividad' %}", {
+        method:"POST", headers:{"X-CSRFToken":csrfToken()}, body:data
+    }).then(r => r.json()).then(data => {
+        if(!data.ok) throw new Error(data.mensaje || "No se pudo guardar la nota.");
+        window.location.reload();
+    }).catch(error => { input.classList.add("invalid"); mostrarToast(error.message); });
+}
+
+function inicializarActividadesManuales(){
+    document.querySelectorAll(".calx-manual-input").forEach(function(input){
+        input.addEventListener("change", function(){ guardarNotaManual(input); });
+        input.addEventListener("keydown", function(event){
+            if(event.key === "Enter"){ event.preventDefault(); guardarNotaManual(input); }
+        });
+    });
+}
 
 function formatearFecha(fecha){
 
@@ -3364,11 +3435,11 @@ document.addEventListener(
     }
 );
 
-/* Cargar columnas manuales guardadas en este navegador */
+/* Inicializar actividades manuales persistidas en el servidor. */
 if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", cargarColumnasManuales);
+    document.addEventListener("DOMContentLoaded", inicializarActividadesManuales);
 }else{
-    cargarColumnasManuales();
+    inicializarActividadesManuales();
 }
 
 </script>
