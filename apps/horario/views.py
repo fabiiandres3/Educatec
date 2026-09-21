@@ -222,15 +222,13 @@ def crear_horario(request):
 
     cursos = Cursos.objects.all()
 
-    # Cursos que ya tienen un horario creado.
-    #
-    # Se mantiene para que puedas utilizarlo en el template
-    # si quieres deshabilitar visualmente esos cursos.
-    cursos_con_horario = set(
-        Horario.objects.values_list(
+    parejas_periodo_curso_con_horario = list(
+        Horario.objects
+        .values_list(
+            "periodo_id",
             "curso_id",
-            flat=True
         )
+        .distinct()
     )
 
     return render(
@@ -239,7 +237,9 @@ def crear_horario(request):
         {
             "periodos": periodos,
             "cursos": cursos,
-            "cursos_con_horario": cursos_con_horario,
+            "parejas_periodo_curso_json": json.dumps(
+                parejas_periodo_curso_con_horario
+            ),
         }
     )
 
@@ -668,31 +668,84 @@ def crear_horario_curso(request, periodo_id, curso_id):
         )
 
     # =====================================================
-    # OBTENER TODOS LOS DOCENTES
+    # ASIGNACIONES DOCENTE -> CLASE (PARA FILTRADO)
+    #
+    # Para cada docente, obtenemos la lista de IDs de clases
+    # que tiene asignadas en este curso. Con esto, en el
+    # frontend podremos filtrar el select de materias
+    # cuando el usuario seleccione un docente.
     # =====================================================
 
-    docentes = (
-        Docente.objects
-        .select_related("usuario")
-        .order_by(
-            "usuario__first_name",
-            "usuario__last_name"
-        )
-    )
-
-    # =====================================================
-    # OBTENER DOCENTES ASIGNADOS AL CURSO
-    # =====================================================
-
-    asignaciones = (
+    asignaciones_qs = (
         AsignacionDocente.objects
         .filter(
             curso=curso
         )
         .select_related(
             "docente__usuario",
-            "curso",
+            "clase",
         )
+        .order_by(
+            "docente__usuario__first_name",
+            "docente__usuario__last_name",
+            "clase__titulo",
+        )
+    )
+
+    # Docentes que tienen al menos UNA asignación en este curso.
+    # Mostraremos SOLAMENTE estos docentes en el select,
+    # para que no aparezcan docentes sin materia asignada.
+    docentes_ids = list(
+        asignaciones_qs.values_list(
+            "docente_id",
+            flat=True,
+        )
+        .distinct()
+    )
+
+    docentes = (
+        Docente.objects
+        .filter(id__in=docentes_ids)
+        .select_related("usuario")
+        .order_by(
+            "usuario__first_name",
+            "usuario__last_name",
+        )
+    )
+
+    # Estructura: { "docente_id": [ { "id": clase_id, "titulo": "..." }, ... ] }
+    clases_por_docente = {}
+
+    for asignacion in asignaciones_qs:
+
+        if not asignacion.clase_id:
+            continue
+
+        docente_key = str(asignacion.docente_id)
+
+        if docente_key not in clases_por_docente:
+            clases_por_docente[docente_key] = []
+
+        ya_existe = any(
+            c["id"] == asignacion.clase_id
+            for c in clases_por_docente[docente_key]
+        )
+
+        if not ya_existe:
+            clases_por_docente[docente_key].append({
+                "id": asignacion.clase_id,
+                "titulo": str(asignacion.clase.titulo),
+            })
+
+    # Listado de TODAS las clases (materias) del curso,
+    # se usa como fallback si algún docente no tiene
+    # materias asignadas específicas.
+    clases_curso = list(
+        curso.clases.values(
+            "id",
+            "titulo",
+        )
+        .order_by("titulo")
     )
 
     dias = [
@@ -727,88 +780,8 @@ def crear_horario_curso(request, periodo_id, curso_id):
             "periodo": periodo,
             "curso": curso,
             "docentes": docentes,
-            "asignaciones": asignaciones,
-            "dias": dias,
-            "horas_manana": horas_manana,
-            "horas_tarde": horas_tarde,
-        },
-    )
-
-
-    periodo = get_object_or_404(
-        Periodo,
-        id=periodo_id
-    )
-
-    curso = get_object_or_404(
-        Cursos,
-        id=curso_id
-    )
-
-    # =====================================================
-    # VALIDAR SI YA EXISTE HORARIO
-    # =====================================================
-
-    horario_existente = Horario.objects.filter(
-        periodo_id=periodo_id,
-        curso_id=curso_id
-    ).exists()
-
-    if horario_existente:
-
-        messages.warning(
-            request,
-            "Este curso ya tiene un horario creado para este período."
-        )
-
-        return redirect(
-            "listar_horario"
-        )
-
-    asignaciones = (
-        AsignacionDocente.objects
-        .filter(
-            clase__curso=curso
-        )
-        .select_related(
-            "docente__usuario",
-            "clase",
-            "clase__curso",
-        )
-    )
-
-    dias = [
-        ("lunes", "Lunes"),
-        ("martes", "Martes"),
-        ("miercoles", "Miércoles"),
-        ("jueves", "Jueves"),
-        ("viernes", "Viernes"),
-    ]
-
-    horas_manana = [
-        ("06:00", "07:00"),
-        ("07:00", "08:00"),
-        ("08:00", "09:00"),
-        ("09:00", "10:00"),
-        ("10:00", "11:00"),
-        ("11:00", "12:00"),
-    ]
-
-    horas_tarde = [
-        ("12:30", "13:30"),
-        ("13:30", "14:30"),
-        ("14:30", "15:30"),
-        ("15:30", "16:30"),
-        ("16:30", "17:00"),
-    ]
-
-    return render(
-        request,
-        "admin/horario/crear_horario_curso.html.html",
-        {
-            "periodo": periodo,
-            "curso": curso,
-            "asignaciones": asignaciones,
+            "clases_curso_json": json.dumps(clases_curso),
+            "clases_por_docente_json": json.dumps(clases_por_docente),
             "dias": dias,
             "horas_manana": horas_manana,
             "horas_tarde": horas_tarde,
@@ -1222,6 +1195,11 @@ def guardar_horario_ajax(request):
             mensaje = (
                 "No se realizaron cambios."
             )
+
+        messages.success(
+            request,
+            mensaje
+        )
 
         return JsonResponse(
             {

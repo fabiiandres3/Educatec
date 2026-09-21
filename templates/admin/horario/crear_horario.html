@@ -119,6 +119,124 @@ Crear horario
         font-size: 14px;
     }
 
+    /* =====================================================
+       NOTIFICACIONES
+       ===================================================== */
+
+    .notificacion {
+        position: fixed;
+        top: 25px;
+        right: 25px;
+        width: min(390px, calc(100vw - 40px));
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 16px 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, .15);
+        border: 1px solid #e5e7eb;
+        z-index: 99999;
+        transform: translateX(120%);
+        opacity: 0;
+        transition: .35s ease;
+        overflow: hidden;
+    }
+
+    .notificacion.mostrar {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .notificacion-icono {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+    }
+
+    .notificacion-contenido {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notificacion-titulo {
+        margin: 0 0 4px;
+        font-size: 14px;
+        font-weight: 800;
+        color: #1f2937;
+    }
+
+    .notificacion-mensaje {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #6b7280;
+    }
+
+    .notificacion-cerrar {
+        border: none;
+        background: transparent;
+        color: #9ca3af;
+        cursor: pointer;
+        font-size: 17px;
+        padding: 2px;
+        line-height: 1;
+    }
+
+    .notificacion-cerrar:hover {
+        color: #374151;
+    }
+
+    .notificacion.advertencia {
+        border-left: 4px solid #f59e0b;
+    }
+
+    .notificacion.advertencia .notificacion-icono {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .notificacion.error {
+        border-left: 4px solid #dc2626;
+    }
+
+    .notificacion.error .notificacion-icono {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .notificacion-barra {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        width: 100%;
+        transform-origin: left;
+    }
+
+    .notificacion.advertencia .notificacion-barra {
+        background: #f59e0b;
+    }
+
+    .notificacion.error .notificacion-barra {
+        background: #dc2626;
+    }
+
+    @keyframes reducirBarra {
+        from {
+            transform: scaleX(1);
+        }
+
+        to {
+            transform: scaleX(0);
+        }
+    }
+
     @media (max-width: 700px) {
 
         .form-grid {
@@ -262,6 +380,56 @@ Crear horario
 </div>
 
 
+<!-- =====================================================
+     NOTIFICACIÓN
+     ===================================================== -->
+
+<div
+    id="notificacion"
+    class="notificacion"
+    role="alert"
+    aria-live="polite"
+>
+
+    <div class="notificacion-icono" id="notificacionIcono">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+
+    <div class="notificacion-contenido">
+
+        <h4
+            class="notificacion-titulo"
+            id="notificacionTitulo"
+        >
+            Advertencia
+        </h4>
+
+        <p
+            class="notificacion-mensaje"
+            id="notificacionMensaje"
+        >
+            Mensaje
+        </p>
+
+    </div>
+
+    <button
+        type="button"
+        class="notificacion-cerrar"
+        id="cerrarNotificacion"
+        aria-label="Cerrar notificación"
+    >
+        <i class="fas fa-times"></i>
+    </button>
+
+    <div
+        class="notificacion-barra"
+        id="notificacionBarra"
+    ></div>
+
+</div>
+
+
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -275,6 +443,95 @@ document.addEventListener("DOMContentLoaded", function () {
     const boton =
         document.getElementById("btnCrearHorario");
 
+    const parejasConHorario =
+        {{ parejas_periodo_curso_json|safe }};
+
+    const parejasSet = new Set(
+        parejasConHorario.map(function (p) {
+            return p[0] + "-" + p[1];
+        })
+    );
+
+
+    /* ==========================================
+       SISTEMA DE NOTIFICACIONES
+       ========================================== */
+
+    const notificacion =
+        document.getElementById("notificacion");
+
+    const notificacionIcono =
+        document.getElementById("notificacionIcono");
+
+    const notificacionTitulo =
+        document.getElementById("notificacionTitulo");
+
+    const notificacionMensaje =
+        document.getElementById("notificacionMensaje");
+
+    const notificacionBarra =
+        document.getElementById("notificacionBarra");
+
+    const cerrarNotificacion =
+        document.getElementById("cerrarNotificacion");
+
+    let timeoutNotificacion = null;
+    let animationFrame = null;
+
+
+    function mostrarNotificacion(tipo, titulo, mensaje) {
+
+        if (timeoutNotificacion) {
+            clearTimeout(timeoutNotificacion);
+        }
+
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+        }
+
+        notificacion.className =
+            "notificacion " + tipo;
+
+        const iconos = {
+            advertencia: "fa-exclamation-triangle",
+            error: "fa-times-circle",
+            exito: "fa-check",
+            info: "fa-info-circle"
+        };
+
+        notificacionIcono.innerHTML =
+            '<i class="fas ' + (iconos[tipo] || iconos.info) + '"></i>';
+
+        notificacionTitulo.textContent = titulo;
+        notificacionMensaje.textContent = mensaje;
+
+        notificacionBarra.style.animation = "none";
+        notificacionBarra.offsetHeight;
+        notificacionBarra.style.animation =
+            "reducirBarra 4s linear forwards";
+
+        notificacion.classList.add("mostrar");
+
+        timeoutNotificacion = setTimeout(function () {
+            ocultarNotificacion();
+        }, 4000);
+    }
+
+
+    function ocultarNotificacion() {
+        notificacion.classList.remove("mostrar");
+    }
+
+
+    cerrarNotificacion.addEventListener(
+        "click",
+        ocultarNotificacion
+    );
+
+
+    /* ==========================================
+       CLICK BOTÓN CREAR HORARIO
+       ========================================== */
 
     boton.addEventListener("click", function () {
 
@@ -287,7 +544,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!periodoId) {
 
-            alert("Selecciona un período.");
+            mostrarNotificacion(
+                "error",
+                "Falta período",
+                "Selecciona un período para continuar."
+            );
 
             periodo.focus();
 
@@ -297,9 +558,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!cursoId) {
 
-            alert("Selecciona un curso.");
+            mostrarNotificacion(
+                "error",
+                "Falta curso",
+                "Selecciona un curso para continuar."
+            );
 
             curso.focus();
+
+            return;
+        }
+
+
+        const clave = periodoId + "-" + cursoId;
+
+
+        if (parejasSet.has(clave)) {
+
+            mostrarNotificacion(
+                "advertencia",
+                "Horario ya existente",
+                "Este curso ya tiene un horario creado para el período seleccionado."
+            );
 
             return;
         }

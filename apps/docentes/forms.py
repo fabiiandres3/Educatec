@@ -1,5 +1,41 @@
 from django import forms
 from apps.docentes.models import Docente, AsignacionDocente
+from apps.user.models import Usuario
+
+
+class EditarDocenteUsuarioForm(forms.ModelForm):
+
+    class Meta:
+        model = Usuario
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+        ]
+
+        widgets = {
+            "username": forms.TextInput(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+            "first_name": forms.TextInput(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+            "last_name": forms.TextInput(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
+        }
 
 
 class DocenteForm(forms.ModelForm):
@@ -7,17 +43,11 @@ class DocenteForm(forms.ModelForm):
     class Meta:
         model = Docente
         fields = [
-            "usuario",
             "telefono",
             "direccion",
         ]
 
         widgets = {
-            "usuario": forms.Select(
-                attrs={
-                    "class": "form-control"
-                }
-            ),
             "telefono": forms.NumberInput(
                 attrs={
                     "class": "form-control",
@@ -37,7 +67,7 @@ class AsignacionDocenteForm(forms.ModelForm):
 
     class Meta:
         model = AsignacionDocente
-        fields = ["curso"]
+        fields = ["curso", "clase"]
 
         widgets = {
             "curso": forms.Select(
@@ -45,8 +75,14 @@ class AsignacionDocenteForm(forms.ModelForm):
                     "class": "form-control"
                 }
             ),
+            "clase": forms.Select(
+                attrs={
+                    "class": "form-control"
+                }
+            ),
         }
 
         labels = {
-            "curso": "Curso"
+            "curso": "Curso",
+            "clase": "Materia (Clase)"
         }

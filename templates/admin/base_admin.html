@@ -364,80 +364,32 @@
     </div>
 
     <div class="page-body">
-        {% block content %}
-            {% if messages %}
-                {% for message in messages %}
 
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
-                        role="alert">
+        {% if messages %}
+            {% for message in messages %}
 
-                        {{ message }}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4"
+                    role="alert"
+                    style="background:{% if 'success' in message.tags %}#065f46;color:#a7f3d0;border:1px solid #047857;{% elif 'warning' in message.tags %}#92400e;color:#fde68a;border:1px solid #b45309;{% elif 'error' in message.tags %}#991b1b;color:#fecaca;border:1px solid #b91c1c;{% else %}#1e40af;color:#bfdbfe;border:1px solid #1d4ed8;{% endif %}border-radius:10px;">
 
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="alert">
-                        </button>
+                    <i class="fas {% if 'success' in message.tags %}fa-check-circle{% elif 'warning' in message.tags %}fa-exclamation-triangle{% elif 'error' in message.tags %}fa-times-circle{% else %}fa-info-circle{% endif %} me-2"></i>
 
-                    </div>
+                    {{ message }}
 
-                {% endfor %}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            style="filter:invert(1);">
+                    </button>
 
-            {% endif %}
-        {% endblock %}
+                </div>
+
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
     </div>
 </div>
-
-{% if messages %}
-<div class="notificaciones-container">
-
-    {% for message in messages %}
-
-        <div class="notificacion
-            {% if message.tags == 'success' %}
-                notificacion-exito
-            {% elif message.tags == 'error' %}
-                notificacion-error
-            {% elif message.tags == 'warning' %}
-                notificacion-advertencia
-            {% else %}
-                notificacion-info
-            {% endif %}
-        ">
-
-            <div class="notificacion-icono">
-
-                {% if message.tags == 'success' %}
-                    <i class="fa-solid fa-circle-check"></i>
-                {% elif message.tags == 'error' %}
-                    <i class="fa-solid fa-circle-xmark"></i>
-                {% elif message.tags == 'warning' %}
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                {% else %}
-                    <i class="fa-solid fa-circle-info"></i>
-                {% endif %}
-
-            </div>
-
-            <div class="notificacion-contenido">
-                {{ message }}
-            </div>
-
-            <button
-                type="button"
-                class="notificacion-cerrar"
-                onclick="cerrarNotificacion(this)"
-                aria-label="Cerrar notificación"
-            >
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-        </div>
-
-    {% endfor %}
-
-</div>
-{% endif %}
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
