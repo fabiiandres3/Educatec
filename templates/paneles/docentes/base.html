@@ -97,6 +97,16 @@
             </li>
 
 
+            <!-- HORARIOS -->
+            <li
+                class="{% block active_horarios %}{% endblock %}"
+                onclick="window.location='{% url 'horarios_docente' %}'"
+            >
+                <i class="fa-solid fa-calendar"></i>
+                Horarios
+            </li>
+
+
             <!-- EVENTOS -->
             <li
                 class="{% block active_eventos %}{% endblock %}"

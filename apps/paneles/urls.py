@@ -66,6 +66,18 @@ urlpatterns = [
         name="carga_academica"
     ),
 
+    path(
+        "docente/horarios/",
+        views.horarios_docente,
+        name="horarios_docente"
+    ),
+
+    path(
+        "docente/horarios/<int:periodo_id>/<int:curso_id>/",
+        views.detalle_horario_docente,
+        name="detalle_horario_docente"
+    ),
+
     # =========================================================
     # ALUMNOS
     # =========================================================
