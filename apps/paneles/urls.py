@@ -114,6 +114,12 @@ urlpatterns = [
         name="configuracion_alumnos"
     ),
 
+    path(
+        "alumno/horarios/",
+        views.horarios_alumnos,
+        name="horarios_alumnos"
+    ),
+
     # =========================================================
     # ACUDIENTE
     # =========================================================

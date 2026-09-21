@@ -418,23 +418,6 @@
 
     </div>
 
-    <!-- CAJA DE DEBUG -->
-    <div class="debug-box">
-        <div class="debug-title">
-            <i class="fas fa-info-circle"></i>
-            Depuración (temporal)
-        </div>
-        Docente: <code>{{ docente.usuario.get_full_name|default:docente.usuario.username }}</code>
-        · ID Docente: <code>{{ docente.id }}</code>
-        · Cursos asignados+horario: <code>{{ cursos|length }}</code>
-        · Registros Horario total: <code>{{ horarios_data|length }}</code>
-        <br>
-        <small style="opacity:.8">
-            Si `Registros Horario total` = 0, no hay nada en la base de datos para este docente.
-            Si es > 0 y no se ve nada, revisa la consola del navegador (F12) para ver errores.
-        </small>
-    </div>
-
     <!-- LISTADO DE TARJETAS -->
     <div class="schedule-grid" id="scheduleGrid"></div>
 
@@ -447,6 +430,28 @@
 </div>
 
 {{ horarios_data|json_script:"horarios-data" }}
+<script id="cursos-asignados-data" type="application/json">
+[
+    {% for curso in cursos %}
+    {
+        "id": {{ curso.id }},
+        "nombre": "{{ curso.nombre|escapejs }}",
+        "periodo": null
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+<script id="periodos-asignados-data" type="application/json">
+[
+    {% for periodo in periodos %}
+    {
+        "id": {{ periodo.id }},
+        "numero": {{ periodo.numero }},
+        "anio": {{ periodo.anio }}
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
 
 {% endblock %}
 
@@ -468,10 +473,81 @@ document.addEventListener("DOMContentLoaded", function () {
             rawData = [];
         }
     }
-    console.log("[horarios_docente] Datos recibidos:", rawData.length, "registros");
-    if (rawData.length) {
-        console.table(rawData.slice(0, 10));
+
+    let cursosAsignados = [];
+    const cursosAsignadosEl = document.getElementById("cursos-asignados-data");
+    if (cursosAsignadosEl) {
+        try { cursosAsignados = JSON.parse(cursosAsignadosEl.textContent) || []; }
+        catch (e) { cursosAsignados = []; }
     }
+
+    let periodosAsignados = [];
+    const periodosAsignadosEl = document.getElementById("periodos-asignados-data");
+    if (periodosAsignadosEl) {
+        try { periodosAsignados = JSON.parse(periodosAsignadosEl.textContent) || []; }
+        catch (e) { periodosAsignados = []; }
+    }
+
+    const cursosDesdeHorarios = Array.from(
+        new Set(
+            rawData.map(function (h) {
+                return JSON.stringify({
+                    id: h.curso,
+                    nombre: h.cursoNombre,
+                    periodo: h.periodo,
+                });
+            })
+        )
+    ).map(function (s) { return JSON.parse(s); });
+
+    const periodosDesdeHorarios = Array.from(
+        new Set(
+            rawData.map(function (h) {
+                return JSON.stringify({
+                    id: h.periodo,
+                    numero: h.periodoNumero,
+                    anio: h.periodoAnio,
+                });
+            })
+        )
+    ).map(function (s) { return JSON.parse(s); });
+
+    const CURSOS_REFS_MAP = new Map();
+    cursosAsignados.forEach(function (c) {
+        if (!c || c.id == null) return;
+        CURSOS_REFS_MAP.set(String(c.id), c);
+    });
+    cursosDesdeHorarios.forEach(function (c) {
+        if (!c || c.id == null) return;
+        const clave = String(c.id);
+        if (!CURSOS_REFS_MAP.has(clave)) CURSOS_REFS_MAP.set(clave, c);
+        else {
+            const exist = CURSOS_REFS_MAP.get(clave);
+            exist.periodo = exist.periodo || c.periodo;
+            exist.nombre = exist.nombre || c.nombre;
+        }
+    });
+    const CURSOS_TODOS = Array.from(CURSOS_REFS_MAP.values());
+
+    const PERIODOS_REFS_MAP = new Map();
+    periodosAsignados.forEach(function (p) {
+        if (!p || p.id == null) return;
+        PERIODOS_REFS_MAP.set(String(p.id), p);
+    });
+    periodosDesdeHorarios.forEach(function (p) {
+        if (!p || p.id == null) return;
+        const clave = String(p.id);
+        if (!PERIODOS_REFS_MAP.has(clave)) PERIODOS_REFS_MAP.set(clave, p);
+        else {
+            const exist = PERIODOS_REFS_MAP.get(clave);
+            exist.numero = exist.numero || p.numero;
+            exist.anio = exist.anio || p.anio;
+        }
+    });
+    const PERIODOS_TODOS = Array.from(PERIODOS_REFS_MAP.values());
+
+    const OPTIONS_CURSOS_ORIGINALES = cursoSelect.innerHTML;
+    const OPTIONS_PERIODOS_ORIGINALES = periodoSelect.innerHTML;
 
     const dias = ["lunes", "martes", "miercoles", "jueves", "viernes"];
 
@@ -518,8 +594,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function generarUrlVer(periodo, curso) {
-        const base = "{% url 'detalle_horario_docente' 0 0 %}";
-        return base.replace(/\/0\/0\/?$/, "/" + periodo + "/" + curso + "/");
+        const base = "{% url 'detalle_horario_docente' 9999 8888 %}";
+        return base
+            .replace("9999", String(periodo))
+            .replace("8888", String(curso));
     }
 
     function agruparHorarios(lista) {
@@ -657,10 +735,74 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
     }
 
+    function actualizarOptionsPeriodos(cursoId) {
+        periodoSelect.innerHTML = OPTIONS_PERIODOS_ORIGINALES;
+        if (!cursoId) return;
+
+        const periodosDataIds = new Set(
+            rawData
+                .filter(function (h) { return String(h.curso) === String(cursoId); })
+                .filter(function (h) { return h.periodo != null; })
+                .map(function (h) { return String(h.periodo); })
+        );
+
+        if (periodosDataIds.size === 0) return;
+
+        Array.from(periodoSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            if (!periodosDataIds.has(String(opt.value))) {
+                opt.remove();
+            }
+        });
+
+        if (!periodoSelect.value) return;
+        const sigueExistiendo = Array.from(periodoSelect.options)
+            .some(function (opt) { return opt.value === periodoSelect.value; });
+        if (!sigueExistiendo) periodoSelect.value = "";
+    }
+
+    function actualizarOptionsCursos(periodoId) {
+        cursoSelect.innerHTML = OPTIONS_CURSOS_ORIGINALES;
+        if (!periodoId) return;
+
+        const cursosDataIds = new Set(
+            rawData
+                .filter(function (h) { return String(h.periodo) === String(periodoId); })
+                .filter(function (h) { return h.curso != null; })
+                .map(function (h) { return String(h.curso); })
+        );
+
+        if (cursosDataIds.size === 0) return;
+
+        Array.from(cursoSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            if (!cursosDataIds.has(String(opt.value))) {
+                opt.remove();
+            }
+        });
+
+        if (!cursoSelect.value) return;
+        const sigueExistiendo = Array.from(cursoSelect.options)
+            .some(function (opt) { return opt.value === cursoSelect.value; });
+        if (!sigueExistiendo) cursoSelect.value = "";
+    }
+
     function renderizar() {
+        actualizarOptionsCursos(periodoSelect.value);
+        actualizarOptionsPeriodos(cursoSelect.value);
+
         grid.innerHTML = "";
         const p = periodoSelect.value;
         const c = cursoSelect.value;
+
+        if (!p && !c) {
+            noSchedules.style.display = "block";
+            noSchedules.querySelector("strong").textContent = "Selecciona filtros";
+            noSchedules.querySelector("span").textContent =
+                "Elige al menos un Período o un Curso para ver tus horarios.";
+            return;
+        }
+
         const filtrados = rawData.filter(function (h) {
             const okP = !p || String(h.periodo) === String(p);
             const okC = !c || String(h.curso) === String(c);
@@ -669,6 +811,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const grupos = agruparHorarios(filtrados);
         if (grupos.length === 0) {
             noSchedules.style.display = "block";
+            noSchedules.querySelector("strong").textContent = "Sin horarios para este filtro";
+            noSchedules.querySelector("span").textContent =
+                "No se encontraron horarios para la combinación seleccionada.";
             return;
         }
         noSchedules.style.display = "none";
@@ -677,8 +822,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    periodoSelect.addEventListener("change", renderizar);
-    cursoSelect.addEventListener("change", renderizar);
+    periodoSelect.addEventListener("change", function () {
+        actualizarOptionsCursos(periodoSelect.value);
+        renderizar();
+    });
+
+    cursoSelect.addEventListener("change", function () {
+        actualizarOptionsPeriodos(cursoSelect.value);
+        renderizar();
+    });
+
+    actualizarOptionsCursos(periodoSelect.value);
+    actualizarOptionsPeriodos(cursoSelect.value);
     renderizar();
 
 });

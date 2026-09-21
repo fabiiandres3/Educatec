@@ -327,24 +327,6 @@
 
     </div>
 
-    <!-- CAJA DE DEBUG -->
-    <div class="debug-box">
-        <div class="debug-title">
-            <i class="fas fa-info-circle"></i>
-            Depuración (temporal)
-        </div>
-        Curso: <code>{{ curso.nombre }}</code>
-        · ID curso: <code>{{ curso.id }}</code>
-        · ID período: <code>{{ periodo.id }}</code>
-        · ID docente: <code>{{ docente.id }}</code>
-        · Registros Horario encontrados: <code>{{ horarios_data|length }}</code>
-        <br>
-        <small style="opacity:.8">
-            Si hay > 0 y el calendario sigue vacío, abre F12 (consola) para ver logs.
-            Si es 0 → la base no tiene Horario.docente_id = {{ docente.id }} con curso = {{ curso.id }} y período = {{ periodo.id }}.
-        </small>
-    </div>
-
     <!-- TARJETA CON TABLA -->
     <div class="schedule-card">
 
@@ -390,10 +372,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("[detalle_horario] Error parseando JSON:", e);
             rawData = [];
         }
-    }
-    console.log("[detalle_horario] Datos recibidos:", rawData.length, "registros");
-    if (rawData.length) {
-        console.table(rawData);
     }
 
     const dias = ["lunes", "martes", "miercoles", "jueves", "viernes"];

@@ -850,6 +850,105 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    const OPTIONS_PERIODOS_ORIGINALES = periodoSelect.innerHTML;
+    const OPTIONS_CURSOS_ORIGINALES = cursoSelect.innerHTML;
+
+    const CURSOS_REFS = Array.from(
+        new Set(
+            horariosBD.map(function (h) {
+                return JSON.stringify({
+                    id: h.curso,
+                    nombre: h.cursoNombre,
+                    periodo: h.periodo,
+                });
+            })
+        )
+    ).map(function (s) { return JSON.parse(s); });
+
+
+    /* =====================================================
+       ACTUALIZAR OPTIONS DE CURSOS SEGÚN PERÍODO
+       ===================================================== */
+
+    function actualizarCursosSegunPeriodo(periodoId) {
+        cursoSelect.innerHTML = OPTIONS_CURSOS_ORIGINALES;
+        if (!periodoId) return;
+
+        const cursosValidos = new Set(
+            horariosBD
+                .filter(function (h) {
+                    return String(h.periodo) === String(periodoId);
+                })
+                .map(function (h) { return String(h.curso); })
+        );
+
+        const refs = new Set(
+            CURSOS_REFS
+                .filter(function (c) {
+                    return String(c.periodo) === String(periodoId);
+                })
+                .map(function (c) { return String(c.id); })
+        );
+
+        cursosValidos.forEach(function (id) { refs.add(id); });
+        if (refs.size === 0) return;
+
+        Array.from(cursoSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            if (!refs.has(String(opt.value))) {
+                opt.remove();
+            }
+        });
+
+        if (cursoSelect.value) {
+            const existe = Array.from(cursoSelect.options)
+                .some(function (o) { return o.value === cursoSelect.value; });
+            if (!existe) cursoSelect.value = "";
+        }
+    }
+
+
+    /* =====================================================
+       ACTUALIZAR OPTIONS DE PERÍODOS SEGÚN CURSO
+       ===================================================== */
+
+    function actualizarPeriodosSegunCurso(cursoId) {
+        periodoSelect.innerHTML = OPTIONS_PERIODOS_ORIGINALES;
+        if (!cursoId) return;
+
+        const periodosValidos = new Set(
+            horariosBD
+                .filter(function (h) {
+                    return String(h.curso) === String(cursoId);
+                })
+                .map(function (h) { return String(h.periodo); })
+        );
+
+        const refs = new Set(
+            CURSOS_REFS
+                .filter(function (c) {
+                    return String(c.id) === String(cursoId);
+                })
+                .map(function (c) { return String(c.periodo); })
+        );
+
+        periodosValidos.forEach(function (id) { refs.add(id); });
+        if (refs.size === 0) return;
+
+        Array.from(periodoSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            if (!refs.has(String(opt.value))) {
+                opt.remove();
+            }
+        });
+
+        if (periodoSelect.value) {
+            const existe = Array.from(periodoSelect.options)
+                .some(function (o) { return o.value === periodoSelect.value; });
+            if (!existe) periodoSelect.value = "";
+        }
+    }
+
 
     /* =====================================================
        DÍAS
@@ -1370,12 +1469,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     periodoSelect.addEventListener(
         "change",
-        renderizarHorario
+        function () {
+            actualizarCursosSegunPeriodo(periodoSelect.value);
+            renderizarHorario();
+        }
     );
 
     cursoSelect.addEventListener(
         "change",
-        renderizarHorario
+        function () {
+            actualizarPeriodosSegunCurso(cursoSelect.value);
+            renderizarHorario();
+        }
     );
 
     jornadaSelect.addEventListener(
@@ -1396,6 +1501,8 @@ document.addEventListener("DOMContentLoaded", function () {
             cursoSelect.value = "";
             jornadaSelect.value = "";
 
+            actualizarCursosSegunPeriodo("");
+            actualizarPeriodosSegunCurso("");
             renderizarHorario();
 
         }
@@ -1519,6 +1626,8 @@ document.addEventListener("DOMContentLoaded", function () {
        INICIALIZAR
        ===================================================== */
 
+    actualizarCursosSegunPeriodo(periodoSelect.value);
+    actualizarPeriodosSegunCurso(cursoSelect.value);
     renderizarHorario();
 
 });

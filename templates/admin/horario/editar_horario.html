@@ -762,9 +762,6 @@ Editar horario
         </div>
 
 
-        {% if horarios_data %}
-
-
         <form
             method="POST"
             id="formEditarHorario"
@@ -881,32 +878,6 @@ Editar horario
 
 
         </form>
-
-
-        {% else %}
-
-
-        <div class="sin-horarios">
-
-            <i class="fas fa-calendar-xmark"></i>
-
-            <strong>
-
-                No hay horarios registrados
-
-            </strong>
-
-            <span>
-
-                Puedes regresar y crear el primer horario
-                para este curso.
-
-            </span>
-
-        </div>
-
-
-        {% endif %}
 
 
     </div>
@@ -1312,7 +1283,10 @@ document.addEventListener(
                                 </option>
 
                                 {% for docente in docentes %}
-                                    <option value="{{ docente.id }}">
+                                    <option
+                                        value="{{ docente.id }}"
+                                        ${horario.docente === {{ docente.id }} ? "selected" : ""}
+                                    >
                                         {{ docente }}
                                     </option>
                                 {% endfor %}
@@ -1334,6 +1308,7 @@ document.addEventListener(
 
                                     <option
                                         value="{{ clase.id }}"
+                                        ${horario.clase === {{ clase.id }} ? "selected" : ""}
                                     >
 
                                         {{ clase }}
@@ -1521,10 +1496,10 @@ document.addEventListener(
                                 {% for docente in docentes %}
 
                                     <option
-                                        value="{{ docente.docente_id }}"
+                                        value="{{ docente.id }}"
                                     >
 
-                                        {{ docente.docente }}
+                                        {{ docente }}
 
                                     </option>
 

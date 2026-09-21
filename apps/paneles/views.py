@@ -1520,6 +1520,88 @@ def configuracion_alumnos(request):
 
 
 # ============================================================
+#                    HORARIOS ALUMNOS
+# ============================================================
+
+@login_required
+def horarios_alumnos(request):
+
+    alumno = get_object_or_404(
+        Alumnos.objects.select_related(
+            "usuario",
+            "curso",
+        ),
+        usuario=request.user,
+        activo=True,
+    )
+
+    periodos = (
+        Periodo.objects
+        .filter(
+            activo=True,
+        )
+        .order_by(
+            "-anio",
+            "-numero",
+        )
+    )
+
+    horarios = (
+        Horario.objects
+        .filter(
+            curso_id=alumno.curso_id,
+        )
+        .select_related(
+            "periodo",
+            "docente__usuario",
+            "curso",
+            "clase",
+        )
+        .order_by(
+            "dia",
+            "hora_inicio",
+        )
+    )
+
+    horarios_data = []
+
+    for horario in horarios:
+
+        horarios_data.append({
+            "id": horario.id,
+
+            "periodo": horario.periodo_id,
+            "periodoNumero": horario.periodo.numero if horario.periodo_id else None,
+            "periodoAnio": horario.periodo.anio if horario.periodo_id else None,
+
+            "docente": horario.docente_id,
+            "docenteNombre": str(horario.docente) if horario.docente_id else "",
+
+            "curso": horario.curso_id,
+            "cursoNombre": horario.curso.nombre if horario.curso_id else "",
+
+            "clase": horario.clase_id,
+            "claseNombre": str(horario.clase) if horario.clase_id else "",
+
+            "dia": horario.dia,
+            "jornada": horario.jornada,
+
+            "horaInicio": horario.hora_inicio.strftime("%H:%M"),
+            "horaFin": horario.hora_fin.strftime("%H:%M"),
+        })
+
+    return render(
+        request,
+        "paneles/alumnos/horarios_alumnos.html",
+        {
+            "alumno": alumno,
+            "periodos": periodos,
+            "horarios_data": horarios_data,
+        }
+    )
+
+
+# ============================================================
 #                    DASHBOARD ACUDIENTE
 # ============================================================
 
