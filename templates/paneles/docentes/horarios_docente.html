@@ -1,0 +1,841 @@
+{% extends "paneles/docentes/base.html" %}
+
+{% block title %}
+    Mis horarios
+{% endblock %}
+
+{% block active_horarios %}
+    active
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.btn-ver {
+    background: #8b5cf6;
+    color: #ffffff;
+}
+.btn-ver:hover {
+    background: #7c3aed;
+}
+.btn-card {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    text-decoration: none;
+}
+.btn-card:hover {
+    transform: translateY(-1px);
+}
+.btn-card-ver {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+.btn-card-ver:hover {
+    background: #8b5cf6;
+    color: #ffffff;
+}
+.schedule-horario-docente {
+    width: 100%;
+    padding: 22px 20px 24px;
+    box-sizing: border-box;
+}
+.schedule-horario-docente *,
+.schedule-horario-docente *::before,
+.schedule-horario-docente *::after {
+    box-sizing: border-box;
+}
+.schedule-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.schedule-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+}
+.schedule-subtitle {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+.schedule-topbar {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+.schedule-filters {
+    display: flex;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.filter-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4b5563;
+}
+.filter-group select {
+    min-width: 170px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1f2937;
+    outline: none;
+    cursor: pointer;
+    font-size: 13px;
+}
+.filter-group select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+.schedule-grid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+.schedule-card {
+    width: 100%;
+    min-width: 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .05);
+}
+.schedule-card-header {
+    min-height: 62px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.schedule-card-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    flex: 1;
+}
+.schedule-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #dbeafe;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.schedule-card-text {
+    min-width: 0;
+}
+.schedule-card-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1f2937;
+}
+.schedule-card-info {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.schedule-card-info .chip {
+    background: #f3f4f6;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #374151;
+}
+.schedule-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.schedule-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+.schedule-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+.schedule-table col.time-column {
+    width: 105px;
+}
+.schedule-table col.day-column {
+    width: calc((100% - 105px) / 5);
+}
+.schedule-table th,
+.schedule-table td {
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+.schedule-table th:last-child,
+.schedule-table td:last-child {
+    border-right: none;
+}
+.schedule-table thead th {
+    height: 48px;
+    padding: 8px;
+    background: #f8fafc;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+.schedule-table tbody td {
+    height: 76px;
+    padding: 6px;
+    vertical-align: top;
+    background: #ffffff;
+}
+.schedule-table .time-cell {
+    padding: 10px 7px;
+    vertical-align: middle;
+    text-align: center;
+    background: #f8fafc;
+}
+.time-main {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+}
+.time-end {
+    display: block;
+    margin-top: 3px;
+    font-size: 11px;
+    color: #9ca3af;
+}
+.schedule-item {
+    width: 100%;
+    min-height: 63px;
+    padding: 8px;
+    border-radius: 8px;
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    overflow: hidden;
+}
+.schedule-item-title {
+    margin: 0 0 4px;
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #1e3a8a;
+}
+.schedule-item-teacher {
+    margin: 0 0 3px;
+    font-size: 11px;
+    line-height: 1.3;
+    color: #374151;
+}
+.schedule-item-time {
+    font-size: 10px;
+    color: #6b7280;
+}
+.empty-cell {
+    width: 100%;
+    height: 100%;
+    min-height: 63px;
+    background:
+        linear-gradient(
+            45deg,
+            transparent 48%,
+            #f3f4f6 48%,
+            #f3f4f6 52%,
+            transparent 52%
+        ),
+        linear-gradient(
+            -45deg,
+            transparent 48%,
+            #f3f4f6 48%,
+            #f3f4f6 52%,
+            transparent 52%
+        );
+    background-size: 14px 14px;
+    background-position: 0 0, 7px 0;
+    opacity: .7;
+    border-radius: 6px;
+}
+.no-schedules {
+    width: 100%;
+    padding: 60px 20px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+    color: #6b7280;
+}
+.no-schedules i {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 40px;
+    color: #9ca3af;
+}
+.no-schedules strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #374151;
+    font-size: 16px;
+}
+.debug-box {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #78350f;
+    line-height: 1.6;
+}
+.debug-box .debug-title {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+.debug-box code {
+    background: rgba(0,0,0,.06);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+@media (max-width: 700px) {
+    .schedule-horario-docente {
+        padding: 15px 10px;
+    }
+    .schedule-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .schedule-topbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .schedule-filters {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .filter-group {
+        width: 100%;
+    }
+    .filter-group select {
+        width: 100%;
+    }
+    .schedule-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .schedule-card-actions {
+        align-self: flex-end;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="schedule-horario-docente">
+
+    <!-- ENCABEZADO -->
+    <div class="schedule-header">
+        <div>
+            <h1 class="schedule-title">
+                Mis horarios
+            </h1>
+            <p class="schedule-subtitle">
+                Horarios de los cursos que tienes asignados.
+            </p>
+        </div>
+    </div>
+
+    <!-- BARRA SUPERIOR (filtros) -->
+    <div class="schedule-topbar">
+
+        <div class="schedule-filters">
+
+            <div class="filter-group">
+                <label for="periodoSelect">Período</label>
+                <select id="periodoSelect">
+                    <option value="">Todos los períodos</option>
+                    {% for periodo in periodos %}
+                        <option value="{{ periodo.id }}">
+                            Período {{ periodo.numero }} - {{ periodo.anio }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="cursoSelect">Curso</label>
+                <select id="cursoSelect">
+                    <option value="">Todos los cursos</option>
+                    {% for curso in cursos %}
+                        <option value="{{ curso.id }}">
+                            {{ curso.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- LISTADO DE TARJETAS -->
+    <div class="schedule-grid" id="scheduleGrid"></div>
+
+    <div class="no-schedules" id="noSchedules" style="display:none">
+        <i class="fas fa-calendar-xmark"></i>
+        <strong>No tienes horarios asignados</strong>
+        <span>No se encontraron horarios para los filtros seleccionados.</span>
+    </div>
+
+</div>
+
+{{ horarios_data|json_script:"horarios-data" }}
+<script id="cursos-asignados-data" type="application/json">
+[
+    {% for curso in cursos %}
+    {
+        "id": {{ curso.id }},
+        "nombre": "{{ curso.nombre|escapejs }}",
+        "periodo": null
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+<script id="periodos-asignados-data" type="application/json">
+[
+    {% for periodo in periodos %}
+    {
+        "id": {{ periodo.id }},
+        "numero": {{ periodo.numero }},
+        "anio": {{ periodo.anio }}
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const periodoSelect = document.getElementById("periodoSelect");
+    const cursoSelect = document.getElementById("cursoSelect");
+    const grid = document.getElementById("scheduleGrid");
+    const noSchedules = document.getElementById("noSchedules");
+
+    let rawData = [];
+    const datosEl = document.getElementById("horarios-data");
+    if (datosEl) {
+        try { rawData = JSON.parse(datosEl.textContent) || []; }
+        catch (e) {
+            console.error("[horarios_docente] Error parseando JSON:", e);
+            rawData = [];
+        }
+    }
+
+    let cursosAsignados = [];
+    const cursosAsignadosEl = document.getElementById("cursos-asignados-data");
+    if (cursosAsignadosEl) {
+        try { cursosAsignados = JSON.parse(cursosAsignadosEl.textContent) || []; }
+        catch (e) { cursosAsignados = []; }
+    }
+
+    let periodosAsignados = [];
+    const periodosAsignadosEl = document.getElementById("periodos-asignados-data");
+    if (periodosAsignadosEl) {
+        try { periodosAsignados = JSON.parse(periodosAsignadosEl.textContent) || []; }
+        catch (e) { periodosAsignados = []; }
+    }
+
+    const cursosDesdeHorarios = Array.from(
+        new Set(
+            rawData.map(function (h) {
+                return JSON.stringify({
+                    id: h.curso,
+                    nombre: h.cursoNombre,
+                    periodo: h.periodo,
+                });
+            })
+        )
+    ).map(function (s) { return JSON.parse(s); });
+
+    const periodosDesdeHorarios = Array.from(
+        new Set(
+            rawData.map(function (h) {
+                return JSON.stringify({
+                    id: h.periodo,
+                    numero: h.periodoNumero,
+                    anio: h.periodoAnio,
+                });
+            })
+        )
+    ).map(function (s) { return JSON.parse(s); });
+
+    const CURSOS_REFS_MAP = new Map();
+    cursosAsignados.forEach(function (c) {
+        if (!c || c.id == null) return;
+        CURSOS_REFS_MAP.set(String(c.id), c);
+    });
+    cursosDesdeHorarios.forEach(function (c) {
+        if (!c || c.id == null) return;
+        const clave = String(c.id);
+        if (!CURSOS_REFS_MAP.has(clave)) CURSOS_REFS_MAP.set(clave, c);
+        else {
+            const exist = CURSOS_REFS_MAP.get(clave);
+            exist.periodo = exist.periodo || c.periodo;
+            exist.nombre = exist.nombre || c.nombre;
+        }
+    });
+    const CURSOS_TODOS = Array.from(CURSOS_REFS_MAP.values());
+
+    const PERIODOS_REFS_MAP = new Map();
+    periodosAsignados.forEach(function (p) {
+        if (!p || p.id == null) return;
+        PERIODOS_REFS_MAP.set(String(p.id), p);
+    });
+    periodosDesdeHorarios.forEach(function (p) {
+        if (!p || p.id == null) return;
+        const clave = String(p.id);
+        if (!PERIODOS_REFS_MAP.has(clave)) PERIODOS_REFS_MAP.set(clave, p);
+        else {
+            const exist = PERIODOS_REFS_MAP.get(clave);
+            exist.numero = exist.numero || p.numero;
+            exist.anio = exist.anio || p.anio;
+        }
+    });
+    const PERIODOS_TODOS = Array.from(PERIODOS_REFS_MAP.values());
+
+    const OPTIONS_CURSOS_ORIGINALES = cursoSelect.innerHTML;
+    const OPTIONS_PERIODOS_ORIGINALES = periodoSelect.innerHTML;
+
+    const dias = ["lunes", "martes", "miercoles", "jueves", "viernes"];
+
+    const bloques = [
+        { inicio: "06:00", fin: "07:00" },
+        { inicio: "07:00", fin: "08:00" },
+        { inicio: "08:00", fin: "09:00" },
+        { inicio: "09:00", fin: "10:00" },
+        { inicio: "10:00", fin: "11:00" },
+        { inicio: "11:00", fin: "12:00" },
+        { inicio: "12:30", fin: "13:30" },
+        { inicio: "13:30", fin: "14:30" },
+        { inicio: "14:30", fin: "15:30" },
+        { inicio: "15:30", fin: "16:30" },
+        { inicio: "16:30", fin: "17:00" }
+    ];
+
+    function escapeHTML(v) {
+        return String(v ?? "")
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function normalizarDia(v) {
+        return String(v ?? "").trim().toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function minutos(hora) {
+        if (!hora) return null;
+        const p = String(hora).split(":");
+        if (p.length < 2) return null;
+        return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+    }
+
+    function coincide(horario, inicio, fin) {
+        const a = minutos(horario.horaInicio);
+        const b = minutos(horario.horaFin);
+        const x = minutos(inicio);
+        const y = minutos(fin);
+        if ([a, b, x, y].includes(null)) return false;
+        return a < y && b > x;
+    }
+
+    function generarUrlVer(periodo, curso) {
+        const base = "{% url 'detalle_horario_docente' 9999 8888 %}";
+        return base
+            .replace("9999", String(periodo))
+            .replace("8888", String(curso));
+    }
+
+    function agruparHorarios(lista) {
+        const mapa = new Map();
+        lista.forEach(function (h) {
+            const clave = h.periodo + "__" + h.curso;
+            if (!mapa.has(clave)) {
+                mapa.set(clave, {
+                    periodo: h.periodo,
+                    periodoAnio: h.periodoAnio,
+                    periodoNumero: h.periodoNumero,
+                    curso: h.curso,
+                    cursoNombre: h.cursoNombre,
+                    items: []
+                });
+            }
+            mapa.get(clave).items.push(h);
+        });
+        return Array.from(mapa.values()).sort(function (a, b) {
+            if (a.periodoAnio !== b.periodoAnio)
+                return (a.periodoAnio || 0) - (b.periodoAnio || 0);
+            if (a.periodoNumero !== b.periodoNumero)
+                return (a.periodoNumero || 0) - (b.periodoNumero || 0);
+            return String(a.cursoNombre || "").localeCompare(
+                String(b.cursoNombre || "")
+            );
+        });
+    }
+
+    function renderCelda(horario) {
+        if (!horario) return '<div class="empty-cell"></div>';
+        return `
+            <div class="schedule-item">
+                <p class="schedule-item-title">
+                    ${escapeHTML(horario.claseNombre || horario.cursoNombre)}
+                </p>
+                <p class="schedule-item-teacher">
+                    <i class="fas fa-user"></i>
+                    ${escapeHTML(horario.docenteNombre)}
+                </p>
+                <div class="schedule-item-time">
+                    ${escapeHTML(horario.horaInicio)} - ${escapeHTML(horario.horaFin)}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderTabla(items) {
+        let html = `
+            <table class="schedule-table">
+                <colgroup>
+                    <col class="time-column">
+                    <col class="day-column"><col class="day-column">
+                    <col class="day-column"><col class="day-column">
+                    <col class="day-column">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Lunes</th><th>Martes</th><th>Miércoles</th>
+                        <th>Jueves</th><th>Viernes</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        bloques.forEach(function (bloque) {
+            html += "<tr>";
+            html += `
+                <td class="time-cell">
+                    <span class="time-main">${escapeHTML(bloque.inicio)}</span>
+                    <span class="time-end">${escapeHTML(bloque.fin)}</span>
+                </td>
+            `;
+            dias.forEach(function (dia) {
+                const encontrado = items.find(function (h) {
+                    return normalizarDia(h.dia) === dia
+                        && coincide(h, bloque.inicio, bloque.fin);
+                });
+                html += "<td>" + renderCelda(encontrado || null) + "</td>";
+            });
+            html += "</tr>";
+        });
+        html += "</tbody></table>";
+        return html;
+    }
+
+    function renderTarjeta(grupo) {
+        const urlVer = generarUrlVer(grupo.periodo, grupo.curso);
+
+        const cantidadClases = new Set(
+            grupo.items.map(function (h) { return String(h.clase || "v"); })
+        ).size;
+
+        return `
+            <section class="schedule-card"
+                     data-periodo="${grupo.periodo}"
+                     data-curso="${grupo.curso}">
+                <div class="schedule-card-header">
+                    <div class="schedule-card-title-wrap">
+                        <div class="schedule-card-icon">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                        <div class="schedule-card-text">
+                            <h2 class="schedule-card-title">
+                                ${escapeHTML(grupo.cursoNombre)}
+                            </h2>
+                            <p class="schedule-card-info">
+                                <span class="chip">
+                                    <i class="fas fa-calendar"></i>
+                                    Período ${escapeHTML(grupo.periodoNumero)} - ${escapeHTML(grupo.periodoAnio)}
+                                </span>
+                                <span class="chip">
+                                    <i class="fas fa-book"></i>
+                                    ${cantidadClases} materia${cantidadClases === 1 ? "" : "s"}
+                                </span>
+                                <span class="chip">
+                                    <i class="fas fa-clock"></i>
+                                    ${grupo.items.length} clase${grupo.items.length === 1 ? "" : "s"} semanal${grupo.items.length === 1 ? "" : "es"}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="schedule-card-actions">
+                        <a href="${urlVer}"
+                           class="btn-card btn-card-ver"
+                           title="Ver horario detallado">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="schedule-table-wrapper">
+                    ${renderTabla(grupo.items)}
+                </div>
+            </section>
+        `;
+    }
+
+    function actualizarOptionsPeriodos(cursoId) {
+        periodoSelect.innerHTML = OPTIONS_PERIODOS_ORIGINALES;
+        if (!cursoId) return;
+
+        const periodosDataIds = new Set(
+            rawData
+                .filter(function (h) { return String(h.curso) === String(cursoId); })
+                .filter(function (h) { return h.periodo != null; })
+                .map(function (h) { return String(h.periodo); })
+        );
+
+        if (periodosDataIds.size === 0) return;
+
+        Array.from(periodoSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            if (!periodosDataIds.has(String(opt.value))) {
+                opt.remove();
+            }
+        });
+
+        if (!periodoSelect.value) return;
+        const sigueExistiendo = Array.from(periodoSelect.options)
+            .some(function (opt) { return opt.value === periodoSelect.value; });
+        if (!sigueExistiendo) periodoSelect.value = "";
+    }
+
+    function actualizarOptionsCursos(periodoId) {
+        cursoSelect.innerHTML = OPTIONS_CURSOS_ORIGINALES;
+        if (!periodoId) return;
+
+        const cursosDataIds = new Set(
+            rawData
+                .filter(function (h) { return String(h.periodo) === String(periodoId); })
+                .filter(function (h) { return h.curso != null; })
+                .map(function (h) { return String(h.curso); })
+        );
+
+        if (cursosDataIds.size === 0) return;
+
+        Array.from(cursoSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            if (!cursosDataIds.has(String(opt.value))) {
+                opt.remove();
+            }
+        });
+
+        if (!cursoSelect.value) return;
+        const sigueExistiendo = Array.from(cursoSelect.options)
+            .some(function (opt) { return opt.value === cursoSelect.value; });
+        if (!sigueExistiendo) cursoSelect.value = "";
+    }
+
+    function renderizar() {
+        actualizarOptionsCursos(periodoSelect.value);
+        actualizarOptionsPeriodos(cursoSelect.value);
+
+        grid.innerHTML = "";
+        const p = periodoSelect.value;
+        const c = cursoSelect.value;
+
+        if (!p && !c) {
+            noSchedules.style.display = "block";
+            noSchedules.querySelector("strong").textContent = "Selecciona filtros";
+            noSchedules.querySelector("span").textContent =
+                "Elige al menos un Período o un Curso para ver tus horarios.";
+            return;
+        }
+
+        const filtrados = rawData.filter(function (h) {
+            const okP = !p || String(h.periodo) === String(p);
+            const okC = !c || String(h.curso) === String(c);
+            return okP && okC;
+        });
+        const grupos = agruparHorarios(filtrados);
+        if (grupos.length === 0) {
+            noSchedules.style.display = "block";
+            noSchedules.querySelector("strong").textContent = "Sin horarios para este filtro";
+            noSchedules.querySelector("span").textContent =
+                "No se encontraron horarios para la combinación seleccionada.";
+            return;
+        }
+        noSchedules.style.display = "none";
+        grupos.forEach(function (g) {
+            grid.insertAdjacentHTML("beforeend", renderTarjeta(g));
+        });
+    }
+
+    periodoSelect.addEventListener("change", function () {
+        actualizarOptionsCursos(periodoSelect.value);
+        renderizar();
+    });
+
+    cursoSelect.addEventListener("change", function () {
+        actualizarOptionsPeriodos(cursoSelect.value);
+        renderizar();
+    });
+
+    actualizarOptionsCursos(periodoSelect.value);
+    actualizarOptionsPeriodos(cursoSelect.value);
+    renderizar();
+
+});
+</script>
+{% endblock %}

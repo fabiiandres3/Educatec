@@ -16,4 +16,6 @@ __pycache__/
 
 # IDE
 .vscode/
-.idea/
+.idea/__pycache__/
+*.py[cod]
+db.sqlite3

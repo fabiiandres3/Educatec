@@ -28,6 +28,11 @@ from apps.alumnos.models import (
     Alumnos,
 )
 
+from apps.horario.models import (
+    Horario,
+    Periodo,
+)
+
 from .selectors import (
     obtener_tareas_docente,
     contar_alumnos_curso,
@@ -1042,6 +1047,216 @@ def carga_academica(request):
 
 
 # ============================================================
+#                    HORARIOS DOCENTE
+# ============================================================
+
+def horarios_docente(request):
+
+    # DOCENTE ACTUAL
+    docente = Docente.objects.select_related(
+        "usuario"
+    ).get(
+        usuario=request.user
+    )
+
+    # CURSOS ASIGNADOS (FUENTE 1: AsignacionDocente
+    cursos_asignacion_ids = list(
+        AsignacionDocente.objects
+        .filter(
+            docente_id=docente.id,
+            curso__isnull=False
+        )
+        .values_list("curso_id", flat=True)
+        .distinct()
+    )
+
+    # CURSOS CON HORARIOS (FUENTE 2: el propio docente tiene horarios creados)
+    cursos_horario_ids = list(
+        Horario.objects
+        .filter(docente_id=docente.id)
+        .values_list("curso_id", flat=True)
+        .distinct()
+    )
+
+    # UNIMOS AMBAS FUENTES
+    cursos_ids = list(
+        set(list(cursos_asignacion_ids) + list(cursos_horario_ids))
+    )
+
+    cursos = Cursos.objects.filter(
+        id__in=cursos_ids
+    ).order_by("nombre")
+    periodos = Periodo.objects.all().order_by("id")
+
+    # HORARIOS DEL DOCENTE (solo los que él imparte)
+    horarios = (
+        Horario.objects
+        .filter(
+            docente_id=docente.id,
+            curso_id__in=cursos_ids
+        )
+        .select_related(
+            "periodo",
+            "docente__usuario",
+            "curso",
+            "clase"
+        )
+        .order_by(
+            "periodo__anio",
+            "periodo__numero",
+            "curso__nombre",
+            "dia",
+            "hora_inicio",
+        )
+    )
+
+    horarios_data = []
+
+    for horario in horarios:
+
+        horarios_data.append({
+            "id": horario.id,
+
+            "periodo": horario.periodo_id,
+            "periodoNumero": horario.periodo.numero,
+            "periodoAnio": horario.periodo.anio,
+
+            "docente": horario.docente_id,
+            "docenteNombre": str(horario.docente),
+
+            "curso": horario.curso_id,
+            "cursoNombre": horario.curso.nombre,
+
+            "clase": (
+                horario.clase_id
+                if horario.clase
+                else None
+            ),
+
+            "claseNombre": (
+                str(horario.clase)
+                if horario.clase
+                else ""
+            ),
+
+            "dia": horario.dia,
+            "jornada": horario.jornada,
+
+            "horaInicio": horario.hora_inicio.strftime("%H:%M"),
+            "horaFin": horario.hora_fin.strftime("%H:%M"),
+        })
+
+    return render(
+        request,
+        "paneles/docentes/horarios_docente.html",
+        {
+            "docente": docente,
+            "periodos": periodos,
+            "cursos": cursos,
+            "horarios_data": horarios_data,
+        }
+    )
+
+
+def detalle_horario_docente(request, periodo_id, curso_id):
+
+    # DOCENTE ACTUAL
+    docente = Docente.objects.select_related(
+        "usuario"
+    ).get(
+        usuario=request.user
+    )
+
+    # VERIFICAR QUE EL DOCENTE TENGA ASIGNACIÓN O HORARIOS EN ESE CURSO
+    tiene_asignacion = AsignacionDocente.objects.filter(
+        docente_id=docente.id,
+        curso_id=curso_id
+    ).exists()
+
+    tiene_horario = Horario.objects.filter(
+        docente_id=docente.id,
+        curso_id=curso_id,
+    ).exists()
+
+    if not tiene_asignacion and not tiene_horario:
+        messages.error(
+            request,
+            "No tienes permiso para ver el horario de este curso."
+        )
+        return redirect("horarios_docente")
+
+    periodo = get_object_or_404(Periodo, pk=periodo_id)
+    curso = get_object_or_404(Cursos, pk=curso_id)
+
+    # SOLO HORARIOS DE ESTE DOCENTE EN EL PERIODO + CURSO SELECCIONADO
+    horarios = (
+        Horario.objects
+        .filter(
+            docente_id=docente.id,
+            periodo_id=periodo.id,
+            curso_id=curso.id,
+        )
+        .select_related(
+            "periodo",
+            "docente__usuario",
+            "curso",
+            "clase"
+        )
+        .order_by(
+            "dia",
+            "hora_inicio",
+        )
+    )
+
+    horarios_data = []
+
+    for horario in horarios:
+
+        horarios_data.append({
+            "id": horario.id,
+
+            "periodo": horario.periodo_id,
+            "periodoNumero": horario.periodo.numero,
+            "periodoAnio": horario.periodo.anio,
+
+            "docente": horario.docente_id,
+            "docenteNombre": str(horario.docente),
+
+            "curso": horario.curso_id,
+            "cursoNombre": horario.curso.nombre,
+
+            "clase": (
+                horario.clase_id
+                if horario.clase
+                else None
+            ),
+
+            "claseNombre": (
+                str(horario.clase)
+                if horario.clase
+                else ""
+            ),
+
+            "dia": horario.dia,
+            "jornada": horario.jornada,
+
+            "horaInicio": horario.hora_inicio.strftime("%H:%M"),
+            "horaFin": horario.hora_fin.strftime("%H:%M"),
+        })
+
+    return render(
+        request,
+        "paneles/docentes/detalle_horario_docente.html",
+        {
+            "docente": docente,
+            "periodo": periodo,
+            "curso": curso,
+            "horarios_data": horarios_data,
+        }
+    )
+
+
+# ============================================================
 #                    DASHBOARD ALUMNOS
 # ============================================================
 
@@ -1301,6 +1516,88 @@ def configuracion_alumnos(request):
     return render(
         request,
         "paneles/alumnos/configuracion_alumnos.html"
+    )
+
+
+# ============================================================
+#                    HORARIOS ALUMNOS
+# ============================================================
+
+@login_required
+def horarios_alumnos(request):
+
+    alumno = get_object_or_404(
+        Alumnos.objects.select_related(
+            "usuario",
+            "curso",
+        ),
+        usuario=request.user,
+        activo=True,
+    )
+
+    periodos = (
+        Periodo.objects
+        .filter(
+            activo=True,
+        )
+        .order_by(
+            "-anio",
+            "-numero",
+        )
+    )
+
+    horarios = (
+        Horario.objects
+        .filter(
+            curso_id=alumno.curso_id,
+        )
+        .select_related(
+            "periodo",
+            "docente__usuario",
+            "curso",
+            "clase",
+        )
+        .order_by(
+            "dia",
+            "hora_inicio",
+        )
+    )
+
+    horarios_data = []
+
+    for horario in horarios:
+
+        horarios_data.append({
+            "id": horario.id,
+
+            "periodo": horario.periodo_id,
+            "periodoNumero": horario.periodo.numero if horario.periodo_id else None,
+            "periodoAnio": horario.periodo.anio if horario.periodo_id else None,
+
+            "docente": horario.docente_id,
+            "docenteNombre": str(horario.docente) if horario.docente_id else "",
+
+            "curso": horario.curso_id,
+            "cursoNombre": horario.curso.nombre if horario.curso_id else "",
+
+            "clase": horario.clase_id,
+            "claseNombre": str(horario.clase) if horario.clase_id else "",
+
+            "dia": horario.dia,
+            "jornada": horario.jornada,
+
+            "horaInicio": horario.hora_inicio.strftime("%H:%M"),
+            "horaFin": horario.hora_fin.strftime("%H:%M"),
+        })
+
+    return render(
+        request,
+        "paneles/alumnos/horarios_alumnos.html",
+        {
+            "alumno": alumno,
+            "periodos": periodos,
+            "horarios_data": horarios_data,
+        }
     )
 
 
