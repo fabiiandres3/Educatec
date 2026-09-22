@@ -17,7 +17,8 @@ def obtener_asignaciones_docente(docente):
         )
         .select_related(
             "docente",
-            "curso"
+            "curso",
+            "clase"
         )
     )
 

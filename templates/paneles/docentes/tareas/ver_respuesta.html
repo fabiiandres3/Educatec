@@ -610,7 +610,7 @@
 
                                     <button
                                         type="button"
-                                        class="evaluation-btn incorrect-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida == 1 %}selected{% endif %}"
+                                        class="evaluation-btn incorrect-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida == 0 %}selected{% endif %}"
                                         onclick="selectEvaluation(this, 'incorrect')"
                                     >
 
@@ -626,7 +626,7 @@
 
                                     <button
                                         type="button"
-                                        class="evaluation-btn partial-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida > 1 %}selected{% endif %}"
+                                        class="evaluation-btn partial-btn {% if respuesta.calificada and not respuesta.es_correcta and respuesta.nota_obtenida > 0 %}selected{% endif %}"
                                         onclick="selectEvaluation(this, 'partial')"
                                     >
 
@@ -679,16 +679,14 @@
                                                 type="number"
                                                 name="nota"
                                                 min="0"
-                                                max="5"
+                                                max="{{ pregunta.puntaje }}"
                                                 step="0.1"
                                                 value="{% if respuesta.nota_obtenida is not None %}{{ respuesta.nota_obtenida }}{% else %}0{% endif %}"
                                                 required
                                             >
 
 
-                                            <span>
-                                                / 5.0
-                                            </span>
+                                            <span>/ {{ pregunta.puntaje }}</span>
 
 
                                         </div>
@@ -717,11 +715,11 @@
 
                                                     status-correct
 
-                                                {% elif respuesta.nota_obtenida == 1 %}
+                                                {% elif respuesta.nota_obtenida == 0 %}
 
                                                     status-incorrect
 
-                                                {% elif respuesta.nota_obtenida > 1 %}
+                                                {% elif respuesta.nota_obtenida > 0 %}
 
                                                     status-partial
 
@@ -742,11 +740,11 @@
 
                                                 Correcta
 
-                                            {% elif respuesta.nota_obtenida == 1 %}
+                                            {% elif respuesta.nota_obtenida == 0 %}
 
                                                 Incorrecta
 
-                                            {% elif respuesta.nota_obtenida > 1 %}
+                                            {% elif respuesta.nota_obtenida > 0 %}
 
                                                 Parcial
 
@@ -1038,7 +1036,7 @@ function selectEvaluation(button, type) {
         status.textContent = "Correcta";
 
 
-        pointsInput.value = "5.0";
+        pointsInput.value = pointsInput.max;
 
 
         pointsInput.dispatchEvent(
@@ -1067,7 +1065,7 @@ function selectEvaluation(button, type) {
         status.textContent = "Incorrecta";
 
 
-        pointsInput.value = "1.0";
+        pointsInput.value = "0";
 
 
         pointsInput.dispatchEvent(
@@ -1096,7 +1094,7 @@ function selectEvaluation(button, type) {
         status.textContent = "Parcial";
 
 
-        pointsInput.value = "2.5";
+        pointsInput.value = (Number(pointsInput.max || 0) / 2).toFixed(2);
 
 
         pointsInput.dispatchEvent(

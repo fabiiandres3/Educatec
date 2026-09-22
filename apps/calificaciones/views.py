@@ -109,8 +109,11 @@ def calificaciones_docente(request):
 
         "curso_actual": curso_actual,
 
-        # AsignacionDocente ya NO tiene clase
-        "clase_actual": None,
+        "clase_actual": (
+            asignacion_actual.clase
+            if asignacion_actual
+            else None
+        ),
 
         "tareas": tareas,
         "actividades": actividades,

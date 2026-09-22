@@ -2,17 +2,9 @@ from django import forms
 from django.utils import timezone
 
 from .models import Tareas, Pregunta
-from apps.horario.models import Periodo
 
 
 class TareasForm(forms.ModelForm):
-
-    periodo = forms.ModelChoiceField(
-        queryset=Periodo.objects.order_by("-anio", "numero"),
-        required=True,
-        widget=forms.Select(attrs={"class": "form-control"}),
-        empty_label="Seleccione el período académico",
-    )
 
     class Meta:
         model = Tareas
@@ -27,43 +19,49 @@ class TareasForm(forms.ModelForm):
         ]
 
         widgets = {
+            "titulo": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Título de la tarea",
+            }),
 
-            "fecha_entrega": forms.DateInput(
-                attrs={
-                    "type": "date",
-                    "class": "form-control",
-                    "min": timezone.localdate().isoformat(),
-                }
-            ),
+            "descripcion": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 4,
+                "placeholder": "Descripción de la tarea",
+            }),
 
-            "descripcion": forms.Textarea(
-                attrs={
-                    "rows": 1,
-                    "cols": -20,
-                    "class": "form-control",
-                }
-            ),
+            "fecha_entrega": forms.DateInput(attrs={
+                "type": "date",
+                "class": "form-control",
+            }),
+
+            "periodo": forms.Select(attrs={
+                "class": "form-select",
+            }),
+
+            "clase": forms.Select(attrs={
+                "class": "form-select",
+            }),
+
+            "curso": forms.Select(attrs={
+                "class": "form-select",
+            }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Fecha mínima: hoy
+        fecha_hoy = timezone.localdate().isoformat()
+
+        self.fields["fecha_entrega"].widget.attrs["min"] = fecha_hoy
+
     def clean_fecha_entrega(self):
+        fecha = self.cleaned_data.get("fecha_entrega")
 
-        fecha_entrega = self.cleaned_data.get("fecha_entrega")
-
-        if fecha_entrega and fecha_entrega < timezone.localdate():
+        if fecha and fecha < timezone.localdate():
             raise forms.ValidationError(
-                "No puedes seleccionar una fecha de entrega que ya pasó."
+                "No puedes seleccionar una fecha anterior a hoy."
             )
 
-        return fecha_entrega
-
-
-class PreguntasForm(forms.ModelForm):
-
-    class Meta:
-        model = Pregunta
-
-        fields = [
-            "descripcion",
-            "tipo",
-            "puntaje",  
-        ]
+        return fecha

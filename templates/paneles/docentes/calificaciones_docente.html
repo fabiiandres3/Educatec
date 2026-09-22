@@ -1318,15 +1318,15 @@
         <div>
 
             <div class="calx-assignment-label">
-                Seleccionar curso
+                Seleccionar materia y curso
             </div>
 
             <div class="calx-assignment-current">
 
                 {% if asignacion_actual %}
-                    {{ asignacion_actual.curso.nombre }}
+                    {{ asignacion_actual.clase.titulo|default:"Sin materia" }} — {{ asignacion_actual.curso.nombre }}
                 {% else %}
-                    Selecciona un curso
+                    Selecciona una materia y un curso
                 {% endif %}
 
             </div>
@@ -1356,7 +1356,7 @@
                         selected
                     {% endif %}
                 >
-                    {{ asignacion.curso.nombre }}
+                    {{ asignacion.clase.titulo|default:"Sin materia" }} — {{ asignacion.curso.nombre }}
                 </option>
 
             {% empty %}
@@ -1397,8 +1397,8 @@
             <div>
                 <h2>{{ curso_actual.nombre }}</h2>
                 <p>
-                    Clase:
-                    <strong>{{ clase_actual.titulo }}</strong>
+                    Materia:
+                    <strong>{{ clase_actual.titulo|default:"Sin materia" }}</strong>
                 </p>
             </div>
 

@@ -176,7 +176,8 @@
                             type="date"
                             id="fecha_entrega"
                             name="fecha_entrega"
-                            value="{{ tarea_form.fecha_entrega.value|default:'' }}">
+                            value="{{ tarea_form.fecha_entrega.value|default:'' }}"
+                            min="{% now 'Y-m-d' %}">
 
                     </div>
 
@@ -261,27 +262,27 @@
 
                     <div class="form-group">
 
-                        <label for="curso">
-                            Curso
+                        <label for="asignacion">
+                            Materia y curso
                             <span class="required">*</span>
                         </label>
 
                         <select
-                            name="curso"
-                            id="curso"
+                            name="asignacion"
+                            id="asignacion"
                             class="form-control"
                             required
                         >
 
                             <option value="">
-                                -- Selecciona un curso --
+                                -- Selecciona una materia y un curso --
                             </option>
 
-                            {% for curso in cursos %}
+                            {% for asignacion in asignaciones %}
 
-                                <option value="{{ curso.id }}" {% if tarea_form.curso.value|stringformat:'s' == curso.id|stringformat:'s' %}selected{% endif %}>
+                                <option value="{{ asignacion.id }}">
 
-                                    {{ curso }}
+                                    {{ asignacion.clase.titulo|default:"Sin materia" }} — {{ asignacion.curso.nombre }}
 
                                 </option>
 
@@ -296,7 +297,7 @@
                         <i class="fa-solid fa-circle-info"></i>
 
                         <span>
-                            Selecciona el curso al que deseas asignar la tarea.
+                            La tarea quedará vinculada a esta materia y a este curso.
                         </span>
 
                     </div>

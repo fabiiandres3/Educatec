@@ -476,13 +476,13 @@ def crear_tareas_docente(request):
             request.FILES
         )
 
-        curso_id = request.POST.get("curso")
+        asignacion_id = request.POST.get("asignacion")
 
-        if not curso_id:
+        if not asignacion_id:
 
             messages.error(
                 request,
-                "Debes seleccionar un curso."
+                "Debes seleccionar una materia y un curso."
             )
 
         else:
@@ -495,11 +495,11 @@ def crear_tareas_docente(request):
                 AsignacionDocente.objects
                 .filter(
                     docente=docente,
-                    curso_id=curso_id
+                    id=asignacion_id
                 )
                 .select_related(
-                    "docente",
-                    "curso"
+                    "curso",
+                    "clase"
                 )
                 .first()
             )
@@ -525,6 +525,7 @@ def crear_tareas_docente(request):
 
                     tarea.docente = docente
                     tarea.curso = asignacion.curso
+                    tarea.clase = asignacion.clase
 
                     tarea.save()
 
@@ -600,6 +601,7 @@ def crear_tareas_docente(request):
             "tarea_form": tarea_form,
             "docente": docente,
             "cursos": cursos,
+            "asignaciones": asignaciones,
         }
     )
 
@@ -693,11 +695,13 @@ def editar_tarea_docente(
                 AsignacionDocente.objects
                 .filter(
                     docente=docente,
-                    curso_id=curso_id
+                    curso_id=curso_id,
+                    clase_id=request.POST.get("clase") or None,
                 )
                 .select_related(
                     "docente",
-                    "curso"
+                    "curso",
+                    "clase",
                 )
                 .first()
             )
@@ -729,6 +733,7 @@ def editar_tarea_docente(
                         tarea_editada.curso = (
                             asignacion.curso
                         )
+                        tarea_editada.clase = asignacion.clase
 
                         tarea_editada.save()
 

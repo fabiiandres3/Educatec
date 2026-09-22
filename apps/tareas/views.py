@@ -1,5 +1,6 @@
 from decimal import Decimal, InvalidOperation
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import (
@@ -20,6 +21,7 @@ from .services import (
 )
 
 from apps.eventos.models import Evento
+from apps.docentes.models import Docente
 
 
 # ============================================================
@@ -483,6 +485,7 @@ def Ver_respuesta(request, tarea_id, alumno_id):
 # DOCENTE - EVALUAR RESPUESTA
 # ============================================================
 
+@login_required
 def Evaluar_respuesta(request, tarea_id):
 
     # ========================================================
@@ -499,10 +502,8 @@ def Evaluar_respuesta(request, tarea_id):
     # OBTENER TAREA
     # ========================================================
 
-    tarea = get_object_or_404(
-        Tareas,
-        id=tarea_id
-    )
+    docente = get_object_or_404(Docente, usuario=request.user)
+    tarea = get_object_or_404(Tareas, id=tarea_id, docente=docente)
 
     # ========================================================
     # DATOS RECIBIDOS
@@ -593,16 +594,24 @@ def Evaluar_respuesta(request, tarea_id):
     # GUARDAR EVALUACIÓN DE LA RESPUESTA
     # ========================================================
 
-    respuesta.nota_obtenida = nota_decimal
-
-    respuesta.calificada = True
-
-    # El formulario envía "correct"
-    # pero también aceptamos "correcta"
-
-    respuesta.es_correcta = (
-        estado in ("correct", "correcta")
-    )
+    if estado in ("correct", "correcta"):
+        respuesta.nota_obtenida = puntaje_pregunta
+        respuesta.calificada = True
+        respuesta.es_correcta = True
+    elif estado in ("incorrect", "incorrecta"):
+        respuesta.nota_obtenida = Decimal("0")
+        respuesta.calificada = True
+        respuesta.es_correcta = False
+    elif estado in ("partial", "parcial"):
+        respuesta.nota_obtenida = nota_decimal
+        respuesta.calificada = True
+        respuesta.es_correcta = False
+    elif estado == "pending":
+        respuesta.nota_obtenida = Decimal("0")
+        respuesta.calificada = False
+        respuesta.es_correcta = False
+    else:
+        return redirect("ver_respuesta", tarea_id=tarea.id, alumno_id=respuesta.alumno_id)
 
     respuesta.save()
 
