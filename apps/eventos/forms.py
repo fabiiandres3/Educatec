@@ -64,19 +64,26 @@ class EventoForm(forms.ModelForm):
                 }
             ),
 
+            # El selector nativo permite indicar una hora exacta; ``step``
+            # habilita todos los minutos, no solo franjas de 30 minutos.
             "hora_inicio": forms.TimeInput(
+                format="%H:%M",
                 attrs={
                     "class": "form-control",
                     "type": "time",
+                    "step": "60",
                 }
             ),
 
             "hora_fin": forms.TimeInput(
+                format="%H:%M",
                 attrs={
                     "class": "form-control",
                     "type": "time",
+                    "step": "60",
                 }
             ),
+
         }
 
     def __init__(self, *args, **kwargs):
@@ -90,36 +97,6 @@ class EventoForm(forms.ModelForm):
         # ==========================================
 
         self.fields["fecha"].widget.attrs["min"] = hoy.isoformat()
-
-        # ==========================================
-        # OPCIONES DE HORA
-        # CADA 30 MINUTOS
-        # ==========================================
-
-        opciones_hora = [
-            ("", "Selecciona una hora")
-        ]
-
-        for hora in range(0, 24):
-
-            for minuto in (0, 30):
-
-                valor = f"{hora:02d}:{minuto:02d}"
-
-                texto = timezone.datetime(
-                    2000,
-                    1,
-                    1,
-                    hora,
-                    minuto
-                ).strftime("%I:%M %p")
-
-                opciones_hora.append(
-                    (valor, texto)
-                )
-
-        self.fields["hora_inicio"].choices = opciones_hora
-        self.fields["hora_fin"].choices = opciones_hora
 
     def clean_fecha(self):
 
