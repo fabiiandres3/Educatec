@@ -839,6 +839,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 datosElement.textContent
             );
 
+            // La vista siempre debe entregar una lista, pero mantenemos la
+            // página funcional ante datos vacíos o una respuesta antigua.
+            if (!Array.isArray(horariosBD)) {
+                horariosBD = [];
+            }
+
         } catch (error) {
 
             console.error(
@@ -871,8 +877,12 @@ document.addEventListener("DOMContentLoaded", function () {
        ===================================================== */
 
     function actualizarCursosSegunPeriodo(periodoId) {
+        const cursoSeleccionado = cursoSelect.value;
         cursoSelect.innerHTML = OPTIONS_CURSOS_ORIGINALES;
-        if (!periodoId) return;
+        if (!periodoId) {
+            cursoSelect.value = cursoSeleccionado;
+            return;
+        }
 
         const cursosValidos = new Set(
             horariosBD
@@ -891,7 +901,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         cursosValidos.forEach(function (id) { refs.add(id); });
-        if (refs.size === 0) return;
+        if (refs.size === 0) {
+            cursoSelect.value = cursoSeleccionado;
+            return;
+        }
 
         Array.from(cursoSelect.options).forEach(function (opt) {
             if (!opt.value) return;
@@ -900,10 +913,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        if (cursoSelect.value) {
-            const existe = Array.from(cursoSelect.options)
-                .some(function (o) { return o.value === cursoSelect.value; });
-            if (!existe) cursoSelect.value = "";
+        const existe = Array.from(cursoSelect.options)
+            .some(function (o) { return o.value === cursoSeleccionado; });
+
+        if (existe) {
+            cursoSelect.value = cursoSeleccionado;
         }
     }
 
@@ -913,8 +927,12 @@ document.addEventListener("DOMContentLoaded", function () {
        ===================================================== */
 
     function actualizarPeriodosSegunCurso(cursoId) {
+        const periodoSeleccionado = periodoSelect.value;
         periodoSelect.innerHTML = OPTIONS_PERIODOS_ORIGINALES;
-        if (!cursoId) return;
+        if (!cursoId) {
+            periodoSelect.value = periodoSeleccionado;
+            return;
+        }
 
         const periodosValidos = new Set(
             horariosBD
@@ -933,7 +951,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         periodosValidos.forEach(function (id) { refs.add(id); });
-        if (refs.size === 0) return;
+        if (refs.size === 0) {
+            periodoSelect.value = periodoSeleccionado;
+            return;
+        }
 
         Array.from(periodoSelect.options).forEach(function (opt) {
             if (!opt.value) return;
@@ -942,10 +963,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        if (periodoSelect.value) {
-            const existe = Array.from(periodoSelect.options)
-                .some(function (o) { return o.value === periodoSelect.value; });
-            if (!existe) periodoSelect.value = "";
+        const existe = Array.from(periodoSelect.options)
+            .some(function (o) { return o.value === periodoSeleccionado; });
+
+        if (existe) {
+            periodoSelect.value = periodoSeleccionado;
         }
     }
 

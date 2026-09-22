@@ -596,39 +596,10 @@ def eliminar_horario(request, id):
 # ============================================================
 
 def listar_horario(request):
-
-    periodos = Periodo.objects.all().order_by("id")
-
-    cursos = Cursos.objects.all().order_by("id")
-
-    asignaciones = (
-        AsignacionDocente.objects
-        .select_related(
-            "docente__usuario",
-            "clase__curso"
-        )
-    )
-
-    horarios = (
-        Horario.objects
-        .select_related(
-            "periodo",
-            "docente__usuario",
-            "curso",
-            "clase"
-        )
-    )
-
-    return render(
-        request,
-        "admin/horario/listar_horario.html",
-        {
-            "periodos": periodos,
-            "cursos": cursos,
-            "asignaciones": asignaciones,
-            "horarios": horarios,
-        }
-    )
+    # Ambas rutas de listado usan el mismo template. Delegar en la vista que
+    # serializa ``horarios_data`` evita que el planificador reciba ``null`` y
+    # que su JavaScript deje de renderizar los horarios.
+    return listar_horarios(request)
 
 
 # ============================================================

@@ -191,6 +191,49 @@
 
 
     <!-- =====================================================
+     PERÍODO ACADÉMICO
+====================================================== -->
+
+    <div class="form-card">
+
+        <div class="card-header">
+
+            <div class="card-icon cyan">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+
+            <div>
+                <h2>Período académico</h2>
+
+                <p>
+                    Selecciona el período al que corresponde esta tarea.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="courses-body">
+
+            <div class="form-group">
+
+                {{ tarea_form.periodo.label_tag }}
+                {{ tarea_form.periodo }}
+
+                {% if tarea_form.periodo.errors %}
+                    <div class="field-errors">
+                        {{ tarea_form.periodo.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
      CURSO
 ====================================================== -->
 
@@ -236,7 +279,7 @@
 
                             {% for curso in cursos %}
 
-                                <option value="{{ curso.id }}">
+                                <option value="{{ curso.id }}" {% if tarea_form.curso.value|stringformat:'s' == curso.id|stringformat:'s' %}selected{% endif %}>
 
                                     {{ curso }}
 

@@ -736,8 +736,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function actualizarOptionsPeriodos(cursoId) {
+        const periodoSeleccionado = periodoSelect.value;
         periodoSelect.innerHTML = OPTIONS_PERIODOS_ORIGINALES;
-        if (!cursoId) return;
+        if (!cursoId) {
+            periodoSelect.value = periodoSeleccionado;
+            return;
+        }
 
         const periodosDataIds = new Set(
             rawData
@@ -746,7 +750,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 .map(function (h) { return String(h.periodo); })
         );
 
-        if (periodosDataIds.size === 0) return;
+        if (periodosDataIds.size === 0) {
+            periodoSelect.value = periodoSeleccionado;
+            return;
+        }
 
         Array.from(periodoSelect.options).forEach(function (opt) {
             if (!opt.value) return;
@@ -755,15 +762,18 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        if (!periodoSelect.value) return;
         const sigueExistiendo = Array.from(periodoSelect.options)
-            .some(function (opt) { return opt.value === periodoSelect.value; });
-        if (!sigueExistiendo) periodoSelect.value = "";
+            .some(function (opt) { return opt.value === periodoSeleccionado; });
+        if (sigueExistiendo) periodoSelect.value = periodoSeleccionado;
     }
 
     function actualizarOptionsCursos(periodoId) {
+        const cursoSeleccionado = cursoSelect.value;
         cursoSelect.innerHTML = OPTIONS_CURSOS_ORIGINALES;
-        if (!periodoId) return;
+        if (!periodoId) {
+            cursoSelect.value = cursoSeleccionado;
+            return;
+        }
 
         const cursosDataIds = new Set(
             rawData
@@ -772,7 +782,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 .map(function (h) { return String(h.curso); })
         );
 
-        if (cursosDataIds.size === 0) return;
+        if (cursosDataIds.size === 0) {
+            cursoSelect.value = cursoSeleccionado;
+            return;
+        }
 
         Array.from(cursoSelect.options).forEach(function (opt) {
             if (!opt.value) return;
@@ -781,10 +794,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        if (!cursoSelect.value) return;
         const sigueExistiendo = Array.from(cursoSelect.options)
-            .some(function (opt) { return opt.value === cursoSelect.value; });
-        if (!sigueExistiendo) cursoSelect.value = "";
+            .some(function (opt) { return opt.value === cursoSeleccionado; });
+        if (sigueExistiendo) cursoSelect.value = cursoSeleccionado;
     }
 
     function renderizar() {
