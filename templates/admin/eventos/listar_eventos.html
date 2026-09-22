@@ -705,6 +705,7 @@
 
         <article
             class="evento-card"
+            data-evento-id="{{ evento.id }}"
             data-titulo="{{ evento.titulo|lower }}"
             data-descripcion="{{ evento.descripcion|lower }}"
         >
@@ -1045,6 +1046,8 @@
         confirmar.href =
             `/eventos/${id}/eliminar/`;
 
+        confirmar.dataset.eventoId = id;
+
         modal.classList.add("active");
 
         document.body.style.overflow = "hidden";
@@ -1071,6 +1074,78 @@
         }
 
     }
+
+
+    function obtenerCookie(nombre) {
+
+        const prefijo = `${nombre}=`;
+
+        return document.cookie
+            .split(";")
+            .map(function (cookie) { return cookie.trim(); })
+            .find(function (cookie) {
+                return cookie.startsWith(prefijo);
+            })
+            ?.slice(prefijo.length) || "";
+    }
+
+
+    document.getElementById("btnConfirmarEliminar").addEventListener(
+        "click",
+        async function (event) {
+
+            event.preventDefault();
+
+            const boton = event.currentTarget;
+            const eventoId = boton.dataset.eventoId;
+            const textoOriginal = boton.textContent;
+
+            boton.setAttribute("aria-busy", "true");
+            boton.style.pointerEvents = "none";
+            boton.textContent = "Eliminando...";
+
+            try {
+
+                const respuesta = await fetch(boton.href, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": obtenerCookie("csrftoken"),
+                        "Accept": "application/json",
+                    },
+                });
+
+                const resultado = await respuesta.json();
+
+                if (!respuesta.ok || !resultado.success) {
+                    throw new Error(
+                        resultado.message || "No se pudo eliminar el evento."
+                    );
+                }
+
+                const tarjeta = document.querySelector(
+                    `.evento-card[data-evento-id="${eventoId}"]`
+                );
+
+                if (tarjeta) {
+                    tarjeta.remove();
+                }
+
+                cerrarModalEliminar();
+
+            } catch (error) {
+
+                alert(error.message || "No se pudo eliminar el evento.");
+
+            } finally {
+
+                boton.removeAttribute("aria-busy");
+                boton.style.pointerEvents = "";
+                boton.textContent = textoOriginal;
+
+            }
+
+        }
+    );
 
 
     /* =========================================================

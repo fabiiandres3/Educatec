@@ -119,7 +119,12 @@ class EventoForm(forms.ModelForm):
         hora_fin = cleaned_data.get("hora_fin")
 
         hoy = timezone.localdate()
-        ahora = timezone.localtime().time()
+        # El selector trabaja por minutos. Quitamos segundos para que, por
+        # ejemplo, a las 08:04:35 se pueda crear un evento a las 08:04.
+        ahora = timezone.localtime().replace(
+            second=0,
+            microsecond=0,
+        ).time()
 
         # ==========================================
         # HORA INICIO < HORA FIN
@@ -141,7 +146,7 @@ class EventoForm(forms.ModelForm):
         if (
             fecha == hoy
             and hora_inicio
-            and hora_inicio <= ahora
+            and hora_inicio < ahora
         ):
 
             # Cuando estamos editando el evento actual,

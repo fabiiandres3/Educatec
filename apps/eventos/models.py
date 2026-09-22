@@ -77,7 +77,12 @@ class Evento(models.Model):
         super().clean()
 
         hoy = timezone.localdate()
-        ahora = timezone.localtime().time()
+        # Las horas del formulario se seleccionan por minuto; una hora igual
+        # al minuto actual no debe considerarse como pasada por los segundos.
+        ahora = timezone.localtime().replace(
+            second=0,
+            microsecond=0,
+        ).time()
 
         # ==========================================
         # FECHA
@@ -106,7 +111,7 @@ class Evento(models.Model):
         if (
             self.fecha == hoy
             and self.hora_inicio
-            and self.hora_inicio <= ahora
+            and self.hora_inicio < ahora
         ):
             raise ValidationError({
                 "hora_inicio": "No puedes crear un evento con una hora de inicio que ya pasó."

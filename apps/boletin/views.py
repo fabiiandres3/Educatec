@@ -123,7 +123,6 @@ def ver_boletin_administrador(request, alumno_id, periodo_id):
     periodo = get_object_or_404(Periodo, pk=periodo_id)
     filas, promedio = construir_boletin(
         alumno, periodo, _asignaciones_curso(alumno.curso),
-        solo_con_notas=es_alumno,
     )
     return render(request, "boletin/boletin_detalle.html", {"alumno": alumno, "periodo": periodo, "filas": filas, "promedio": promedio, "es_administrador": True})
 

@@ -204,26 +204,27 @@ def eliminar_evento(
     evento_id
 ):
 
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "type": "error",
+            "message": "Método no permitido.",
+        }, status=405)
+
     evento = get_object_or_404(
         Evento,
         id=evento_id
     )
 
-    if request.method == "POST":
+    titulo = evento.titulo
+    evento.delete()
 
-        evento.delete()
-
-        return redirect(
-            "listar_eventos"
-        )
-
-    return render(
-        request,
-        "admin/eventos/eliminar_evento.html",
-        {
-            "evento": evento,
-        }
-    )
+    return JsonResponse({
+        "success": True,
+        "type": "success",
+        "message": f"El evento '{titulo}' se eliminó correctamente.",
+        "evento_id": evento_id,
+    })
 
 
 # ============================================================
