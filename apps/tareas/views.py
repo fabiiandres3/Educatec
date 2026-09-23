@@ -599,7 +599,9 @@ def Evaluar_respuesta(request, tarea_id):
         respuesta.calificada = True
         respuesta.es_correcta = True
     elif estado in ("incorrect", "incorrecta"):
-        respuesta.nota_obtenida = Decimal("0")
+        # El botón establece cero por defecto, pero el docente puede
+        # asignar puntos al corregir manualmente una respuesta.
+        respuesta.nota_obtenida = nota_decimal
         respuesta.calificada = True
         respuesta.es_correcta = False
     elif estado in ("partial", "parcial"):

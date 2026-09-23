@@ -51,11 +51,29 @@ class CalificacionesPorAsignacionTests(TestCase):
         self.assertEqual([tarea.id for tarea in tareas_mate], [tarea_mate.id])
         self.assertEqual([tarea.id for tarea in tareas_ciencias], [tarea_ciencias.id])
 
+    def test_muestra_notas_de_tareas_heredadas_o_deshabilitadas(self):
+        tarea_heredada = Tareas.objects.create(
+            docente=self.docente_ciencias,
+            curso=self.curso,
+            clase=None,
+            titulo="Tarea antigua de Inglés",
+            activa=False,
+        )
+        Calificacion.objects.create(
+            alumno=self.alumno_usuario,
+            tarea=tarea_heredada,
+            nota=Decimal("4.00"),
+        )
+
+        _, tareas, _ = obtener_libro_calificaciones(self.asignacion_ciencias)
+
+        self.assertEqual([tarea.id for tarea in tareas], [tarea_heredada.id])
+
     def test_botones_de_revision_actualizan_la_calificacion_final(self):
         tarea = Tareas.objects.create(
             docente=self.docente_matematicas, curso=self.curso, clase=self.matematicas, titulo="Ejercicio",
         )
-        pregunta = Pregunta.objects.create(tarea=tarea, descripcion="Resuelve", tipo="texto", puntaje=Decimal("2.00"))
+        pregunta = Pregunta.objects.create(tarea=tarea, descripcion="Resuelve", tipo="texto", puntaje=Decimal("5.00"))
         respuesta = RespuestaAlumno.objects.create(alumno=self.alumno_usuario, pregunta=pregunta, respuesta_texto="respuesta")
         self.client.force_login(self.docente_matematicas.usuario)
 
@@ -65,12 +83,12 @@ class CalificacionesPorAsignacionTests(TestCase):
         respuesta.refresh_from_db()
         self.assertTrue(respuesta.calificada)
         self.assertTrue(respuesta.es_correcta)
-        self.assertEqual(respuesta.nota_obtenida, Decimal("2.00"))
+        self.assertEqual(respuesta.nota_obtenida, Decimal("5.00"))
         self.assertEqual(Calificacion.objects.get(alumno=self.alumno_usuario, tarea=tarea).nota, Decimal("5.00"))
 
         self.client.post(reverse("evaluar_respuesta", args=[tarea.id]), {
             "respuesta_id": respuesta.id, "estado": "incorrect", "nota": "2",
         })
         respuesta.refresh_from_db()
-        self.assertEqual(respuesta.nota_obtenida, Decimal("0.00"))
-        self.assertEqual(Calificacion.objects.get(alumno=self.alumno_usuario, tarea=tarea).nota, Decimal("0.00"))
+        self.assertEqual(respuesta.nota_obtenida, Decimal("2.00"))
+        self.assertEqual(Calificacion.objects.get(alumno=self.alumno_usuario, tarea=tarea).nota, Decimal("2.00"))

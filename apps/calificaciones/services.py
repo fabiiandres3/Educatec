@@ -29,11 +29,17 @@ def _obtener_tareas_asignacion(asignacion, periodo=None):
     filtros = {
         "docente": asignacion.docente,
         "curso_id": asignacion.curso_id,
-        "activa": True,
     }
     if asignacion.clase_id:
-        filtros["clase_id"] = asignacion.clase_id
-    tareas = Tareas.objects.filter(**filtros)
+        # Las tareas creadas antes de vincular la materia quedaron con
+        # ``clase=None``. Se conservan en el libro del mismo docente y curso
+        # para no ocultar calificaciones ya registradas. Las tareas nuevas se
+        # guardan siempre con la materia de la asignación.
+        tareas = Tareas.objects.filter(**filtros).filter(
+            Q(clase_id=asignacion.clase_id) | Q(clase__isnull=True)
+        )
+    else:
+        tareas = Tareas.objects.filter(**filtros)
     if periodo:
         # Las tareas nuevas se filtran por su FK explícita. Las tareas
         # históricas sin período deben seguir contando: la app de
@@ -52,11 +58,13 @@ def _obtener_actividades_asignacion(asignacion, periodo=None):
     filtros = {
         "docente": asignacion.docente,
         "curso_id": asignacion.curso_id,
-        "activa": True,
     }
     if asignacion.clase_id:
-        filtros["clase_id"] = asignacion.clase_id
-    actividades = ActividadCalificacion.objects.filter(**filtros)
+        actividades = ActividadCalificacion.objects.filter(**filtros).filter(
+            Q(clase_id=asignacion.clase_id) | Q(clase__isnull=True)
+        )
+    else:
+        actividades = ActividadCalificacion.objects.filter(**filtros)
     if periodo:
         actividades = actividades.filter(
             Q(periodo=periodo)
