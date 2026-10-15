@@ -65,23 +65,3 @@ window.addEventListener('load', () => {
 
 });
 
-const logoutBtn = document.getElementById("logoutBtn");
-
-if (logoutBtn) {
-
-    logoutBtn.addEventListener("click", () => {
-
-        const confirmar = confirm(
-            "¿Deseas cerrar sesión?"
-        );
-
-        if (confirmar) {
-
-            localStorage.removeItem("rol");
-
-            window.location.href = "/cerrar/";
-        }
-
-    });
-
-}

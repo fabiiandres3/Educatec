@@ -5,7 +5,7 @@ from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from apps.alumnos.models import Alumnos
+from apps.alumnos.models import Alumnos, AcudienteAlumno
 from apps.docentes.models import AsignacionDocente, Docente
 from apps.horario.models import Periodo
 from apps.user.decorators import rol_requerido
@@ -102,6 +102,44 @@ def mis_boletines(request):
     })
 
 
+@rol_requerido("acudiente")
+def boletin_alumno_acudiente(request, alumno_id):
+    relacion = get_object_or_404(
+        AcudienteAlumno.objects.select_related("alumno__usuario", "alumno__curso"),
+        acudiente__usuario=request.user,
+        acudiente__activo=True,
+        alumno_id=alumno_id,
+        alumno__activo=True,
+        autorizado=True,
+    )
+    alumno = relacion.alumno
+    periodo = (
+        get_object_or_404(Periodo, pk=request.GET["periodo"])
+        if request.GET.get("periodo") else None
+    )
+    filas, promedio = ([], None)
+    if periodo and alumno.curso:
+        filas, promedio = construir_boletin(
+            alumno,
+            periodo,
+            _asignaciones_curso(alumno.curso),
+            solo_con_notas=True,
+        )
+        # Las observaciones individuales solo se muestran cuando el docente
+        # las publicó; las calificaciones del período siguen visibles.
+        for fila in filas:
+            if not fila["publicado"]:
+                fila["observacion"] = None
+
+    return render(request, "boletin/acudiente_boletin.html", {
+        "alumno": alumno,
+        "periodos": _periodos(),
+        "periodo": periodo,
+        "filas": filas,
+        "promedio": promedio,
+    })
+
+
 @rol_requerido("administrador")
 def boletines_administrador(request):
     from apps.cursos.models import Cursos
@@ -127,14 +165,29 @@ def ver_boletin_administrador(request, alumno_id, periodo_id):
     return render(request, "boletin/boletin_detalle.html", {"alumno": alumno, "periodo": periodo, "filas": filas, "promedio": promedio, "es_administrador": True})
 
 
-@rol_requerido("administrador", "alumno")
+@rol_requerido("administrador", "alumno", "acudiente")
 def descargar_boletin_pdf(request, alumno_id, periodo_id):
     alumno = get_object_or_404(Alumnos.objects.select_related("usuario", "curso"), pk=alumno_id)
-    es_alumno = request.user.rol.nombre.lower().strip() == "alumno"
+    rol = request.user.rol.nombre.lower().strip()
+    es_alumno = rol == "alumno"
+    es_acudiente = rol == "acudiente"
     if es_alumno and alumno.usuario_id != request.user.id:
         raise Http404
+    if es_acudiente:
+        get_object_or_404(
+            AcudienteAlumno,
+            acudiente__usuario=request.user,
+            acudiente__activo=True,
+            alumno=alumno,
+            alumno__activo=True,
+            autorizado=True,
+        )
     periodo = get_object_or_404(Periodo, pk=periodo_id)
     filas, promedio = construir_boletin(alumno, periodo, _asignaciones_curso(alumno.curso))
+    if es_acudiente:
+        for fila in filas:
+            if not fila["publicado"]:
+                fila["observacion"] = None
     from reportlab.lib.pagesizes import letter
     from reportlab.lib.styles import getSampleStyleSheet
     from reportlab.platypus import SimpleDocTemplate, Spacer, Paragraph, Table, TableStyle
@@ -142,7 +195,7 @@ def descargar_boletin_pdf(request, alumno_id, periodo_id):
     archivo = BytesIO()
     documento = SimpleDocTemplate(archivo, pagesize=letter, title="Boletín académico")
     estilos = getSampleStyleSheet()
-    elementos = [Paragraph("EDUCATEC — Boletín académico", estilos["Title"]), Paragraph(f"Estudiante: {alumno.usuario.get_full_name() or alumno.usuario.username}<br/>Curso: {alumno.curso or 'No asignado'}<br/>Periodo: {periodo}", estilos["BodyText"]), Spacer(1, 12)]
+    elementos = [Paragraph("EDUCATEC — Boletín académico", estilos["Title"]), Paragraph(f"Estudiante: {alumno.usuario.get_full_name() or alumno.usuario.documento}<br/>Curso: {alumno.curso or 'No asignado'}<br/>Periodo: {periodo}", estilos["BodyText"]), Spacer(1, 12)]
     datos = [["Asignatura", "Docente", "Nota", "Desempeño"]] + [[str(f["materia"] or "Sin asignatura"), str(f["docente"]), str(f["nota"] or "—"), f["desempeno"]] for f in filas]
     tabla = Table(datos, colWidths=[150, 160, 60, 90])
     tabla.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e293b")), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("GRID", (0, 0), (-1, -1), .25, colors.grey), ("VALIGN", (0, 0), (-1, -1), "TOP")]))

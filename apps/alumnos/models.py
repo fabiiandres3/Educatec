@@ -98,7 +98,7 @@ class Acudiente(models.Model):
 
         nombre = self.usuario.get_full_name()
 
-        return nombre or self.usuario.username
+        return nombre or self.usuario.documento
 
 
 # =========================================================

@@ -87,10 +87,18 @@ SITE_ID = 2
 # DJANGO ALLAUTH
 # =========================================================
 
+
 # Permitir iniciar sesión directamente con Google
 # sin mostrar una página intermedia.
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_FORMS = {
+    "signup": "apps.user.adapters.GoogleSignupForm",
+}
+ACCOUNT_FORMS = {
+    "signup": "apps.user.adapters.AccountSignupForm",
+}
 
 
 # Permitir identificar usuarios mediante
@@ -399,3 +407,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =========================================================
 
 AUTH_USER_MODEL = 'user.Usuario'
+

@@ -29,12 +29,15 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         rel="stylesheet"
     >
+    <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
+    <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
     <style>
 
         body {
 
-            background: #f4f7fb;
+            background: #f1f5f9;
+            color: #172033;
 
             font-family:
                 Arial,
@@ -52,6 +55,7 @@
             border-right: 1px solid #e5e7eb;
 
             padding: 25px 15px;
+            box-shadow: 4px 0 18px rgba(15, 23, 42, .04);
 
         }
 
@@ -83,7 +87,8 @@
 
             text-decoration: none;
 
-            color: #475569;
+            color: #334155;
+            font-weight: 600;
 
             transition: .2s;
 
@@ -95,6 +100,17 @@
 
             color: #2563eb;
 
+        }
+
+        .menu-link.active {
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-weight: 700;
+        }
+
+        .menu-link:focus-visible, .logout-button:focus-visible {
+            outline: 3px solid #2563eb;
+            outline-offset: 2px;
         }
 
         .logout-button {
@@ -127,6 +143,20 @@
                 0 4px 15px
                 rgba(0,0,0,.05);
 
+        }
+
+        .portal-content { max-width: 1500px; margin: 0 auto; }
+
+        @media (max-width: 991.98px) {
+            .sidebar { min-height: auto; padding: 16px; }
+            .logo { margin-bottom: 14px; }
+            .sidebar .menu-link { display: inline-flex; margin: 3px; }
+            main.col-lg-10 { width: 100%; }
+        }
+
+        @media (max-width: 575.98px) {
+            main.col-lg-10 { padding: 16px !important; }
+            .topbar { padding: 20px; }
         }
 
         .student-card {
@@ -193,7 +223,7 @@
 </head>
 
 
-<body>
+<body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
 
 <div class="container-fluid">
 
@@ -216,7 +246,7 @@
 
             <a
                 href="{% url 'dashboard_acudiente' %}"
-                class="menu-link"
+                class="menu-link {% if request.resolver_match.url_name == 'dashboard_acudiente' %}active{% endif %}"
             >
 
                 <i class="fa-solid fa-house"></i>
@@ -225,6 +255,20 @@
 
             </a>
 
+            <a href="{% url 'eventos_acudiente' %}"
+               class="menu-link {% if request.resolver_match.url_name == 'eventos_acudiente' %}active{% endif %}">
+                <i class="fa-solid fa-calendar-days"></i>
+                Eventos
+            </a>
+
+
+            <div class="mt-4">
+
+                <a href="{% url 'configuracion_cuenta' %}" class="menu-link {% if request.resolver_match.url_name == 'configuracion_cuenta' %}active{% endif %}">
+                    <i class="fa-solid fa-gear"></i> Configuración de cuenta
+                </a>
+
+            </div>
 
             <div class="mt-4">
 
@@ -240,7 +284,7 @@
 
                         <i class="fa-solid fa-user"></i>
 
-                        {{ request.user.get_full_name|default:request.user.username }}
+                        {{ request.user.get_full_name|default:request.user.documento }}
 
                     </span>
 
@@ -281,6 +325,7 @@
         ================================================== -->
 
         <main class="col-lg-10 p-4">
+          <div class="portal-content">
 
             {% if messages %}
 
@@ -301,6 +346,7 @@
 
             {% block content %}
             {% endblock %}
+          </div>
 
         </main>
 
@@ -310,6 +356,11 @@
 
 {% block extra_js %}
 {% endblock %}
+
+<script src="{% static 'js/paneles/cuenta_tema.js' %}"></script>
+<script src="{% static 'js/paneles/fecha_nacimiento_edad.js' %}"></script>
+<script src="{% static 'js/paneles/confirmar_cierre_sesion.js' %}"></script>
+<script src="{% static 'js/csrf_refresh.js' %}"></script>
 
 </body>
 

@@ -54,15 +54,33 @@ def sincronizar_alumno(
         and instance.rol.nombre.lower().strip() == "alumno"
     ):
 
-        Alumnos.objects.get_or_create(
-            usuario=instance
+        alumno, _ = Alumnos.objects.get_or_create(
+            usuario=instance,
+            defaults={"fecha_nacimiento": instance.fecha_nacimiento},
         )
+
+        # Los alumnos importados antiguamente podían tener la fecha solo
+        # en su perfil académico. Conserva ese dato en la cuenta y úsalo
+        # al crear o sincronizar el perfil según el rol.
+        if instance.fecha_nacimiento and alumno.fecha_nacimiento != instance.fecha_nacimiento:
+            alumno.fecha_nacimiento = instance.fecha_nacimiento
+            alumno.save(update_fields=["fecha_nacimiento"])
+        elif alumno.fecha_nacimiento and not instance.fecha_nacimiento:
+            Usuario.objects.filter(pk=instance.pk).update(
+                fecha_nacimiento=alumno.fecha_nacimiento
+            )
+            instance.fecha_nacimiento = alumno.fecha_nacimiento
 
     else:
 
-        Alumnos.objects.filter(
-            usuario=instance
-        ).delete()
+        alumno = Alumnos.objects.filter(usuario=instance).only("fecha_nacimiento").first()
+        if alumno and alumno.fecha_nacimiento and not instance.fecha_nacimiento:
+            Usuario.objects.filter(pk=instance.pk).update(
+                fecha_nacimiento=alumno.fecha_nacimiento
+            )
+            instance.fecha_nacimiento = alumno.fecha_nacimiento
+
+        Alumnos.objects.filter(usuario=instance).delete()
 
 
 # =========================================================

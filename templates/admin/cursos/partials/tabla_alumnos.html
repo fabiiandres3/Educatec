@@ -26,12 +26,12 @@
                         {% if alumno.usuario.get_full_name %}
                             {{ alumno.usuario.get_full_name }}
                         {% else %}
-                            {{ alumno.usuario.username }}
+                            {{ alumno.usuario.documento }}
                         {% endif %}
                     </td>
 
                     <td>
-                        {{ alumno.usuario.username }}
+                        {{ alumno.usuario.documento }}
                     </td>
 
                     <td>

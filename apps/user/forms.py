@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 
 from apps.user.models import Usuario
 
@@ -8,6 +9,52 @@ from apps.user.models import Usuario
 # =========================================================
 
 class RegistrarForm(forms.ModelForm):
+
+    fecha_nacimiento = forms.DateField(
+        label="Fecha de nacimiento",
+        required=True,
+        widget=forms.DateInput(attrs={
+            "class": "form-control",
+            "type": "date",
+            "autocomplete": "bday",
+        }),
+    )
+
+    def clean_fecha_nacimiento(self):
+        fecha = self.cleaned_data["fecha_nacimiento"]
+        if fecha >= timezone.localdate():
+            raise forms.ValidationError("La fecha de nacimiento debe ser anterior a hoy.")
+        return fecha
+
+    documento = forms.CharField(
+        label="Documento de identidad",
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Ingrese su documento de identidad",
+        }),
+    )
+
+    direccion = forms.CharField(
+        label="Dirección",
+        max_length=255,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Ingrese su dirección",
+        }),
+    )
+
+    telefono = forms.CharField(
+        label="Número de teléfono",
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Ingrese su número de teléfono",
+        }),
+    )
 
     password = forms.CharField(
         label="Contraseña",
@@ -34,18 +81,21 @@ class RegistrarForm(forms.ModelForm):
         model = Usuario
 
         fields = [
-            "username",
+            "documento",
             "first_name",
             "last_name",
+            "fecha_nacimiento",
             "email",
+            "direccion",
+            "telefono",
         ]
 
         widgets = {
 
-            "username": forms.TextInput(
+            "documento": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ingrese su usuario"
+                    "placeholder": "Ingrese su documento de identidad"
                 }
             ),
 
@@ -63,12 +113,28 @@ class RegistrarForm(forms.ModelForm):
                 }
             ),
 
+            "fecha_nacimiento": forms.DateInput(
+                attrs={
+                    "class": "form-control",
+                    "type": "date",
+                    "autocomplete": "bday",
+                }
+            ),
+
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
                     "placeholder": "Ingrese su correo electrónico",
                     "required": True
                 }
+            ),
+
+            "direccion": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Ingrese su dirección"}
+            ),
+
+            "telefono": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Ingrese su número de teléfono"}
             ),
         }
 
@@ -104,27 +170,27 @@ class RegistrarForm(forms.ModelForm):
     # VALIDAR USUARIO
     # =====================================================
 
-    def clean_username(self):
+    def clean_documento(self):
 
-        username = self.cleaned_data.get("username")
+        documento = self.cleaned_data.get("documento")
 
-        if not username:
+        if not documento:
 
             raise forms.ValidationError(
-                "El nombre de usuario es obligatorio."
+                "El documento de identidad es obligatorio."
             )
 
-        username = username.strip()
+        documento = documento.strip()
 
         if Usuario.objects.filter(
-            username__iexact=username
+            documento__iexact=documento
         ).exists():
 
             raise forms.ValidationError(
-                "Este nombre de usuario ya está registrado."
+                "Este documento ya está registrado."
             )
 
-        return username
+        return documento
 
 
     # =====================================================
@@ -158,11 +224,11 @@ class RegistrarForm(forms.ModelForm):
 class LoginForm(forms.Form):
 
     username = forms.CharField(
-        label="Usuario",
+        label="Documento de identidad",
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Usuario"
+                "placeholder": "Documento de identidad"
             }
         )
     )
@@ -184,6 +250,15 @@ class LoginForm(forms.Form):
 
 class EditarUsuarioForm(forms.ModelForm):
 
+    def clean_fecha_nacimiento(self):
+        if self.add_prefix("fecha_nacimiento") not in self.data:
+            fecha = self.initial.get("fecha_nacimiento") or self.instance.fecha_nacimiento
+        else:
+            fecha = self.cleaned_data.get("fecha_nacimiento")
+        if fecha and fecha >= timezone.localdate():
+            raise forms.ValidationError("La fecha de nacimiento debe ser anterior a hoy.")
+        return fecha
+
     class Meta:
 
         model = Usuario
@@ -192,6 +267,7 @@ class EditarUsuarioForm(forms.ModelForm):
             "username",
             "first_name",
             "last_name",
+            "fecha_nacimiento",
             "email",
             "rol",
         ]
@@ -214,6 +290,10 @@ class EditarUsuarioForm(forms.ModelForm):
                 attrs={
                     "class": "form-control"
                 }
+            ),
+
+            "fecha_nacimiento": forms.DateInput(
+                attrs={"class": "form-control", "type": "date", "autocomplete": "bday"}
             ),
 
             "email": forms.EmailInput(

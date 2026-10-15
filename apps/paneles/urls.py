@@ -4,6 +4,8 @@ from . import views
 
 urlpatterns = [
 
+    path("cuenta/configuracion/", views.configuracion_cuenta, name="configuracion_cuenta"),
+
     # =========================================================
     # DOCENTE
     # =========================================================
@@ -42,6 +44,18 @@ urlpatterns = [
         "docente/asistencia/guardar/",
         views.guardar_asistencia_ajax,
         name="guardar_asistencia_ajax"
+    ),
+
+    path(
+        "docente/asistencia/historial/guardar/",
+        views.guardar_asistencia,
+        name="guardar_asistencia"
+    ),
+
+    path(
+        "docente/asistencia/historial/eliminar/",
+        views.eliminar_asistencia,
+        name="eliminar_asistencia"
     ),
 
     path(
@@ -128,6 +142,12 @@ urlpatterns = [
         "acudiente/",
         views.dashboard_acudiente,
         name="dashboard_acudiente"
+    ),
+
+    path(
+        "acudiente/eventos/",
+        views.eventos_acudiente,
+        name="eventos_acudiente"
     ),
 
     path(

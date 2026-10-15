@@ -377,7 +377,7 @@
         </div>
 
         <h3>
-            {{ porcentaje_asistencia|default:"—" }}%
+            {% if porcentaje_asistencia != "—" %}{{ porcentaje_asistencia }}%{% else %}—{% endif %}
         </h3>
 
         <p>

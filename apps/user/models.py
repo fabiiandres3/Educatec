@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -37,5 +39,40 @@ class Usuario(AbstractUser):
         unique=True
     )
 
+    documento = models.CharField(
+        max_length=30,
+        unique=True,
+        null=True,
+        blank=True,
+    )
+
+    direccion = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+
+    telefono = models.CharField(
+        max_length=30,
+        blank=True,
+        null=True,
+    )
+
+    fecha_nacimiento = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="fecha de nacimiento",
+    )
+
+    @property
+    def edad(self):
+        if not self.fecha_nacimiento:
+            return None
+
+        hoy = date.today()
+        return hoy.year - self.fecha_nacimiento.year - (
+            (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+        )
+
     def __str__(self):
-        return self.username
+        return self.documento or self.username

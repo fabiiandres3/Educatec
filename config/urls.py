@@ -1,11 +1,24 @@
 from django.contrib import admin
 from django.urls import path, include
+from apps.alumnos import views as alumnos_views
 
 from django.conf import settings
 from django.conf.urls.static import static
 
 
 urlpatterns = [
+
+    # Rutas del panel propio antes de Django Admin, que captura el prefijo /admin/.
+    path(
+        "admin/acudientes/relacion/<int:relacion_id>/eliminar/",
+        alumnos_views.eliminar_relacion_acudiente,
+        name="eliminar_relacion_acudiente",
+    ),
+    path(
+        "admin/acudientes/",
+        alumnos_views.administrar_acudientes,
+        name="administrar_acudientes",
+    ),
 
     # =========================================================
     # ADMINISTRADOR DE DJANGO

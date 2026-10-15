@@ -40,7 +40,7 @@ class AcudienteAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        "usuario__username",
+        "usuario__documento",
         "usuario__first_name",
         "usuario__last_name",
         "usuario__email",
@@ -59,7 +59,7 @@ class AcudienteAdmin(admin.ModelAdmin):
 
         return (
             obj.usuario.get_full_name()
-            or obj.usuario.username
+            or obj.usuario.documento
         )
 
     @admin.display(description="Correo")
@@ -86,7 +86,7 @@ class AlumnosAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        "usuario__username",
+        "usuario__documento",
         "usuario__first_name",
         "usuario__last_name",
         "usuario__email",
@@ -99,10 +99,10 @@ class AlumnosAdmin(admin.ModelAdmin):
         "usuario__rol",
     )
 
-    @admin.display(description="Usuario")
+    @admin.display(description="Documento")
     def mostrar_usuario(self, obj):
 
-        return obj.usuario.username
+        return obj.usuario.documento
 
     @admin.display(description="Nombre")
     def mostrar_nombre(self, obj):

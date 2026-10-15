@@ -128,11 +128,11 @@
 
                         <div class="avatar-admin"
                              style="width:32px;height:32px;font-size:12px;">
-                            {{ u.username|first|upper }}
+                            {{ u.documento|default:"?"|first|upper }}
                         </div>
 
 
-                        {{ u.username }}
+                        {{ u.documento|default:"—" }}
 
 
                     </div>

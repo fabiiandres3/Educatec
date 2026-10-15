@@ -1,4 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_GET
 
 from django.contrib import messages
 
@@ -23,6 +27,16 @@ from apps.user import decorators
 from apps.user.tokens import email_verification_token
 
 from apps.eventos.models import Evento
+from apps.alumnos.models import Alumnos
+
+
+@ensure_csrf_cookie
+@require_GET
+def refresh_csrf_token(request):
+    response = JsonResponse({"csrfToken": get_token(request)})
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response["Pragma"] = "no-cache"
+    return response
 
 
 # =========================================================
@@ -227,7 +241,7 @@ def Registrar_usuario(request):
             # Obtener datos del formulario
             # -------------------------------------------------
 
-            username = form.cleaned_data["username"]
+            documento = form.cleaned_data["documento"]
 
             email = form.cleaned_data["email"]
 
@@ -256,7 +270,7 @@ def Registrar_usuario(request):
 
             usuario = form.save(commit=False)
 
-            usuario.username = username
+            usuario.username = documento
 
             usuario.email = email
 
@@ -465,7 +479,7 @@ def iniciar_sesion(request):
 
     if request.method == "POST":
         if form.is_valid():
-            username = form.cleaned_data["username"]
+            identificador = form.cleaned_data["username"]
 
             password = form.cleaned_data["password"]
 
@@ -474,10 +488,13 @@ def iniciar_sesion(request):
             # -------------------------------------------------
 
             try:
-                usuario_existente = Usuario.objects.get(username__iexact=username)
+                usuario_existente = Usuario.objects.get(documento__iexact=identificador)
 
             except Usuario.DoesNotExist:
-                usuario_existente = None
+                try:
+                    usuario_existente = Usuario.objects.get(username__iexact=identificador)
+                except Usuario.DoesNotExist:
+                    usuario_existente = None
 
             # -------------------------------------------------
             # Verificar si la cuenta existe pero
@@ -499,7 +516,9 @@ def iniciar_sesion(request):
             # -------------------------------------------------
 
             usuario = authenticate(
-                request=request, username=username, password=password
+                request=request,
+                username=(usuario_existente.username if usuario_existente else identificador),
+                password=password,
             )
 
             # -------------------------------------------------
@@ -582,7 +601,7 @@ def dashboard(request):
 @decorators.rol_requerido("administrador")
 def Listar_usuarios(request):
 
-    usuarios = Usuario.objects.filter(rol__nombre__iexact="usuario")
+    usuarios = Usuario.objects.filter(rol__nombre__iexact="usuario").select_related("rol")
 
     return render(request, "admin/usuarios/usuarios.html", {"usuarios": usuarios})
 
@@ -596,13 +615,23 @@ def Listar_usuarios(request):
 def Editar_usuario(request, usuario_id):
 
     usuario = get_object_or_404(Usuario, id=usuario_id)
+    fecha_nacimiento_registrada = usuario.fecha_nacimiento
+    if not fecha_nacimiento_registrada:
+        fecha_nacimiento_registrada = Alumnos.objects.filter(
+            usuario=usuario
+        ).values_list("fecha_nacimiento", flat=True).first()
+    datos_iniciales = {"fecha_nacimiento": fecha_nacimiento_registrada}
 
     # -----------------------------------------------------
     # POST
     # -----------------------------------------------------
 
     if request.method == "POST":
-        usuario_form = EditarUsuarioForm(request.POST, instance=usuario)
+        usuario_form = EditarUsuarioForm(
+            request.POST,
+            instance=usuario,
+            initial=datos_iniciales,
+        )
 
         if usuario_form.is_valid():
             usuario_form.save()
@@ -614,7 +643,10 @@ def Editar_usuario(request, usuario_id):
     # -----------------------------------------------------
 
     else:
-        usuario_form = EditarUsuarioForm(instance=usuario)
+        usuario_form = EditarUsuarioForm(
+            instance=usuario,
+            initial=datos_iniciales,
+        )
 
     return render(
         request, "admin/usuarios/editar_usuario.html", {"usuario_form": usuario_form}

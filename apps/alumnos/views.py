@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
 from apps.user.models import Usuario
-from apps.alumnos.models import Alumnos
+from apps.alumnos.models import Alumnos, AcudienteAlumno
 from apps.user.forms import EditarUsuarioForm
-from apps.alumnos.forms import AlumnoForm
+from apps.alumnos.forms import AlumnoForm, AcudienteAlumnoForm
+from apps.user import decorators
 from apps.tareas.models import (
     Tareas,
     Imagen,
@@ -18,6 +20,47 @@ from apps.tareas.models import (
 
 from apps.tareas.forms import TareasForm
 from apps.tareas.services import Crear_preguntas
+
+
+@decorators.rol_requerido("administrador")
+def administrar_acudientes(request):
+    relacion_form = AcudienteAlumnoForm(prefix="relacion")
+
+    if request.method == "POST":
+        accion = request.POST.get("accion")
+
+        if accion == "crear_relacion":
+            relacion_form = AcudienteAlumnoForm(request.POST, prefix="relacion")
+            if relacion_form.is_valid():
+                with transaction.atomic():
+                    relacion_form.save()
+                messages.success(request, "Acudiente relacionado con el alumno correctamente.")
+                return redirect("administrar_acudientes")
+
+    relaciones = AcudienteAlumno.objects.select_related(
+        "acudiente__usuario", "alumno__usuario", "alumno__curso"
+    ).order_by("acudiente__usuario__last_name", "alumno__usuario__last_name")
+    acudientes = Usuario.objects.filter(rol__nombre__iexact="acudiente").select_related(
+        "rol"
+    ).prefetch_related(
+        "acudiente__relaciones_alumnos__alumno__usuario"
+    ).order_by("last_name", "first_name")
+
+    return render(request, "admin/acudientes/acudientes.html", {
+        "acudientes": acudientes,
+        "relaciones": relaciones,
+        "relacion_form": relacion_form,
+        "puede_relacionar": acudientes.exists() and Alumnos.objects.exists(),
+    })
+
+
+@decorators.rol_requerido("administrador")
+def eliminar_relacion_acudiente(request, relacion_id):
+    relacion = get_object_or_404(AcudienteAlumno, pk=relacion_id)
+    if request.method == "POST":
+        relacion.delete()
+        messages.success(request, "Se eliminó la relación entre acudiente y alumno.")
+    return redirect("administrar_acudientes")
 
 # Create your views here.
 
@@ -41,7 +84,8 @@ def Editar_alumno(request, alumno_id):
 
         usuario_form = EditarUsuarioForm(
             request.POST,
-            instance=usuario
+            instance=usuario,
+            initial={"fecha_nacimiento": usuario.fecha_nacimiento or alumno.fecha_nacimiento},
         )
 
         alumno_form = AlumnoForm(
@@ -79,8 +123,10 @@ def Editar_alumno(request, alumno_id):
                         },
                     )
 
-            usuario_form.save()
+            usuario_actualizado = usuario_form.save()
             alumno_form.save()
+            alumno.fecha_nacimiento = usuario_actualizado.fecha_nacimiento
+            alumno.save(update_fields=["fecha_nacimiento"])
 
             messages.success(
                 request,
@@ -92,7 +138,8 @@ def Editar_alumno(request, alumno_id):
     else:
 
         usuario_form = EditarUsuarioForm(
-            instance=usuario
+            instance=usuario,
+            initial={"fecha_nacimiento": usuario.fecha_nacimiento or alumno.fecha_nacimiento},
         )
 
         alumno_form = AlumnoForm(

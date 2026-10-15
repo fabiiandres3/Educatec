@@ -29,11 +29,13 @@
         rel="stylesheet"
         href="{% static 'css/paneles/dashboard_docentes.css' %}"
     >
+    <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
+    <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
     {% block extra_css %}{% endblock %}
 </head>
 
-<body>
+<body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
 
 <div class="wrapper">
 
@@ -162,6 +164,10 @@
 <!-- ========================================= -->
 
 <script src="{% static 'js/paneles/dashboard_docente.js' %}"></script>
+<script src="{% static 'js/paneles/cuenta_tema.js' %}"></script>
+<script src="{% static 'js/paneles/fecha_nacimiento_edad.js' %}"></script>
+<script src="{% static 'js/paneles/confirmar_cierre_sesion.js' %}"></script>
+<script src="{% static 'js/csrf_refresh.js' %}"></script>
 
 {% block extra_js %}{% endblock %}
 

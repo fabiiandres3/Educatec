@@ -1,0 +1,66 @@
+{% extends "paneles/acudientes/base.html" %}
+
+{% block title %}Eventos del colegio{% endblock %}
+
+{% block content %}
+<style>
+    .events-heading { padding:26px; margin-bottom:24px; color:#fff; border-radius:18px; background:linear-gradient(120deg,#173b75,#2563eb); }
+    .events-heading h1 { margin:0 0 6px; font-weight:800; }
+    .events-heading p { color:#eaf2ff; margin:0; }
+    .events-section-title { color:#172033; font-size:21px; font-weight:750; margin:26px 0 14px; }
+    .event-card { background:#fff; border:1px solid #dbe3ee; border-radius:16px; overflow:hidden; height:100%; box-shadow:0 5px 18px rgba(15,23,42,.045); }
+    .event-card img { width:100%; height:190px; object-fit:cover; }
+    .event-card-body { padding:20px; }
+    .event-card h2 { color:#172033; font-size:18px; font-weight:750; }
+    .event-card-meta { display:flex; flex-wrap:wrap; gap:10px 16px; color:#334155; font-size:13px; margin:12px 0; }
+    .event-kind { display:inline-block; padding:4px 9px; background:#dbeafe; color:#1e40af; border-radius:999px; font-size:12px; font-weight:700; }
+    .event-description { color:#334155; white-space:pre-line; }
+    .events-empty { padding:30px; text-align:center; background:#fff; border:1px dashed #94a3b8; border-radius:16px; color:#475569; }
+</style>
+
+<header class="events-heading">
+    <h1><i class="fa-regular fa-calendar-days me-2"></i>Eventos del colegio</h1>
+    <p>Fechas y actividades publicadas para acudientes y comunidad educativa.</p>
+</header>
+
+<h2 class="events-section-title">Próximos eventos</h2>
+<div class="row g-4">
+    {% for evento in eventos_proximos %}
+        <div class="col-md-6 col-xl-4">
+            <article class="event-card">
+                {% if evento.imagen %}<img src="{{ evento.imagen.url }}" alt="Imagen de {{ evento.titulo }}">{% endif %}
+                <div class="event-card-body">
+                    <span class="event-kind">{{ evento.get_tipo_display }}</span>
+                    <h2 class="mt-3">{{ evento.titulo }}</h2>
+                    <div class="event-card-meta">
+                        <span><i class="fa-regular fa-calendar me-1"></i>{{ evento.fecha|date:"d/m/Y" }}</span>
+                        <span><i class="fa-regular fa-clock me-1"></i>{% if evento.hora_inicio %}{{ evento.hora_inicio|time:"H:i" }}{% if evento.hora_fin %}–{{ evento.hora_fin|time:"H:i" }}{% endif %}{% else %}Todo el día{% endif %}</span>
+                    </div>
+                    <div class="event-description">{{ evento.descripcion|linebreaksbr }}</div>
+                    {% if evento.video %}<a class="btn btn-outline-primary btn-sm mt-3" href="{{ evento.video }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube me-1"></i>Ver video</a>{% endif %}
+                </div>
+            </article>
+        </div>
+    {% empty %}
+        <div class="col-12"><div class="events-empty"><i class="fa-regular fa-calendar-xmark fs-2 mb-2"></i><p class="mb-0">No hay eventos próximos publicados.</p></div></div>
+    {% endfor %}
+</div>
+
+{% if eventos_pasados %}
+    <h2 class="events-section-title">Eventos anteriores</h2>
+    <div class="row g-4">
+        {% for evento in eventos_pasados %}
+            <div class="col-md-6 col-xl-4">
+                <article class="event-card">
+                    <div class="event-card-body">
+                        <span class="event-kind">{{ evento.get_tipo_display }}</span>
+                        <h2 class="mt-3">{{ evento.titulo }}</h2>
+                        <div class="event-card-meta"><span><i class="fa-regular fa-calendar me-1"></i>{{ evento.fecha|date:"d/m/Y" }}</span></div>
+                        <div class="event-description">{{ evento.descripcion|truncatewords:32 }}</div>
+                    </div>
+                </article>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

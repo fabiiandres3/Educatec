@@ -8,17 +8,20 @@ admin.site.register(Roles)
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
     list_display = (
-        'username',
+        'documento',
         "first_name",
         "last_name",
+        "fecha_nacimiento",
+        "edad",
         "email",
         "rol",
     )
 
     fields = (
-        'username',
+        'documento',
         "first_name",
         "last_name",
+        "fecha_nacimiento",
         "email",
         "rol",
     )

@@ -1,0 +1,52 @@
+{% extends "paneles/acudientes/base.html" %}
+
+{% block title %}Boletín de {{ alumno.usuario.get_full_name|default:alumno.usuario.documento }}{% endblock %}
+
+{% block content %}
+<style>
+    .guardian-report-header { padding:24px; margin-bottom:20px; background:#fff; border:1px solid #dbe3ee; border-radius:16px; }
+    .guardian-report-header h1 { color:#172033; font-size:24px; font-weight:800; margin:0 0 5px; }
+    .guardian-report-header p { color:#475569; margin:0; }
+    .guardian-report-selector { padding:20px; margin-bottom:24px; background:#fff; border:1px solid #dbe3ee; border-radius:16px; }
+    .guardian-report-selector label { color:#1f2937; font-weight:700; }
+    .guardian-report-empty { padding:28px; text-align:center; background:#fff; border:1px dashed #94a3b8; border-radius:16px; color:#475569; }
+    .guardian-report-actions { display:flex; justify-content:flex-end; gap:10px; margin:16px 0; }
+    @media print { .sidebar, .guardian-report-actions, .guardian-report-selector, .mb-3 { display:none !important; } main.col-lg-10 { width:100%; padding:0 !important; } .educatec-report { border:0; box-shadow:none; } }
+</style>
+
+<div class="mb-3">
+    <a href="{% url 'detalle_alumno_acudiente' alumno.id %}" class="btn btn-outline-secondary">
+        <i class="fa-solid fa-arrow-left me-1"></i>Volver al estudiante
+    </a>
+</div>
+
+<header class="guardian-report-header">
+    <h1><i class="fa-solid fa-file-lines text-primary me-2"></i>Boletín académico</h1>
+    <p>{{ alumno.usuario.get_full_name|default:alumno.usuario.documento }} · {{ alumno.curso|default:"Sin curso asignado" }}</p>
+</header>
+
+<form method="get" class="guardian-report-selector">
+    <label for="periodo">Selecciona el período</label>
+    <div class="row g-2 mt-1">
+        <div class="col-md-8">
+            <select id="periodo" name="periodo" class="form-select">
+                <option value="">Selecciona un período</option>
+                {% for item in periodos %}
+                    <option value="{{ item.id }}" {% if periodo.id == item.id %}selected{% endif %}>{{ item }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4"><button class="btn btn-primary w-100" type="submit"><i class="fa-solid fa-magnifying-glass me-1"></i>Consultar boletín</button></div>
+    </div>
+</form>
+
+{% if periodo %}
+    <div class="guardian-report-actions">
+        <a class="btn btn-outline-danger" href="{% url 'descargar_boletin_pdf' alumno.id periodo.id %}"><i class="fa-solid fa-file-pdf me-1"></i>Descargar PDF</a>
+        <button class="btn btn-outline-secondary" type="button" onclick="window.print()"><i class="fa-solid fa-print me-1"></i>Imprimir</button>
+    </div>
+    {% include "boletin/partials/detalle.html" %}
+{% else %}
+    <div class="guardian-report-empty"><i class="fa-regular fa-folder-open fs-2 mb-2"></i><p class="mb-0">Elige un período para consultar el boletín del estudiante.</p></div>
+{% endif %}
+{% endblock %}

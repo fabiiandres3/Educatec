@@ -310,11 +310,11 @@
                     </span>
                     <span class="chip">
                         <i class="fas fa-user"></i>
-                        Docente: {{ docente.usuario.get_full_name|default:docente.usuario.username }}
+                        Docente: {{ docente.usuario.get_full_name|default:docente.usuario.documento }}
                     </span>
                     <span class="chip">
                         <i class="fas fa-book"></i>
-                        {{ horarios_data|length }} clase{{ horarios_data|length == 1|yesno:",s" }} semanal{{ horarios_data|length == 1|yesno:",es" }}
+                        {{ horarios_data|length }} clase{{ horarios_data|length|pluralize:"s" }} semanal{{ horarios_data|length|pluralize:"es" }}
                     </span>
                 </p>
             </div>

@@ -604,6 +604,7 @@ def cargar_alumnos_excel(request):
                     usuario_obj.email = email
                     usuario_obj.first_name = first_name
                     usuario_obj.last_name = last_name
+                    usuario_obj.fecha_nacimiento = fecha_nacimiento
 
                     # Asignar rol Alumno
                     usuario_obj.rol = rol_alumno
@@ -634,6 +635,7 @@ def cargar_alumnos_excel(request):
                         email=email,
                         first_name=first_name,
                         last_name=last_name,
+                        fecha_nacimiento=fecha_nacimiento,
                         rol=rol_alumno,
                     )
 

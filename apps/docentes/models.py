@@ -25,7 +25,7 @@ class Docente(models.Model):
     )
 
     def __str__(self):
-        return self.usuario.get_full_name() or self.usuario.username
+        return self.usuario.get_full_name() or self.usuario.documento
 
 
 class AsignacionDocente(models.Model):

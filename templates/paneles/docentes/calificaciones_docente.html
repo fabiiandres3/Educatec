@@ -1852,7 +1852,18 @@
 
                                         {% else %}
 
-                                            <span class="grade-empty">—</span>
+                                            <div class="calx-grade">
+                                                <span class="grade-empty">—</span>
+                                                <button
+                                                    type="button"
+                                                    class="calx-edit"
+                                                    title="Asignar nota"
+                                                    aria-label="Asignar nota"
+                                                    onclick="editarNota(this)"
+                                                >
+                                                    <i class="fas fa-pen"></i>
+                                                </button>
+                                            </div>
 
                                         {% endif %}
 
@@ -3132,7 +3143,9 @@ function restaurarNota(
         if(editor){
 
             editor.outerHTML =
-                '<span class="grade-empty">—</span>';
+                '<div class="calx-grade"><span class="grade-empty">—</span>' +
+                '<button type="button" class="calx-edit" title="Asignar nota" aria-label="Asignar nota" onclick="editarNota(this)">' +
+                '<i class="fas fa-pen"></i></button></div>';
 
         }
 

@@ -10,12 +10,41 @@
 
 {% block content %}
 
+<style>
+    .guardian-hero { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:28px; margin-bottom:22px; color:#fff; border-radius:20px; background:linear-gradient(120deg,#173b75,#2563eb); box-shadow:0 12px 28px rgba(37,99,235,.18); }
+    .guardian-hero h1 { font-size:clamp(24px,3vw,34px); font-weight:800; margin:0 0 6px; }
+    .guardian-hero p { margin:0; color:#eaf2ff; }
+    .guardian-hero-icon { width:62px; height:62px; display:grid; place-items:center; border-radius:18px; background:rgba(255,255,255,.16); font-size:28px; }
+    .guardian-stat-card { height:100%; padding:18px; background:#fff; border:1px solid #dbe3ee; border-radius:16px; box-shadow:0 5px 18px rgba(15,23,42,.045); }
+    .guardian-stat-label { color:#475569; font-size:13px; font-weight:600; }
+    .guardian-stat-value { color:#172033; font-size:26px; font-weight:800; margin-top:6px; }
+    .guardian-stat-icon { width:40px; height:40px; border-radius:12px; display:grid; place-items:center; background:#eff6ff; color:#1d4ed8; }
+    .section-heading { display:flex; align-items:end; justify-content:space-between; gap:16px; margin:30px 0 16px; }
+    .section-heading h2 { margin:0; color:#172033; font-size:22px; font-weight:750; }
+    .event-panel { background:#fff; border:1px solid #dbe3ee; border-radius:16px; padding:20px; margin-bottom:28px; box-shadow:0 5px 18px rgba(15,23,42,.045); }
+    .event-preview { display:flex; gap:15px; padding:14px 0; border-bottom:1px solid #e2e8f0; }
+    .event-preview:last-child { border-bottom:0; }
+    .event-date { flex:0 0 60px; height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:12px; background:#eff6ff; color:#1d4ed8; }
+    .event-date strong { font-size:21px; line-height:1; }
+    .event-date small { font-size:11px; text-transform:uppercase; font-weight:700; }
+    .event-preview h3 { margin:0 0 4px; font-size:16px; color:#172033; font-weight:700; }
+    .event-meta { color:#475569; font-size:13px; }
+    .student-card { border:1px solid #dbe3ee; box-shadow:0 6px 20px rgba(15,23,42,.05); transition:transform .18s ease, box-shadow .18s ease; }
+    .student-card:hover { transform:translateY(-2px); box-shadow:0 12px 26px rgba(15,23,42,.09); }
+    .student-card h4, .student-card strong { color:#172033; }
+    .student-card .stat { border:1px solid #e2e8f0; }
+    .student-card .stat small { color:#475569; font-weight:600; }
+    @media(max-width:575px) { .guardian-hero { padding:22px; } .guardian-hero-icon { display:none; } .section-heading { align-items:start; flex-direction:column; } }
+</style>
+
+{% comment %}Replaced by the guardian dashboard hero below.{% endcomment %}
+{% comment %}
 <div class="topbar">
 
     <h2>
 
         Hola,
-        {{ request.user.first_name|default:request.user.username }}
+        {{ request.user.first_name|default:request.user.documento }}
         👋
 
     </h2>
@@ -27,7 +56,37 @@
     </p>
 
 </div>
+{% endcomment %}
 
+<section class="guardian-hero">
+    <div>
+        <h1>Hola, {{ request.user.first_name|default:request.user.documento }}</h1>
+        <p>Consulta el progreso de tus estudiantes y mantente al día con el colegio.</p>
+    </div>
+    <div class="guardian-hero-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+</section>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-user-graduate"></i></div><div class="guardian-stat-label mt-3">Estudiantes vinculados</div><div class="guardian-stat-value">{{ alumnos|length }}</div></div></div>
+    <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-calendar-day"></i></div><div class="guardian-stat-label mt-3">Próximos eventos</div><div class="guardian-stat-value">{{ total_eventos_proximos }}</div></div></div>
+    <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-chart-line"></i></div><div class="guardian-stat-label mt-3">Promedio general</div><div class="guardian-stat-value">{% if promedio_general != None %}{{ promedio_general }}{% else %}—{% endif %}</div></div></div>
+    <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="guardian-stat-label mt-3">Requieren atención en asistencia</div><div class="guardian-stat-value">{{ alumnos_alerta }}</div></div></div>
+</div>
+
+<section class="event-panel">
+    <div class="section-heading mt-0">
+        <div><h2><i class="fa-regular fa-calendar me-2 text-primary"></i>Agenda del colegio</h2><p class="text-secondary mb-0 mt-1">Eventos publicados para acudientes y comunidad educativa.</p></div>
+        <a href="{% url 'eventos_acudiente' %}" class="btn btn-outline-primary">Ver todos <i class="fa-solid fa-arrow-right ms-1"></i></a>
+    </div>
+    {% for evento in eventos_proximos %}
+        <article class="event-preview">
+            <div class="event-date"><strong>{{ evento.fecha|date:'d' }}</strong><small>{{ evento.fecha|date:'M' }}</small></div>
+            <div><h3>{{ evento.titulo }}</h3><div class="event-meta"><span class="me-3"><i class="fa-regular fa-clock me-1"></i>{% if evento.hora_inicio %}{{ evento.hora_inicio|time:'H:i' }}{% else %}Todo el día{% endif %}</span><span class="badge text-bg-light border">{{ evento.get_tipo_display }}</span></div><p class="text-secondary mb-0 mt-2">{{ evento.descripcion|truncatewords:24 }}</p></div>
+        </article>
+    {% empty %}
+        <p class="text-secondary mb-0">No hay eventos próximos publicados.</p>
+    {% endfor %}
+</section>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
 
@@ -70,7 +129,7 @@
 
                         <h4 class="mb-1">
 
-                            {{ alumno.usuario.get_full_name }}
+                            {{ alumno.usuario.get_full_name|default:alumno.usuario.documento }}
 
                         </h4>
 
@@ -193,6 +252,14 @@
 
                 </div>
 
+
+                <a
+                    href="{% url 'boletin_alumno_acudiente' alumno.id %}"
+                    class="btn btn-outline-primary w-100 mb-2"
+                >
+                    <i class="fa-solid fa-file-lines me-1"></i>
+                    Ver boletín académico
+                </a>
 
                 <a
                     href="{% url 'detalle_alumno_acudiente' alumno.id %}"

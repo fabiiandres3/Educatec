@@ -1,9 +1,19 @@
 from django import forms
+from django.utils import timezone
 from apps.docentes.models import Docente, AsignacionDocente
 from apps.user.models import Usuario
 
 
 class EditarDocenteUsuarioForm(forms.ModelForm):
+
+    def clean_fecha_nacimiento(self):
+        if self.add_prefix("fecha_nacimiento") not in self.data:
+            fecha = self.instance.fecha_nacimiento
+        else:
+            fecha = self.cleaned_data.get("fecha_nacimiento")
+        if fecha and fecha >= timezone.localdate():
+            raise forms.ValidationError("La fecha de nacimiento debe ser anterior a hoy.")
+        return fecha
 
     class Meta:
         model = Usuario
@@ -11,6 +21,7 @@ class EditarDocenteUsuarioForm(forms.ModelForm):
             "username",
             "first_name",
             "last_name",
+            "fecha_nacimiento",
             "email",
         ]
 
@@ -29,6 +40,9 @@ class EditarDocenteUsuarioForm(forms.ModelForm):
                 attrs={
                     "class": "form-control"
                 }
+            ),
+            "fecha_nacimiento": forms.DateInput(
+                attrs={"class": "form-control", "type": "date", "autocomplete": "bday"}
             ),
             "email": forms.EmailInput(
                 attrs={

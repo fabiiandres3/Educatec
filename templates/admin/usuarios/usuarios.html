@@ -535,6 +535,7 @@
                         <th>Usuario</th>
                         <th>Nombre</th>
                         <th>Apellido</th>
+                        <th>Fecha de nacimiento / Edad</th>
                         <th>Correo</th>
                         <th>Rol</th>
                         <th>Acciones</th>
@@ -567,11 +568,11 @@
                             <div class="user-info">
 
                                 <div class="user-avatar">
-                                    {{ usuario.first_name|default:usuario.username|slice:":1"|upper }}
+                                    {{ usuario.first_name|default:usuario.documento|slice:":1"|upper }}
                                 </div>
 
                                 <span class="username">
-                                    {{ usuario.username }}
+                                    {{ usuario.documento }}
                                 </span>
 
                             </div>
@@ -598,6 +599,19 @@
                                 {{ usuario.last_name|default:"—" }}
                             </span>
 
+                        </td>
+
+
+                        <!-- FECHA DE NACIMIENTO Y EDAD -->
+
+                        <td>
+                            {% if usuario.fecha_nacimiento %}
+                                <span class="user-name">{{ usuario.fecha_nacimiento|date:"d/m/Y" }}</span>
+                                <br>
+                                <small class="text-muted">{{ usuario.edad }} años</small>
+                            {% else %}
+                                <span class="text-muted">Sin información</span>
+                            {% endif %}
                         </td>
 
 
@@ -687,7 +701,7 @@
 
                     <tr>
 
-                        <td colspan="7" class="empty-state">
+                        <td colspan="8" class="empty-state">
 
                             <div class="empty-icon">
 

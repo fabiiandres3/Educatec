@@ -468,9 +468,9 @@
                                 <div class="student-avatar">
 
                                     {% if estudiante.first_name %}
-                                        {{ estudiante.first_name|first|upper }}
+                                        {{ estudiante.first_name|default:estudiante.documento|default:"?"|first|upper }}
                                     {% else %}
-                                        {{ estudiante.username|first|upper }}
+                                        {{ estudiante.documento|default:"?"|first|upper }}
                                     {% endif %}
 
                                 </div>
@@ -482,7 +482,7 @@
                                         {% if estudiante.get_full_name %}
                                             {{ estudiante.get_full_name }}
                                         {% else %}
-                                            {{ estudiante.username }}
+                                            {{ estudiante.documento|default:"—" }}
                                         {% endif %}
 
                                     </h3>
@@ -519,7 +519,7 @@
                                 <a
                                     href="{% url 'repetir_tarea_alumno' tarea.id estudiante.id %}"
                                     class="btn-refresh"
-                                    onclick="return confirmarRepetir('{{ estudiante.get_full_name|default:estudiante.username|escapejs }}');"
+                                    onclick="return confirmarRepetir('{{ estudiante.get_full_name|default:estudiante.documento|escapejs }}');"
                                 >
                                     ↻ Repetir tarea
                                 </a>

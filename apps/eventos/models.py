@@ -18,6 +18,7 @@ class Evento(models.Model):
         ("todos", "Todos"),
         ("alumnos", "Alumnos"),
         ("docentes", "Docentes"),
+        ("acudientes", "Acudientes"),
     ]
 
     titulo = models.CharField(

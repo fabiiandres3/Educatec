@@ -1,0 +1,44 @@
+{% extends 'paneles/docentes/base.html' %}
+{% block title %}Historial de asistencia{% endblock %}
+{% block active_asistencia %}active{% endblock %}
+{% block content %}
+<style>
+    .attendance-history-header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:20px; }
+    .attendance-history-header h1 { color:#172033; font-size:25px; font-weight:800; margin:0; }
+    .attendance-history-header p { color:#475569; margin:5px 0 0; }
+    .attendance-filter, .attendance-history-card { padding:20px; background:#fff; border:1px solid #dbe3ee; border-radius:16px; box-shadow:0 5px 18px rgba(15,23,42,.04); }
+    .attendance-filter label { color:#1f2937; font-weight:700; }
+    .attendance-history-card { margin-top:20px; }
+    .history-state { display:inline-block; padding:5px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .history-P { color:#065f46; background:#d1fae5; }
+    .history-T { color:#854d0e; background:#fef3c7; }
+    .history-A { color:#991b1b; background:#fee2e2; }
+</style>
+
+<header class="attendance-history-header">
+    <div><h1><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Historial de asistencia</h1><p>Consulta o corrige los registros de los cursos que tienes asignados.</p></div>
+    <a href="{% url 'asistencia_docente' %}" class="btn btn-outline-primary"><i class="fa-solid fa-arrow-left me-1"></i>Volver al registro</a>
+</header>
+
+<form method="get" class="attendance-filter">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-5"><label for="curso">Curso</label><select id="curso" name="curso" class="form-select"><option value="">Selecciona un curso</option>{% for curso in cursos %}<option value="{{ curso.id }}" {% if curso_sel.id == curso.id %}selected{% endif %}>{{ curso.nombre }}</option>{% endfor %}</select></div>
+        <div class="col-md-4"><label for="fecha">Fecha</label><input id="fecha" name="fecha" type="date" class="form-control" value="{{ fecha_sel|date:'Y-m-d' }}" max="{{ hoy|date:'Y-m-d' }}"></div>
+        <div class="col-md-3"><button type="submit" class="btn btn-primary w-100">Consultar</button></div>
+    </div>
+</form>
+
+{% if curso_sel %}
+<section class="attendance-history-card">
+    <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 fw-bold text-dark mb-0">{{ curso_sel.nombre }} · {{ fecha_sel|date:'d/m/Y' }}</h2><span class="text-secondary">{{ filas|length }} estudiantes</span></div>
+    <div class="table-responsive"><table class="table align-middle mb-0">
+        <thead><tr><th>Estudiante</th><th>Documento</th><th>Estado</th></tr></thead>
+        <tbody>{% for fila in filas %}
+            <tr><td>{{ fila.alumnos.usuario.get_full_name|default:fila.alumnos.usuario.documento }}</td><td>{{ fila.alumnos.usuario.documento|default:'—' }}</td><td>{% if fila.asistencia %}<span class="history-state history-{{ fila.asistencia.estado }}">{{ fila.asistencia.get_estado_display }}</span>{% else %}<span class="text-secondary">Sin registro</span>{% endif %}</td></tr>
+        {% empty %}<tr><td colspan="3" class="text-center text-secondary py-4">No hay alumnos activos en este curso.</td></tr>{% endfor %}</tbody>
+    </table></div>
+</section>
+{% elif not cursos %}
+    <div class="alert alert-info mt-3">No tienes cursos asignados para registrar asistencia.</div>
+{% endif %}
+{% endblock %}

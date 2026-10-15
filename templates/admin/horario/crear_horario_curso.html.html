@@ -1154,7 +1154,7 @@ Crear horario - {{ curso.nombre }}
                     <option
                         value="{{ docente.id }}"
                     >
-                        {{ docente.usuario.get_full_name|default:docente.usuario.username }}
+                        {{ docente.usuario.get_full_name|default:docente.usuario.documento }}
                     </option>
 
                     {% empty %}

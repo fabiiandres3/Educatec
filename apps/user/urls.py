@@ -5,6 +5,8 @@ from apps.user import views
 
 urlpatterns = [
 
+    path("csrf/refresh/", views.refresh_csrf_token, name="refresh_csrf_token"),
+
     # =========================================================
     # PÁGINAS PÚBLICAS
     # =========================================================
