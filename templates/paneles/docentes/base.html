@@ -30,6 +30,7 @@
         href="{% static 'css/paneles/dashboard_docentes.css' %}"
     >
     <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
+    <style>.sidebar { position: sticky; top: 0; align-self: flex-start; display: flex; flex: 0 0 190px; flex-direction: column; height: 100vh; } .sidebar .menu { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; } .sidebar .menu::-webkit-scrollbar { display: none; }</style>
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
     {% block extra_css %}{% endblock %}
@@ -140,6 +141,14 @@
             </li>
 
         </ul>
+
+        <div class="sidebar-account" aria-label="Cuenta de {{ request.user.get_full_name|default:request.user.documento }}">
+            <div class="sidebar-account-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
+            <div class="sidebar-account-details">
+                <span class="sidebar-account-name">{{ request.user.get_full_name|default:request.user.documento }}</span>
+                <span class="sidebar-account-role">{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
+            </div>
+        </div>
 
     </aside>
 

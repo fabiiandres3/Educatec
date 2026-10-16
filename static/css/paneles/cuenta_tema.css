@@ -108,3 +108,73 @@ html[data-theme="dark"] .logout-dialog-error{background:#432a33;color:#ffbac4}
 @keyframes logout-fade-in{from{opacity:0}to{opacity:1}}
 @keyframes logout-dialog-in{from{opacity:0;transform:translateY(7px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:480px){.logout-dialog{padding:23px 18px}.logout-dialog-actions{flex-direction:column-reverse}.logout-dialog-actions button{width:100%}}
+:root {
+    --sidebar-account-text: #f1f5f9;
+    --sidebar-account-muted: #94a3b8;
+}
+
+.sidebar-account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    margin-top: auto;
+    padding: 14px 10px 4px;
+    border-top: 1px solid rgba(148, 163, 184, .25);
+}
+
+.sidebar-account-avatar {
+    display: flex;
+    flex: 0 0 38px;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #38bdf8;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.sidebar-account-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.sidebar-account-name {
+    overflow: hidden;
+    color: var(--sidebar-account-text);
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-account-role {
+    color: var(--sidebar-account-muted);
+    font-size: 11px;
+}
+
+.sidebar #logoutBtn,
+.sidebar #logoutBtn i,
+.sidebar .logout-button,
+.sidebar .logout-button i {
+    color: #f87171;
+}
+
+.sidebar #logoutBtn:hover,
+.sidebar #logoutBtn:hover i,
+.sidebar .logout-button:hover,
+.sidebar .logout-button:hover i {
+    color: #fca5a5;
+}
+
+html[data-theme="dark"] .sidebar-account {
+    border-top-color: rgba(148, 163, 184, .25);
+    --sidebar-account-text: #e6edf7;
+    --sidebar-account-muted: #aab8cc;
+}
