@@ -163,7 +163,9 @@ def Eliminar_alumno(request, alumno_id):
     )
 
     if request.method == "POST":
+        nombre_alumno = alumno.usuario.get_full_name() or alumno.usuario.documento
         alumno.usuario.delete()
+        messages.success(request, f"Alumno {nombre_alumno} eliminado correctamente.")
 
         return redirect("listar_alumnos")
 

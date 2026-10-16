@@ -30,6 +30,7 @@
         href="{% static 'css/paneles/dashboard_docentes.css' %}"
     >
     <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
+    <link rel="stylesheet" href="{% static 'css/paneles/notificaciones_toast.css' %}">
     <style>
         .sidebar { position: sticky; top: 0; align-self: flex-start; display: flex; flex: 0 0 190px; flex-direction: column; height: 100vh; }
         .sidebar .menu { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
@@ -188,6 +189,8 @@
 <script src="{% static 'js/paneles/fecha_nacimiento_edad.js' %}"></script>
 <script src="{% static 'js/paneles/confirmar_cierre_sesion.js' %}"></script>
 <script src="{% static 'js/csrf_refresh.js' %}"></script>
+{% include 'paneles/partials/notificaciones_toast.html' %}
+<script src="{% static 'js/paneles/notificaciones_toast.js' %}"></script>
 
 {% block extra_js %}{% endblock %}
 

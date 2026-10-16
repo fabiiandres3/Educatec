@@ -1,0 +1,65 @@
+.app-toast-stack {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1200;
+    display: grid;
+    gap: 12px;
+    width: min(390px, calc(100vw - 32px));
+    pointer-events: none;
+}
+
+.app-toast {
+    --toast-color: #2563eb;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 42px 15px 16px;
+    overflow: hidden;
+    color: #f8fafc;
+    background: #172033;
+    border: 1px solid color-mix(in srgb, var(--toast-color) 65%, transparent);
+    border-left: 4px solid var(--toast-color);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px #0003;
+    pointer-events: auto;
+    animation: app-toast-in .25s ease-out both;
+}
+
+.app-toast--success { --toast-color: #22c55e; }
+.app-toast--error { --toast-color: #ef4444; }
+.app-toast--warning { --toast-color: #f59e0b; }
+.app-toast--info { --toast-color: #3b82f6; }
+
+.app-toast__icon { color: var(--toast-color); font-size: 20px; }
+.app-toast__text { font-size: 14px; line-height: 1.4; }
+.app-toast__close {
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    padding: 0;
+    color: #cbd5e1;
+    background: transparent;
+    border: 0;
+    font-size: 23px;
+    line-height: 1;
+    cursor: pointer;
+}
+.app-toast__close:hover { color: white; }
+.app-toast.is-leaving { animation: app-toast-out .2s ease-in forwards; }
+
+@keyframes app-toast-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes app-toast-out {
+    to { opacity: 0; transform: translateY(8px); }
+}
+
+@media (max-width: 575px) {
+    .app-toast-stack { right: 16px; bottom: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .app-toast, .app-toast.is-leaving { animation: none; }
+}

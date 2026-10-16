@@ -1,0 +1,14 @@
+<div class="app-toast-stack" aria-live="polite" aria-atomic="false">
+    {% for message in messages %}
+        <div class="app-toast app-toast--{% if 'success' in message.tags %}success{% elif 'error' in message.tags %}error{% elif 'warning' in message.tags %}warning{% else %}info{% endif %}" role="status">
+            <span class="app-toast__icon" aria-hidden="true">
+                {% if 'success' in message.tags %}<i class="fa-solid fa-circle-check"></i>
+                {% elif 'error' in message.tags %}<i class="fa-solid fa-circle-xmark"></i>
+                {% elif 'warning' in message.tags %}<i class="fa-solid fa-triangle-exclamation"></i>
+                {% else %}<i class="fa-solid fa-circle-info"></i>{% endif %}
+            </span>
+            <span class="app-toast__text">{{ message }}</span>
+            <button class="app-toast__close" type="button" aria-label="Cerrar notificación">&times;</button>
+        </div>
+    {% endfor %}
+</div>

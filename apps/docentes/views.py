@@ -416,7 +416,9 @@ def Eliminar_docente(
 
     if request.method == "POST":
 
+        nombre_docente = docente.usuario.get_full_name() or docente.usuario.documento
         docente.usuario.delete()
+        messages.success(request, f"Docente {nombre_docente} eliminado correctamente.")
 
         return redirect(
             "listar_docentes"

@@ -635,6 +635,7 @@ def Editar_usuario(request, usuario_id):
 
         if usuario_form.is_valid():
             usuario_form.save()
+            messages.success(request, "Usuario editado correctamente.")
 
             return redirect("listar_usuarios")
 
@@ -668,7 +669,9 @@ def Eliminar_usuario(request, usuario_id):
     # -----------------------------------------------------
 
     if request.method == "POST":
+        nombre_usuario = usuario.get_full_name() or usuario.documento
         usuario.delete()
+        messages.success(request, f"Usuario {nombre_usuario} eliminado correctamente.")
 
         return redirect("listar_usuarios")
 
