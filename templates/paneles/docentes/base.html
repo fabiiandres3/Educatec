@@ -30,7 +30,18 @@
         href="{% static 'css/paneles/dashboard_docentes.css' %}"
     >
     <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
-    <style>.sidebar { position: sticky; top: 0; align-self: flex-start; display: flex; flex: 0 0 190px; flex-direction: column; height: 100vh; } .sidebar .menu { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; } .sidebar .menu::-webkit-scrollbar { display: none; }</style>
+    <style>
+        .sidebar { position: sticky; top: 0; align-self: flex-start; display: flex; flex: 0 0 190px; flex-direction: column; height: 100vh; }
+        .sidebar .menu { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+        .sidebar .menu::-webkit-scrollbar { display: none; }
+        .profile { display: none !important; }
+        .user-area { gap: 20px; }
+        .user-area::after { content: "\f590"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 1.3rem; line-height: 1; color: inherit; }
+        .notification { display: flex; align-items: center; line-height: 1; }
+        .wave-hand { display: inline-block; transform-origin: 70% 80%; animation: wave-greeting 1.4s ease-in-out infinite; }
+        @keyframes wave-greeting { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(18deg); } 50% { transform: rotate(-8deg); } 75% { transform: rotate(18deg); } }
+        @media (prefers-reduced-motion: reduce) { .wave-hand { animation: none; } }
+    </style>
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
     {% block extra_css %}{% endblock %}

@@ -386,10 +386,12 @@
     <div class="topbar">
         <h5>{% block page_title %}Dashboard{% endblock %}</h5>
         <div class="topbar-user">
-            <div class="avatar-admin">
-                {{ request.user.documento|default:"?"|first|upper }}
-            </div>
-            <span>{{ request.user.documento|default:"—" }}</span>
+            {% if request.user.documento %}
+                <div class="avatar-admin">
+                    {{ request.user.documento|first|upper }}
+                </div>
+                <span>{{ request.user.documento }}</span>
+            {% endif %}
         </div>
     </div>
 

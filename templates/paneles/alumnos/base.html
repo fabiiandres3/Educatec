@@ -43,7 +43,18 @@
         href="{% static 'css/paneles/dashboard_alumnos.css' %}"
     >
     <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
-    <style>.sidebar { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; scrollbar-width: none; } .sidebar::-webkit-scrollbar { display: none; } .sidebar .menu { flex: 1; min-height: 0; }</style>
+    <style>
+        .sidebar { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; scrollbar-width: none; }
+        .sidebar::-webkit-scrollbar { display: none; }
+        .sidebar .menu { flex: 1; min-height: 0; }
+        .profile { display: none !important; }
+        .user-area { gap: 20px; }
+        .user-area::after { content: "\f590"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 1.3rem; line-height: 1; color: inherit; }
+        .notification { display: flex; align-items: center; line-height: 1; }
+        .wave-hand { display: inline-block; transform-origin: 70% 80%; animation: wave-greeting 1.4s ease-in-out infinite; }
+        @keyframes wave-greeting { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(18deg); } 50% { transform: rotate(-8deg); } 75% { transform: rotate(18deg); } }
+        @media (prefers-reduced-motion: reduce) { .wave-hand { animation: none; } }
+    </style>
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
 

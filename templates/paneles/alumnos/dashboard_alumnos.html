@@ -23,7 +23,8 @@
     <div class="welcome">
 
         <h2>
-            Hola, {{ alumnos.nombre }} 👋
+            Hola, {% firstof request.user.get_full_name alumno.nombre request.user.documento %}
+            <span class="wave-hand" role="img" aria-label="saludando">&#128075;</span>
         </h2>
 
         <p>
