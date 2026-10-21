@@ -1,0 +1,41 @@
+<div class="alumnos-table-shell">
+  <div class="alumnos-table-scroll">
+    <table class="alumnos-table">
+      <thead>
+        <tr>
+          <th>Alumno</th><th>Documento</th><th>Correo</th><th>Edad</th><th>Teléfono</th>
+          <th>Dirección</th><th>Curso</th><th>Ingreso</th><th>Estado</th>
+          <th class="th-acciones" style="display:none">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="listaAlumnos">
+        {% for alumno in alumnos %}
+          <tr data-curso="{{ alumno.curso_id|default:'sin-curso' }}">
+            <td>
+              <div class="alumno-identidad">
+                <span class="alumno-avatar" aria-hidden="true">{{ alumno.usuario.first_name|default:alumno.usuario.username|first|upper }}</span>
+                  <span class="alumno-nombre"><strong>{{ alumno.usuario.get_full_name|default:alumno.usuario.documento }}</strong><small>Alumno</small></span>
+              </div>
+            </td>
+            <td><span class="alumno-dato-principal">{{ alumno.usuario.documento|default:alumno.usuario.username }}</span></td>
+            <td><a class="alumno-email" href="mailto:{{ alumno.usuario.email }}">{{ alumno.usuario.email|default:"Sin correo" }}</a></td>
+            <td>{% if alumno.usuario.fecha_nacimiento or alumno.fecha_nacimiento %}<span class="alumno-dato-principal">{{ alumno.edad }} años</span>{% else %}<span class="alumno-dato-vacio">Sin dato</span>{% endif %}</td>
+            <td>{{ alumno.usuario.telefono|default:alumno.telefono|default:"Sin teléfono" }}</td>
+            <td><span class="alumno-direccion">{{ alumno.usuario.direccion|default:alumno.direccion|default:"Sin dirección" }}</span></td>
+            <td>{% if alumno.curso %}<span class="alumno-curso">{{ alumno.curso.nombre }}</span>{% else %}<span class="alumno-sin-curso">Sin curso</span>{% endif %}</td>
+            <td>{% if alumno.fecha_ingreso %}{{ alumno.fecha_ingreso|date:"d/m/Y" }}{% else %}<span class="alumno-dato-vacio">Sin dato</span>{% endif %}</td>
+            <td>{% if alumno.activo %}<span class="alumno-estado activo"><i class="fa-solid fa-circle-check"></i> Activo</span>{% else %}<span class="alumno-estado inactivo"><i class="fa-solid fa-circle-xmark"></i> Inactivo</span>{% endif %}</td>
+            <td class="td-acciones" style="display:none;white-space:nowrap">
+              <a href="{% url 'editar_alumno' alumno.usuario.id %}" class="tabla-accion-btn tabla-accion-edit" title="Editar alumno" aria-label="Editar alumno"><i class="fa-solid fa-pen"></i></a>
+              <a href="{% url 'eliminar_alumno' alumno.usuario.id %}" class="tabla-accion-btn tabla-accion-delete" title="Eliminar alumno" aria-label="Eliminar alumno"><i class="fa-solid fa-trash"></i></a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="10" class="alumnos-vacio">No hay alumnos registrados.</td></tr>
+        {% endfor %}
+        <tr id="sinResultadosAlumnos" hidden><td colspan="10" class="alumnos-vacio"><i class="fa-solid fa-magnifying-glass"></i> No hay alumnos que coincidan con los filtros.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="alumnos-table-footer"><span id="resumenAlumnos" aria-live="polite"></span><span>Desliza horizontalmente para ver todos los datos</span></div>
+</div>

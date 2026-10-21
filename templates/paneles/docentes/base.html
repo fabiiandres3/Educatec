@@ -46,6 +46,7 @@
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
     {% block extra_css %}{% endblock %}
+{% include "partials/page_transition_assets.html" %}
 </head>
 
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">

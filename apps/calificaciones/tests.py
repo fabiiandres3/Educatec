@@ -16,8 +16,10 @@ from .services import obtener_libro_calificaciones
 class CalificacionesPorAsignacionTests(TestCase):
     def setUp(self):
         self.curso = Cursos.objects.create(nombre="Curso compartido")
-        self.matematicas = Clases.objects.create(titulo="Matemáticas", curso=self.curso)
-        self.ciencias = Clases.objects.create(titulo="Ciencias", curso=self.curso)
+        self.matematicas = Clases.objects.create(titulo="Matemáticas")
+        self.matematicas.cursos.add(self.curso)
+        self.ciencias = Clases.objects.create(titulo="Ciencias")
+        self.ciencias.cursos.add(self.curso)
         self.docente_matematicas = Docente.objects.create(
             usuario=Usuario.objects.create_user(username="mate", email="mate@example.com"),
             direccion="Dirección",

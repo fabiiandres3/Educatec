@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 
 from apps.user.models import Usuario
@@ -60,6 +62,17 @@ class Alumnos(models.Model):
 
         return (
             f"{self.usuario.get_full_name()} "
+        )
+
+    @property
+    def edad(self):
+        fecha_nacimiento = self.usuario.fecha_nacimiento or self.fecha_nacimiento
+        if not fecha_nacimiento:
+            return None
+
+        hoy = date.today()
+        return hoy.year - fecha_nacimiento.year - (
+            (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day)
         )
 
 

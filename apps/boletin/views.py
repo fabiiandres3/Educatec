@@ -152,7 +152,15 @@ def boletines_administrador(request):
         for alumno in Alumnos.objects.filter(curso=curso, activo=True).select_related("usuario").order_by("usuario__last_name"):
             boletin, promedio = construir_boletin(alumno, periodo, asignaciones)
             filas.append({"alumno": alumno, "promedio": promedio, "completo": bool(boletin) and all(f["completo"] for f in boletin), "pendientes": sum(not f["completo"] for f in boletin)})
-    return render(request, "boletin/admin_lista.html", {"cursos": Cursos.objects.all(), "periodos": _periodos(), "curso": curso, "periodo": periodo, "filas": filas})
+    return render(request, "boletin/admin_lista.html", {
+        "cursos": Cursos.objects.all(),
+        "periodos": _periodos(),
+        "curso": curso,
+        "periodo": periodo,
+        "filas": filas,
+        "boletines_completos": sum(fila["completo"] for fila in filas),
+        "boletines_pendientes": sum(not fila["completo"] for fila in filas),
+    })
 
 
 @rol_requerido("administrador")

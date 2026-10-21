@@ -12,15 +12,15 @@
   <style>
     /* Estilos base existentes... */
     .cursos-wrapper { max-width: 1350px; margin: 0 auto; padding: 10px 5px 50px; }
-    .cursos-hero { position: relative; overflow: hidden; border-radius: 24px; padding: 35px 40px; margin-bottom: 28px; background: linear-gradient(135deg, #2563eb, #4f46e5, #7c3aed); color: white; box-shadow: 0 15px 35px rgba(37, 99, 235, 0.18); }
-    .cursos-hero::before { content: ''; position: absolute; width: 260px; height: 260px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); right: -80px; top: -130px; }
-    .cursos-hero::after { content: ''; position: absolute; width: 180px; height: 180px; border-radius: 50%; background: rgba(255, 255, 255, 0.06); left: 45%; bottom: -120px; }
+    .cursos-hero { position: relative; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px 34px; margin-bottom: 24px; background: linear-gradient(120deg, #ffffff 0%, #f4f7ff 100%); color: #172033; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
+    .cursos-hero::before { content: ''; position: absolute; width: 260px; height: 260px; border-radius: 50%; background: rgba(79, 70, 229, 0.06); right: -80px; top: -130px; }
+    .cursos-hero::after { content: ''; position: absolute; width: 180px; height: 180px; border-radius: 50%; background: rgba(37, 99, 235, 0.05); left: 45%; bottom: -120px; }
     .cursos-hero-content { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
     .cursos-hero h1 { font-size: 32px; font-weight: 800; margin: 0 0 7px; }
-    .cursos-hero p { margin: 0; opacity: 0.9; font-size: 15px; }
+    .cursos-hero p { margin: 0; color: #64748b; font-size: 14px; }
     
-    .btn-crear-curso { display: inline-flex; align-items: center; gap: 9px; background: white; color: #2563eb; border: none; border-radius: 12px; padding: 12px 18px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12); }
-    .btn-crear-curso:hover { color: #1d4ed8; transform: translateY(-2px); box-shadow: 0 12px 22px rgba(0, 0, 0, 0.16); }
+    .btn-crear-curso { display: inline-flex; align-items: center; gap: 9px; background: #3158c8; color: white; border: none; border-radius: 11px; padding: 12px 18px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; box-shadow: 0 5px 13px rgba(49, 88, 200, 0.18); }
+    .btn-crear-curso:hover { color: white; background: #2549b1; transform: translateY(-2px); box-shadow: 0 8px 17px rgba(49, 88, 200, 0.23); }
     
     .btn-registrar-alumno { display: inline-flex; align-items: center; gap: 9px; background: #2563eb; color: white; border: none; border-radius: 11px; padding: 11px 18px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); height: fit-content; cursor: pointer; }
     .btn-registrar-alumno:hover { background: #1d4ed8; color: white; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3); }
@@ -45,9 +45,9 @@
     .section-body { padding: 25px; }
     
     .cursos-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-    .curso-card { position: relative; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
-    .curso-card:hover { transform: translateY(-5px); border-color: #bfdbfe; box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1); }
-    .curso-card-header { position: relative; padding: 23px; background: linear-gradient(135deg, #eff6ff, #eef2ff); }
+    .curso-card { position: relative; z-index:0; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; overflow: visible; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+    .curso-card:hover { z-index:5; transform: translateY(-5px); border-color: #bfdbfe; box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1); }
+    .curso-card-header { position: relative; overflow:hidden; border-radius:17px 17px 0 0; padding: 23px; background: linear-gradient(135deg, #eff6ff, #eef2ff); }
     .curso-card-header::after { content: ''; position: absolute; width: 80px; height: 80px; border-radius: 50%; background: rgba(37, 99, 235, 0.07); right: -20px; top: -25px; }
     .curso-icon { width: 43px; height: 43px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: white; color: #2563eb; margin-bottom: 14px; box-shadow: 0 5px 12px rgba(37, 99, 235, 0.1); }
     .curso-card-header h3 { position: relative; z-index: 2; margin: 0; color: #172033; font-size: 19px; font-weight: 750; }
@@ -59,10 +59,32 @@
     .capacidad-progress { height: 100%; border-radius: 20px; background: linear-gradient(90deg, #2563eb, #6366f1); transition: width 0.3s ease; }
     .capacidad-text { margin-top: 8px; color: #94a3b8; font-size: 11px; }
     .curso-card-actions { padding: 15px 23px; border-top: 1px solid #f1f5f9; display: flex; gap: 8px; }
-    .curso-action { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.2s ease; }
+    .cursos-hero h1 { display:flex; align-items:center; gap:15px; color: #172033; letter-spacing: -.035em; }
+    .cursos-hero h1 i { display:grid; place-items:center; flex:0 0 58px; width:58px; height:58px; border-radius:16px; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; font-size:24px; box-shadow:0 8px 20px rgba(37,99,235,.2); }
+    .section-card { border-color: #e6eaf1; box-shadow: 0 6px 22px rgba(15,23,42,.045); }
+    .curso-card { border-color: #e4e9f1; box-shadow: 0 3px 12px rgba(15,23,42,.035); }
+    .curso-card-header { padding: 19px 21px; }
+    .curso-card-body { padding: 17px 21px; }
+    .curso-card-actions { padding: 12px 21px; }
+    .curso-action { position:relative; box-sizing:border-box; flex:0 0 38px; width:38px; min-width:38px; max-width:38px; height:38px; min-height:38px; padding:0; border:0; border-radius:10px; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:0.2s ease; cursor:pointer; }
     .curso-action.edit { background: #fef3c7; color: #d97706; }
     .curso-action.delete { background: #fee2e2; color: #dc2626; }
     .curso-action:hover { transform: translateY(-2px); }
+    .curso-action::after { content:attr(data-tooltip); position:absolute; z-index:20; left:50%; bottom:calc(100% + 9px); padding:7px 10px; border-radius:7px; background:#172033; color:#fff; font-size:11px; font-weight:650; line-height:1.2; white-space:nowrap; pointer-events:none; opacity:0; transform:translate(-50%,4px); transition:opacity .16s ease,transform .16s ease; }
+    .curso-action:hover::after,.curso-action:focus-visible::after { opacity:1; transform:translate(-50%,0); }
+
+    .curso-delete-modal[hidden] { display:none; }
+    .curso-delete-modal { position:fixed; inset:0; z-index:2000; display:grid; place-items:center; padding:20px; background:rgba(15,23,42,.58); backdrop-filter:blur(4px); }
+    .curso-delete-dialog { width:min(100%,430px); padding:28px; border:1px solid #e5e7eb; border-radius:20px; background:#fff; box-shadow:0 24px 70px rgba(15,23,42,.25); text-align:center; animation:curso-modal-in .18s ease-out; }
+    .curso-delete-icon { width:58px; height:58px; display:grid; place-items:center; margin:0 auto 16px; border-radius:18px; color:#dc2626; background:#fee2e2; font-size:23px; }
+    .curso-delete-dialog h3 { margin:0 0 8px; color:#172033; font-size:20px; font-weight:750; }
+    .curso-delete-dialog p { margin:0; color:#64748b; font-size:14px; line-height:1.55; }
+    .curso-delete-name { display:block; margin-top:8px; color:#1e293b; font-weight:750; }
+    .curso-delete-actions { display:flex; justify-content:center; gap:10px; margin-top:24px; }
+    .curso-delete-btn { min-height:42px; padding:0 17px; border:1px solid #dbe2ea; border-radius:10px; background:#fff; color:#475569; font-size:13px; font-weight:700; cursor:pointer; }
+    .curso-delete-btn.confirm { border-color:#dc2626; background:#dc2626; color:#fff; }
+    .curso-delete-btn:hover { filter:brightness(.96); }
+    @keyframes curso-modal-in { from { opacity:0; transform:translateY(8px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
     
     .empty-cursos { text-align: center; padding: 55px 20px; color: #64748b; }
     .empty-cursos-icon { width: 70px; height: 70px; border-radius: 20px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 27px; }
@@ -82,9 +104,48 @@
     .tabla-accion-delete { background: #fee2e2; color: #dc2626; }
     .tabla-accion-btn:hover { transform: scale(1.08); }
 
+    .alumnos-filter-row { display:grid; grid-template-columns:minmax(220px,1fr) minmax(240px,1fr) auto; align-items:end; gap:14px; width:100%; }
+    .alumnos-search-wrap { position:relative; min-width:0; }
+    .alumnos-search-wrap i { position:absolute; top:50%; left:14px; transform:translateY(-50%); color:#94a3b8; }
+    .alumnos-search { min-height:44px; padding-left:40px !important; border-radius:11px !important; border:1px solid #dbe2ea !important; background:#fff; }
+    .alumnos-table-shell { overflow:hidden; border:1px solid #e2e8f0; border-radius:16px; background:#fff; box-shadow:0 5px 18px rgba(15,23,42,.045); }
+    .alumnos-table-scroll { width:100%; overflow:auto; }
+    .alumnos-table { width:100%; min-width:1180px; margin:0; border-collapse:separate; border-spacing:0; color:#334155; font-size:12px; }
+    .alumnos-table thead th { position:sticky; top:0; z-index:1; padding:13px 14px; border:0; border-bottom:1px solid #e2e8f0; background:#f7f9fc; color:#64748b; font-size:10px; font-weight:750; letter-spacing:.055em; text-align:left; text-transform:uppercase; white-space:nowrap; }
+    .alumnos-table tbody td { max-width:220px; padding:12px 14px; border:0; border-bottom:1px solid #f0f3f7; vertical-align:middle; }
+    .alumnos-table tbody tr:last-child td { border-bottom:0; }
+    .alumnos-table tbody tr:not([hidden]):hover td { background:#f8faff; }
+    .alumno-identidad { display:flex; align-items:center; gap:10px; min-width:170px; }
+    .alumno-avatar { width:34px; height:34px; display:grid; place-items:center; flex:0 0 34px; border-radius:11px; background:#eaf0ff; color:#4263d8; font-size:12px; font-weight:800; }
+    .alumno-nombre { display:grid; gap:3px; min-width:0; }
+    .alumno-nombre strong { max-width:190px; overflow:hidden; color:#1e293b; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+    .alumno-nombre small,.alumno-dato-secundario { color:#94a3b8; font-size:10px; }
+    .alumno-dato-principal { color:#334155; font-weight:650; white-space:nowrap; }
+    .alumno-email { display:block; max-width:190px; overflow:hidden; color:#5269b8; text-decoration:none; text-overflow:ellipsis; white-space:nowrap; }
+    .alumno-email:hover { color:#3452b2; text-decoration:underline; }
+    .alumno-direccion { display:block; max-width:170px; overflow:hidden; color:#64748b; text-overflow:ellipsis; white-space:nowrap; }
+    .alumno-dato-vacio { color:#a3adbb; }
+    .alumno-curso { display:inline-flex; padding:5px 9px; border-radius:999px; background:#eff6ff; color:#3158bb; font-size:11px; font-weight:700; white-space:nowrap; }
+    .alumno-sin-curso { display:inline-flex; padding:5px 9px; border-radius:999px; background:#fff7ed; color:#c2410c; font-size:11px; font-weight:700; white-space:nowrap; }
+    .alumno-estado { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; white-space:nowrap; }
+    .alumno-estado.activo { color:#15803d; }
+    .alumno-estado.inactivo { color:#b91c1c; }
+    .alumnos-vacio { padding:35px !important; color:#94a3b8 !important; text-align:center; }
+    .alumnos-table-footer { display:flex; justify-content:space-between; gap:14px; padding:11px 14px; border-top:1px solid #edf1f6; color:#94a3b8; font-size:11px; }
+    html[data-theme="dark"] .alumnos-table-shell { border-color:#344258; background:#192437; }
+    html[data-theme="dark"] .alumnos-table { color:#d0d9e8; }
+    html[data-theme="dark"] .alumnos-table thead th { border-color:#344258; background:#202e44; color:#aebbd0; }
+    html[data-theme="dark"] .alumnos-table tbody td { border-color:#2b394e; }
+    html[data-theme="dark"] .alumnos-table tbody tr:not([hidden]):hover td { background:#202e44; }
+    html[data-theme="dark"] .alumno-nombre strong,html[data-theme="dark"] .alumno-dato-principal { color:#e2e8f0; }
+    html[data-theme="dark"] .alumno-direccion { color:#b1bdcf; }
+    html[data-theme="dark"] .alumnos-search { border-color:#344258 !important; background:#202e44; color:#e2e8f0; }
+
     @media (max-width: 900px) {
       .cursos-stats { grid-template-columns: 1fr; }
       .cursos-hero-content { flex-direction: column; align-items: flex-start; }
+      .alumnos-filter-row { grid-template-columns:1fr; }
+      .alumnos-table-footer { flex-direction:column; }
     }
     @media (max-width: 600px) {
       .cursos-wrapper { padding: 5px 0 35px; }
@@ -559,8 +620,8 @@
                 </div>
 
                 <div class="curso-card-actions">
-                  <a href="{% url 'editar_curso' curso.id %}" class="curso-action edit" title="Editar curso"><i class="fa-solid fa-pen"></i></a>
-                  <a href="{% url 'eliminar_curso' curso.id %}" class="curso-action delete" title="Eliminar curso"><i class="fa-solid fa-trash"></i></a>
+                  <a href="{% url 'editar_curso' curso.id %}" class="curso-action edit" aria-label="Editar curso {{ curso.nombre }}" data-tooltip="Editar curso"><i class="fa-solid fa-pen"></i></a>
+                  <button type="button" class="curso-action delete js-confirmar-eliminar-curso" aria-label="Eliminar curso {{ curso.nombre }}" data-tooltip="Eliminar curso" data-delete-url="{% url 'eliminar_curso' curso.id %}" data-course-name="{{ curso.nombre }}"><i class="fa-solid fa-trash"></i></button>
                 </div>
               </div>
             {% endfor %}
@@ -578,6 +639,22 @@
             </a>
           </div>
         {% endif %}
+
+        <div class="curso-delete-modal" id="curso-delete-modal" hidden>
+          <section class="curso-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="curso-delete-title" aria-describedby="curso-delete-description" tabindex="-1">
+            <div class="curso-delete-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div>
+            <h3 id="curso-delete-title">¿Seguro que deseas eliminar este curso?</h3>
+            <p id="curso-delete-description">Se eliminará el curso:</p>
+            <span class="curso-delete-name" id="curso-delete-name"></span>
+            <form method="post" id="curso-delete-form">
+              {% csrf_token %}
+              <div class="curso-delete-actions">
+                <button type="button" class="curso-delete-btn" id="cancelar-eliminar-curso">Cancelar</button>
+                <button type="submit" class="curso-delete-btn confirm"><i class="fa-solid fa-trash" aria-hidden="true"></i> Sí, eliminar</button>
+              </div>
+            </form>
+          </section>
+        </div>
       </div>
     </div>
 
@@ -597,6 +674,7 @@
 
       <div class="section-body">
         <div class="filtro-actions-wrapper">
+          <div class="alumnos-filter-row">
           <div class="filtro-container">
             <label for="filtroCurso" class="filtro-label">
               <i class="fa-solid fa-filter"></i>
@@ -604,11 +682,17 @@
             </label>
             <select id="filtroCurso" class="form-select filtro-select">
               <option value="">Todos los cursos</option>
-              {% for curso in cursos %}
+              <option value="sin-curso">Alumnos sin curso</option>
+              {% for curso in cursos_filtro %}
                 <option value="{{ curso.id }}">{{ curso.nombre }}</option>
               {% endfor %}
             </select>
           </div>
+
+          <label class="alumnos-search-wrap">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input id="buscarAlumno" class="form-control alumnos-search" type="search" placeholder="Buscar por nombre, documento o correo" aria-label="Buscar alumnos">
+          </label>
 
           <div class="acciones-grupo">
             <!-- BOTÓN QUE DISPARA EL MODAL DE EXCEL -->
@@ -632,10 +716,11 @@
               Editar
             </button>
           </div>
+          </div>
         </div>
 
         <!-- TABLA -->
-        {% include 'admin/cursos/partials/tabla_alumnos.html' %}
+        {% include 'admin/cursos/partials/tabla_alumnos_detallada.html' %}
       </div>
     </div>
   </div>
@@ -926,6 +1011,77 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("curso-delete-modal");
+  const form = document.getElementById("curso-delete-form");
+  const name = document.getElementById("curso-delete-name");
+  const cancel = document.getElementById("cancelar-eliminar-curso");
+  if (!modal || !form || !name || !cancel) return;
+
+  let trigger = null;
+  const closeModal = () => {
+    modal.hidden = true;
+    document.body.style.overflow = "";
+    trigger?.focus();
+  };
+
+  document.querySelectorAll(".js-confirmar-eliminar-curso").forEach((button) => {
+    button.addEventListener("click", () => {
+      trigger = button;
+      name.textContent = button.dataset.courseName || "este curso";
+      form.action = button.dataset.deleteUrl;
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      cancel.focus();
+    });
+  });
+
+  cancel.addEventListener("click", closeModal);
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) closeModal();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !modal.hidden) closeModal();
+  });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const courseFilter = document.getElementById("filtroCurso");
+  const searchInput = document.getElementById("buscarAlumno");
+  const body = document.getElementById("listaAlumnos");
+  const emptyState = document.getElementById("sinResultadosAlumnos");
+  const summary = document.getElementById("resumenAlumnos");
+  if (!body) return;
+
+  const rows = [...body.querySelectorAll("tr[data-curso]")];
+  const normalize = (value) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
+  const filterRows = () => {
+    const selectedCourse = courseFilter?.value || "";
+    const query = normalize(searchInput?.value.trim() || "");
+    let visibleCount = 0;
+
+    rows.forEach((row) => {
+      const matchesCourse = !selectedCourse || row.dataset.curso === selectedCourse;
+      const matchesSearch = !query || normalize(row.textContent).includes(query);
+      const visible = matchesCourse && matchesSearch;
+      row.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+
+    if (emptyState) emptyState.hidden = rows.length === 0 || visibleCount > 0;
+    if (summary) summary.textContent = rows.length
+      ? `Mostrando ${visibleCount} de ${rows.length} alumnos`
+      : "No hay alumnos registrados";
+  };
+
+  courseFilter?.addEventListener("change", filterRows);
+  searchInput?.addEventListener("input", filterRows);
+  filterRows();
+});
+</script>
 
 
 

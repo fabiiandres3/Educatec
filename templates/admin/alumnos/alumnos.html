@@ -1,6 +1,9 @@
 {% extends 'admin/base_admin.html' %}
 
-{% block title %}Alumnos{% endblock %}
+{% block title %}Alumnos
+
+
+{% endblock %}
 
 {% block content %}
 
@@ -465,10 +468,51 @@
         }
     }
 
+
+    .listing-page { max-width: 1480px; margin: 0 auto; padding: 18px 8px 36px !important; }
+    .listing-page .page-header { align-items: flex-end; padding: 22px 24px; margin-bottom: 18px; border: 1px solid #e5eaf2; border-radius: 18px; background: linear-gradient(125deg, #fff, #f5f7ff); box-shadow: 0 8px 24px rgba(15, 23, 42, .04); }
+    .listing-page .page-title { color: #172033; font-size: clamp(26px, 3vw, 34px); letter-spacing: -.04em; }
+    .listing-page .page-header > div:first-child { display:grid; grid-template-columns:58px 1fr; column-gap:15px; align-items:center; }
+    .listing-page .page-title { display:contents; }
+    .listing-page .page-title-icon { display:grid; place-items:center; flex:0 0 58px; width:58px; height:58px; border-radius:16px; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; font-size:24px; box-shadow:0 8px 20px rgba(37,99,235,.2); }
+    .listing-page .page-title-icon { grid-column:1; grid-row:1 / 3; }
+    .listing-page .page-title-copy { grid-column:2; grid-row:1; align-self:end; }
+    .listing-page .page-subtitle { grid-column:2; grid-row:2; align-self:start; }
+    .listing-page .page-subtitle { margin-top: 7px; color: #64748b; }
+    .listing-page .stats-card { display: none; }
+    .overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin: 0 0 18px; }
+    .overview-card { position: relative; overflow: hidden; display: flex; align-items: center; gap: 13px; min-height: 84px; padding: 15px 18px; border: 1px solid #e8edf4; border-radius: 15px; background: #fff; box-shadow: 0 6px 18px rgba(15, 23, 42, .035); }
+    .overview-card:after { content: ""; position: absolute; right: -22px; bottom: -40px; width: 100px; height: 100px; border-radius: 50%; background: var(--accent-soft); opacity: .7; }
+    .overview-icon { z-index: 1; display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border-radius: 13px; color: var(--accent); background: var(--accent-soft); font-size: 17px; }
+    .overview-copy { z-index: 1; display: grid; gap: 5px; }
+    .overview-value { color: #172033; font-size: 23px; font-weight: 750; line-height: 1; }
+    .overview-label { color: #697586; font-size: 11px; font-weight: 650; }
+    .listing-page .table-card { border: 1px solid #e7ecf3; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, .045); }
+    .listing-page .table-toolbar, .listing-page .toolbar { padding: 15px 18px; border-bottom: 1px solid #edf1f6; background: #fff; }
+    .listing-page .table-toolbar-title { color: #263247; font-weight: 700; }
+    .listing-page .search-box input { height: 43px; border-color: #e2e8f0; border-radius: 11px; background: #f8fafc; }
+    .listing-page .search-box input:focus { background: #fff; border-color: #818cf8; }
+    .listing-page table thead th { background: #f8fafc; color: #7b8798; font-size: 10px; letter-spacing: .08em; }
+    .listing-page table tbody td { padding-top: 14px; padding-bottom: 14px; }
+    .listing-page table tbody tr { transition: background .18s ease; }
+    .listing-page table tbody tr:hover { background: #fafbff; }
+    .listing-filter-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 11px 17px; border-bottom: 1px solid #edf1f6; background: #fff; }
+    .listing-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+    .listing-filter { border: 1px solid transparent; border-radius: 9px; padding: 8px 11px; color: #64748b; background: transparent; font-size: 12px; font-weight: 650; cursor: pointer; transition: .18s ease; }
+    .listing-filter:hover { color: #4338ca; background: #f5f3ff; }
+    .listing-filter.active { border-color: #e0e7ff; color: #4338ca; background: #eef2ff; }
+    .listing-count { color: #64748b; font-size: 12px; font-weight: 600; }
+    .listing-empty-filter { padding: 13px 17px; color: #64748b; background: #fff; font-size: 13px; }
+    .listing-page .btn-create { border-radius: 11px; box-shadow: 0 5px 12px rgba(79, 70, 229, .16); }
+    .listing-page .action-btn, .listing-page .btn-action { border-radius: 9px; transition: .18s ease; }
+    @media (max-width: 900px) { .overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .overview-card:last-child { grid-column: 1 / -1; } }
+    @media (max-width: 680px) { .listing-page { padding: 12px 0 28px !important; } .listing-page .page-header { align-items: flex-start; padding: 17px; } .overview-grid { gap: 8px; } .overview-card { min-height: 72px; padding: 12px; gap: 9px; } .overview-icon { flex-basis: 36px; width: 36px; height: 36px; } .overview-value { font-size: 21px; } .listing-filter-bar { align-items: flex-start; flex-direction: column; } .listing-filters { overflow-x: auto; flex-wrap: nowrap; max-width: 100%; } .listing-filter { white-space: nowrap; } }
+    @media (max-width: 420px) { .overview-grid { grid-template-columns: 1fr 1fr; } .overview-card:last-child { grid-column: 1 / -1; } }
+
 </style>
 
 
-<div class="container-fluid alumnos-page">
+<div class="container-fluid alumnos-page listing-page">
 
     <!-- ENCABEZADO -->
     <div class="page-header">
@@ -476,7 +520,8 @@
         <div>
 
             <h1 class="page-title">
-                Alumnos
+                <span class="page-title-icon"><i class="fas fa-user-graduate" aria-hidden="true"></i></span>
+                <span class="page-title-copy">Alumnos</span>
             </h1>
 
             <p class="page-subtitle">
@@ -515,6 +560,18 @@
 
     </div>
 
+
+    <section class="overview-grid" aria-label="Resumen de alumnos">
+        <article class="overview-card" style="--accent:#4f46e5;--accent-soft:#eef2ff"><span class="overview-icon"><i class="fas fa-user-graduate"></i></span><span class="overview-copy"><strong class="overview-value">{{ alumnos|length }}</strong><span class="overview-label">Alumnos registrados</span></span></article>
+        <article class="overview-card" style="--accent:#16a34a;--accent-soft:#dcfce7"><span class="overview-icon"><i class="fas fa-book-open"></i></span><span class="overview-copy"><strong class="overview-value">{{ alumnos_con_curso }}</strong><span class="overview-label">Con curso asignado</span></span></article>
+        <article class="overview-card" style="--accent:#d97706;--accent-soft:#fef3c7"><span class="overview-icon"><i class="fas fa-inbox"></i></span><span class="overview-copy"><strong class="overview-value">{{ alumnos_sin_curso }}</strong><span class="overview-label">Sin curso asignado</span></span></article>
+    </section>
+
+    <div class="listing-filter-bar"><div class="listing-filters" role="group" aria-label="Filtrar alumnos">
+        <button type="button" class="listing-filter active" data-list-filter="all">Todos</button>
+        <button type="button" class="listing-filter" data-list-filter="assigned">Con curso</button>
+        <button type="button" class="listing-filter" data-list-filter="unassigned">Sin curso</button>
+    </div><span class="listing-count" data-list-count></span></div>
 
     <!-- TABLA -->
     <div class="table-card">
@@ -580,7 +637,7 @@
 
                     {% for alumno in alumnos %}
 
-                    <tr class="alumno-row">
+                    <tr class="alumno-row" data-listing-status="{% if alumno.curso %}assigned{% else %}unassigned{% endif %}">
 
 
                         <!-- ID -->
@@ -997,4 +1054,33 @@ function cerrarModalEliminar() {
 
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const root = document.querySelector(".listing-page");
+    if (!root) return;
+    const rows = Array.from(root.querySelectorAll("[data-listing-status]"));
+    const buttons = root.querySelectorAll("[data-list-filter]");
+    const input = root.querySelector("input[id^='search']");
+    const count = root.querySelector("[data-list-count]");
+    let filter = "all";
+    function refreshList() {
+        const query = input ? input.value.toLocaleLowerCase().trim() : "";
+        let visible = 0;
+        rows.forEach(row => {
+            const matchesFilter = filter === "all" || row.dataset.listingStatus === filter;
+            const matchesText = !query || row.textContent.toLocaleLowerCase().includes(query);
+            row.style.display = matchesFilter && matchesText ? "" : "none";
+            if (matchesFilter && matchesText) visible++;
+        });
+        if (count) count.textContent = visible + (visible === 1 ? " resultado" : " resultados");
+    }
+    buttons.forEach(button => button.addEventListener("click", function () {
+        filter = this.dataset.listFilter;
+        buttons.forEach(item => item.classList.toggle("active", item === this));
+        refreshList();
+    }));
+    if (input) input.addEventListener("input", refreshList);
+    refreshList();
+});
+</script>
 {% endblock %}

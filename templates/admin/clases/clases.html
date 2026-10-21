@@ -461,227 +461,143 @@
         }
     }
 
+    .clases-page { max-width: 1480px; margin: 0 auto; padding: 18px 8px 36px; }
+    .clases-page .page-header { align-items: center; margin-bottom: 24px; padding: 22px 24px; border: 1px solid #e2e8f0; border-radius: 20px; background: linear-gradient(130deg, #f8fbff, #eef2ff); box-shadow: 0 8px 24px rgba(30, 64, 175, .06); }
+    .clases-page .page-header > div:first-child { display:grid; grid-template-columns:58px 1fr; column-gap:15px; align-items:center; }
+    .page-title { display:contents; font-size: clamp(26px, 3vw, 34px); letter-spacing: -.04em; }
+    .page-title-icon { display:grid; place-items:center; grid-column:1; grid-row:1 / 3; width:58px; height:58px; border-radius:16px; background:linear-gradient(135deg,#6366f1,#4338ca); color:#fff; font-size:24px; box-shadow:0 8px 20px rgba(67,56,202,.2); }
+    .page-title-copy { grid-column:2; grid-row:1; align-self:end; }
+    .page-subtitle { grid-column:2; grid-row:2; align-self:start; }
+    .page-subtitle { margin-top: 8px; font-size: 14px; }
+    .overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0 0 22px; }
+    .overview-card { position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px; min-height: 94px; padding: 18px 20px; border: 1px solid #e8edf4; border-radius: 16px; background: #fff; box-shadow: 0 6px 18px rgba(15, 23, 42, .035); }
+    .overview-card:after { content: ""; position: absolute; right: -18px; bottom: -35px; width: 100px; height: 100px; border-radius: 50%; background: var(--accent-soft); opacity: .7; }
+    .overview-icon { z-index: 1; display: grid; place-items: center; flex: 0 0 46px; width: 46px; height: 46px; border-radius: 14px; color: var(--accent); background: var(--accent-soft); font-size: 18px; }
+    .overview-card-copy { z-index: 1; display: grid; gap: 5px; }
+    .overview-value { color: #172033; font-size: 25px; font-weight: 750; line-height: 1; }
+    .overview-label { color: #697586; font-size: 12px; font-weight: 600; }
+    .toolbar { align-items: center; margin: 0; padding: 16px 18px; border: 1px solid #e8edf4; border-bottom: 0; border-radius: 16px 16px 0 0; background: #fff; }
+    .toolbar-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; flex: 1; }
+    .search-box { width: min(340px, 100%); }
+    .search-box input { height: 44px; border-color: #e2e8f0; background: #f8fafc; }
+    .search-box input:focus { background: #fff; }
+    .class-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .class-filter { border: 1px solid transparent; border-radius: 9px; padding: 9px 11px; color: #64748b; background: transparent; font-size: 12px; font-weight: 650; cursor: pointer; transition: .18s ease; }
+    .class-filter:hover { color: #4338ca; background: #f5f3ff; }
+    .class-filter.active { border-color: #e0e7ff; color: #4338ca; background: #eef2ff; }
+    .btn-create { height: 44px; border-radius: 11px; box-shadow: 0 5px 12px rgba(79, 70, 229, .18); }
+    .table-card { border-color: #e8edf4; border-radius: 0 0 16px 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, .04); }
+    .clases-table thead th { padding: 14px 18px; background: #f8fafc; color: #7b8798; font-size: 10px; letter-spacing: .08em; }
+    .clases-table tbody td { padding: 15px 18px; }
+    .clases-table tbody tr { transition: background .18s ease; }
+    .clases-table tbody tr:hover { background: #fafbff; }
+    .class-info { gap: 12px; }
+    .class-icon { width: 42px; height: 42px; border-radius: 13px; background: linear-gradient(145deg, #eef2ff, #e0e7ff); color: #4f46e5; }
+    .class-name { display: block; color: #1e293b; font-size: 14px; font-weight: 700; }
+    .class-id { display: block; margin-top: 3px; color: #94a3b8; font-size: 11px; font-weight: 550; }
+    .course-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .course-badge { padding: 6px 9px; border: 1px solid #d1fae5; border-radius: 999px; background: #f0fdf4; color: #15803d; font-size: 11px; font-weight: 650; }
+    .course-empty { display: inline-flex; align-items: center; gap: 7px; padding: 6px 9px; border: 1px solid #e2e8f0; border-radius: 999px; background: #f8fafc; color: #64748b; font-size: 11px; font-weight: 600; }
+    .actions { justify-content: flex-end; gap: 7px; }
+    .action-btn { min-height: 34px; padding: 0 10px; border-radius: 9px; }
+    .btn-edit { border-color: #e0e7ff; background: #f5f3ff; color: #4f46e5; }
+    .btn-edit:hover { border-color: #c7d2fe; background: #eef2ff; color: #3730a3; transform: translateY(-1px); }
+    .btn-delete:hover { transform: translateY(-1px); }
+    .list-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; border-top: 1px solid #eef2f7; color: #64748b; background: #fff; font-size: 12px; }
+    .empty-state { padding: 58px 20px !important; }
+    .empty-icon { background: #eef2ff; color: #6366f1; }
+    .empty-title { color: #1e293b; font-size: 17px; }
+    .empty-text { color: #64748b; line-height: 1.6; }
+    @media (max-width: 900px) { .overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .overview-card:last-child { grid-column: 1 / -1; } }
+    @media (max-width: 768px) { .clases-page { padding: 12px 0 28px; } .page-header { align-items: flex-start; } .overview-grid { gap: 9px; } .overview-card { min-height: 78px; padding: 13px; gap: 10px; } .overview-icon { flex-basis: 38px; width: 38px; height: 38px; } .toolbar { align-items: stretch; padding: 13px; } .toolbar-controls { align-items: stretch; flex-direction: column; } .search-box { width: 100%; } .class-filters { overflow-x: auto; flex-wrap: nowrap; } .class-filter { white-space: nowrap; } .actions { flex-direction: row; } .action-btn { width: auto; } .list-footer { align-items: flex-start; flex-direction: column; } }
+    @media (max-width: 480px) { .overview-grid { grid-template-columns: 1fr 1fr; } .overview-card:last-child { grid-column: 1 / -1; } .overview-value { font-size: 22px; } .clases-table thead th, .clases-table tbody td { padding: 11px 10px; } .actions .action-btn { width: 36px; min-width: 36px; padding: 0; font-size: 0; } .actions .action-btn i { font-size: 13px; } }
+
 </style>
 
 <div class="container-fluid clases-page">
-
-    <!-- ENCABEZADO -->
     <div class="page-header">
-
         <div>
-            <h1 class="page-title">
-                Clases
-            </h1>
-
-            <p class="page-subtitle">
-                Gestiona las clases disponibles en la plataforma.
-            </p>
+            <h1 class="page-title"><span class="page-title-icon"><i class="fas fa-chalkboard" aria-hidden="true"></i></span><span class="page-title-copy">Clases</span></h1>
+            <p class="page-subtitle">Organiza las clases y revisa en qu&eacute; cursos est&aacute; cada una.</p>
         </div>
-
-        <!-- CONTADOR -->
-        <div class="stats-card">
-
-            <div class="stats-icon">
-                <i class="fas fa-chalkboard"></i>
-            </div>
-
-            <div>
-
-                <div class="stats-number">
-                    {{ clases|length }}
-                </div>
-
-                <div class="stats-label">
-                    Clases registradas
-                </div>
-
-            </div>
-
-        </div>
-
+        <a href="{% url 'crear_clase' %}" class="btn-create"><i class="fas fa-plus"></i> Nueva clase</a>
     </div>
 
+    <section class="overview-grid" aria-label="Resumen de clases">
+        <article class="overview-card" style="--accent:#4f46e5;--accent-soft:#eef2ff">
+            <span class="overview-icon"><i class="fas fa-chalkboard"></i></span>
+            <span class="overview-card-copy"><strong class="overview-value">{{ clases|length }}</strong><span class="overview-label">Clases registradas</span></span>
+        </article>
+        <article class="overview-card" style="--accent:#16a34a;--accent-soft:#dcfce7">
+            <span class="overview-icon"><i class="fas fa-link"></i></span>
+            <span class="overview-card-copy"><strong class="overview-value">{{ clases_con_curso }}</strong><span class="overview-label">Con curso asignado</span></span>
+        </article>
+        <article class="overview-card" style="--accent:#d97706;--accent-soft:#fef3c7">
+            <span class="overview-icon"><i class="fas fa-inbox"></i></span>
+            <span class="overview-card-copy"><strong class="overview-value">{{ clases_sin_curso }}</strong><span class="overview-label">Sin curso asignado</span></span>
+        </article>
+    </section>
 
-    <!-- TOOLBAR -->
     <div class="toolbar">
-
-        <div class="search-box">
-
-            <i class="fas fa-search search-icon"></i>
-
-            <input
-                type="text"
-                id="searchClase"
-                placeholder="Buscar clase o curso..."
-                autocomplete="off"
-            >
-
+        <div class="toolbar-controls">
+            <label class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="search" id="searchClase" placeholder="Buscar clase o curso..." autocomplete="off" aria-label="Buscar clase o curso">
+            </label>
+            <div class="class-filters" role="group" aria-label="Filtrar clases">
+                <button type="button" class="class-filter active" data-filter="all">Todas <span>{{ clases|length }}</span></button>
+                <button type="button" class="class-filter" data-filter="assigned">Con curso</button>
+                <button type="button" class="class-filter" data-filter="unassigned">Sin curso</button>
+            </div>
         </div>
-
-
-        <a
-            href="{% url 'crear_clase' %}"
-            class="btn-create"
-        >
-
-            <i class="fas fa-plus"></i>
-            Crear clase
-
-        </a>
-
     </div>
 
-
-    <!-- TABLA -->
     <div class="table-card">
-
         <div class="table-responsive">
-
             <table class="clases-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>ID</th>
-                        <th>Clase</th>
-                        <th>Curso</th>
-                        <th>Acciones</th>
-
-                    </tr>
-
-                </thead>
-
-
+                <thead><tr><th>Clase</th><th>Cursos asignados</th><th style="text-align:right">Acciones</th></tr></thead>
                 <tbody>
-
                     {% for clase in clases %}
-
-                    <tr class="clase-row">
-
-                        <!-- ID -->
+                    <tr class="clase-row" data-course-status="{% if clase.cursos.exists %}assigned{% else %}unassigned{% endif %}">
                         <td>
-
-                            <span class="class-id">
-                                #{{ clase.id }}
-                            </span>
-
-                        </td>
-
-
-                        <!-- NOMBRE -->
-                        <td>
-
                             <div class="class-info">
-
-                                <div class="class-icon">
-                                    <i class="fas fa-book"></i>
-                                </div>
-
-                                <span class="class-name">
-                                    {{ clase.titulo }}
-                                </span>
-
+                                <div class="class-icon"><i class="fas fa-book-open"></i></div>
+                                <div><span class="class-name">{{ clase.titulo }}</span><span class="class-id">C&oacute;digo #{{ clase.id }}</span></div>
                             </div>
-
                         </td>
-
-
-                        <!-- CURSO -->
                         <td>
-
-                            {% if clase.curso %}
-
-                                <span class="course-badge">
-
-                                    <i class="fas fa-graduation-cap"></i>
-
-                                    {{ clase.curso }}
-
-                                </span>
-
+                            {% if clase.cursos.exists %}
+                            <div class="course-list">
+                                {% for curso in clase.cursos.all %}<span class="course-badge"><i class="fas fa-graduation-cap"></i> {{ curso.nombre }}</span>{% endfor %}
+                            </div>
                             {% else %}
-
-                                <span class="text-muted">
-                                    Sin curso
-                                </span>
-
+                            <span class="course-empty"><i class="fas fa-minus-circle"></i> A&uacute;n sin curso</span>
                             {% endif %}
-
                         </td>
-
-
-                        <!-- ACCIONES -->
                         <td>
-
                             <div class="actions">
-
-                                <a
-                                    href="{% url 'editar_clase' clase.id %}"
-                                    class="action-btn btn-edit"
-                                    title="Editar clase"
-                                >
-
-                                    <i class="fas fa-edit"></i>
-                                    Editar
-
-                                </a>
-
-
-                                <button
-                                    type="button"
-                                    class="action-btn btn-delete"
-                                    title="Eliminar clase"
-                                    onclick="abrirModalEliminarClase(
-                                        '{{ clase.id }}',
-                                        '{{ clase.titulo|escapejs }}'
-                                    )"
-                                >
-
-                                    <i class="fas fa-trash-alt"></i>
-                                    Eliminar
-
-                                </button>
-
+                                <a href="{% url 'editar_clase' clase.id %}" class="action-btn btn-edit" title="Editar clase"><i class="fas fa-pen"></i> Editar</a>
+                                <button type="button" class="action-btn btn-delete" title="Eliminar clase" onclick="abrirModalEliminarClase('{{ clase.id }}','{{ clase.titulo|escapejs }}')"><i class="fas fa-trash-alt"></i> Eliminar</button>
                             </div>
-
                         </td>
-
                     </tr>
-
-
                     {% empty %}
-
-                    <tr>
-
-                        <td colspan="4" class="empty-state">
-
-                            <div class="empty-icon">
-                                <i class="fas fa-chalkboard"></i>
-                            </div>
-
-                            <div class="empty-title">
-                                No hay clases disponibles
-                            </div>
-
-                            <div class="empty-text">
-                                Cuando se creen clases aparecerán aquí.
-                            </div>
-
-                        </td>
-
-                    </tr>
-
+                    <tr><td colspan="3" class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-chalkboard"></i></div>
+                        <div class="empty-title">Todav&iacute;a no hay clases</div>
+                        <div class="empty-text">Crea la primera clase para empezar a organizar los cursos.</div>
+                    </td></tr>
                     {% endfor %}
-
+                    <tr id="noResults" hidden><td colspan="3" class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-search"></i></div>
+                        <div class="empty-title">No encontramos clases</div>
+                        <div class="empty-text">Prueba con otro nombre o cambia el filtro.</div>
+                    </td></tr>
                 </tbody>
-
             </table>
-
         </div>
-
+        <div class="list-footer"><span id="visibleClasses">{{ clases|length }} clases visibles</span><span>Haz clic en editar para actualizar sus cursos.</span></div>
     </div>
-
 </div>
 
 
@@ -748,32 +664,35 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    /* BUSCADOR */
     const searchInput = document.getElementById("searchClase");
-    const rows = document.querySelectorAll(".clase-row");
+    const rows = Array.from(document.querySelectorAll(".clase-row"));
+    const filterButtons = document.querySelectorAll(".class-filter");
+    const noResults = document.getElementById("noResults");
+    const visibleLabel = document.getElementById("visibleClasses");
+    let activeFilter = "all";
 
-    if (searchInput) {
-
-        searchInput.addEventListener("input", function () {
-
-            const search = this.value
-                .toLowerCase()
-                .trim();
-
-            rows.forEach(function (row) {
-
-                const content = row.textContent.toLowerCase();
-
-                row.style.display = content.includes(search)
-                    ? ""
-                    : "none";
-
-            });
-
+    function filtrarClases() {
+        const search = searchInput ? searchInput.value.toLocaleLowerCase().trim() : "";
+        let visibles = 0;
+        rows.forEach(function (row) {
+            const coincideTexto = row.textContent.toLocaleLowerCase().includes(search);
+            const coincideFiltro = activeFilter === "all" || row.dataset.courseStatus === activeFilter;
+            const mostrar = coincideTexto && coincideFiltro;
+            row.hidden = !mostrar;
+            if (mostrar) visibles += 1;
         });
-
+        if (noResults) noResults.hidden = visibles > 0 || rows.length === 0;
+        if (visibleLabel) visibleLabel.textContent = visibles + (visibles === 1 ? " clase visible" : " clases visibles");
     }
 
+    if (searchInput) searchInput.addEventListener("input", filtrarClases);
+    filterButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            activeFilter = this.dataset.filter;
+            filterButtons.forEach(item => item.classList.toggle("active", item === this));
+            filtrarClases();
+        });
+    });
 
     /* CERRAR MODAL AL HACER CLICK FUERA */
     const modal = document.getElementById("modalEliminarClase");

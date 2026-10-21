@@ -121,7 +121,7 @@ def dashboard_docente(request):
 
         # Buscar las clases del curso asignado
         clases = Clases.objects.filter(
-            curso=asignacion.curso
+            cursos=asignacion.curso
         )
 
         for clase in clases:
@@ -308,7 +308,7 @@ def calificaciones_docente(request):
     # AsignacionDocente ya no tiene "clase".
     # Para obtener tareas se consultan las clases pertenecientes al curso.
     clases_actuales = (
-        Clases.objects.filter(curso=curso_actual)
+        Clases.objects.filter(cursos=curso_actual)
         if curso_actual
         else Clases.objects.none()
     )

@@ -51,6 +51,7 @@ def administrar_acudientes(request):
         "relaciones": relaciones,
         "relacion_form": relacion_form,
         "puede_relacionar": acudientes.exists() and Alumnos.objects.exists(),
+        "acudientes_activos": acudientes.filter(is_active=True).count(),
     })
 
 
@@ -66,9 +67,14 @@ def eliminar_relacion_acudiente(request, relacion_id):
 
 
 def Listar_alumnos(request):
-    alumnos = Usuario.objects.filter(rol__nombre='alumno')
-
-    return render(request, 'admin/alumnos/alumnos.html', {'alumnos':alumnos})
+    alumnos = Usuario.objects.filter(rol__nombre='alumno').select_related(
+        "rol", "alumno__curso"
+    )
+    return render(request, 'admin/alumnos/alumnos.html', {
+        "alumnos": alumnos,
+        "alumnos_con_curso": alumnos.filter(alumno__curso__isnull=False).count(),
+        "alumnos_sin_curso": alumnos.filter(alumno__curso__isnull=True).count(),
+    })
 
 
 def Editar_alumno(request, alumno_id):
@@ -79,13 +85,18 @@ def Editar_alumno(request, alumno_id):
     )
 
     usuario = alumno.usuario
+    datos_iniciales = {
+        "fecha_nacimiento": usuario.fecha_nacimiento or alumno.fecha_nacimiento,
+        "telefono": usuario.telefono or alumno.telefono,
+        "direccion": usuario.direccion or alumno.direccion,
+    }
 
     if request.method == "POST":
 
         usuario_form = EditarUsuarioForm(
             request.POST,
             instance=usuario,
-            initial={"fecha_nacimiento": usuario.fecha_nacimiento or alumno.fecha_nacimiento},
+            initial=datos_iniciales,
         )
 
         alumno_form = AlumnoForm(
@@ -126,7 +137,9 @@ def Editar_alumno(request, alumno_id):
             usuario_actualizado = usuario_form.save()
             alumno_form.save()
             alumno.fecha_nacimiento = usuario_actualizado.fecha_nacimiento
-            alumno.save(update_fields=["fecha_nacimiento"])
+            alumno.telefono = usuario_actualizado.telefono
+            alumno.direccion = usuario_actualizado.direccion
+            alumno.save(update_fields=["fecha_nacimiento", "telefono", "direccion"])
 
             messages.success(
                 request,
@@ -139,7 +152,7 @@ def Editar_alumno(request, alumno_id):
 
         usuario_form = EditarUsuarioForm(
             instance=usuario,
-            initial={"fecha_nacimiento": usuario.fecha_nacimiento or alumno.fecha_nacimiento},
+            initial=datos_iniciales,
         )
 
         alumno_form = AlumnoForm(

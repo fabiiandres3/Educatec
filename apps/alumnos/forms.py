@@ -4,9 +4,18 @@ from apps.user.models import Usuario
 
 
 class AlumnoForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["curso"].empty_label = "Seleccione un curso"
+
     class Meta:
         model = Alumnos
-        exclude = ["usuario", "fecha_nacimiento"]
+        exclude = ["usuario", "fecha_nacimiento", "telefono", "direccion", "clase"]
+        labels = {
+            "curso": "Curso",
+            "fecha_ingreso": "Fecha de ingreso",
+            "activo": "Estado activo",
+        }
         widgets = {
             "fecha_nacimiento": forms.DateInput(attrs={
                 "type": "date",
@@ -48,7 +57,7 @@ class AlumnoForm(forms.ModelForm):
 
 
 class CrearAcudienteForm(forms.Form):
-    documento = forms.CharField(
+    username = forms.CharField(
         label="Documento de identidad",
         max_length=30,
         widget=forms.TextInput(attrs={"class": "form-control"}),
@@ -84,13 +93,13 @@ class CrearAcudienteForm(forms.Form):
         widget=forms.PasswordInput(attrs={"class": "form-control"}),
     )
 
-    def clean_documento(self):
-        documento = self.cleaned_data["documento"].strip()
-        if Usuario.objects.filter(documento__iexact=documento).exists() or Usuario.objects.filter(
-            username__iexact=documento
+    def clean_username(self):
+        username = self.cleaned_data["username"].strip()
+        if Usuario.objects.filter(documento__iexact=username).exists() or Usuario.objects.filter(
+            username__iexact=username
         ).exists():
             raise forms.ValidationError("Ya existe un usuario con ese documento.")
-        return documento
+        return username
 
     def clean_email(self):
         email = self.cleaned_data["email"].strip().lower()

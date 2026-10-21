@@ -1,0 +1,40 @@
+/* Keep the app navigation persistent and animate page content separately. */
+@view-transition { navigation: auto; }
+
+.sidebar { view-transition-name: educatec-navigation; }
+
+::view-transition-group(educatec-navigation) { animation: none; z-index: 10; }
+::view-transition-old(educatec-navigation),
+::view-transition-new(educatec-navigation) { animation: none; }
+
+::view-transition-old(root) {
+    animation: educatec-content-out 180ms cubic-bezier(.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+    animation: educatec-content-in 260ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@keyframes educatec-content-out {
+    to { opacity: .72; transform: translateX(-12px); }
+}
+@keyframes educatec-content-in {
+    from { opacity: .72; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Fallback for browsers without cross-document View Transitions. */
+html.page-transition-fallback .main-content,
+html.page-transition-fallback main.content,
+html.page-transition-fallback main.portal-content,
+html.page-transition-fallback main {
+    animation: educatec-content-in 260ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root),
+    html.page-transition-fallback .main-content,
+    html.page-transition-fallback main.content,
+    html.page-transition-fallback main.portal-content,
+    html.page-transition-fallback main { animation: none; }
+}

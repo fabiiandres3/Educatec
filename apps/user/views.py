@@ -241,7 +241,7 @@ def Registrar_usuario(request):
             # Obtener datos del formulario
             # -------------------------------------------------
 
-            documento = form.cleaned_data["documento"]
+            username = form.cleaned_data["username"]
 
             email = form.cleaned_data["email"]
 
@@ -270,7 +270,7 @@ def Registrar_usuario(request):
 
             usuario = form.save(commit=False)
 
-            usuario.username = documento
+            usuario.username = username
 
             usuario.email = email
 
@@ -603,7 +603,11 @@ def Listar_usuarios(request):
 
     usuarios = Usuario.objects.filter(rol__nombre__iexact="usuario").select_related("rol")
 
-    return render(request, "admin/usuarios/usuarios.html", {"usuarios": usuarios})
+    return render(request, "admin/usuarios/usuarios.html", {
+        "usuarios": usuarios,
+        "usuarios_activos": usuarios.filter(is_active=True).count(),
+        "usuarios_inactivos": usuarios.filter(is_active=False).count(),
+    })
 
 
 # =========================================================

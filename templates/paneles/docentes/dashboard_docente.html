@@ -447,7 +447,7 @@
                 type="button"
                 class="grado {% if forloop.first %}active{% endif %}"
             >
-                {{ a.clase.curso.nombre }} — {{ a.clase.titulo }}
+                {{ a.curso.nombre }} — {{ a.clase.titulo }}
             </button>
 
         {% empty %}
@@ -855,7 +855,7 @@
 
                         <i class="fa-solid fa-book"></i>
 
-                        {{ a.clase.titulo }} ({{ a.clase.curso.nombre }})
+                        {{ a.clase.titulo }} ({{ a.curso.nombre }})
 
                     </li>
 

@@ -5,20 +5,26 @@ from apps.user.models import Usuario
 
 
 class CuentaPerfilForm(forms.ModelForm):
+    def clean_username(self):
+        username = self.cleaned_data["username"].strip()
+        if Usuario.objects.filter(documento__iexact=username).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Este documento ya está asociado con otra cuenta.")
+        return username
+
     class Meta:
         model = Usuario
         fields = (
-            "first_name", "last_name", "fecha_nacimiento", "documento",
+            "username", "first_name", "last_name", "fecha_nacimiento",
             "email", "telefono", "direccion",
         )
         widgets = {
             "first_name": forms.TextInput(attrs={"autocomplete": "given-name"}),
             "last_name": forms.TextInput(attrs={"autocomplete": "family-name"}),
-            "fecha_nacimiento": forms.DateInput(attrs={
+            "fecha_nacimiento": forms.DateInput(format="%Y-%m-%d", attrs={
                 "type": "date",
                 "autocomplete": "bday",
             }),
-            "documento": forms.TextInput(attrs={"autocomplete": "off"}),
+            "username": forms.TextInput(attrs={"autocomplete": "off"}),
             "email": forms.EmailInput(attrs={"autocomplete": "email"}),
             "telefono": forms.TextInput(attrs={"autocomplete": "tel"}),
             "direccion": forms.TextInput(attrs={"autocomplete": "street-address"}),
@@ -31,10 +37,10 @@ class CuentaPerfilForm(forms.ModelForm):
         self.fields["first_name"].label = "Nombres"
         self.fields["last_name"].label = "Apellidos"
         self.fields["fecha_nacimiento"].label = "Fecha de nacimiento"
-        self.fields["documento"].label = "Número de documento"
-        self.fields["email"].label = "Correo electrónico"
-        self.fields["telefono"].label = "Teléfono"
-        self.fields["direccion"].label = "Dirección"
+        self.fields["username"].label = "Documento de identidad"
+        self.fields["email"].label = "Correo electrÃ³nico"
+        self.fields["telefono"].label = "TelÃ©fono"
+        self.fields["direccion"].label = "DirecciÃ³n"
 
     def clean_fecha_nacimiento(self):
         if self.add_prefix("fecha_nacimiento") not in self.data:

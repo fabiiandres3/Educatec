@@ -13,7 +13,7 @@ class RegistrarForm(forms.ModelForm):
     fecha_nacimiento = forms.DateField(
         label="Fecha de nacimiento",
         required=True,
-        widget=forms.DateInput(attrs={
+        widget=forms.DateInput(format="%Y-%m-%d", attrs={
             "class": "form-control",
             "type": "date",
             "autocomplete": "bday",
@@ -26,7 +26,7 @@ class RegistrarForm(forms.ModelForm):
             raise forms.ValidationError("La fecha de nacimiento debe ser anterior a hoy.")
         return fecha
 
-    documento = forms.CharField(
+    username = forms.CharField(
         label="Documento de identidad",
         max_length=30,
         required=True,
@@ -37,41 +37,41 @@ class RegistrarForm(forms.ModelForm):
     )
 
     direccion = forms.CharField(
-        label="Dirección",
+        label="DirecciÃ³n",
         max_length=255,
         required=True,
         widget=forms.TextInput(attrs={
             "class": "form-control",
-            "placeholder": "Ingrese su dirección",
+            "placeholder": "Ingrese su direcciÃ³n",
         }),
     )
 
     telefono = forms.CharField(
-        label="Número de teléfono",
+        label="NÃºmero de telÃ©fono",
         max_length=30,
         required=True,
         widget=forms.TextInput(attrs={
             "class": "form-control",
-            "placeholder": "Ingrese su número de teléfono",
+            "placeholder": "Ingrese su nÃºmero de telÃ©fono",
         }),
     )
 
     password = forms.CharField(
-        label="Contraseña",
+        label="ContraseÃ±a",
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Ingrese su contraseña"
+                "placeholder": "Ingrese su contraseÃ±a"
             }
         )
     )
 
     password2 = forms.CharField(
-        label="Confirmar contraseña",
+        label="Confirmar contraseÃ±a",
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Confirme su contraseña"
+                "placeholder": "Confirme su contraseÃ±a"
             }
         )
     )
@@ -81,7 +81,7 @@ class RegistrarForm(forms.ModelForm):
         model = Usuario
 
         fields = [
-            "documento",
+            "username",
             "first_name",
             "last_name",
             "fecha_nacimiento",
@@ -92,7 +92,7 @@ class RegistrarForm(forms.ModelForm):
 
         widgets = {
 
-            "documento": forms.TextInput(
+            "username": forms.TextInput(
                 attrs={
                     "class": "form-control",
                     "placeholder": "Ingrese su documento de identidad"
@@ -113,8 +113,7 @@ class RegistrarForm(forms.ModelForm):
                 }
             ),
 
-            "fecha_nacimiento": forms.DateInput(
-                attrs={
+            "fecha_nacimiento": forms.DateInput(format="%Y-%m-%d", attrs={
                     "class": "form-control",
                     "type": "date",
                     "autocomplete": "bday",
@@ -124,17 +123,17 @@ class RegistrarForm(forms.ModelForm):
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ingrese su correo electrónico",
+                    "placeholder": "Ingrese su correo electrÃ³nico",
                     "required": True
                 }
             ),
 
             "direccion": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Ingrese su dirección"}
+                attrs={"class": "form-control", "placeholder": "Ingrese su direcciÃ³n"}
             ),
 
             "telefono": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Ingrese su número de teléfono"}
+                attrs={"class": "form-control", "placeholder": "Ingrese su nÃºmero de telÃ©fono"}
             ),
         }
 
@@ -150,7 +149,7 @@ class RegistrarForm(forms.ModelForm):
         if not email:
 
             raise forms.ValidationError(
-                "El correo electrónico es obligatorio."
+                "El correo electrÃ³nico es obligatorio."
             )
 
         email = email.lower().strip()
@@ -160,7 +159,7 @@ class RegistrarForm(forms.ModelForm):
         ).exists():
 
             raise forms.ValidationError(
-                "Este correo electrónico ya está registrado."
+                "Este correo electrÃ³nico ya estÃ¡ registrado."
             )
 
         return email
@@ -170,31 +169,34 @@ class RegistrarForm(forms.ModelForm):
     # VALIDAR USUARIO
     # =====================================================
 
-    def clean_documento(self):
+    def clean_username(self):
 
-        documento = self.cleaned_data.get("documento")
+        username = self.cleaned_data.get("username")
 
-        if not documento:
+        if not username:
 
             raise forms.ValidationError(
                 "El documento de identidad es obligatorio."
             )
 
-        documento = documento.strip()
+        username = username.strip()
 
         if Usuario.objects.filter(
-            documento__iexact=documento
+            documento__iexact=username
         ).exists():
 
+            if self.instance.pk and self.instance.documento == username:
+                return username
+
             raise forms.ValidationError(
-                "Este documento ya está registrado."
+                "Este documento ya estÃ¡ registrado."
             )
 
-        return documento
+        return username
 
 
     # =====================================================
-    # VALIDAR CONTRASEÑAS
+    # VALIDAR CONTRASEÃ‘AS
     # =====================================================
 
     def clean(self):
@@ -211,7 +213,7 @@ class RegistrarForm(forms.ModelForm):
 
                 self.add_error(
                     "password2",
-                    "Las contraseñas no coinciden."
+                    "Las contraseÃ±as no coinciden."
                 )
 
         return cleaned_data
@@ -234,11 +236,11 @@ class LoginForm(forms.Form):
     )
 
     password = forms.CharField(
-        label="Contraseña",
+        label="ContraseÃ±a",
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Contraseña"
+                "placeholder": "ContraseÃ±a"
             }
         )
     )
@@ -249,6 +251,12 @@ class LoginForm(forms.Form):
 # =========================================================
 
 class EditarUsuarioForm(forms.ModelForm):
+
+    def clean_username(self):
+        username = self.cleaned_data["username"].strip()
+        if Usuario.objects.filter(documento__iexact=username).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Este documento ya está asociado con otra cuenta.")
+        return username
 
     def clean_fecha_nacimiento(self):
         if self.add_prefix("fecha_nacimiento") not in self.data:
@@ -269,8 +277,21 @@ class EditarUsuarioForm(forms.ModelForm):
             "last_name",
             "fecha_nacimiento",
             "email",
+            "telefono",
+            "direccion",
             "rol",
         ]
+
+        labels = {
+            "username": "Documento de identidad",
+            "first_name": "Nombres",
+            "last_name": "Apellidos",
+            "fecha_nacimiento": "Fecha de nacimiento",
+            "email": "Correo electrónico",
+            "telefono": "Teléfono",
+            "direccion": "Dirección",
+            "rol": "Rol",
+        }
 
         widgets = {
 
@@ -292,8 +313,10 @@ class EditarUsuarioForm(forms.ModelForm):
                 }
             ),
 
-            "fecha_nacimiento": forms.DateInput(
-                attrs={"class": "form-control", "type": "date", "autocomplete": "bday"}
+            "telefono": forms.TextInput(attrs={"class": "form-control"}),
+            "direccion": forms.TextInput(attrs={"class": "form-control"}),
+
+            "fecha_nacimiento": forms.DateInput(format="%Y-%m-%d", attrs={"class": "form-control", "type": "date", "autocomplete": "bday"}
             ),
 
             "email": forms.EmailInput(

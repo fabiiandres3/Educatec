@@ -64,6 +64,15 @@ class Usuario(AbstractUser):
         verbose_name="fecha de nacimiento",
     )
 
+    def save(self, *args, **kwargs):
+        # username es el identificador de inicio de sesión y también el
+        # documento de identidad que consulta el resto del sistema.
+        self.documento = self.username
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None:
+            kwargs["update_fields"] = set(update_fields) | {"documento"}
+        super().save(*args, **kwargs)
+
     @property
     def edad(self):
         if not self.fecha_nacimiento:

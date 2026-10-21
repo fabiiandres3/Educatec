@@ -99,7 +99,7 @@
   <h4>Grados Asignados</h4><br>
   <div class="grados">
     {% for a in asignaciones %}
-      <span class="grado">{{ a.clase.curso.nombre }} — {{ a.clase.titulo }}</span>
+      <span class="grado">{{ a.curso.nombre }} — {{ a.clase.titulo }}</span>
     {% empty %}
       <p style="color:#6b7280;">No hay grados asignados.</p>
     {% endfor %}

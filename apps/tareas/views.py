@@ -30,13 +30,17 @@ from apps.docentes.models import Docente
 
 def Listar_tareas(request):
 
-    tareas = Tareas.objects.all()
+    tareas = Tareas.objects.select_related(
+        "clase", "curso", "docente__usuario"
+    ).all()
 
     return render(
         request,
         "admin/tareas/tareas.html",
         {
-            "tareas": tareas
+            "tareas": tareas,
+            "tareas_activas": tareas.filter(activa=True).count(),
+            "tareas_inactivas": tareas.filter(activa=False).count(),
         }
     )
 

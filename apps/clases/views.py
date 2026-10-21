@@ -6,8 +6,14 @@ from .models import Clases
 
 
 def Listar_Clases(request):
-    clases = Clases.objects.all()
-    return render(request, "admin/clases/clases.html", {"clases": clases})
+    clases = Clases.objects.prefetch_related("cursos").all()
+    clases_con_curso = clases.filter(cursos__isnull=False).distinct().count()
+    clases_sin_curso = clases.filter(cursos__isnull=True).count()
+    return render(request, "admin/clases/clases.html", {
+        "clases": clases,
+        "clases_con_curso": clases_con_curso,
+        "clases_sin_curso": clases_sin_curso,
+    })
 
 def Crear_clase(request):
     if request.method == 'POST':

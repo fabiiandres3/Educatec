@@ -59,6 +59,36 @@
         margin-bottom: 20px;
     }
 
+    .curso-card-body .class-picker { margin-top:20px; padding:18px; border:1px solid #e5ebf5; border-radius:16px; background:linear-gradient(145deg,#fbfdff,#f5f8ff); }
+    .class-picker-head { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:14px; }
+    .class-picker-title { display:flex; align-items:center; gap:11px; }
+    .class-picker-icon { width:38px; height:38px; display:grid; place-items:center; flex:0 0 auto; border-radius:11px; color:#345bd8; background:#e9efff; }
+    .class-picker-title h4 { margin:0; color:#1d2b47; font-size:15px; font-weight:750; }
+    .class-picker-title p { margin:3px 0 0; color:#7b879a; font-size:12px; }
+    .class-picker-count { padding:7px 10px; border-radius:999px; white-space:nowrap; color:#3158cb; background:#e9efff; font-size:12px; font-weight:700; }
+    .class-picker-tools { display:flex; gap:8px; margin-bottom:12px; }
+    .class-search-wrap { position:relative; flex:1; margin:0 !important; }
+    .class-search-wrap i { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:#8c98aa; }
+    .curso-card-body .class-search { min-height:40px; padding:8px 12px 8px 37px; border-radius:10px; background:#fff; }
+    .class-picker-tool { border:1px solid #dce4f2; border-radius:9px; padding:0 10px; background:#fff; color:#53627a; font-size:12px; font-weight:650; white-space:nowrap; }
+    .class-picker-tool:hover { border-color:#9aafea; color:#345bd8; }
+    .class-options { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; }
+    .curso-card-body .class-option { display:flex; align-items:center; gap:9px; min-height:44px; margin:0; padding:8px 10px; border:1px solid #e1e7f1; border-radius:10px; background:#fff; cursor:pointer; transition:border-color .18s ease,background .18s ease,box-shadow .18s ease,transform .18s ease; }
+    .class-option:hover { border-color:#9aafea; transform:translateY(-1px); }
+    .class-option.is-selected { border-color:#6884e7; background:#f2f5ff; box-shadow:0 0 0 3px #345bd810; }
+    .curso-card-body .class-option input { width:15px; height:15px; flex:0 0 auto; margin:0; padding:0; accent-color:#4263d8; }
+    .class-option-name { min-width:0; flex:1; overflow:hidden; color:#263550; font-size:12px; font-weight:700; text-overflow:ellipsis; white-space:nowrap; }
+    .class-option-checkmark { color:#4463d4; opacity:0; }
+    .class-option.is-selected .class-option-checkmark { opacity:1; }
+    .class-picker-errors,.class-picker-empty { margin-top:8px; color:#dc3545; font-size:13px; }
+    .class-picker-empty { display:none; padding:18px; border:1px dashed #cdd7e8; border-radius:12px; color:#748198; text-align:center; }
+    .class-picker-empty.is-visible { display:block; }
+    .class-picker-none { grid-column:1/-1; padding:20px; border-radius:12px; background:#fff; color:#748198; text-align:center; font-size:13px; }
+    html[data-theme="dark"] .class-picker { border-color:#344258; background:#192437; }
+    html[data-theme="dark"] .class-picker-title h4,html[data-theme="dark"] .class-option-name { color:#e7edf7; }
+    html[data-theme="dark"] .class-option,html[data-theme="dark"] .class-search,html[data-theme="dark"] .class-picker-tool,html[data-theme="dark"] .class-picker-none { border-color:#344258; background:#202e44; color:#c5d0e0; }
+    html[data-theme="dark"] .class-option.is-selected { background:#26395d; }
+
     .curso-card-body label {
         display: block;
         margin-bottom: 7px;
@@ -151,6 +181,11 @@
             padding: 22px;
         }
 
+        .class-picker-head { align-items:flex-start; }
+        .class-picker-tools { flex-wrap:wrap; }
+        .class-search-wrap { flex-basis:100%; }
+        .class-options { grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr)); }
+
         .curso-card-footer {
             padding: 18px 22px;
             flex-direction: column-reverse;
@@ -190,7 +225,81 @@
             <div class="curso-card-body">
 
                 {{ form.non_field_errors }}
-                {{ form.as_p }}
+
+                {% for field in form %}
+                    {% if field.name != "clases" and field.name != "docentes" %}
+                        <p>{{ field.label_tag }}{{ field }}{{ field.errors }}</p>
+                    {% endif %}
+                {% endfor %}
+
+                <section class="class-picker" aria-labelledby="teacher-picker-heading">
+                    <div class="class-picker-head">
+                        <div class="class-picker-title">
+                            <span class="class-picker-icon"><i class="fa-solid fa-chalkboard-user"></i></span>
+                            <div>
+                                <h4 id="teacher-picker-heading">Docentes del curso</h4>
+                                <p>Selecciona los docentes que tendrán asignado este curso.</p>
+                            </div>
+                        </div>
+                        <span class="class-picker-count" id="teacher-selection-count" aria-live="polite">0 seleccionados</span>
+                    </div>
+                    {% for error in form.docentes.errors %}<div class="class-picker-errors">{{ error }}</div>{% endfor %}
+                    <div class="class-picker-tools">
+                        <label class="class-search-wrap">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input class="class-search" id="teacher-search" type="search" placeholder="Buscar un docente..." aria-label="Buscar docentes">
+                        </label>
+                        <button class="class-picker-tool" type="button" id="select-visible-teachers">Seleccionar visibles</button>
+                        <button class="class-picker-tool" type="button" id="clear-teachers">Limpiar</button>
+                    </div>
+                    <div class="class-options" id="teacher-options">
+                        {% for checkbox in form.docentes %}
+                            <label class="class-option" data-teacher-option data-search="{{ checkbox.choice_label|lower }}">
+                                {{ checkbox.tag }}
+                                <span class="class-option-name">{{ checkbox.choice_label }}</span>
+                                <i class="fa-solid fa-circle-check class-option-checkmark" aria-hidden="true"></i>
+                            </label>
+                        {% empty %}
+                            <div class="class-picker-none">No hay docentes registrados para asignar.</div>
+                        {% endfor %}
+                    </div>
+                    <div class="class-picker-empty" id="teacher-search-empty">No encontramos docentes con ese nombre.</div>
+                </section>
+
+                <section class="class-picker" aria-labelledby="class-picker-heading">
+                    <div class="class-picker-head">
+                        <div class="class-picker-title">
+                            <span class="class-picker-icon"><i class="fa-solid fa-layer-group"></i></span>
+                            <div>
+                                <h4 id="class-picker-heading">Clases asignadas al curso</h4>
+                                <p>Selecciona las clases que pertenecen a este curso. Puedes elegir varias.</p>
+                            </div>
+                        </div>
+                        <span class="class-picker-count" id="class-selection-count" aria-live="polite">0 seleccionadas</span>
+                    </div>
+
+                    {% for error in form.clases.errors %}<div class="class-picker-errors">{{ error }}</div>{% endfor %}
+                    <div class="class-picker-tools">
+                        <label class="class-search-wrap">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input class="class-search" id="class-search" type="search" placeholder="Buscar una clase..." aria-label="Buscar clases">
+                        </label>
+                        <button class="class-picker-tool" type="button" id="select-visible-classes">Seleccionar visibles</button>
+                        <button class="class-picker-tool" type="button" id="clear-classes">Limpiar</button>
+                    </div>
+                    <div class="class-options" id="class-options">
+                        {% for checkbox in form.clases %}
+                            <label class="class-option" data-class-option data-search="{{ checkbox.choice_label|lower }}">
+                                {{ checkbox.tag }}
+                                <span class="class-option-name">{{ checkbox.choice_label }}</span>
+                                <i class="fa-solid fa-circle-check class-option-checkmark" aria-hidden="true"></i>
+                            </label>
+                        {% empty %}
+                            <div class="class-picker-none">No hay clases disponibles para asignar.</div>
+                        {% endfor %}
+                    </div>
+                    <div class="class-picker-empty" id="class-search-empty">No encontramos clases con ese nombre.</div>
+                </section>
 
             </div>
 
@@ -213,5 +322,45 @@
     </div>
 
 </div>
+
+<script>
+(() => {
+    const initializePicker = (config) => {
+        const list = document.getElementById(config.list);
+        if (!list) return;
+        const options = [...list.querySelectorAll(config.optionSelector)];
+        const count = document.getElementById(config.count);
+        const search = document.getElementById(config.search);
+        const empty = document.getElementById(config.empty);
+        const refresh = () => {
+            const query = (search?.value || "").trim().toLocaleLowerCase("es");
+            let visible = 0, selected = 0;
+            options.forEach((option) => {
+                const input = option.querySelector("input[type='checkbox']");
+                const matches = option.dataset.search.includes(query);
+                option.hidden = !matches;
+                if (matches) visible += 1;
+                if (input.checked) selected += 1;
+                option.classList.toggle("is-selected", input.checked);
+            });
+            if (count) count.textContent = `${selected} ${selected === 1 ? config.one : config.many}`;
+            empty?.classList.toggle("is-visible", visible === 0);
+        };
+        list.addEventListener("change", refresh);
+        search?.addEventListener("input", refresh);
+        document.getElementById(config.select)?.addEventListener("click", () => {
+            options.forEach((option) => { if (!option.hidden) option.querySelector("input[type='checkbox']").checked = true; });
+            refresh();
+        });
+        document.getElementById(config.clear)?.addEventListener("click", () => {
+            options.forEach((option) => { option.querySelector("input[type='checkbox']").checked = false; });
+            refresh();
+        });
+        refresh();
+    };
+    initializePicker({list:"class-options", optionSelector:"[data-class-option]", count:"class-selection-count", search:"class-search", empty:"class-search-empty", select:"select-visible-classes", clear:"clear-classes", one:"1 seleccionada", many:"seleccionadas"});
+    initializePicker({list:"teacher-options", optionSelector:"[data-teacher-option]", count:"teacher-selection-count", search:"teacher-search", empty:"teacher-search-empty", select:"select-visible-teachers", clear:"clear-teachers", one:"1 seleccionado", many:"seleccionados"});
+})();
+</script>
 
 {% endblock %}

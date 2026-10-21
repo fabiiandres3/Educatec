@@ -9,11 +9,9 @@ class Clases(models.Model):
         max_length=100
     )
 
-    curso = models.ForeignKey(
+    cursos = models.ManyToManyField(
         Cursos,
-        on_delete=models.SET_NULL,
         blank=True,
-        null=True,
         related_name="clases"
     )
 

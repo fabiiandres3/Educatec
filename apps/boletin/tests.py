@@ -18,7 +18,8 @@ from apps.boletin.services import construir_boletin
 class ConsolidadoBoletinTests(TestCase):
     def test_solo_incluye_notas_del_periodo_y_contenido_individual(self):
         curso = Cursos.objects.create(nombre="7A")
-        materia = Clases.objects.create(titulo="Matemáticas", curso=curso)
+        materia = Clases.objects.create(titulo="Matemáticas")
+        materia.cursos.add(curso)
         docente_usuario = Usuario.objects.create_user(username="docente", email="d@e.co")
         docente = Docente.objects.create(usuario=docente_usuario, direccion="Dirección")
         asignacion = AsignacionDocente.objects.create(docente=docente, curso=curso, clase=materia)

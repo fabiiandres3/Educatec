@@ -22,18 +22,20 @@ def listar_cursos(request):
 
     cursos = Cursos.objects.annotate(
     cantidad_alumnos=Count("alumnos"))
+    cursos_filtro = Cursos.objects.order_by("nombre")
 
     alumnos = Alumnos.objects.select_related(
         "usuario",
         "curso",
         "clase"
-    ).all()
+    ).order_by("usuario__first_name", "usuario__last_name", "usuario__username")
 
     return render(
         request,
         "admin/cursos/cursos.html",
         {
             "cursos": cursos,
+            "cursos_filtro": cursos_filtro,
             "alumnos": alumnos,
         }
     )
@@ -46,6 +48,8 @@ def listar_cursos(request):
 
 def listar_alumnos(request):
 
+    cursos_filtro = Cursos.objects.order_by("nombre")
+
     alumnos = Alumnos.objects.select_related(
         "usuario",
         "curso",
@@ -57,6 +61,7 @@ def listar_alumnos(request):
         "admin/cursos/cursos.html",
         {
             "alumnos": alumnos,
+            "cursos_filtro": cursos_filtro,
         }
     )
 
@@ -69,11 +74,12 @@ def Crear_curso(request):
 
     if request.method == "POST":
 
-        form = CursosForm(request.POST, request.FILES)
+        form = CursosForm(request.POST, request.FILES, incluir_clases=True)
 
         if form.is_valid():
 
-            form.save()
+            with transaction.atomic():
+                form.save()
 
             messages.success(request, "Curso creado correctamente.")
 
@@ -81,7 +87,7 @@ def Crear_curso(request):
 
     else:
 
-        form = CursosForm()
+        form = CursosForm(incluir_clases=True)
 
     return render(
         request,"admin/cursos/crear_curso.html",
@@ -103,7 +109,6 @@ def Editar_curso(request, curso_id):
 
         form = CursosForm(
             request.POST,
-            request.FILES,
             instance=curso
         )
 
@@ -139,6 +144,10 @@ def Editar_curso(request, curso_id):
 # ==========================================
 
 def Eliminar_curso(request, curso_id):
+
+    if request.method != "POST":
+        messages.warning(request, "Confirma la eliminación del curso desde el botón de eliminar.")
+        return redirect("listar_cursos")
 
     curso = get_object_or_404(
         Cursos,

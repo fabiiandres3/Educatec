@@ -47,15 +47,33 @@ from decimal import Decimal, InvalidOperation
 
 def Listar_docentes(request):
 
-    docentes = Usuario.objects.filter(
+    docentes = list(Usuario.objects.filter(
         rol__nombre="docente"
-    )
+    ).order_by("first_name", "last_name", "username"))
+
+    cursos_por_docente = {docente.id: [] for docente in docentes}
+    if cursos_por_docente:
+        asignaciones = (
+            AsignacionDocente.objects
+            .filter(docente__usuario_id__in=cursos_por_docente, curso__isnull=False)
+            .select_related("curso", "docente")
+            .order_by("curso__nombre")
+        )
+        for asignacion in asignaciones:
+            cursos = cursos_por_docente[asignacion.docente.usuario_id]
+            if asignacion.curso.nombre not in cursos:
+                cursos.append(asignacion.curso.nombre)
+
+    for docente in docentes:
+        docente.cursos_asignados = cursos_por_docente[docente.id]
 
     return render(
         request,
         "admin/docente/docentes.html",
         {
-            "docentes": docentes
+            "docentes": docentes,
+            "docentes_con_cursos": sum(bool(docente.cursos_asignados) for docente in docentes),
+            "docentes_sin_cursos": sum(not docente.cursos_asignados for docente in docentes),
         }
     )
 
@@ -73,6 +91,11 @@ def Editar_docente(request, docente_id):
         .filter(docente=docente)
         .select_related("curso", "clase")
     )
+    cursos_asignados = asignaciones.filter(curso__isnull=False)
+    materias_asignaciones = asignaciones.filter(clase__isnull=False)
+    cursos_disponibles = Cursos.objects.exclude(
+        id__in=cursos_asignados.values_list("curso_id", flat=True)
+    ).order_by("nombre")
 
     # Materias (clases) únicas asignadas al docente
     materias_asignadas = (
@@ -84,6 +107,7 @@ def Editar_docente(request, docente_id):
         .values_list("clase_id", flat=True)
         .distinct()
     )
+    clases_disponibles = Clases.objects.exclude(id__in=materias_asignadas).order_by("titulo")
 
     if request.method == "POST":
 
@@ -157,6 +181,10 @@ def Editar_docente(request, docente_id):
             "docente_form": docente_form,
             "asignacion_form": asignacion_form,
             "asignaciones": asignaciones,
+            "cursos_asignados": cursos_asignados,
+            "cursos_disponibles": cursos_disponibles,
+            "materias_asignaciones": materias_asignaciones,
+            "clases_disponibles": clases_disponibles,
             "max_asignaciones": MAX_CURSOS_POR_DOCENTE,
             "max_materias": MAX_MATERIAS_POR_DOCENTE,
             "materias_asignadas": materias_asignadas,
@@ -245,20 +273,91 @@ def asignar_curso_materia_ajax(request, docente_id):
         usuario_id=docente_id
     )
 
-    curso_id = request.POST.get("curso")
+    tipo = request.POST.get("tipo")
+    curso_ids = request.POST.getlist("cursos") or ([request.POST.get("curso")] if request.POST.get("curso") else [])
     clase_id = request.POST.get("clase")
 
-    if not curso_id:
-
-        return JsonResponse(
-            {
-                "ok": False,
-                "mensaje": "Debes seleccionar un curso."
-            },
-            status=400
+    if tipo == "editar_clase":
+        asignacion_id = request.POST.get("asignacion_id")
+        nueva_clase_id = request.POST.get("clase")
+        if not str(asignacion_id or "").isdigit() or not str(nueva_clase_id or "").isdigit():
+            return JsonResponse({"ok": False, "mensaje": "Selecciona una clase válida."}, status=400)
+        asignacion = get_object_or_404(
+            AsignacionDocente, id=asignacion_id, docente=docente, clase__isnull=False
         )
+        clase_nueva = get_object_or_404(Clases, id=nueva_clase_id)
+        if AsignacionDocente.objects.filter(docente=docente, clase=clase_nueva).exclude(id=asignacion.id).exists():
+            return JsonResponse({"ok": False, "mensaje": "Esa clase ya está asignada a este docente."}, status=400)
+        clase_anterior = {"id": asignacion.clase_id, "nombre": asignacion.clase.titulo}
+        asignacion.clase = clase_nueva
+        asignacion.save(update_fields=["clase"])
+        return JsonResponse({
+            "ok": True,
+            "mensaje": "Asignación de clase actualizada correctamente.",
+            "asignacion": {"id": asignacion.id, "tipo": "materia", "clase_id": clase_nueva.id, "clase": clase_nueva.titulo},
+            "clase_anterior": clase_anterior,
+        })
 
-    if not clase_id:
+    if tipo == "clase":
+        clase_ids = list(dict.fromkeys(request.POST.getlist("clases")))
+        if not clase_ids or any(not str(value).isdigit() for value in clase_ids):
+            return JsonResponse({"ok": False, "mensaje": "Selecciona una o más clases válidas."}, status=400)
+        ids_enteros = [int(value) for value in clase_ids]
+        clases_actuales = set(AsignacionDocente.objects.filter(
+            docente=docente, clase__isnull=False
+        ).values_list("clase_id", flat=True).distinct())
+        ids_nuevos = [clase_id for clase_id in ids_enteros if clase_id not in clases_actuales]
+        if not ids_nuevos:
+            return JsonResponse({"ok": False, "mensaje": "Las clases seleccionadas ya están asignadas."}, status=400)
+        if len(clases_actuales) + len(ids_nuevos) > MAX_MATERIAS_POR_DOCENTE:
+            return JsonResponse({
+                "ok": False,
+                "mensaje": f"Cada docente puede tener máximo {MAX_MATERIAS_POR_DOCENTE} clases asignadas.",
+            }, status=400)
+        clases_nuevas = list(Clases.objects.filter(id__in=ids_nuevos).order_by("titulo"))
+        if len(clases_nuevas) != len(ids_nuevos):
+            return JsonResponse({"ok": False, "mensaje": "Una o más clases seleccionadas no existen."}, status=400)
+        asignaciones_creadas = [
+            AsignacionDocente.objects.create(docente=docente, clase=clase)
+            for clase in clases_nuevas
+        ]
+        return JsonResponse({
+            "ok": True,
+            "mensaje": "Clases asignadas correctamente.",
+            "asignaciones": [
+                {"id": asignacion.id, "tipo": "materia", "clase_id": asignacion.clase_id, "clase": asignacion.clase.titulo}
+                for asignacion in asignaciones_creadas
+            ],
+            "materias_count": len(clases_actuales) + len(asignaciones_creadas),
+            "max_materias": MAX_MATERIAS_POR_DOCENTE,
+        })
+
+    if tipo == "editar_curso":
+        asignacion_id = request.POST.get("asignacion_id")
+        curso_id = request.POST.get("curso")
+        if not str(asignacion_id or "").isdigit() or not str(curso_id or "").isdigit():
+            return JsonResponse({"ok": False, "mensaje": "Selecciona un curso válido."}, status=400)
+        asignacion = get_object_or_404(
+            AsignacionDocente, id=asignacion_id, docente=docente, curso__isnull=False
+        )
+        curso_nuevo = get_object_or_404(Cursos, id=curso_id)
+        if AsignacionDocente.objects.filter(docente=docente, curso=curso_nuevo).exclude(id=asignacion.id).exists():
+            return JsonResponse({"ok": False, "mensaje": "Ese curso ya está asignado a este docente."}, status=400)
+        curso_anterior = {"id": asignacion.curso_id, "nombre": asignacion.curso.nombre}
+        asignacion.curso = curso_nuevo
+        asignacion.save(update_fields=["curso"])
+        return JsonResponse({
+            "ok": True,
+            "mensaje": "Asignación de curso actualizada correctamente.",
+            "asignacion": {"id": asignacion.id, "tipo": "curso", "curso_id": curso_nuevo.id, "curso": curso_nuevo.nombre},
+            "curso_anterior": curso_anterior,
+        })
+
+    if tipo not in ("curso", "materia"):
+        return JsonResponse({"ok": False, "mensaje": "Selecciona si vas a asignar un curso o una materia."}, status=400)
+    if tipo == "curso" and not curso_ids:
+        return JsonResponse({"ok": False, "mensaje": "Debes seleccionar un curso."}, status=400)
+    if tipo == "materia" and not clase_id:
 
         return JsonResponse(
             {
@@ -282,7 +381,37 @@ def asignar_curso_materia_ajax(request, docente_id):
         .distinct()
     )
 
-    if (
+    if tipo == "materia" and int(clase_id) in materias_actuales:
+        return JsonResponse({"ok": False, "mensaje": "Esa materia ya está asignada a este docente."}, status=400)
+    nuevos_cursos = []
+    if tipo == "curso":
+        curso_ids = list(dict.fromkeys(curso_ids))
+        if any(not str(curso_id).isdigit() for curso_id in curso_ids):
+            return JsonResponse({"ok": False, "mensaje": "La selección contiene un curso no válido."}, status=400)
+        cursos_existentes = set(AsignacionDocente.objects.filter(
+            docente=docente, curso_id__in=curso_ids
+        ).values_list("curso_id", flat=True))
+        nuevos_ids = [curso_id for curso_id in curso_ids if int(curso_id) not in cursos_existentes]
+        if not nuevos_ids:
+            return JsonResponse({"ok": False, "mensaje": "Los cursos seleccionados ya estÃ¡n asignados."}, status=400)
+        nuevos_cursos = list(Cursos.objects.filter(id__in=nuevos_ids).order_by("nombre"))
+        if len(nuevos_cursos) != len(nuevos_ids):
+            return JsonResponse({"ok": False, "mensaje": "Uno o mÃ¡s cursos seleccionados no existen."}, status=400)
+        nuevas_asignaciones = [
+            AsignacionDocente.objects.create(docente=docente, curso=curso)
+            for curso in nuevos_cursos
+        ]
+        return JsonResponse({
+            "ok": True,
+            "mensaje": "Cursos asignados correctamente.",
+            "asignaciones": [
+                {"id": a.id, "tipo": "curso", "curso_id": a.curso_id, "curso": a.curso.nombre, "clase": ""}
+                for a in nuevas_asignaciones
+            ],
+            "materias_count": len(materias_actuales),
+            "max_materias": MAX_MATERIAS_POR_DOCENTE,
+        })
+    if tipo == "materia" and (
         int(clase_id) not in materias_actuales
         and len(materias_actuales) >= MAX_MATERIAS_POR_DOCENTE
     ):
@@ -305,7 +434,6 @@ def asignar_curso_materia_ajax(request, docente_id):
 
     asignacion = AsignacionDocente.objects.create(
         docente=docente,
-        curso_id=curso_id,
         clase_id=clase_id,
     )
 
@@ -315,7 +443,8 @@ def asignar_curso_materia_ajax(request, docente_id):
             "mensaje": "Asignación creada correctamente.",
             "asignacion": {
                 "id": asignacion.id,
-                "curso": asignacion.curso.nombre,
+                "tipo": tipo,
+                "curso": asignacion.curso.nombre if asignacion.curso else "",
                 "clase": (
                     asignacion.clase.titulo
                     if asignacion.clase
@@ -352,7 +481,17 @@ def eliminar_asignacion_ajax(request, asignacion_id):
 
     docente = asignacion.docente
 
-    asignacion.delete()
+    tipo = request.POST.get("tipo")
+    curso_quitado = {"id": asignacion.curso_id, "nombre": asignacion.curso.nombre} if tipo == "curso" and asignacion.curso_id else None
+    clase_quitada = {"id": asignacion.clase_id, "nombre": asignacion.clase.titulo} if tipo == "materia" and asignacion.clase_id else None
+    if tipo == "materia" and asignacion.curso_id:
+        asignacion.clase = None
+        asignacion.save(update_fields=["clase"])
+    elif tipo == "curso" and asignacion.clase_id:
+        asignacion.curso = None
+        asignacion.save(update_fields=["curso"])
+    else:
+        asignacion.delete()
 
     materias_count = len(
         set(
@@ -372,6 +511,8 @@ def eliminar_asignacion_ajax(request, asignacion_id):
             "mensaje": "Asignación eliminada.",
             "materias_count": materias_count,
             "max_materias": MAX_MATERIAS_POR_DOCENTE,
+            "curso_quitado": curso_quitado,
+            "clase_quitada": clase_quitada,
         }
     )
 

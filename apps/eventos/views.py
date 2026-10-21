@@ -24,6 +24,8 @@ def listar_eventos(request):
         "admin/eventos/listar_eventos.html",
         {
             "eventos": eventos,
+            "eventos_publicados": eventos.filter(publicado=True).count(),
+            "eventos_no_publicados": eventos.filter(publicado=False).count(),
         }
     )
 
