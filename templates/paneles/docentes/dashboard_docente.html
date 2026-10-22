@@ -4,272 +4,69 @@
 
 {% block active_inicio %}active{% endblock %}
 
-{% block search_placeholder %}Buscar alumnos...{% endblock %}
+{% block page_title %}Panel docente{% endblock %}
+
+{% block page_subtitle %}Resumen de tu actividad académica{% endblock %}
 
 
 {% block extra_css %}
 
 <style>
 
-    /* =========================================================
-    DASHBOARD
-    ========================================================= */
-
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 20px;
-        align-items: start;
-    }
-
-    .right-panel {
+    .edc-evento {
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        gap: 20px;
     }
 
-
-    /* =========================================================
-    ACCIONES RÁPIDAS
-    ========================================================= */
-
-    .action-btn {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+    .edc-evento__img {
         width: 100%;
-        padding: 11px 16px;
-        margin-bottom: 8px;
-
-        background: #f8fafc;
-        border: 1.5px solid #e5e7eb;
-        border-radius: 12px;
-
-        color: #081b3a;
-        font-size: 14px;
-        font-weight: 500;
-        font-family: inherit;
-
-        cursor: pointer;
-        transition: background .2s, border-color .2s, color .2s;
-
-        box-sizing: border-box;
-    }
-
-    .action-btn:hover {
-        background: #eef4ff;
-        border-color: #006eff;
-        color: #006eff;
-    }
-
-    .action-btn:last-child {
-        margin-bottom: 0;
-    }
-
-
-    /* =========================================================
-    EVENTOS
-    ========================================================= */
-
-    .eventos-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 10px;
-    }
-
-    .eventos-header h4 {
-        margin: 0;
-    }
-
-    .btn-ver-eventos {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-
-        padding: 9px 14px;
-
-        background: #006eff;
-        color: white;
-
-        border: none;
-        border-radius: 9px;
-
-        text-decoration: none;
-
-        font-size: 13px;
-        font-weight: 600;
-
-        transition: background .2s, transform .2s;
-    }
-
-    .btn-ver-eventos:hover {
-        background: #0056cc;
-        color: white;
-        transform: translateY(-1px);
-    }
-
-
-    .eventos-grid {
-        display: grid;
-        grid-template-columns: repeat(
-            auto-fit,
-            minmax(250px, 1fr)
-        );
-        gap: 15px;
-        margin-top: 15px;
-    }
-
-
-    .evento-card {
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        overflow: hidden;
-        background: #ffffff;
-
-        transition: transform .2s, box-shadow .2s;
-    }
-
-    .evento-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, .08);
-    }
-
-
-    .evento-imagen {
-        width: 100%;
-        height: 150px;
+        height: 148px;
         object-fit: cover;
         display: block;
     }
 
-
-    .evento-contenido {
+    .edc-evento__cuerpo {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
         padding: 15px;
     }
 
-
-    .evento-titulo {
-        font-size: 16px;
+    .edc-evento__cuerpo strong {
+        font-size: 15px;
         font-weight: 700;
-        color: #081b3a;
-        margin-bottom: 8px;
+        color: var(--edc-texto);
     }
 
-
-    .evento-info {
-        font-size: 13px;
-        color: #64748b;
-        margin-bottom: 8px;
+    .edc-evento__meta {
+        font-size: 12.5px;
+        color: var(--edc-texto-sec);
     }
 
-
-    .evento-descripcion {
-        font-size: 13px;
-        color: #475569;
-        line-height: 1.5;
-        margin-top: 10px;
-    }
-
-
-    .evento-tipo {
-        display: inline-block;
-
-        padding: 4px 9px;
-
-        border-radius: 20px;
-
-        background: #eef4ff;
-        color: #006eff;
-
-        font-size: 11px;
-        font-weight: 600;
-
-        margin-top: 5px;
-    }
-
-
-    .evento-video {
-        margin-top: 10px;
-    }
-
-
-    .evento-video a {
-        font-size: 13px;
-        text-decoration: none;
-        color: #006eff;
-        font-weight: 600;
-    }
-
-
-    .sin-eventos {
-        color: #6b7280;
-        padding: 15px 0;
+    .edc-evento__cuerpo p {
         margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--edc-texto-sec);
     }
 
+    .edc-evento__video {
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+    }
 
-    /* =========================================================
-       GRADOS
-    ========================================================= */
+    .edc-bloque {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
 
-    .grados {
+    .edc-chips {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .grado {
-        padding: 9px 15px;
-
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-
-        background: #f8fafc;
-        color: #081b3a;
-
-        font-size: 13px;
-        font-weight: 600;
-
-        cursor: pointer;
-
-        transition: background .2s, border-color .2s, color .2s;
-    }
-
-    .grado:hover,
-    .grado.active {
-        background: #eef4ff;
-        border-color: #006eff;
-        color: #006eff;
-    }
-
-
-    /* =========================================================
-       RESPONSIVE
-    ========================================================= */
-
-    @media (max-width: 900px) {
-
-        .dashboard-grid {
-            grid-template-columns: 1fr;
-        }
-
-    }
-
-
-    @media (max-width: 600px) {
-
-        .eventos-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .eventos-grid {
-            grid-template-columns: 1fr;
-        }
-
+        gap: 8px;
     }
 
 </style>
@@ -279,609 +76,494 @@
 
 {% block content %}
 
+<div class="edc-bloque">
 
-<!-- =========================================================
-     ENCABEZADO
-========================================================= -->
 
-<div class="topbar">
+    <!-- =====================================================
+         BIENVENIDA
+    ====================================================== -->
 
-    <div class="welcome">
-
-        <h2>
-            Hola, {% firstof docente.usuario.get_full_name request.user.get_full_name request.user.documento %}
-            <span class="wave-hand" role="img" aria-label="saludando">&#128075;</span>
-        </h2>
-
-        <p>
-            Resumen de tu actividad académica
-        </p>
-
-    </div>
-
-
-    <div class="user-area">
-
-        <div class="notification">
-
-            <i class="fa-solid fa-bell"></i>
-
-            <span class="notification-count">
-                {{ mensajes_no_leidos|default:"0" }}
-            </span>
-
-        </div>
-
-
-        <div class="profile">
-
-            <img
-                src="https://i.pravatar.cc/120?img=3"
-                alt="Docente Avatar"
-                class="profile-img"
-            >
-
-            <div>
-
-                <strong>
-                    {{ docente.usuario.first_name }} {{ docente.usuario.last_name }}
-                </strong>
-
-                <small>
-                    Docente
-                </small>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<br>
-
-
-<!-- =========================================================
-     ESTADÍSTICAS
-========================================================= -->
-
-<div class="stats">
-
-
-    <!-- ALUMNOS -->
-
-    <div class="stat-card">
-
-        <div class="icon blue">
-            <i class="fa-solid fa-user-graduate"></i>
-        </div>
-
-        <h3>
-            {{ total_alumnoss|default:"0" }}
-        </h3>
-
-        <p>
-            Alumnos
-        </p>
-
-    </div>
-
-
-    <!-- ASISTENCIA -->
-
-    <div class="stat-card">
-
-        <div class="icon green">
-            <i class="fa-solid fa-check"></i>
-        </div>
-
-        <h3>
-            {% if porcentaje_asistencia != "—" %}{{ porcentaje_asistencia }}%{% else %}—{% endif %}
-        </h3>
-
-        <p>
-            Asistencia
-        </p>
-
-    </div>
-
-
-    <!-- TAREAS -->
-
-    <div class="stat-card">
-
-        <div class="icon orange">
-            <i class="fa-solid fa-book-open"></i>
-        </div>
-
-        <h3>
-            {{ total_tareas|default:"0" }}
-        </h3>
-
-        <p>
-            Tareas
-        </p>
-
-    </div>
-
-
-    <!-- PROMEDIO -->
-
-    <div class="stat-card">
-
-        <div class="icon purple">
-            <i class="fa-solid fa-chart-line"></i>
-        </div>
-
-        <h3>
-            {{ promedio|default:"—" }}
-        </h3>
-
-        <p>
-            Promedio
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     MIS GRADOS
-========================================================= -->
-
-<div class="section-card">
-
-    <h4>
-        Mis Grados
-    </h4>
-
-
-    <div class="grados">
-
-        {% for a in asignaciones %}
-
-            <button
-                type="button"
-                class="grado {% if forloop.first %}active{% endif %}"
-            >
-                {{ a.curso.nombre }} — {{ a.clase.titulo }}
-            </button>
-
-        {% empty %}
-
-            <p style="color:#6b7280;">
-                No hay grados asignados aún.
-            </p>
-
-        {% endfor %}
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     PRÓXIMOS EVENTOS
-========================================================= -->
-
-<div class="section-card">
-
-
-    <div class="eventos-header">
+    <section class="edc-bienvenida">
 
         <div>
 
-            <h4>
-                📢 Próximos eventos
-            </h4>
+            <span class="edc-bienvenida__saludo">
+                <i class="fa-solid fa-hand-sparkles"></i>
+                {{ saludo|default:"Bienvenido" }}
+            </span>
+
+            <h1>
+                {{ docente.usuario.get_full_name|default:request.user.documento }}
+            </h1>
+
+            <p>
+                Este es el resumen de tu actividad académica en Educatec.
+            </p>
 
         </div>
 
+        <div class="edc-bienvenida__arte" aria-hidden="true">
+            <i class="fa-solid fa-chalkboard-user"></i>
+        </div>
 
-        <!-- BOTÓN VER TODOS -->
+    </section>
 
-        
-           <a href="{% url 'listar_eventos_docente' %}"class="btn-ver-eventos">
 
-            <i class="fa-solid fa-calendar-days"></i>
+    <!-- =====================================================
+         ESTADÍSTICAS
+    ====================================================== -->
 
-            Ver todos los eventos
+    <div class="edc-rejilla">
 
-        </a>
+        <!-- ALUMNOS -->
+
+        <article class="edc-stat">
+
+            <span class="edc-stat__icono" aria-hidden="true">
+                <i class="fa-solid fa-user-graduate"></i>
+            </span>
+
+            <div class="edc-stat__texto">
+                <div class="edc-stat__valor">
+                    {{ total_alumnoss|default:"0" }}
+                </div>
+                <div class="edc-stat__etiqueta">
+                    Alumnos
+                </div>
+            </div>
+
+        </article>
+
+
+        <!-- ASISTENCIA DE HOY -->
+
+        <article class="edc-stat">
+
+            <span class="edc-stat__icono edc-stat__icono--exito" aria-hidden="true">
+                <i class="fa-solid fa-user-check"></i>
+            </span>
+
+            <div class="edc-stat__texto">
+                <div class="edc-stat__valor">
+                    {% if porcentaje_asistencia is not None %}
+                        {{ porcentaje_asistencia }}%
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+                <div class="edc-stat__etiqueta">
+                    Asistencia de hoy
+                </div>
+            </div>
+
+        </article>
+
+
+        <!-- TAREAS -->
+
+        <article class="edc-stat">
+
+            <span class="edc-stat__icono edc-stat__icono--alerta" aria-hidden="true">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </span>
+
+            <div class="edc-stat__texto">
+                <div class="edc-stat__valor">
+                    {{ total_tareas|default:"0" }}
+                </div>
+                <div class="edc-stat__etiqueta">
+                    Tareas próximas
+                </div>
+            </div>
+
+        </article>
+
+
+        <!-- PROMEDIO -->
+
+        <article class="edc-stat">
+
+            <span class="edc-stat__icono" aria-hidden="true">
+                <i class="fa-solid fa-chart-line"></i>
+            </span>
+
+            <div class="edc-stat__texto">
+                <div class="edc-stat__valor">
+                    {{ promedio|default:"—" }}
+                </div>
+                <div class="edc-stat__etiqueta">
+                    Promedio de calificaciones
+                </div>
+            </div>
+
+        </article>
 
     </div>
 
 
-    {% if eventos %}
+    <!-- =====================================================
+         MIS GRADOS
+    ====================================================== -->
+
+    <section class="edc-tarjeta">
+
+        <div class="edc-tarjeta__cabeza">
+            <h2>
+                <i class="fa-solid fa-layer-group"></i>
+                Mis grados y materias
+            </h2>
+        </div>
+
+        <div class="edc-tarjeta__cuerpo">
+
+            {% if asignaciones %}
+
+                <div class="edc-chips">
+
+                    {% for a in asignaciones %}
+
+                        <span class="edc-badge edc-badge--info">
+                            <i class="fa-solid fa-book"></i>
+                            {{ a.curso.nombre }} — {{ a.clase.titulo }}
+                        </span>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="edc-vacio">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <strong>Sin asignaciones</strong>
+                    <p>
+                        Todavía no tienes grados o materias asignadas.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
 
 
-        <div class="eventos-grid">
+    <!-- =====================================================
+         PRÓXIMOS EVENTOS
+    ====================================================== -->
 
+    <section class="edc-tarjeta">
 
-            {% for evento in eventos %}
+        <div class="edc-tarjeta__cabeza">
+            <h2>
+                <i class="fa-solid fa-calendar-days"></i>
+                Próximos eventos
+            </h2>
+            <a
+                class="edc-btn edc-btn--suave"
+                href="{% url 'listar_eventos_docente' %}"
+            >
+                Ver todos
+            </a>
+        </div>
 
-                {% if forloop.counter <= 3 %}
+        <div class="edc-tarjeta__cuerpo">
 
-                    <div class="evento-card">
+            {% if eventos %}
 
+                <div class="edc-rejilla">
 
-                        <!-- IMAGEN -->
+                    {% for evento in eventos|slice:":3" %}
 
-                        {% if evento.imagen %}
+                        <article class="edc-tarjeta edc-evento">
 
-                            <img
-                                src="{{ evento.imagen.url }}"
-                                alt="{{ evento.titulo }}"
-                                class="evento-imagen"
-                            >
-
-                        {% endif %}
-
-
-                        <div class="evento-contenido">
-
-
-                            <!-- TÍTULO -->
-
-                            <div class="evento-titulo">
-
-                                📢 {{ evento.titulo }}
-
-                            </div>
-
-
-                            <!-- FECHA -->
-
-                            <div class="evento-info">
-
-                                📅
-                                {{ evento.fecha|date:"d/m/Y" }}
-
-                                {% if evento.hora %}
-
-                                    · 🕐
-                                    {{ evento.hora|time:"H:i" }}
-
-                                {% endif %}
-
-                            </div>
-
-
-                            <!-- TIPO -->
-
-                            <span class="evento-tipo">
-
-                                {{ evento.get_tipo_display }}
-
-                            </span>
-
-
-                            <!-- DESCRIPCIÓN -->
-
-                            {% if evento.descripcion %}
-
-                                <div class="evento-descripcion">
-
-                                    {{ evento.descripcion }}
-
-                                </div>
-
+                            {% if evento.imagen %}
+                                <img
+                                    class="edc-evento__img"
+                                    src="{{ evento.imagen.url }}"
+                                    alt="{{ evento.titulo }}"
+                                >
                             {% endif %}
 
+                            <div class="edc-evento__cuerpo">
 
-                            <!-- VIDEO -->
+                                <strong>
+                                    {{ evento.titulo }}
+                                </strong>
 
-                            {% if evento.video %}
+                                <span class="edc-evento__meta">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    {{ evento.fecha|date:"d/m/Y" }}
+                                    {% if evento.hora_inicio %}
+                                        · <i class="fa-regular fa-clock"></i>
+                                        {{ evento.hora_inicio|time:"H:i" }}
+                                    {% endif %}
+                                </span>
 
-                                <div class="evento-video">
+                                <span class="edc-badge edc-badge--info">
+                                    {{ evento.get_tipo_display }}
+                                </span>
 
-                                    🎥
+                                {% if evento.descripcion %}
+                                    <p>
+                                        {{ evento.descripcion|truncatechars:110 }}
+                                    </p>
+                                {% endif %}
 
-                                    
+                                {% if evento.video %}
+                                    <a
+                                        class="edc-evento__video"
                                         href="{{ evento.video }}"
                                         target="_blank"
                                         rel="noopener"
                                     >
+                                        <i class="fa-solid fa-video"></i>
                                         Ver video
                                     </a>
+                                {% endif %}
 
-                                </div>
+                            </div>
 
-                            {% endif %}
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="edc-vacio">
+                    <i class="fa-regular fa-calendar-xmark"></i>
+                    <strong>No hay eventos próximos</strong>
+                    <p>
+                        Actualmente no hay eventos publicados para docentes.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
 
 
+    <!-- =====================================================
+         TAREAS Y PANEL LATERAL
+    ====================================================== -->
+
+    <div class="edc-rejilla edc-rejilla--principal">
+
+
+        <!-- PRÓXIMAS TAREAS -->
+
+        <section class="edc-tarjeta">
+
+            <div class="edc-tarjeta__cabeza">
+                <h2>
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    Próximas tareas
+                </h2>
+                <a
+                    class="edc-btn edc-btn--suave"
+                    href="{% url 'listar_tareas_docentes' %}"
+                >
+                    Ver todas
+                </a>
+            </div>
+
+            {% if tareas_recientes %}
+
+                <div class="edc-tabla-envoltura">
+
+                    <table class="edc-tabla">
+
+                        <thead>
+                            <tr>
+                                <th>Tarea</th>
+                                <th>Curso</th>
+                                <th>Materia</th>
+                                <th>Fecha límite</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for tarea in tareas_recientes %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ tarea.titulo }}
+                                    </td>
+
+                                    <td>
+                                        {{ tarea.curso|default:"—" }}
+                                    </td>
+
+                                    <td>
+                                        {% if tarea.clase %}
+                                            {{ tarea.clase.titulo }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if tarea.fecha_entrega %}
+                                            {{ tarea.fecha_entrega|date:"d/m/Y" }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+
+                                        {% if tarea.estado == "vencida" %}
+
+                                            <span class="edc-badge edc-badge--error">
+                                                Vencida
+                                            </span>
+
+                                        {% elif tarea.estado == "inactiva" %}
+
+                                            <span class="edc-badge">
+                                                Inactiva
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="edc-badge edc-badge--exito">
+                                                Activa
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="edc-vacio">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <strong>No hay tareas registradas</strong>
+                    <p>
+                        Cuando crees tareas aparecerán en este listado.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- PANEL LATERAL -->
+
+        <div class="edc-bloque">
+
+
+            <!-- ACCIONES RÁPIDAS -->
+
+            <section class="edc-tarjeta">
+
+                <div class="edc-tarjeta__cabeza">
+                    <h2>
+                        <i class="fa-solid fa-bolt"></i>
+                        Acciones rápidas
+                    </h2>
+                </div>
+
+                <div class="edc-tarjeta__cuerpo edc-bloque">
+
+                    <a
+                        class="edc-btn edc-btn--bloque"
+                        href="{% url 'calificaciones_docente' %}"
+                    >
+                        <i class="fa-solid fa-chart-column"></i>
+                        Calificaciones
+                    </a>
+
+                    <a
+                        class="edc-btn edc-btn--bloque"
+                        href="{% url 'asistencia_docente' %}"
+                    >
+                        <i class="fa-solid fa-calendar-check"></i>
+                        Registrar asistencia
+                    </a>
+
+                    <a
+                        class="edc-btn edc-btn--bloque edc-btn--secundario"
+                        href="{% url 'listar_tareas_docentes' %}"
+                    >
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        Gestionar tareas
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- MIS MATERIAS -->
+
+            <section class="edc-tarjeta">
+
+                <div class="edc-tarjeta__cabeza">
+                    <h2>
+                        <i class="fa-solid fa-book"></i>
+                        Mis materias
+                    </h2>
+                </div>
+
+                <div class="edc-tarjeta__cuerpo">
+
+                    {% if asignaciones %}
+
+                        <ul class="edc-lista">
+
+                            {% for a in asignaciones %}
+
+                                <li>
+                                    <span class="edc-lista__punto" aria-hidden="true">
+                                        <i class="fa-solid fa-book"></i>
+                                    </span>
+                                    <span class="edc-lista__principal">
+                                        <strong>{{ a.clase.titulo }}</strong>
+                                        <span>{{ a.curso.nombre }}</span>
+                                    </span>
+                                </li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    {% else %}
+
+                        <div class="edc-vacio">
+                            <i class="fa-solid fa-book"></i>
+                            <strong>Sin materias asignadas</strong>
                         </div>
 
-                    </div>
+                    {% endif %}
 
-                {% endif %}
+                </div>
 
-            {% endfor %}
-
-
-        </div>
-
-
-    {% else %}
-
-        <p class="sin-eventos">
-
-            No hay eventos próximos.
-
-        </p>
-
-    {% endif %}
-
-
-</div>
-
-
-<!-- =========================================================
-     TAREAS + PANEL DERECHO
-========================================================= -->
-
-<div class="dashboard-grid">
-
-
-    <!-- =====================================================
-         PRÓXIMAS TAREAS
-    ====================================================== -->
-
-    <div class="section-card">
-
-
-        <div
-            style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                margin-bottom:10px;
-            "
-        >
-
-            <h4>
-                Próximas Tareas
-            </h4>
+            </section>
 
         </div>
-
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Tarea
-                    </th>
-
-                    <th>
-                        Grado
-                    </th>
-
-                    <th>
-                        Materia
-                    </th>
-
-                    <th>
-                        Fecha límite
-                    </th>
-
-                    <th>
-                        Estado
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody>
-
-
-                {% for tarea in tareas_recientes %}
-
-                    <tr>
-
-
-                        <td>
-                            {{ tarea.titulo }}
-                        </td>
-
-
-                        <td>
-                            {{ tarea.curso }}
-                        </td>
-
-
-                        <td>
-                            {{ tarea.materia }}
-                        </td>
-
-
-                        <td>
-                            {{ tarea.fecha_limite }}
-                        </td>
-
-
-                        <td>
-
-
-                            <span
-                                style="
-                                    padding:4px 10px;
-                                    border-radius:20px;
-                                    font-size:12px;
-
-                                    {% if tarea.estado == 'entregada' %}
-
-                                        background:#d1fae5;
-                                        color:#065f46;
-
-                                    {% elif tarea.estado == 'vencida' %}
-
-                                        background:#fee2e2;
-                                        color:#991b1b;
-
-                                    {% else %}
-
-                                        background:#fff3cd;
-                                        color:#b45309;
-
-                                    {% endif %}
-                                "
-                            >
-
-                                {{ tarea.get_estado_display }}
-
-                            </span>
-
-
-                        </td>
-
-
-                    </tr>
-
-
-                {% empty %}
-
-
-                    <tr>
-
-                        <td
-                            colspan="5"
-                            style="
-                                text-align:center;
-                                color:#6b7280;
-                                padding:20px 0;
-                            "
-                        >
-
-                            No hay tareas registradas.
-
-                        </td>
-
-                    </tr>
-
-
-                {% endfor %}
-
-
-            </tbody>
-
-        </table>
-
-
-    </div>
-
-
-    <!-- =====================================================
-         PANEL DERECHO
-    ====================================================== -->
-
-    <div class="right-panel">
-
-
-        <!-- ACCIONES RÁPIDAS -->
-
-        <div class="section-card">
-
-            <h4>
-                Acciones Rápidas
-            </h4>
-
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="window.location='{% url 'calificaciones_docente' %}'"
-            >
-
-                <i class="fa-solid fa-chart-column"></i>
-
-                Calificaciones
-
-            </button>
-
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="window.location='{% url 'asistencia_docente' %}'"
-            >
-
-                <i class="fa-solid fa-calendar-check"></i>
-
-                Registrar Asistencia
-
-            </button>
-
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="window.location='{% url 'listar_eventos_docente' %}'"
-            >
-
-                <i class="fa-solid fa-calendar-days"></i>
-
-                Ver Eventos
-
-            </button>
-
-
-        </div>
-
-
-        <!-- MIS MATERIAS -->
-
-        <div class="section-card">
-
-            <h4>
-                Mis Materias
-            </h4>
-
-
-            <ul class="activities">
-
-
-                {% for a in asignaciones %}
-
-                    <li>
-
-                        <i class="fa-solid fa-book"></i>
-
-                        {{ a.clase.titulo }} ({{ a.curso.nombre }})
-
-                    </li>
-
-
-                {% empty %}
-
-
-                    <li style="color:#6b7280;">
-
-                        Sin materias asignadas.
-
-                    </li>
-
-
-                {% endfor %}
-
-
-            </ul>
-
-        </div>
-
 
     </div>
 
 
 </div>
-
 
 {% endblock %}

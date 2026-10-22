@@ -3,90 +3,111 @@
 {% block title %}Detalle de Tarea{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="edc-pagina">
 
     <!-- TAREA -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">{{ tarea.titulo }}</h3>
+    <div class="edc-tarjeta">
+
+        <div class="edc-tarjeta__cabeza">
+            <h2>{{ tarea.titulo }}</h2>
         </div>
 
-        <div class="card-body">
+        <div class="edc-tabla-envoltura">
 
-            {% if tarea.titulo %}
-            <div class="mb-3">
-                <strong>Título:</strong><br>
-                {{ tarea.titulo }}
-            </div>
-            {% endif %}
+            <table class="edc-tabla">
 
-            {% if tarea.descripcion %}
-            <div class="mb-3">
-                <strong>Descripción:</strong><br>
-                {{ tarea.descripcion }}
-            </div>
-            {% endif %}
+                <tbody>
 
-            {% if tarea.fecha_creacion %}
-            <div class="mb-3">
-                <strong>Fecha de creación:</strong><br>
-                {{ tarea.fecha_creacion }}
-            </div>
-            {% endif %}
+                    {% if tarea.titulo %}
+                    <tr>
+                        <th scope="row">Título:</th>
+                        <td>{{ tarea.titulo }}</td>
+                    </tr>
+                    {% endif %}
+
+                    {% if tarea.descripcion %}
+                    <tr>
+                        <th scope="row">Descripción:</th>
+                        <td>{{ tarea.descripcion }}</td>
+                    </tr>
+                    {% endif %}
+
+                    {% if tarea.fecha_creacion %}
+                    <tr>
+                        <th scope="row">Fecha de creación:</th>
+                        <td>{{ tarea.fecha_creacion }}</td>
+                    </tr>
+                    {% endif %}
+
+                </tbody>
+
+            </table>
 
         </div>
+
     </div>
 
     <!-- IMÁGENES -->
     {% if tarea.imagenes.all %}
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Imágenes</h5>
+    <div class="edc-tarjeta">
+
+        <div class="edc-tarjeta__cabeza">
+            <h3>Imágenes</h3>
         </div>
 
-        <div class="card-body">
-            <div class="row">
+        <div class="edc-tarjeta__cuerpo">
+
+            <div class="edc-rejilla">
 
                 {% for imagen in tarea.imagenes.all %}
-                <div class="col-md-4 mb-3">
-                    <img src="{{ imagen.imagen.url }}" class="img-fluid rounded border shadow-sm">
+                <div>
+                    <img src="{{ imagen.imagen.url }}" alt="Imagen de la tarea" class="img-fluid rounded border shadow-sm">
                 </div>
                 {% endfor %}
 
             </div>
+
         </div>
+
     </div>
     {% endif %}
 
     <!-- ARCHIVOS -->
     {% if tarea.archivos.all %}
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Archivos adjuntos</h5>
+    <div class="edc-tarjeta">
+
+        <div class="edc-tarjeta__cabeza">
+            <h3>Archivos adjuntos</h3>
         </div>
 
-        <div class="card-body">
+        <div class="edc-tarjeta__cuerpo">
 
-            {% for archivo in tarea.archivos.all %}
-            <div class="mb-2">
-                <a href="{{ archivo.archivo.url }}" target="_blank" class="btn btn-outline-primary">
-                    📄 {{ archivo.archivo.name }}
-                </a>
-            </div>
-            {% endfor %}
+            <ul class="edc-lista">
+
+                {% for archivo in tarea.archivos.all %}
+                <li>
+                    <a href="{{ archivo.archivo.url }}" target="_blank" class="edc-btn edc-btn--suave">
+                        📄 {{ archivo.archivo.name }}
+                    </a>
+                </li>
+                {% endfor %}
+
+            </ul>
 
         </div>
+
     </div>
     {% endif %}
 
     <!-- VIDEOS -->
     {% if tarea.video_set.all %}
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Videos</h5>
+    <div class="edc-tarjeta">
+
+        <div class="edc-tarjeta__cabeza">
+            <h3>Videos</h3>
         </div>
 
-        <div class="card-body">
+        <div class="edc-tarjeta__cuerpo">
 
             {% for video in tarea.video_set.all %}
 
@@ -101,6 +122,7 @@
             {% endfor %}
 
         </div>
+
     </div>
     {% endif %}
 
@@ -109,22 +131,22 @@
     <form method="POST">
         {% csrf_token %}
 
-        <div class="card shadow-sm">
+        <div class="edc-tarjeta">
 
-            <div class="card-header bg-secondary text-white">
-                <h4 class="mb-0">
+            <div class="edc-tarjeta__cabeza">
+                <h4>
                     Preguntas ({{ tarea.preguntas.count }})
                 </h4>
             </div>
 
 
-            <div class="card-body">
+            <div class="edc-tarjeta__cuerpo">
 
                 {% for pregunta in preguntas %}
 
-                <div class="card shadow-sm mb-4">
+                <div class="edc-tarjeta mb-4">
 
-                    <div class="card-body">
+                    <div class="edc-tarjeta__cuerpo">
 
                         <h4 class="mb-3">
                             Pregunta {{ forloop.counter }}
@@ -138,9 +160,9 @@
                         <input type="hidden" name="tipo_{{ forloop.counter0 }}" value="{{ pregunta.tipo }}">
 
 
-                        <div class="mb-3">
+                        <div class="edc-campo">
 
-                            <strong>Enunciado:</strong>
+                            <span class="edc-ayuda">Enunciado:</span>
 
                             <p>
                                 {{ pregunta.descripcion }}
@@ -149,20 +171,20 @@
                         </div>
 
 
-                        <div class="mb-3">
+                        <div class="edc-campo">
 
-                            <strong>Tipo:</strong>
+                            <span class="edc-ayuda">Tipo:</span>
 
-                            {{ pregunta.get_tipo_display }}
+                            <span>{{ pregunta.get_tipo_display }}</span>
 
                         </div>
 
 
-                        <div class="mb-4">
+                        <div class="edc-campo">
 
-                            <strong>Puntaje:</strong>
+                            <span class="edc-ayuda">Puntaje:</span>
 
-                            {{ pregunta.puntaje }}
+                            <span>{{ pregunta.puntaje }}</span>
 
                         </div>
 
@@ -174,19 +196,19 @@
 
                         {% if not pregunta.respondida %}
 
-                        <div class="mb-3">
+                        <div class="edc-campo">
 
-                            <label class="form-label fw-bold">
+                            <label class="edc-ayuda">
                                 Tu respuesta:
                             </label>
 
-                            <textarea class="form-control" rows="4" name="respuesta_{{ forloop.counter0 }}"></textarea>
+                            <textarea class="edc-control" rows="4" name="respuesta_{{ forloop.counter0 }}"></textarea>
 
                         </div>
 
                         {% else %}
 
-                        <div class="alert alert-success">
+                        <div class="edc-alerta edc-alerta--exito">
                             Ya respondiste esta pregunta.
                         </div>
 
@@ -201,14 +223,14 @@
 
                         {% if not pregunta.respondida %}
 
-                        <div class="opciones-container">
+                        <div class="edc-campo">
 
                             {% for opcion in pregunta.opciones.all %}
 
-                            <label class="opcion-item">
+                            <label class="edc-alerta">
 
                                 <input type="radio" name="opcion_seleccionada_{{ forloop.parentloop.counter0 }}"
-                                    value="{{ opcion.id }}" class="opcion-check">
+                                    value="{{ opcion.id }}">
 
                                 <span>
                                     {{ opcion.opcion }}
@@ -222,7 +244,7 @@
 
                         {% else %}
 
-                        <div class="alert alert-success">
+                        <div class="edc-alerta edc-alerta--exito">
                             Ya respondiste esta pregunta.
                         </div>
 
@@ -240,9 +262,9 @@
 
                 <!-- BOTÓN SUBMIT -->
 
-                <div class="text-end mt-4">
+                <div class="edc-pagina__acciones">
 
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="edc-btn">
                         Enviar respuestas
                     </button>
 
@@ -254,61 +276,23 @@
         </div>
     </form>
 
-    <div class="alert alert-info">
+    <div class="edc-alerta edc-alerta--info">
         Nota actual:
         <strong>{{ nota }}</strong>
     </div>
 
     <!-- BOTONES -->
-    <div class="mt-4">
+    <div class="edc-pagina__acciones">
 
-        <a href="{% url 'editar_tarea' tarea.id %}" class="btn btn-warning">
+        <a href="{% url 'editar_tarea' tarea.id %}" class="edc-btn">
             Editar
         </a>
 
-        <a href="{% url 'listar_tareas' %}" class="btn btn-secondary">
+        <a href="{% url 'listar_tareas' %}" class="edc-btn edc-btn--secundario">
             Volver
         </a>
 
     </div>
 
 </div>
-
-<style>
-    .opciones-container {
-        margin-top: 20px;
-    }
-
-    .opcion-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-
-        width: 100%;
-
-        padding: 12px 15px;
-
-        margin-bottom: 2px;
-
-        background: #f8f9fa;
-
-        cursor: pointer;
-
-        transition: 0.2s;
-    }
-
-    .opcion-item:hover {
-        background: #e9ecef;
-    }
-
-    .opcion-check {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-    }
-
-    .opcion-item:has(.opcion-check:checked) {
-        background: #d8e6dc;
-    }
-</style>
 {% endblock %}

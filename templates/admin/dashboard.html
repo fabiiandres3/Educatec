@@ -1,276 +1,199 @@
 {% extends 'admin/base_admin.html' %}
 
 
-{% block page_title %}Dashboard{% endblock %}
+{% block page_title %}Panel de administración{% endblock %}
+
+{% block page_subtitle %}Vista general de la institución{% endblock %}
 
 
 {% block content %}
 
+<!-- =====================================================
+     BIENVENIDA
+====================================================== -->
 
-<!-- STATS -->
-<div class="row g-4 mb-4">
+<section class="edc-bienvenida mb-4">
 
+    <div>
 
-    <div class="col-md-4 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(254, 254, 254, 0.15);">
-                <i class="fas fa-user-graduate" style="color:#38bdf8;"></i>
-            </div>
-            <div class="stat-value">{{ total_alumnoss }}</div>
-            <div class="stat-label">alumnos</div>
-        </div>
+        <span class="edc-bienvenida__saludo">
+            <i class="fa-regular fa-sun"></i>
+            {{ saludo|default:"Bienvenido" }}
+        </span>
+
+        <h1>{{ request.user.get_full_name|default:request.user.documento }}</h1>
+
+        <p>
+            Este es el resumen general de Educatec:
+            {{ total_alumnoss }} estudiantes activos, {{ total_docentees }} docentes
+            y {{ total_cursos }} cursos registrados.
+        </p>
+
     </div>
 
-
-    <div class="col-md-4 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(168,85,247,.15);">
-                <i class="fas fa-chalkboard-teacher" style="color:#a855f7;"></i>
-            </div>
-            <div class="stat-value">{{ total_docentees }}</div>
-            <div class="stat-label">docentes</div>
-        </div>
+    <div class="edc-bienvenida__arte" aria-hidden="true">
+        <i class="fa-solid fa-shield-halved"></i>
     </div>
 
+</section>
 
-    <div class="col-md-4 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(251,191,36,.15);">
-                <i class="fas fa-tasks" style="color:#fbbf24;"></i>
-            </div>
-            <div class="stat-value">{{ total_tareas }}</div>
-            <div class="stat-label">Tareas</div>
+
+<!-- =====================================================
+     ESTADÍSTICAS
+====================================================== -->
+
+<div class="edc-rejilla mb-4">
+
+    <article class="edc-stat">
+        <div class="edc-stat__icono"><i class="fa-solid fa-user-graduate"></i></div>
+        <div class="edc-stat__texto">
+            <div class="edc-stat__valor">{{ total_alumnoss }}</div>
+            <div class="edc-stat__etiqueta">Alumnos activos</div>
         </div>
-    </div>
+    </article>
 
-
-    <div class="col-md-6 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(34,197,94,.15);">
-                <i class="fas fa-book" style="color:#22c55e;"></i>
-            </div>
-            <div class="stat-value">{{ total_cursos }}</div>
-            <div class="stat-label">Cursos</div>
+    <article class="edc-stat">
+        <div class="edc-stat__icono edc-stat__icono--exito"><i class="fa-solid fa-chalkboard-user"></i></div>
+        <div class="edc-stat__texto">
+            <div class="edc-stat__valor">{{ total_docentees }}</div>
+            <div class="edc-stat__etiqueta">Docentes</div>
         </div>
-    </div>
+    </article>
 
-
-    <div class="col-md-6 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(239,68,68,.15);">
-                <i class="fas fa-atom" style="color:#ef4444;"></i>
-            </div>
-            <div class="stat-value">{{ total_materias }}</div>
-            <div class="stat-label">Materias</div>
+    <article class="edc-stat">
+        <div class="edc-stat__icono edc-stat__icono--alerta"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="edc-stat__texto">
+            <div class="edc-stat__valor">{{ total_cursos }}</div>
+            <div class="edc-stat__etiqueta">Cursos</div>
         </div>
-    </div>
+    </article>
 
+    <article class="edc-stat">
+        <div class="edc-stat__icono"><i class="fa-solid fa-book-open"></i></div>
+        <div class="edc-stat__texto">
+            <div class="edc-stat__valor">{{ total_materias }}</div>
+            <div class="edc-stat__etiqueta">Clases / materias</div>
+        </div>
+    </article>
+
+    <article class="edc-stat">
+        <div class="edc-stat__icono edc-stat__icono--error"><i class="fa-solid fa-clipboard-list"></i></div>
+        <div class="edc-stat__texto">
+            <div class="edc-stat__valor">{{ total_tareas }}</div>
+            <div class="edc-stat__etiqueta">Tareas creadas</div>
+        </div>
+    </article>
 
 </div>
 
 
+<!-- =====================================================
+     USUARIOS RECIENTES
+====================================================== -->
 
+<section class="edc-tarjeta">
 
-<!-- USUARIOS RECIENTES -->
-<div class="admin-table">
+    <div class="edc-tarjeta__cabeza">
 
+        <h2>
+            <i class="fa-regular fa-clock me-2"></i>
+            Usuarios recientes
+        </h2>
 
-    <div class="admin-table-header">
-
-
-        <h6>
-            <i class="fas fa-clock me-2" style="color:#38bdf8;"></i>
-            Usuarios Recientes
-        </h6>
-
-
-        <a href="{#}"
-           style="color:#38bdf8; font-size:13px; text-decoration:none;">
-            Ver todos
-            <i class="fas fa-arrow-right ms-1"></i>
+        <a href="{% url 'listar_usuarios' %}" class="edc-btn edc-btn--suave">
+            Ver usuarios
+            <i class="fa-solid fa-arrow-right"></i>
         </a>
 
-
     </div>
 
+    {% if usuarios_recientes %}
 
+        <div class="edc-tabla-envoltura">
 
+            <table class="edc-tabla">
 
-    <table class="table table-dark-custom">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Registro</th>
+                    </tr>
+                </thead>
 
+                <tbody>
 
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Fecha registro</th>
-            </tr>
-        </thead>
+                    {% for u in usuarios_recientes %}
 
+                        <tr>
 
-        <tbody>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="edc-usuario__avatar" aria-hidden="true">{{ u.documento|default:"?"|first|upper }}</span>
+                                    <span>{{ u.get_full_name|default:u.documento|default:"—" }}</span>
+                                </div>
+                            </td>
 
+                            <td>{{ u.email|default:"—" }}</td>
 
-            {% for u in usuarios_recientes %}
+                            <td>
 
+                                {% if u.is_superuser %}
 
-            <tr>
+                                    <span class="edc-badge edc-badge--info">Administrador</span>
 
+                                {% elif u.rol %}
 
-                <!-- USUARIO -->
-                <td>
+                                    {% if u.rol.nombre|lower == 'docente' %}
+                                        <span class="edc-badge edc-badge--info">{{ u.rol.nombre }}</span>
+                                    {% elif u.rol.nombre|lower == 'alumnos' or u.rol.nombre|lower == 'alumno' %}
+                                        <span class="edc-badge edc-badge--exito">{{ u.rol.nombre }}</span>
+                                    {% else %}
+                                        <span class="edc-badge">{{ u.rol.nombre }}</span>
+                                    {% endif %}
 
+                                {% else %}
 
-                    <div style="display:flex; align-items:center; gap:10px;">
+                                    <span class="edc-badge">Sin rol</span>
 
+                                {% endif %}
 
-                        <div class="avatar-admin"
-                             style="width:32px;height:32px;font-size:12px;">
-                            {{ u.documento|default:"?"|first|upper }}
-                        </div>
+                            </td>
 
+                            <td>
 
-                        {{ u.documento|default:"—" }}
+                                {% if u.is_active %}
+                                    <span class="edc-badge edc-badge--exito">Activo</span>
+                                {% else %}
+                                    <span class="edc-badge edc-badge--error">Inactivo</span>
+                                {% endif %}
 
+                            </td>
 
-                    </div>
+                            <td>{{ u.date_joined|date:"d/m/Y" }}</td>
 
+                        </tr>
 
-                </td>
+                    {% endfor %}
 
+                </tbody>
 
+            </table>
 
+        </div>
 
-                <!-- EMAIL -->
-                <td style="color:#64748b;">
-                    {{ u.email|default:"—" }}
-                </td>
+    {% else %}
 
+        <div class="edc-vacio">
+            <i class="fa-regular fa-user"></i>
+            <strong>Aún no hay usuarios registrados</strong>
+            <p>Los usuarios aparecerán aquí en cuanto se registren.</p>
+        </div>
 
+    {% endif %}
 
-
-                <!-- ROL -->
-                <td>
-
-
-                    {% if u.is_superuser %}
-
-
-                        <span class="badge-rol badge-admin">
-                            Admin
-                        </span>
-
-
-                    {% elif u.rol %}
-
-
-                        <span class="badge-rol
-                            {% if u.rol.nombre|lower == 'docente' %}
-                                badge-docente
-                            {% elif u.rol.nombre|lower == 'alumnos' %}
-                                badge-alumno
-                            {% else %}
-                                badge-usuario
-                            {% endif %}">
-
-
-                            {{ u.rol.nombre }}
-
-
-                        </span>
-
-
-                    {% else %}
-
-
-                        <span class="badge-rol badge-usuario">
-                            Sin rol
-                        </span>
-
-
-                    {% endif %}
-
-
-                </td>
-
-
-
-
-                <!-- ESTADO -->
-                <td>
-
-
-                    {% if u.is_active %}
-
-
-                        <span style="color:#22c55e; font-size:13px;">
-                            <i class="fas fa-circle"
-                               style="font-size:8px;"></i>
-                            Activo
-                        </span>
-
-
-                    {% else %}
-
-
-                        <span style="color:#ef4444; font-size:13px;">
-                            <i class="fas fa-circle"
-                               style="font-size:8px;"></i>
-                            Inactivo
-                        </span>
-
-
-                    {% endif %}
-
-
-                </td>
-
-
-
-
-                <!-- FECHA -->
-                <td style="color:#64748b;">
-                    {{ u.date_joined|date:"d/m/Y" }}
-                </td>
-
-
-            </tr>
-
-
-
-
-            {% empty %}
-
-
-            <tr>
-
-
-                <td colspan="5"
-                    class="text-center"
-                    style="color:#475569; padding:40px;">
-
-
-                    No hay usuarios registrados
-
-
-                </td>
-
-
-            </tr>
-
-
-            {% endfor %}
-
-
-        </tbody>
-
-
-    </table>
-
-
-</div>
-
+</section>
 
 {% endblock %}

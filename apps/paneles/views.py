@@ -133,14 +133,22 @@ def dashboard_docente(request):
                 )
             )
 
-    # Ordenar si los objetos tienen fecha de creación
-    try:
-        tareas_recientes.sort(
-            key=lambda x: x.creado_en,
-            reverse=True
-        )
-    except AttributeError:
-        pass
+    # Estado real de cada tarea según su publicación y fecha de entrega.
+    hoy_docente = timezone.localdate()
+
+    for tarea in tareas_recientes:
+
+        if not tarea.activa:
+            tarea.estado = "inactiva"
+        elif tarea.fecha_entrega and tarea.fecha_entrega < hoy_docente:
+            tarea.estado = "vencida"
+        else:
+            tarea.estado = "activa"
+
+    # Ordenar por fecha de entrega (las más próximas primero).
+    tareas_recientes.sort(
+        key=lambda tarea: tarea.fecha_entrega or date.max
+    )
 
     tareas_recientes = tareas_recientes[:5]
 
@@ -160,9 +168,20 @@ def dashboard_docente(request):
     asistieron_hoy = registros_hoy.filter(estado__in=["P", "T"]).count()
     porcentaje_asistencia = (
         round(asistieron_hoy / total_registros_hoy * 100, 1)
-        if total_registros_hoy else "—"
+        if total_registros_hoy else None
     )
-    promedio = "—"
+
+    # Promedio real de las calificaciones de las tareas del docente.
+    notas_docente = [
+        float(nota)
+        for nota in Calificacion.objects
+        .filter(tarea__docente=docente)
+        .values_list("nota", flat=True)
+    ]
+    promedio = (
+        round(sum(notas_docente) / len(notas_docente), 2)
+        if notas_docente else None
+    )
 
     # --------------------------------------------------------
     # RENDER
@@ -1360,6 +1379,11 @@ def dashboard_alumnos(request):
         usuario=request.user,
         activo=True,
     )
+
+    # --------------------------------------------------------
+    # ASISTENCIA REAL DEL ALUMNO
+    # --------------------------------------------------------
+
     asistencias_alumno = Asistencia.objects.filter(alumno=alumno)
     presentes = asistencias_alumno.filter(estado="P").count()
     tardanzas = asistencias_alumno.filter(estado="T").count()
@@ -1369,6 +1393,92 @@ def dashboard_alumnos(request):
         round((presentes + tardanzas) / total_asistencias * 100, 1)
         if total_asistencias else None
     )
+
+    # --------------------------------------------------------
+    # PROMEDIO REAL POR MATERIA (CLASE)
+    # --------------------------------------------------------
+    # Se reúnen las notas de tareas y de actividades manuales y se
+    # agrupan por la clase (materia) a la que pertenecen. Solo se
+    # muestran datos existentes en la base de datos.
+
+    materias = {}
+
+    calificaciones_tareas = (
+        Calificacion.objects
+        .filter(alumno=request.user)
+        .select_related("tarea", "tarea__clase")
+    )
+
+    for calificacion in calificaciones_tareas:
+        tarea = calificacion.tarea
+        nombre_materia = (
+            tarea.clase.titulo
+            if tarea and tarea.clase
+            else "General"
+        )
+        materias.setdefault(nombre_materia, []).append(float(calificacion.nota))
+
+    calificaciones_actividades = (
+        CalificacionActividad.objects
+        .filter(alumno=request.user, nota__isnull=False)
+        .select_related("actividad", "actividad__clase")
+    )
+
+    for calificacion in calificaciones_actividades:
+        actividad = calificacion.actividad
+        nombre_materia = (
+            actividad.clase.titulo
+            if actividad and actividad.clase
+            else "General"
+        )
+        materias.setdefault(nombre_materia, []).append(float(calificacion.nota))
+
+    resumen_materias = [
+        {
+            "materia": nombre,
+            "promedio": round(sum(notas) / len(notas), 2),
+        }
+        for nombre, notas in sorted(materias.items())
+    ]
+
+    notas_totales = [nota for notas in materias.values() for nota in notas]
+    promedio_general = (
+        round(sum(notas_totales) / len(notas_totales), 2)
+        if notas_totales else None
+    )
+
+    # --------------------------------------------------------
+    # TAREAS PENDIENTES DEL CURSO DEL ALUMNO
+    # --------------------------------------------------------
+    # Pendiente = tarea activa del curso que aún no tiene calificación
+    # registrada para este alumno.
+
+    tareas_pendientes = 0
+
+    if alumno.curso:
+        tareas_calificadas = (
+            Calificacion.objects
+            .filter(alumno=request.user, tarea__curso=alumno.curso)
+            .values_list("tarea_id", flat=True)
+        )
+        tareas_pendientes = (
+            Tareas.objects
+            .filter(curso=alumno.curso, activa=True)
+            .exclude(id__in=tareas_calificadas)
+            .count()
+        )
+
+    # --------------------------------------------------------
+    # LOGROS DERIVADOS DE DATOS REALES
+    # --------------------------------------------------------
+
+    total_logros = 0
+
+    if porcentaje_asistencia is not None and porcentaje_asistencia >= 90:
+        total_logros += 1
+
+    if promedio_general is not None and promedio_general >= 4.5:
+        total_logros += 1
 
     eventos = Evento.objects.filter(
         publicado=True,
@@ -1388,6 +1498,10 @@ def dashboard_alumnos(request):
             "presentes": presentes,
             "tardanzas": tardanzas,
             "ausentes": ausentes,
+            "materias": resumen_materias,
+            "promedio_general": promedio_general,
+            "tareas_pendientes": tareas_pendientes,
+            "total_logros": total_logros,
         }
     )
 
@@ -1921,17 +2035,11 @@ def dashboard_acudiente(request):
         tardanzas = asistencias.filter(estado="T").count()
 
         porcentaje_asistencia = (
-
             round(
-                (
-                    presentes + tardanzas
-                    / total_asistencias
-                ) * 100,
+                (presentes + tardanzas) / total_asistencias * 100,
                 1
             )
-
             if total_asistencias > 0
-
             else None
         )
 
@@ -1943,7 +2051,18 @@ def dashboard_acudiente(request):
 
         if alumno.curso:
 
-            tareas_pendientes = alumno.curso.tareas_set.filter(activa=True).count()
+            tareas_calificadas = (
+                Calificacion.objects
+                .filter(alumno=alumno.usuario, tarea__curso=alumno.curso)
+                .values_list("tarea_id", flat=True)
+            )
+
+            tareas_pendientes = (
+                Tareas.objects
+                .filter(curso=alumno.curso, activa=True)
+                .exclude(id__in=tareas_calificadas)
+                .count()
+            )
 
         # -------------------------------------------------
         # DATOS PARA LA PLANTILLA

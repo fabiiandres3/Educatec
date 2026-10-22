@@ -1,540 +1,95 @@
 {% extends 'admin/base_admin.html' %}
+{% load static %}
 
-{% block title %}Tareas
+{% block title %}Tareas{% endblock %}
 
-
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/educatec/panel_tareas.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<style>
-    .tareas-page {
-        padding: 10px 5px 30px;
-    }
-
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        gap: 20px;
-        flex-wrap: wrap;
-    }
-
-    .page-title {
-        margin: 0;
-        font-size: 28px;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .page-subtitle {
-        margin: 5px 0 0;
-        color: #6b7280;
-        font-size: 14px;
-    }
-
-    .stats-card {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        padding: 13px 18px;
-        box-shadow: 0 4px 15px rgba(0,0,0,.04);
-    }
-
-    .stats-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #eef2ff;
-        color: #4f46e5;
-    }
-
-    .stats-number {
-        font-size: 21px;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .stats-label {
-        font-size: 12px;
-        color: #6b7280;
-    }
-
-    .toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 18px;
-        flex-wrap: wrap;
-    }
-
-    .search-box {
-        position: relative;
-        width: 300px;
-        max-width: 100%;
-    }
-
-    .search-box input {
-        width: 100%;
-        height: 42px;
-        border: 1px solid #d1d5db;
-        border-radius: 10px;
-        padding: 0 14px 0 40px;
-        outline: none;
-        box-sizing: border-box;
-    }
-
-    .search-box input:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,.12);
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-    }
-
-    .btn-create {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        height: 42px;
-        padding: 0 17px;
-        border-radius: 10px;
-        background: #4f46e5;
-        color: white;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .btn-create:hover {
-        background: #4338ca;
-        color: white;
-    }
-
-    .table-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0,0,0,.05);
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-    }
-
-    .tasks-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 0;
-    }
-
-    .tasks-table thead th {
-        background: #f8fafc;
-        color: #6b7280;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        padding: 15px 17px;
-        border-bottom: 1px solid #e5e7eb;
-        white-space: nowrap;
-    }
-
-    .tasks-table tbody td {
-        padding: 15px 17px;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 13px;
-        color: #374151;
-        vertical-align: middle;
-    }
-
-    .tasks-table tbody tr:hover {
-        background: #f8fafc;
-    }
-
-    .task-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        min-width: 180px;
-    }
-
-    .task-icon {
-        width: 35px;
-        height: 35px;
-        border-radius: 9px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #eef2ff;
-        color: #4f46e5;
-        flex-shrink: 0;
-    }
-
-    .task-name {
-        font-weight: 600;
-        color: #1f2937;
-    }
-
-    .badge-course {
-        display: inline-flex;
-        padding: 6px 9px;
-        border-radius: 8px;
-        background: #f0fdf4;
-        color: #15803d;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .badge-status {
-        display: inline-flex;
-        padding: 6px 9px;
-        border-radius: 8px;
-        background: #ecfdf5;
-        color: #047857;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .date {
-        color: #64748b;
-        white-space: nowrap;
-    }
-
-    .teacher {
-        color: #64748b;
-    }
-
-    .actions {
-        display: flex;
-        gap: 6px;
-        white-space: nowrap;
-    }
-
-    .btn-action {
-        width: 34px;
-        height: 34px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
-    }
-
-    .btn-info-soft {
-        background: #eff6ff;
-        color: #2563eb;
-    }
-
-    .btn-primary-soft {
-        background: #eef2ff;
-        color: #4f46e5;
-    }
-
-    .btn-danger-soft {
-        background: #fef2f2;
-        color: #dc2626;
-    }
-
-    .btn-danger-soft:hover {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 50px !important;
-        color: #9ca3af !important;
-    }
-
-    .empty-icon {
-        width: 60px;
-        height: 60px;
-        margin: auto auto 15px;
-        border-radius: 50%;
-        background: #f3f4f6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-    }
-
-    /* =========================================================
-       MODAL ELIMINAR
-       ========================================================= */
-
-    .modal-eliminar {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.45);
-        z-index: 9999;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .modal-eliminar.activo {
-        display: flex;
-    }
-
-    .modal-box {
-        width: 100%;
-        max-width: 420px;
-        background: #ffffff;
-        border-radius: 18px;
-        padding: 30px;
-        text-align: center;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
-        animation: aparecerModal 0.2s ease;
-    }
-
-    .modal-icon {
-        width: 65px;
-        height: 65px;
-        margin: 0 auto 18px;
-        border-radius: 50%;
-        background: #fef2f2;
-        color: #dc2626;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 25px;
-    }
-
-    .modal-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 10px;
-    }
-
-    .modal-text {
-        color: #6b7280;
-        font-size: 14px;
-        line-height: 1.6;
-        margin-bottom: 25px;
-    }
-
-    .modal-text strong {
-        color: #374151;
-    }
-
-    .modal-actions {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .modal-btn {
-        border: none;
-        border-radius: 9px;
-        padding: 10px 18px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .btn-cancelar {
-        background: #f3f4f6;
-        color: #374151;
-    }
-
-    .btn-cancelar:hover {
-        background: #e5e7eb;
-    }
-
-    .btn-confirmar {
-        background: #dc2626;
-        color: #ffffff;
-    }
-
-    .btn-confirmar:hover {
-        background: #b91c1c;
-    }
-
-    @keyframes aparecerModal {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-
-    @media (max-width: 480px) {
-
-        .modal-box {
-            padding: 25px 20px;
-        }
-
-        .modal-actions {
-            flex-direction: column;
-        }
-
-        .modal-btn {
-            width: 100%;
-        }
-    }
-
-    .listing-page { max-width: 1480px; margin: 0 auto; padding: 18px 8px 36px !important; }
-    .listing-page .page-header { align-items: flex-end; padding: 22px 24px; margin-bottom: 18px; border: 1px solid #e5eaf2; border-radius: 18px; background: linear-gradient(125deg, #fff, #f5f7ff); box-shadow: 0 8px 24px rgba(15, 23, 42, .04); }
-    .listing-page .page-title { color: #172033; font-size: clamp(26px, 3vw, 34px); letter-spacing: -.04em; }
-    .listing-page .page-header > div:first-child { display:grid; grid-template-columns:58px 1fr; column-gap:15px; align-items:center; }
-    .listing-page .page-title { display:contents; }
-    .listing-page .page-title-icon { display:grid; place-items:center; flex:0 0 58px; width:58px; height:58px; border-radius:16px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; font-size:24px; box-shadow:0 8px 20px rgba(217,119,6,.2); }
-    .listing-page .page-title-icon { grid-column:1; grid-row:1 / 3; }
-    .listing-page .page-title-copy { grid-column:2; grid-row:1; align-self:end; }
-    .listing-page .page-subtitle { grid-column:2; grid-row:2; align-self:start; }
-    .listing-page .page-subtitle { margin-top: 7px; color: #64748b; }
-    .listing-page .stats-card { display: none; }
-    .overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin: 0 0 18px; }
-    .overview-card { position: relative; overflow: hidden; display: flex; align-items: center; gap: 13px; min-height: 84px; padding: 15px 18px; border: 1px solid #e8edf4; border-radius: 15px; background: #fff; box-shadow: 0 6px 18px rgba(15, 23, 42, .035); }
-    .overview-card:after { content: ""; position: absolute; right: -22px; bottom: -40px; width: 100px; height: 100px; border-radius: 50%; background: var(--accent-soft); opacity: .7; }
-    .overview-icon { z-index: 1; display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border-radius: 13px; color: var(--accent); background: var(--accent-soft); font-size: 17px; }
-    .overview-copy { z-index: 1; display: grid; gap: 5px; }
-    .overview-value { color: #172033; font-size: 23px; font-weight: 750; line-height: 1; }
-    .overview-label { color: #697586; font-size: 11px; font-weight: 650; }
-    .listing-page .table-card { border: 1px solid #e7ecf3; border-radius: 16px; box-shadow: 0 8px 24px rgba(15, 23, 42, .045); }
-    .listing-page .table-toolbar, .listing-page .toolbar { padding: 15px 18px; border-bottom: 1px solid #edf1f6; background: #fff; }
-    .listing-page .table-toolbar-title { color: #263247; font-weight: 700; }
-    .listing-page .search-box input { height: 43px; border-color: #e2e8f0; border-radius: 11px; background: #f8fafc; }
-    .listing-page .search-box input:focus { background: #fff; border-color: #818cf8; }
-    .listing-page table thead th { background: #f8fafc; color: #7b8798; font-size: 10px; letter-spacing: .08em; }
-    .listing-page table tbody td { padding-top: 14px; padding-bottom: 14px; }
-    .listing-page table tbody tr { transition: background .18s ease; }
-    .listing-page table tbody tr:hover { background: #fafbff; }
-    .listing-filter-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 11px 17px; border-bottom: 1px solid #edf1f6; background: #fff; }
-    .listing-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
-    .listing-filter { border: 1px solid transparent; border-radius: 9px; padding: 8px 11px; color: #64748b; background: transparent; font-size: 12px; font-weight: 650; cursor: pointer; transition: .18s ease; }
-    .listing-filter:hover { color: #4338ca; background: #f5f3ff; }
-    .listing-filter.active { border-color: #e0e7ff; color: #4338ca; background: #eef2ff; }
-    .listing-count { color: #64748b; font-size: 12px; font-weight: 600; }
-    .listing-empty-filter { padding: 13px 17px; color: #64748b; background: #fff; font-size: 13px; }
-    .listing-page .btn-create { border-radius: 11px; box-shadow: 0 5px 12px rgba(79, 70, 229, .16); }
-    .listing-page .action-btn, .listing-page .btn-action { border-radius: 9px; transition: .18s ease; }
-    @media (max-width: 900px) { .overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .overview-card:last-child { grid-column: 1 / -1; } }
-    @media (max-width: 680px) { .listing-page { padding: 12px 0 28px !important; } .listing-page .page-header { align-items: flex-start; padding: 17px; } .overview-grid { gap: 8px; } .overview-card { min-height: 72px; padding: 12px; gap: 9px; } .overview-icon { flex-basis: 36px; width: 36px; height: 36px; } .overview-value { font-size: 21px; } .listing-filter-bar { align-items: flex-start; flex-direction: column; } .listing-filters { overflow-x: auto; flex-wrap: nowrap; max-width: 100%; } .listing-filter { white-space: nowrap; } }
-    @media (max-width: 420px) { .overview-grid { grid-template-columns: 1fr 1fr; } .overview-card:last-child { grid-column: 1 / -1; } }
-
-</style>
-
-
-<div class="container-fluid tareas-page listing-page">
+<div class="edc-pagina listing-page">
 
     <!-- ENCABEZADO -->
-
-    <div class="page-header">
-
+    <header class="edc-pagina__cabecera">
         <div>
-
-            <h1 class="page-title">
-                <span class="page-title-icon"><i class="fas fa-clipboard-list" aria-hidden="true"></i></span>
-                <span class="page-title-copy">Tareas</span>
+            <h1 class="edc-pagina__titulo">
+                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                Tareas
             </h1>
-
-            <p class="page-subtitle">
+            <p class="edc-pagina__subtitulo">
                 Administra las tareas creadas en la plataforma.
             </p>
-
         </div>
 
-
-        <div class="stats-card">
-
-            <div class="stats-icon">
-                <i class="fas fa-tasks"></i>
-            </div>
-
-            <div>
-
-                <div class="stats-number">
-                    {{ tareas|length }}
-                </div>
-
-                <div class="stats-label">
-                    Tareas registradas
-                </div>
-
-            </div>
-
+        <div class="edc-stat">
+            <span class="edc-stat__icono"><i class="fas fa-tasks" aria-hidden="true"></i></span>
+            <span class="edc-stat__texto">
+                <strong class="edc-stat__valor">{{ tareas|length }}</strong>
+                <span class="edc-stat__etiqueta">Tareas registradas</span>
+            </span>
         </div>
+    </header>
 
-    </div>
-
-
-    <section class="overview-grid" aria-label="Resumen de tareas">
-        <article class="overview-card" style="--accent:#4f46e5;--accent-soft:#eef2ff"><span class="overview-icon"><i class="fas fa-tasks"></i></span><span class="overview-copy"><strong class="overview-value">{{ tareas|length }}</strong><span class="overview-label">Tareas registradas</span></span></article>
-        <article class="overview-card" style="--accent:#16a34a;--accent-soft:#dcfce7"><span class="overview-icon"><i class="fas fa-circle-check"></i></span><span class="overview-copy"><strong class="overview-value">{{ tareas_activas }}</strong><span class="overview-label">Tareas activas</span></span></article>
-        <article class="overview-card" style="--accent:#d97706;--accent-soft:#fef3c7"><span class="overview-icon"><i class="fas fa-circle-pause"></i></span><span class="overview-copy"><strong class="overview-value">{{ tareas_inactivas }}</strong><span class="overview-label">Tareas inactivas</span></span></article>
+    <section class="edc-rejilla" aria-label="Resumen de tareas">
+        <div class="edc-stat">
+            <span class="edc-stat__icono"><i class="fas fa-tasks" aria-hidden="true"></i></span>
+            <span class="edc-stat__texto">
+                <strong class="edc-stat__valor">{{ tareas|length }}</strong>
+                <span class="edc-stat__etiqueta">Tareas registradas</span>
+            </span>
+        </div>
+        <div class="edc-stat">
+            <span class="edc-stat__icono edc-stat__icono--exito"><i class="fas fa-circle-check" aria-hidden="true"></i></span>
+            <span class="edc-stat__texto">
+                <strong class="edc-stat__valor">{{ tareas_activas }}</strong>
+                <span class="edc-stat__etiqueta">Tareas activas</span>
+            </span>
+        </div>
+        <div class="edc-stat">
+            <span class="edc-stat__icono edc-stat__icono--alerta"><i class="fas fa-circle-pause" aria-hidden="true"></i></span>
+            <span class="edc-stat__texto">
+                <strong class="edc-stat__valor">{{ tareas_inactivas }}</strong>
+                <span class="edc-stat__etiqueta">Tareas inactivas</span>
+            </span>
+        </div>
     </section>
 
     <!-- HERRAMIENTAS -->
-
-    <div class="toolbar">
-
-        <div class="search-box">
-
-            <i class="fas fa-search search-icon"></i>
-
+    <div class="edc-filtros">
+        <label class="edc-buscador-campo">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
             <input
                 type="text"
                 id="searchTarea"
                 placeholder="Buscar tarea..."
                 autocomplete="off"
+                aria-label="Buscar tarea"
             >
+        </label>
 
-        </div>
-
-
-        <a
-            href="{% url 'crear_tarea' %}"
-            class="btn-create"
-        >
-            <i class="fas fa-plus"></i>
+        <a href="{% url 'crear_tarea' %}" class="edc-btn">
+            <i class="fas fa-plus" aria-hidden="true"></i>
             Crear tarea
         </a>
-
     </div>
 
-
-    <div class="listing-filter-bar"><div class="listing-filters" role="group" aria-label="Filtrar tareas">
-        <button type="button" class="listing-filter active" data-list-filter="all">Todas</button>
-        <button type="button" class="listing-filter" data-list-filter="active">Activas</button>
-        <button type="button" class="listing-filter" data-list-filter="inactive">Inactivas</button>
-    </div><span class="listing-count" data-list-count></span></div>
+    <div class="edc-filtros">
+        <div class="edc-filtros__grupo" role="group" aria-label="Filtrar tareas">
+            <button type="button" class="edc-btn edc-btn--secundario listing-filter active" data-list-filter="all">Todas</button>
+            <button type="button" class="edc-btn edc-btn--secundario listing-filter" data-list-filter="active">Activas</button>
+            <button type="button" class="edc-btn edc-btn--secundario listing-filter" data-list-filter="inactive">Inactivas</button>
+        </div>
+        <span class="edc-ayuda" data-list-count></span>
+    </div>
 
     <!-- TABLA -->
-
-    <div class="table-card">
-
-        <div class="table-responsive">
-
-            <table class="tasks-table">
-
+    <div class="edc-tarjeta">
+        <div class="edc-tabla-envoltura">
+            <table class="edc-tabla">
                 <thead>
-
                     <tr>
-
                         <th>Tarea</th>
                         <th>Materia</th>
                         <th>Curso</th>
@@ -543,200 +98,124 @@
                         <th>Estado</th>
                         <th>Entregas</th>
                         <th>Acciones</th>
-
                     </tr>
-
                 </thead>
 
-
                 <tbody>
-
                     {% for tarea in tareas %}
-
                     <tr class="task-row" data-listing-status="{% if tarea.activa %}active{% else %}inactive{% endif %}">
-
                         <td>
-
-                            <div class="task-title">
-
-                                <div class="task-icon">
-                                    <i class="fas fa-file-alt"></i>
-                                </div>
-
-                                <span class="task-name">
-                                    {{ tarea.titulo }}
-                                </span>
-
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="edc-lista__punto"><i class="fas fa-file-alt" aria-hidden="true"></i></span>
+                                <strong>{{ tarea.titulo }}</strong>
                             </div>
-
                         </td>
-
 
                         <td>
                             {{ tarea.clase|default:"Sin materia" }}
                         </td>
 
-
                         <td>
-
                             {% if tarea.curso %}
-
-                                <span class="badge-course">
+                                <span class="edc-badge edc-badge--exito">
                                     {{ tarea.curso }}
                                 </span>
-
                             {% else %}
-
-                                <span class="text-muted">
+                                <span class="edc-ayuda">
                                     Sin curso
                                 </span>
-
                             {% endif %}
-
                         </td>
 
-
                         <td>
-
-                            <span class="teacher">
-                                {{ tarea.docente|default:"Sin docente" }}
-                            </span>
-
+                            {{ tarea.docente|default:"Sin docente" }}
                         </td>
 
-
                         <td>
-
                             {% if tarea.fecha_entrega %}
-
-                                <span class="date">
-
-                                    <i class="far fa-calendar-alt"></i>
-
+                                <span class="edc-ayuda">
+                                    <i class="far fa-calendar-alt" aria-hidden="true"></i>
                                     {{ tarea.fecha_entrega|date:"d/m/Y" }}
-
                                 </span>
-
                             {% else %}
-
-                                <span class="text-muted">
+                                <span class="edc-ayuda">
                                     Sin fecha
                                 </span>
-
                             {% endif %}
-
                         </td>
 
-
                         <td>
-
                             {% if tarea.estado %}
-
-                                <span class="badge-status">
-
-                                    <i class="fas fa-check-circle"></i>
-
+                                <span class="edc-badge edc-badge--info">
+                                    <i class="fas fa-check-circle" aria-hidden="true"></i>
                                     {{ tarea.get_estado_display }}
-
                                 </span>
-
                             {% else %}
-
-                                <span class="text-muted">
+                                <span class="edc-ayuda">
                                     Sin estado
                                 </span>
-
                             {% endif %}
-
                         </td>
 
-
                         <td>
-
-                            <span class="text-muted">
+                            <span class="edc-ayuda">
                                 {{ tarea.entregas|default:"0" }}/{{ tarea.total_alumnoss|default:"0" }}
                             </span>
-
                         </td>
 
-
                         <td>
-
-                            <div class="actions">
-
+                            <div class="edc-acciones">
                                 <!-- VER -->
-
                                 <a
                                     href="{% url 'detalle_tarea' tarea.id %}"
-                                    class="btn-action btn-info-soft"
+                                    class="edc-accion"
                                     title="Ver"
+                                    aria-label="Ver tarea"
                                 >
-                                    <i class="fas fa-eye"></i>
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
                                 </a>
-
 
                                 <!-- EDITAR -->
-
                                 <a
                                     href="{% url 'editar_tarea' tarea.id %}"
-                                    class="btn-action btn-primary-soft"
+                                    class="edc-accion"
                                     title="Editar"
+                                    aria-label="Editar tarea"
                                 >
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
                                 </a>
 
-
                                 <!-- ELIMINAR -->
-
                                 <button
                                     type="button"
-                                    class="btn-action btn-danger-soft"
+                                    class="edc-accion edc-accion--peligro"
                                     title="Eliminar"
+                                    aria-label="Eliminar tarea"
                                     onclick="abrirModalEliminarTarea(
                                         '{{ tarea.id }}',
                                         '{{ tarea.titulo|escapejs }}'
                                     )"
                                 >
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
                                 </button>
-
                             </div>
-
                         </td>
-
                     </tr>
-
 
                     {% empty %}
-
                     <tr>
-
-                        <td colspan="8" class="empty-state">
-
-                            <div class="empty-icon">
-                                <i class="fas fa-tasks"></i>
+                        <td colspan="8">
+                            <div class="edc-vacio">
+                                <i class="fas fa-tasks" aria-hidden="true"></i>
+                                <strong>No hay tareas registradas</strong>
+                                <p>Las tareas creadas aparecerán aquí.</p>
                             </div>
-
-                            <strong>
-                                No hay tareas registradas
-                            </strong>
-
-                            <div>
-                                Las tareas creadas aparecerán aquí.
-                            </div>
-
                         </td>
-
                     </tr>
-
                     {% endfor %}
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
 
 </div>
@@ -751,14 +230,12 @@
     <div class="modal-box">
 
         <div class="modal-icon">
-            <i class="fas fa-trash-alt"></i>
+            <i class="fas fa-trash-alt" aria-hidden="true"></i>
         </div>
-
 
         <div class="modal-title">
             ¿Eliminar tarea?
         </div>
-
 
         <div class="modal-text">
 
@@ -774,7 +251,6 @@
 
         </div>
 
-
         <form
             id="formEliminarTarea"
             method="POST"
@@ -786,16 +262,15 @@
 
                 <button
                     type="button"
-                    class="modal-btn btn-cancelar"
+                    class="edc-btn edc-btn--secundario"
                     onclick="cerrarModalEliminarTarea()"
                 >
                     Cancelar
                 </button>
 
-
                 <button
                     type="submit"
-                    class="modal-btn btn-confirmar"
+                    class="edc-btn edc-btn--peligro"
                 >
                     Eliminar
                 </button>

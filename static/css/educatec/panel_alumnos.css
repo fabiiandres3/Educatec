@@ -1,0 +1,109 @@
+/* =========================================================
+   EDUCATEC · PANEL DE ALUMNOS
+   Estilos mínimos específicos del módulo (modal de confirmación
+   y estado activo del filtro). Usa los tokens --edc-*.
+   ========================================================= */
+
+/* ---------- Filtros: botón activo ---------- */
+.edc-filtros .edc-btn--suave.active {
+    background: var(--edc-primario);
+    border-color: var(--edc-primario);
+    color: #FFFFFF;
+}
+
+/* ---------- Modal de confirmación de eliminación ---------- */
+.modal-eliminar {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(2, 6, 23, .55);
+    backdrop-filter: blur(2px);
+}
+
+.modal-eliminar.activo {
+    display: flex;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 28px;
+    text-align: center;
+    background: var(--edc-superficie);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-lg);
+    box-shadow: var(--edc-sombra-lg);
+}
+
+.modal-icon {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: #FEE2E2;
+    color: var(--edc-error);
+    font-size: 24px;
+}
+
+.modal-title {
+    margin: 0 0 10px;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    color: var(--edc-texto);
+}
+
+.modal-text {
+    margin: 0 0 22px;
+    color: var(--edc-texto-sec);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.modal-text strong {
+    color: var(--edc-texto);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-btn {
+    flex: 1;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: var(--edc-radio-sm);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--edc-transicion), color var(--edc-transicion);
+}
+
+.btn-cancelar {
+    background: var(--edc-superficie-alt);
+    border-color: var(--edc-borde);
+    color: var(--edc-texto);
+}
+
+.btn-cancelar:hover {
+    background: var(--edc-borde);
+}
+
+.btn-confirmar {
+    background: var(--edc-error);
+    color: #FFFFFF;
+}
+
+.btn-confirmar:hover {
+    background: #B91C1C;
+}

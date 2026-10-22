@@ -1,0 +1,11 @@
+/* =========================================================
+   EDUCATEC · PANEL DE ACUDIENTES
+   Estilos mínimos específicos del módulo (estado activo del
+   filtro). Usa los tokens --edc-*.
+   ========================================================= */
+
+.edc-filtros .edc-btn--suave.active {
+    background: var(--edc-primario);
+    border-color: var(--edc-primario);
+    color: #FFFFFF;
+}

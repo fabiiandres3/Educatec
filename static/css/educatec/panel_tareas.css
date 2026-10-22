@@ -1,0 +1,79 @@
+/* =========================================================
+   EDUCATEC · PANEL TAREAS
+   Solo los componentes sin equivalente en el sistema de diseño.
+   Usa exclusivamente los tokens --edc-*.
+   ========================================================= */
+
+/* ---------- Filtros de tareas ---------- */
+.listing-filter.active {
+    background: var(--edc-primario-soft);
+    border-color: var(--edc-primario);
+    color: var(--edc-primario-fuerte);
+}
+
+/* ---------- Modal de confirmación eliminar ---------- */
+.modal-eliminar {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(2, 6, 23, .55);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--edc-transicion), visibility var(--edc-transicion);
+}
+
+.modal-eliminar.activo {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    background: var(--edc-superficie);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-lg);
+    text-align: center;
+    box-shadow: var(--edc-sombra-lg);
+}
+
+.modal-icon {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #FEE2E2;
+    color: var(--edc-error);
+    font-size: 25px;
+}
+
+.modal-title {
+    margin-bottom: 10px;
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--edc-texto);
+}
+
+.modal-text {
+    margin-bottom: 24px;
+    color: var(--edc-texto-sec);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.modal-text strong {
+    color: var(--edc-texto);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}

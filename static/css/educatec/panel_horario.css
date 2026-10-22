@@ -1,0 +1,1631 @@
+/* =========================================================
+   EDUCATEC · PANEL HORARIO
+   Solo los componentes sin equivalente en el sistema de diseño.
+   Usa exclusivamente los tokens --edc-*.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1. NOTIFICACIONES
+   --------------------------------------------------------- */
+
+.notificacion {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: min(400px, calc(100vw - 40px));
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    background: var(--edc-superficie);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio);
+    box-shadow: var(--edc-sombra-lg);
+    z-index: 99999;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(120%);
+    transition: transform .35s ease, opacity .35s ease;
+}
+
+.notificacion.mostrar {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notificacion-icono {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: var(--edc-radio-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+}
+
+.notificacion-contenido {
+    flex: 1;
+    min-width: 0;
+}
+
+.notificacion-titulo {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--edc-texto);
+}
+
+.notificacion-mensaje {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--edc-texto-sec);
+}
+
+.notificacion-cerrar {
+    border: none;
+    background: transparent;
+    color: var(--edc-texto-sec);
+    cursor: pointer;
+    font-size: 17px;
+    padding: 2px;
+    line-height: 1;
+}
+
+.notificacion-cerrar:hover {
+    color: var(--edc-texto);
+}
+
+.notificacion-barra {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    transform-origin: left;
+}
+
+.notificacion.exito {
+    border-left: 4px solid var(--edc-exito);
+}
+
+.notificacion.exito .notificacion-icono {
+    background: color-mix(in srgb, var(--edc-exito) 16%, var(--edc-superficie));
+    color: var(--edc-exito);
+}
+
+.notificacion.exito .notificacion-barra {
+    background: var(--edc-exito);
+}
+
+.notificacion.error {
+    border-left: 4px solid var(--edc-error);
+}
+
+.notificacion.error .notificacion-icono {
+    background: color-mix(in srgb, var(--edc-error) 16%, var(--edc-superficie));
+    color: var(--edc-error);
+}
+
+.notificacion.error .notificacion-barra {
+    background: var(--edc-error);
+}
+
+.notificacion.advertencia {
+    border-left: 4px solid var(--edc-advertencia);
+}
+
+.notificacion.advertencia .notificacion-icono {
+    background: color-mix(in srgb, var(--edc-advertencia) 18%, var(--edc-superficie));
+    color: var(--edc-advertencia);
+}
+
+.notificacion.advertencia .notificacion-barra {
+    background: var(--edc-advertencia);
+}
+
+.notificacion.info {
+    border-left: 4px solid var(--edc-primario);
+}
+
+.notificacion.info .notificacion-icono {
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario-fuerte);
+}
+
+.notificacion.info .notificacion-barra {
+    background: var(--edc-primario);
+}
+
+@keyframes reducirBarra {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+@media (max-width: 600px) {
+    .notificacion {
+        top: 10px;
+        right: 10px;
+        width: calc(100vw - 20px);
+    }
+}
+
+/* ---------------------------------------------------------
+   2. REJILLA DE HORARIO · EDITAR (editar_horario)
+   --------------------------------------------------------- */
+
+.editar-horario .info-grid {
+    width: 100%;
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.editar-horario .info-card {
+    background: var(--edc-superficie);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    padding: 15px 18px;
+    box-shadow: var(--edc-sombra-sm);
+}
+
+.editar-horario .edc-tarjeta__cabeza p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--edc-texto-sec);
+}
+
+.editar-horario .tabla-horario {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.editar-horario .tabla-horario col.col-hora {
+    width: 105px;
+}
+
+.editar-horario .tabla-horario col.col-dia {
+    width: calc((100% - 105px) / 5);
+}
+
+.editar-horario .tabla-horario th {
+    height: 48px;
+    padding: 10px;
+    border: 1px solid var(--edc-borde);
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.editar-horario .tabla-horario td {
+    height: 105px;
+    padding: 6px;
+    border: 1px solid var(--edc-borde);
+    background: var(--edc-superficie);
+    vertical-align: top;
+    box-sizing: border-box;
+}
+
+.editar-horario .tabla-horario td.hora {
+    width: 105px;
+    padding: 10px 5px;
+    background: var(--edc-superficie-alt);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.editar-horario .hora-inicio {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--edc-texto);
+}
+
+.editar-horario .hora-fin {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--edc-texto-sec);
+}
+
+.editar-horario .celda-horario {
+    width: 100%;
+    min-height: 90px;
+    padding: 9px;
+    border-radius: var(--edc-radio-sm);
+    background: color-mix(in srgb, var(--edc-advertencia) 12%, var(--edc-superficie));
+    border-left: 4px solid var(--edc-advertencia);
+    box-sizing: border-box;
+}
+
+.editar-horario .clase-nombre {
+    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--edc-advertencia);
+}
+
+.editar-horario .docente-nombre {
+    margin-bottom: 5px;
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--edc-texto);
+}
+
+.editar-horario .horario-hora {
+    font-size: 10px;
+    color: var(--edc-texto-sec);
+}
+
+.editar-horario .btn-editar-celda {
+    width: 28px;
+    height: 28px;
+    margin-top: 7px;
+    padding: 0;
+    border: none;
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-advertencia);
+    color: var(--edc-superficie);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editar-horario .btn-editar-celda:hover {
+    background: color-mix(in srgb, var(--edc-advertencia) 80%, var(--edc-azul-noche));
+}
+
+.editar-horario .panel-edicion {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid color-mix(in srgb, var(--edc-advertencia) 35%, var(--edc-borde));
+}
+
+.editar-horario .panel-edicion select,
+.editar-horario .panel-edicion input,
+.editar-horario .panel-nuevo select,
+.editar-horario .panel-nuevo input {
+    width: 100%;
+    height: 31px;
+    margin-bottom: 5px;
+    padding: 0 7px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie);
+    color: var(--edc-texto);
+    font-size: 11px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.editar-horario .panel-edicion select:focus,
+.editar-horario .panel-edicion input:focus,
+.editar-horario .panel-nuevo select:focus,
+.editar-horario .panel-nuevo input:focus {
+    border-color: var(--edc-primario);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--edc-primario) 18%, transparent);
+}
+
+.editar-horario .celda-vacia {
+    width: 100%;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.editar-horario .btn-agregar-celda {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px dashed var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto-sec);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--edc-transicion), border-color var(--edc-transicion), color var(--edc-transicion);
+}
+
+.editar-horario .btn-agregar-celda:hover {
+    background: var(--edc-primario-soft);
+    border-color: var(--edc-primario);
+    color: var(--edc-primario-fuerte);
+}
+
+.editar-horario .panel-nuevo {
+    display: none;
+    width: 100%;
+    padding: 9px;
+    border-radius: var(--edc-radio-sm);
+    background: color-mix(in srgb, var(--edc-advertencia) 10%, var(--edc-superficie));
+    border: 1px solid color-mix(in srgb, var(--edc-advertencia) 35%, var(--edc-borde));
+    box-sizing: border-box;
+}
+
+.editar-horario .panel-nuevo-titulo {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--edc-advertencia);
+}
+
+.editar-horario .btn-cerrar-nuevo {
+    width: 100%;
+    height: 28px;
+    margin-top: 2px;
+    border: none;
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.editar-horario .btn-cerrar-nuevo:hover {
+    background: var(--edc-borde);
+}
+
+.editar-horario .info-label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--edc-texto-sec);
+    text-transform: uppercase;
+}
+
+.editar-horario .info-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--edc-texto);
+}
+
+.editar-horario .sin-horarios {
+    padding: 50px 20px;
+    text-align: center;
+    color: var(--edc-texto-sec);
+}
+
+.editar-horario .sin-horarios i {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 35px;
+    color: var(--edc-gris-claro);
+}
+
+.editar-horario .sin-horarios strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--edc-texto);
+}
+
+/* ---------------------------------------------------------
+   3. BARRA DE ACCIONES
+   --------------------------------------------------------- */
+
+.acciones {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.editar-horario .acciones {
+    width: 100%;
+}
+
+.horario-container .acciones {
+    justify-content: space-between;
+    margin-top: 0;
+    padding: 16px 20px;
+    border-top: 1px solid var(--edc-borde);
+    background: var(--edc-superficie-alt);
+}
+
+.horario-container .acciones-izquierda {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+    .acciones {
+        flex-direction: column;
+    }
+
+    .acciones .edc-btn {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .editar-horario .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------------------------------------------------------
+   4. CONSTRUCTOR DE HORARIO · CURSO (crear_horario_curso)
+   --------------------------------------------------------- */
+
+.horario-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.horario-container .informacion {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.horario-container .badge {
+    background: var(--edc-superficie);
+    color: var(--edc-texto);
+    padding: 10px 16px;
+    border-radius: var(--edc-radio-sm);
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--edc-borde);
+}
+
+.horario-container .badge i.periodo { color: var(--edc-primario); }
+.horario-container .badge i.curso { color: var(--edc-acento); }
+
+.horario-container .tabs-jornada {
+    display: flex;
+    gap: 8px;
+    padding: 5px;
+    background: var(--edc-superficie);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    margin-bottom: 16px;
+    width: fit-content;
+}
+
+.horario-container .tab-jornada {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--edc-texto-sec);
+    border-radius: var(--edc-radio-sm);
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: background var(--edc-transicion), color var(--edc-transicion);
+}
+
+.horario-container .tab-jornada:hover {
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto);
+}
+
+.horario-container .tab-jornada.activo {
+    background: linear-gradient(135deg, var(--edc-primario), var(--edc-primario-fuerte));
+    color: var(--edc-superficie);
+    box-shadow: var(--edc-sombra);
+}
+
+.horario-container .tab-jornada.activo i {
+    color: var(--edc-superficie) !important;
+}
+
+.horario-container .tab-jornada i {
+    font-size: 14px;
+}
+
+.horario-container .tabla-horario {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.horario-container .tabla-horario thead th {
+    background: var(--edc-superficie-alt);
+    padding: 14px 10px;
+    border-right: 1px solid var(--edc-borde);
+    border-bottom: 2px solid var(--edc-borde);
+    color: var(--edc-texto);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .2px;
+    text-align: center;
+}
+
+.horario-container .tabla-horario thead th .dia-icono {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    margin-right: 4px;
+}
+
+.horario-container .dia-icono.manana { color: var(--edc-advertencia); }
+.horario-container .dia-icono.tarde { color: var(--edc-acento); }
+
+.horario-container .tabla-horario thead th:first-child {
+    width: 160px;
+}
+
+.horario-container .tabla-horario tbody td {
+    height: 92px;
+    padding: 0;
+    border-right: 1px solid var(--edc-borde);
+    border-bottom: 1px solid var(--edc-borde);
+    vertical-align: top;
+}
+
+.horario-container .hora {
+    background: var(--edc-superficie-alt);
+    text-align: center;
+    padding: 10px !important;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--edc-primario);
+}
+
+.horario-container .celda-horario {
+    position: relative;
+    background: var(--edc-superficie);
+    cursor: pointer;
+    transition: background var(--edc-transicion);
+}
+
+.horario-container .celda-horario:hover {
+    background: var(--edc-primario-soft);
+}
+
+.horario-container .celda-horario::after {
+    content: "+";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 34px;
+    height: 34px;
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto-sec);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity var(--edc-transicion), background var(--edc-transicion), color var(--edc-transicion);
+}
+
+.horario-container .celda-horario:hover::after {
+    opacity: 1;
+    background: linear-gradient(135deg, var(--edc-primario), var(--edc-primario-fuerte));
+    color: var(--edc-superficie);
+}
+
+.horario-container .jornada-fila {
+    display: none;
+}
+
+.horario-container .jornada-fila.visible {
+    display: table-row;
+}
+
+.horario-container .jornada-cabecera {
+    display: none;
+}
+
+.horario-container .jornada-cabecera.visible {
+    display: table-row;
+}
+
+.horario-container .jornada td {
+    height: auto !important;
+    padding: 12px !important;
+    background: var(--edc-primario-soft);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--edc-primario-fuerte);
+    letter-spacing: .8px;
+    border-right: none;
+}
+
+.horario-container .contenido-celda {
+    min-height: 92px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+.horario-container .docente {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--edc-texto);
+    line-height: 1.2;
+}
+
+.horario-container .clase {
+    font-size: 11.5px;
+    color: var(--edc-texto-sec);
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.horario-container .nota {
+    font-size: 10.5px;
+    color: var(--edc-texto-sec);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-style: italic;
+}
+
+.horario-container .contador-horarios {
+    padding: 9px 14px;
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario-fuerte);
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.horario-container .contador-horarios i {
+    color: var(--edc-primario);
+}
+
+/* ---------------------------------------------------------
+   5. MODAL (crear_horario_curso)
+   --------------------------------------------------------- */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--edc-azul-noche) 60%, transparent);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.modal.activo {
+    display: flex;
+}
+
+.modal-contenido {
+    width: 100%;
+    max-width: 560px;
+    background: var(--edc-superficie);
+    border-radius: var(--edc-radio);
+    overflow: hidden;
+    box-shadow: var(--edc-sombra-lg);
+    animation: modalEntrada .28s cubic-bezier(.4, 0, .2, 1);
+}
+
+@keyframes modalEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--edc-primario), var(--edc-primario-fuerte));
+    color: var(--edc-superficie);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 16.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cerrar {
+    border: none;
+    background: color-mix(in srgb, var(--edc-superficie) 16%, transparent);
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--edc-superficie);
+    width: 34px;
+    height: 34px;
+    border-radius: var(--edc-radio-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--edc-transicion);
+}
+
+.cerrar:hover {
+    background: color-mix(in srgb, var(--edc-superficie) 28%, transparent);
+}
+
+.modal-body {
+    padding: 22px 22px 4px;
+}
+
+.campo {
+    margin-bottom: 18px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--edc-texto);
+}
+
+.campo label .requerido {
+    color: var(--edc-error);
+    margin-left: 2px;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    height: 40px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color var(--edc-transicion), box-shadow var(--edc-transicion);
+    background: var(--edc-superficie);
+    color: var(--edc-texto);
+    font-family: inherit;
+}
+
+.campo textarea {
+    min-height: 80px;
+    height: auto;
+    resize: vertical;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    border-color: var(--edc-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--edc-primario) 12%, transparent);
+}
+
+.campo input:read-only,
+.campo select:disabled {
+    cursor: not-allowed;
+    opacity: .8;
+    background: var(--edc-superficie-alt);
+}
+
+.bloqueado {
+    background: var(--edc-superficie-alt) !important;
+    color: var(--edc-texto-sec) !important;
+    font-weight: 600;
+}
+
+.campo-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--edc-texto-sec);
+}
+
+.colores-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--edc-texto);
+}
+
+.colores {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.color {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: transform var(--edc-transicion);
+}
+
+.color:hover {
+    transform: scale(1.1);
+}
+
+.color.seleccionado {
+    border-color: var(--edc-texto);
+    box-shadow: 0 0 0 2px var(--edc-superficie), 0 0 0 4px currentColor;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 22px 20px;
+}
+
+.modal-footer-derecha {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-eliminar {
+    border: 1px solid color-mix(in srgb, var(--edc-error) 40%, var(--edc-borde));
+    border-radius: var(--edc-radio-sm);
+    height: 38px;
+    padding: 0 14px;
+    background: var(--edc-superficie);
+    color: var(--edc-error);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background var(--edc-transicion);
+}
+
+.btn-eliminar:hover {
+    background: color-mix(in srgb, var(--edc-error) 8%, var(--edc-superficie));
+}
+
+.btn-modal-cancelar {
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    height: 40px;
+    padding: 0 16px;
+    background: var(--edc-superficie);
+    color: var(--edc-texto);
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: background var(--edc-transicion);
+}
+
+.btn-modal-cancelar:hover {
+    background: var(--edc-superficie-alt);
+    border-color: var(--edc-borde);
+}
+
+.btn-modal-guardar {
+    border: none;
+    border-radius: var(--edc-radio-sm);
+    height: 40px;
+    padding: 0 18px;
+    background: var(--edc-primario);
+    color: var(--edc-superficie);
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: background var(--edc-transicion), transform var(--edc-transicion);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.btn-modal-guardar:hover {
+    background: var(--edc-primario-fuerte);
+    transform: translateY(-1px);
+}
+
+/* ---------------------------------------------------------
+   6. REJILLA DE HORARIO · LISTAR (listar_horario)
+   --------------------------------------------------------- */
+
+.schedule-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-group label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--edc-texto-sec);
+}
+
+.filter-group select {
+    min-width: 170px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie);
+    color: var(--edc-texto);
+    outline: none;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.filter-group select:focus {
+    border-color: var(--edc-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--edc-primario) 12%, transparent);
+}
+
+.schedule-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.schedule-card {
+    width: 100%;
+    min-width: 0;
+}
+
+.schedule-card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--edc-texto);
+}
+
+.schedule-card-info {
+    font-size: 12px;
+    color: var(--edc-texto-sec);
+}
+
+.schedule-layout {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 12px;
+    align-items: start;
+}
+
+.schedule-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.schedule-table col.time-column {
+    width: 105px;
+}
+
+.schedule-table col.day-column {
+    width: calc((100% - 105px) / 5);
+}
+
+.schedule-table th,
+.schedule-table td {
+    border-right: 1px solid var(--edc-borde);
+    border-bottom: 1px solid var(--edc-borde);
+}
+
+.schedule-table th:last-child,
+.schedule-table td:last-child {
+    border-right: none;
+}
+
+.schedule-table thead th {
+    height: 48px;
+    padding: 8px;
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.schedule-table tbody td {
+    height: 76px;
+    padding: 6px;
+    vertical-align: top;
+    background: var(--edc-superficie);
+}
+
+.schedule-table .time-cell {
+    padding: 10px 7px;
+    vertical-align: middle;
+    text-align: center;
+    background: var(--edc-superficie-alt);
+}
+
+.time-main {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--edc-texto);
+}
+
+.time-end {
+    display: block;
+    margin-top: 3px;
+    font-size: 11px;
+    color: var(--edc-texto-sec);
+}
+
+.schedule-item {
+    width: 100%;
+    min-height: 63px;
+    padding: 8px;
+    border-radius: var(--edc-radio-sm);
+    background: color-mix(in srgb, var(--edc-primario) 10%, var(--edc-superficie));
+    border-left: 4px solid var(--edc-primario);
+    overflow: hidden;
+}
+
+.schedule-item-title {
+    margin: 0 0 4px;
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--edc-primario-fuerte);
+}
+
+.schedule-item-teacher {
+    margin: 0 0 3px;
+    font-size: 11px;
+    line-height: 1.3;
+    color: var(--edc-texto);
+}
+
+.schedule-item-time {
+    font-size: 10px;
+    color: var(--edc-texto-sec);
+}
+
+.empty-cell {
+    width: 100%;
+    height: 100%;
+    min-height: 63px;
+}
+
+.no-schedule {
+    display: none;
+    padding: 45px 20px;
+    text-align: center;
+    color: var(--edc-texto-sec);
+}
+
+.no-schedule i {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 30px;
+    color: var(--edc-gris-claro);
+}
+
+.no-schedule strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--edc-texto);
+}
+
+.teachers-card {
+    width: 100%;
+    overflow: hidden;
+}
+
+.teachers-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--edc-borde);
+}
+
+.teachers-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--edc-texto);
+}
+
+.teachers-subtitle {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: var(--edc-texto-sec);
+}
+
+.teachers-list {
+    padding: 7px;
+}
+
+.teacher-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 8px;
+    border-radius: var(--edc-radio-sm);
+}
+
+.teacher-item:hover {
+    background: var(--edc-fondo);
+}
+
+.teacher-avatar {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario);
+    font-size: 12px;
+}
+
+.teacher-name {
+    min-width: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--edc-texto);
+    word-break: break-word;
+}
+
+.no-teachers {
+    padding: 18px 10px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--edc-texto-sec);
+}
+
+@media (max-width: 1000px) {
+    .schedule-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .teachers-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .schedule-filters {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+
+    .schedule-actions {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .schedule-actions .edc-btn {
+        flex: 1;
+    }
+
+    .teachers-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------------------------------------------------------
+   7. GESTIÓN ACADÉMICA (periodo/listar)
+   --------------------------------------------------------- */
+
+.academic-page {
+    max-width: 1480px;
+}
+
+.academic-header {
+    padding: 22px 24px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-lg);
+    background: linear-gradient(125deg, var(--edc-superficie), var(--edc-superficie-alt));
+    box-shadow: var(--edc-sombra-sm);
+}
+
+.academic-heading {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.academic-title-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
+    border-radius: var(--edc-radio);
+    background: linear-gradient(135deg, var(--edc-advertencia), color-mix(in srgb, var(--edc-advertencia) 70%, var(--edc-azul-noche)));
+    color: var(--edc-superficie);
+    font-size: 24px;
+    box-shadow: var(--edc-sombra);
+}
+
+.academic-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    background: var(--edc-superficie-alt);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio);
+}
+
+.academic-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 130px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: var(--edc-radio-sm);
+    background: transparent;
+    color: var(--edc-texto-sec);
+    font-size: 14px;
+    font-weight: 650;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--edc-transicion), color var(--edc-transicion), box-shadow var(--edc-transicion);
+}
+
+.academic-tab:hover {
+    color: var(--edc-texto);
+    background: color-mix(in srgb, var(--edc-superficie) 70%, transparent);
+}
+
+.academic-tab.active {
+    background: var(--edc-superficie);
+    color: var(--edc-primario-fuerte);
+    box-shadow: var(--edc-sombra-sm);
+}
+
+.academic-tab i {
+    width: 17px;
+    height: 17px;
+}
+
+.period-name {
+    color: var(--edc-texto);
+    font-weight: 700;
+}
+
+.period-year {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    background: var(--edc-superficie-alt);
+    border: 1px solid var(--edc-borde);
+    border-radius: 7px;
+    color: var(--edc-texto);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.period-date {
+    color: var(--edc-texto-sec);
+    font-size: 13px;
+}
+
+.academic-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.academic-status.active {
+    background: color-mix(in srgb, var(--edc-exito) 16%, var(--edc-superficie));
+    color: var(--edc-exito);
+}
+
+.academic-status.inactive {
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto-sec);
+}
+
+.academic-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.academic-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario-fuerte);
+}
+
+.academic-empty-icon i {
+    width: 32px;
+    height: 32px;
+}
+
+.academic-modal .modal-content {
+    overflow: hidden;
+    border: none;
+    border-radius: var(--edc-radio-lg);
+    box-shadow: var(--edc-sombra-lg);
+}
+
+.academic-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--edc-error) 12%, var(--edc-superficie));
+    color: var(--edc-error);
+}
+
+.academic-modal-icon i {
+    width: 28px;
+    height: 28px;
+}
+
+.academic-modal-name {
+    padding: 10px;
+    margin-bottom: 15px;
+    background: color-mix(in srgb, var(--edc-error) 10%, var(--edc-superficie));
+    border-radius: var(--edc-radio-sm);
+    color: var(--edc-error);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.schedule-day {
+    font-weight: 700;
+    color: var(--edc-texto);
+}
+
+.schedule-time {
+    display: inline-flex;
+    padding: 6px 10px;
+    background: var(--edc-primario-soft);
+    border-radius: 7px;
+    color: var(--edc-primario-fuerte);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.schedule-jornada {
+    display: inline-flex;
+    padding: 5px 9px;
+    border-radius: 7px;
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto-sec);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.nav-list-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio);
+    background: var(--edc-superficie);
+}
+
+.nav-list-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.nav-list-filter {
+    border: 1px solid transparent;
+    border-radius: var(--edc-radio-sm);
+    padding: 8px 11px;
+    color: var(--edc-texto-sec);
+    background: transparent;
+    font-size: 12px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background var(--edc-transicion), color var(--edc-transicion), border-color var(--edc-transicion);
+}
+
+.nav-list-filter:hover {
+    color: var(--edc-primario-fuerte);
+    background: var(--edc-primario-soft);
+}
+
+.nav-list-filter.active {
+    border-color: var(--edc-primario-soft);
+    color: var(--edc-primario-fuerte);
+    background: var(--edc-primario-soft);
+}
+
+.nav-list-search {
+    position: relative;
+    width: min(340px, 100%);
+}
+
+.nav-list-search i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--edc-texto-sec);
+}
+
+.nav-list-search input {
+    width: 100%;
+    height: 41px;
+    box-sizing: border-box;
+    padding: 0 13px 0 37px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-fondo);
+    color: var(--edc-texto);
+    outline: none;
+}
+
+.nav-list-search input:focus {
+    border-color: var(--edc-primario);
+    background: var(--edc-superficie);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--edc-primario) 12%, transparent);
+}
+
+.nav-list-count {
+    color: var(--edc-texto-sec);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .academic-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .academic-tabs {
+        display: flex;
+        width: 100%;
+    }
+
+    .academic-tab {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 620px) {
+    .academic-header {
+        padding: 17px;
+    }
+
+    .nav-list-tools {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .nav-list-filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .nav-list-filter {
+        white-space: nowrap;
+    }
+
+    .nav-list-search {
+        width: 100%;
+    }
+}
+
+/* ---------------------------------------------------------
+   8. FORMULARIO DE PERÍODO (periodo/formulario)
+   Campos renderizados por Django sin clase propia.
+   --------------------------------------------------------- */
+
+.edc-campo > input,
+.edc-campo > select,
+.edc-campo > textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--edc-borde);
+    border-radius: 12px;
+    background: var(--edc-superficie);
+    color: var(--edc-texto);
+    font: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.edc-campo > input:focus,
+.edc-campo > select:focus,
+.edc-campo > textarea:focus {
+    outline: none;
+    border-color: var(--edc-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--edc-primario) 20%, transparent);
+}
+
+.edc-campo--casilla {
+    flex-direction: row;
+    align-items: center;
+    gap: 9px;
+}
+
+.edc-campo--casilla > label {
+    font-weight: 600;
+}
+
+.edc-campo--casilla > input {
+    width: auto;
+    height: auto;
+    padding: 0;
+    box-shadow: none;
+}

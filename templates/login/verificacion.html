@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -10,192 +12,114 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Cuenta en verificación | Educatec</title>
+    <title>Cuenta en verificación · Educatec</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    <style>
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f8f9fa, #e9f2ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        rel="stylesheet"
+    >
 
-        .verification-card {
-            width: 100%;
-            max-width: 520px;
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 40px 35px;
-            text-align: center;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-        }
+    <link rel="stylesheet" href="{% static 'css/educatec/sistema.css' %}">
 
-        .verification-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 25px;
-            border-radius: 50%;
-            background: #0d6efd;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 38px;
-        }
+    <link rel="stylesheet" href="{% static 'css/educatec/acceso.css' %}">
 
-        .verification-card h1 {
-            color: #111111;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
+    {% include "partials/page_transition_assets.html" %}
 
-        .verification-card .main-text {
-            color: #6c757d;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .verification-alert {
-            background: #fff3cd;
-            border: 1px solid #ffecb5;
-            border-radius: 12px;
-            padding: 18px;
-            color: #664d03;
-            text-align: left;
-        }
-
-        .verification-alert h4 {
-            font-size: 19px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .roles-title {
-            color: #212529;
-            font-weight: 600;
-            margin-top: 25px;
-            margin-bottom: 12px;
-        }
-
-        .list-group {
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .list-group-item {
-            border-color: #dee2e6;
-            padding: 12px;
-            color: #212529;
-        }
-
-        .verification-info {
-            color: #6c757d;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-top: 25px;
-            margin-bottom: 25px;
-        }
-
-        .btn-logout {
-            background: #212529;
-            border: none;
-            color: #ffffff;
-            padding: 12px 28px;
-            border-radius: 10px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #000000;
-            color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
-        }
-
-        @media (max-width: 576px) {
-            .verification-card {
-                padding: 32px 22px;
-            }
-
-            .verification-card h1 {
-                font-size: 24px;
-            }
-        }
-    </style>
-
-{% include "partials/page_transition_assets.html" %}
 </head>
 
-<body>
+<body class="edc-acceso">
 
-    <div class="verification-card">
+<div class="edc-acceso__marco">
 
-        <div class="verification-icon">
-            ⏳
-        </div>
+    {% include "partials/edc_acceso_marca.html" with titulo="Tu solicitud está en revisión" texto="La cuenta ya fue creada. Un administrador revisará tus datos y te asignará un rol para habilitar tu acceso a la plataforma." %}
 
-        <h1>
-            Cuenta en verificación
-        </h1>
+    <main class="edc-acceso__panel">
 
-        <p class="main-text">
-            Tu cuenta fue creada correctamente.
-        </p>
+        <div class="edc-acceso__caja edc-acceso__caja--centrada">
 
-        <div class="verification-alert">
+            <div class="edc-acceso__icono edc-acceso__icono--alerta">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
 
-            <h4>
+            <h2>
                 Cuenta en verificación
-            </h4>
+            </h2>
 
-            <p class="mb-0">
-                Un administrador debe revisar tu solicitud
-                y asignarte un rol dentro de la plataforma.
+            <p class="edc-acceso__ayuda">
+                Tu cuenta fue creada correctamente.
             </p>
 
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div
+                        class="edc-alerta {% if message.tags == 'success' %}edc-alerta--exito{% elif message.tags == 'error' %}edc-alerta--error{% elif message.tags == 'warning' %}edc-alerta--alerta{% else %}edc-alerta--info{% endif %}"
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+
+            <div class="edc-alerta edc-alerta--alerta">
+                <i class="fa-solid fa-circle-info"></i>
+                Un administrador debe revisar tu solicitud y asignarte un rol
+                dentro de la plataforma.
+            </div>
+
+
+            <ul class="edc-acceso__roles">
+
+                <li>
+                    <i class="fa-solid fa-user-graduate"></i>
+                    Alumnos
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    Docente
+                </li>
+
+            </ul>
+
+
+            <p class="edc-acceso__ayuda">
+                Cuando tu cuenta sea aprobada podrás acceder a todas las
+                funciones del sistema.
+            </p>
+
+
+            <div class="edc-acceso__acciones">
+
+                <a
+                    href="{% url 'cerrar_sesion' %}"
+                    class="edc-btn edc-btn--secundario edc-btn--bloque"
+                >
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Cerrar sesión
+                </a>
+
+                <a href="{% url 'index' %}" class="edc-btn edc-btn--suave edc-btn--bloque">
+                    <i class="fa-solid fa-house"></i>
+                    Volver al inicio
+                </a>
+
+            </div>
+
         </div>
 
-        <div class="roles-title">
-            Roles disponibles
-        </div>
+    </main>
 
-        <ul class="list-group">
-
-            <li class="list-group-item">
-                👨‍🎓 Alumnos
-            </li>
-
-            <li class="list-group-item">
-                👨‍🏫 Docente
-            </li>
-
-        </ul>
-
-        <p class="verification-info">
-            Cuando tu cuenta sea aprobada podrás acceder
-            a todas las funciones del sistema.
-        </p>
-
-        <a
-            href="{% url 'cerrar_sesion' %}"
-            class="btn btn-logout"
-        >
-            Cerrar sesión
-        </a>
-
-    </div>
+</div>
 
 </body>
 

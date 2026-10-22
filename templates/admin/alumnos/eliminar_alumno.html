@@ -4,27 +4,58 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="edc-pagina">
 
-    <h2 class="text-black">Eliminar Alumno</h2>
+    <header class="edc-pagina__cabecera">
 
-    <div class="alert alert-danger">
-        ¿Está seguro de eliminar al Alumno
-        <strong>{{ docente.first_name }} {{ docente.last_name }}</strong>?
-    </div>
+        <div>
 
-    <form method="post">
-        {% csrf_token %}
+            <h1 class="edc-pagina__titulo">
+                <i class="fas fa-user-graduate" aria-hidden="true"></i>
+                Eliminar Alumno
+            </h1>
 
-        <button type="submit" class="btn btn-danger">
-            Sí, eliminar
-        </button>
+        </div>
 
-        <a href="{% url 'listar_alumnos' %}" class="btn btn-secondary">
-            Cancelar
-        </a>
+    </header>
 
-    </form>
+
+    <section class="edc-tarjeta">
+
+        <div class="edc-tarjeta__cuerpo">
+
+            <div class="edc-alerta edc-alerta--error" role="alert">
+                <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+                <div>
+                    ¿Está seguro de eliminar al Alumno
+                    <strong>{{ docente.first_name }} {{ docente.last_name }}</strong>?
+                </div>
+            </div>
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="edc-pagina__acciones">
+
+                    <button type="submit" class="edc-btn edc-btn--peligro">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                        Sí, eliminar
+                    </button>
+
+                    <a href="{% url 'listar_alumnos' %}" class="edc-btn edc-btn--secundario">
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                        Cancelar
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
 
 </div>
 

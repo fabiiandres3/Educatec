@@ -1,98 +1,21 @@
 {% extends "admin/dashboard.html" %}
+{% load static %}
 
 {% block title %}
 Crear Evento
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/educatec/panel_eventos.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<!-- Custom Styling Injection -->
-<style>
-
-    .form-fields-wrapper .errorlist {
-        display: none;
-    }
-    .card-modern {
-        border: none;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        background: #ffffff;
-    }
-    
-    .form-section-title {
-        font-size: 0.85rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        color: #6c757d;
-        margin-bottom: 1rem;
-    }
-
-    /* Estilizado para los campos generados por Django */
-    .card-body form p {
-        margin-bottom: 1.25rem;
-    }
-
-    .card-body form label {
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: #2b2d42;
-        margin-bottom: 0.4rem;
-        display: block;
-    }
-
-    .card-body form input[type="text"],
-    .card-body form input[type="date"],
-    .card-body form input[type="time"],
-    .card-body form input[type="number"],
-    .card-body form input[type="email"],
-    .card-body form input[type="file"],
-    .card-body form select,
-    .card-body form textarea {
-        width: 100%;
-        padding: 0.65rem 1rem;
-        font-size: 0.95rem;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-        background-color: #f8f9fa;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .card-body form input:focus,
-    .card-body form select:focus,
-    .card-body form textarea:focus {
-        background-color: #ffffff;
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
-        outline: none;
-    }
-
-    .card-body form textarea {
-        min-height: 120px;
-        resize: vertical;
-    }
-
-    .selector-meridiano {
-        margin-top: 0.5rem;
-    }
-
-    .btn-custom-primary {
-        padding: 0.6rem 1.5rem;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: transform 0.1s ease;
-    }
-
-    .btn-custom-primary:active {
-        transform: scale(0.98);
-    }
-</style>
-
-<div class="container py-4">
+<div class="edc-pagina">
 
     <!-- Navegación contextual (Breadcrumb) -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{% url 'listar_eventos' %}" class="text-decoration-none">Eventos</a></li>
             <li class="breadcrumb-item active" aria-current="page">
                 {% if editar %}
@@ -104,75 +27,67 @@ Crear Evento
         </ol>
     </nav>
 
-    <div class="row justify-content-center">
+    <header class="edc-pagina__cabecera">
 
-        <div class="col-lg-9 col-xl-8">
+        <div>
 
-            <div class="card card-modern">
+            <h1 class="edc-pagina__titulo">
+                <i class="fa-solid {% if editar %}fa-pen-to-square{% else %}fa-calendar-plus{% endif %}" aria-hidden="true"></i>
+                {% if editar %}
+                    Editar evento
+                {% else %}
+                    Crear nuevo evento
+                {% endif %}
+            </h1>
 
-                <div class="card-body p-4 p-md-5">
+            <p class="edc-pagina__subtitulo">
+                {% if editar %}
+                    Modifica la información del evento y guarda los cambios.
+                {% else %}
+                    Completa la información requerida para publicar el evento.
+                {% endif %}
+            </p>
 
-                    <!-- Cabecera -->
-                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 me-3">
-                        <i class="bi {% if editar %}bi-pencil-square{% else %}bi-calendar-plus{% endif %} fs-3"></i>
-                    </div>
+        </div>
 
-                    <div>
-                        <h2 class="h3 fw-bold mb-1">
-                            {% if editar %}
-                                Editar evento
-                            {% else %}
-                                Crear nuevo evento
-                            {% endif %}
-                        </h2>
+    </header>
 
-                        <p class="text-muted small mb-0">
-                            {% if editar %}
-                                Modifica la información del evento y guarda los cambios.
-                            {% else %}
-                                Completa la información requerida para publicar el evento.
-                            {% endif %}
-                        </p>
-                    </div>
+    <div class="edc-tarjeta">
 
-                    <hr class="my-4 text-secondary opacity-25">
+        <div class="edc-tarjeta__cuerpo">
 
-                    <!-- Formulario -->
-                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <!-- Formulario -->
+            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
 
-                        {% csrf_token %}
+                {% csrf_token %}
 
-                        <!-- Renderizado del formulario Django -->
-                        <div class="form-fields-wrapper">
-                            {{ form.as_p }}
-                        </div>
+                <!-- Renderizado del formulario Django -->
+                <div class="form-fields-wrapper">
+                    {{ form.as_p }}
+                </div>
 
-                        <!-- Acciones -->
-                        <div class="d-flex align-items-center justify-content-end gap-2 mt-4 pt-3 border-top">
+                <!-- Acciones -->
+                <div class="edc-pagina__acciones justify-content-end mt-4">
 
-                            <a href="{% url 'listar_eventos' %}" class="btn btn-light px-4 text-secondary">
-                                Cancelar
-                            </a>
+                    <a href="{% url 'listar_eventos' %}" class="edc-btn edc-btn--secundario">
+                        Cancelar
+                    </a>
 
-                            <button type="submit" class="btn btn-primary btn-custom-primary">
+                    <button type="submit" class="edc-btn">
 
-                                <i class="bi bi-check-lg me-1"></i>
+                        <i class="fa-solid fa-check" aria-hidden="true"></i>
 
-                                {% if editar %}
-                                    Guardar cambios
-                                {% else %}
-                                    Publicar Evento
-                                {% endif %}
+                        {% if editar %}
+                            Guardar cambios
+                        {% else %}
+                            Publicar Evento
+                        {% endif %}
 
-                            </button>
-
-                        </div>
-
-                    </form>
+                    </button>
 
                 </div>
 
-            </div>
+            </form>
 
         </div>
 
@@ -283,241 +198,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<style>
-
-    /* =========================================================
-       CONTENEDOR DE NOTIFICACIONES
-    ========================================================= */
-
-    #notificaciones-container {
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        z-index: 9999;
-
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-
-        width: min(400px, calc(100vw - 40px));
-    }
-
-
-    /* =========================================================
-       NOTIFICACIÓN
-    ========================================================= */
-
-    .notificacion-evento {
-        position: relative;
-
-        display: flex;
-        align-items: flex-start;
-
-        padding: 16px 45px 16px 18px;
-
-        border-radius: 12px;
-
-        background: #ffffff;
-
-        box-shadow:
-            0 10px 30px rgba(0, 0, 0, 0.15);
-
-        border-left: 5px solid;
-
-        overflow: hidden;
-
-        animation: aparecerNotificacion 0.25s ease;
-    }
-
-
-    /* =========================================================
-       COLORES
-    ========================================================= */
-
-    .notificacion-evento.exito {
-        border-left-color: #198754;
-    }
-
-    .notificacion-evento.warning {
-        border-left-color: #fd7e14;
-    }
-
-    .notificacion-evento.error {
-        border-left-color: #dc3545;
-    }
-
-    .notificacion-tiempo {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height: 4px;
-        background: #198754;
-        transform: scaleX(1);
-        transform-origin: left center;
-        animation: reducirTiempoNotificacion 10s linear forwards;
-    }
-
-    .notificacion-evento.warning .notificacion-tiempo {
-        background: #fd7e14;
-    }
-
-    .notificacion-evento.error .notificacion-tiempo {
-        background: #dc3545;
-    }
-
-
-    /* =========================================================
-       ICONO
-    ========================================================= */
-
-    .notificacion-icono {
-        font-size: 1.35rem;
-        margin-right: 12px;
-        line-height: 1;
-    }
-
-    .notificacion-evento.exito .notificacion-icono {
-        color: #198754;
-    }
-
-    .notificacion-evento.warning .notificacion-icono {
-        color: #fd7e14;
-    }
-
-    .notificacion-evento.error .notificacion-icono {
-        color: #dc3545;
-    }
-
-
-    /* =========================================================
-       TEXTO
-    ========================================================= */
-
-    .notificacion-contenido {
-        flex: 1;
-    }
-
-    .notificacion-titulo {
-        font-weight: 700;
-        font-size: 0.95rem;
-        margin-bottom: 3px;
-        color: #212529;
-    }
-
-    .notificacion-mensaje {
-        font-size: 0.88rem;
-        color: #6c757d;
-        line-height: 1.4;
-    }
-
-
-    /* =========================================================
-       BOTÓN X
-    ========================================================= */
-
-    .notificacion-cerrar {
-        position: absolute;
-
-        top: 10px;
-        right: 10px;
-
-        width: 28px;
-        height: 28px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        border: 1px solid #374151;
-        background: #374151;
-
-        color: #ffffff;
-
-        font-size: 1.25rem;
-        font-weight: 700;
-        line-height: 1;
-
-        border-radius: 50%;
-
-        cursor: pointer;
-
-        transition: all 0.2s ease;
-    }
-
-    .notificacion-cerrar:hover {
-        background: #111827;
-        border-color: #111827;
-        color: #ffffff;
-    }
-
-    .notificacion-cerrar:focus-visible {
-        outline: 3px solid rgba(37, 99, 235, 0.45);
-        outline-offset: 2px;
-    }
-
-
-    /* =========================================================
-       ANIMACIÓN
-    ========================================================= */
-
-    @keyframes aparecerNotificacion {
-
-        from {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-    }
-
-
-    @keyframes desaparecerNotificacion {
-
-        from {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        to {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-
-    }
-
-    @keyframes reducirTiempoNotificacion {
-
-        from {
-            transform: scaleX(1);
-        }
-
-        to {
-            transform: scaleX(0);
-        }
-
-    }
-
-
-    .notificacion-saliendo {
-        animation: desaparecerNotificacion 0.2s ease forwards;
-    }
-
-</style>
-
-
 <!-- =========================================================
      CONTENEDOR
 ========================================================= -->
 
 <div id="notificaciones-container"></div>
-
-
-
 
 <script>
 

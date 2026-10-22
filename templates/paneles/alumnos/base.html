@@ -1,7 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-nivel="{{ nivel_educativo|default:'default' }}">
 
 <head>
 
@@ -12,12 +12,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Educatec -
-        {% block title %}
-            Portal Estudiantil
-        {% endblock %}
-    </title>
+    <title>Educatec - {% block title %}Portal Estudiantil{% endblock %}</title>
 
 
     <!-- Bootstrap -->
@@ -36,546 +31,199 @@
     >
 
 
-    <!-- CSS DEL PANEL ALUMNOS -->
+    <!-- CSS heredado del panel (usado por las páginas internas) -->
 
     <link
         rel="stylesheet"
         href="{% static 'css/paneles/dashboard_alumnos.css' %}"
     >
+
     <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
     <link rel="stylesheet" href="{% static 'css/paneles/notificaciones_toast.css' %}">
-    <style>
-        .sidebar { display: flex; flex-direction: column; height: 100vh; overflow-y: auto; scrollbar-width: none; }
-        .sidebar::-webkit-scrollbar { display: none; }
-        .sidebar .menu { flex: 1; min-height: 0; }
-        .profile { display: none !important; }
-        .user-area { gap: 20px; }
-        .user-area::after { content: "\f590"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 1.3rem; line-height: 1; color: inherit; }
-        .notification { display: flex; align-items: center; line-height: 1; }
-        .wave-hand { display: inline-block; transform-origin: 70% 80%; animation: wave-greeting 1.4s ease-in-out infinite; }
-        @keyframes wave-greeting { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(18deg); } 50% { transform: rotate(-8deg); } 75% { transform: rotate(18deg); } }
-        @media (prefers-reduced-motion: reduce) { .wave-hand { animation: none; } }
-    </style>
+
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
+    {% block extra_css %}{% endblock %}
 
-    {% block extra_css %}
-    {% endblock %}
+    <!-- Sistema de diseño Educatec (se carga al final para homogeneizar) -->
 
+    <link rel="stylesheet" href="{% static 'css/educatec/sistema.css' %}">
 
-    <!-- =====================================================
-         ESTILO CERRAR SESIÓN
-    ====================================================== -->
+    {% include "partials/page_transition_assets.html" %}
 
-    <style>
-
-        .logout-item {
-            margin-top: 10px;
-            padding: 0 !important;
-        }
-
-
-        .logout-item form {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-        }
-
-
-        .logout-button {
-            width: 100%;
-            border: none;
-            outline: none;
-            background: transparent;
-            color: inherit;
-
-            display: flex;
-            align-items: center;
-
-            gap: 12px;
-
-            padding: 12px 18px;
-
-            margin: 0;
-
-            font-family: inherit;
-            font-size: inherit;
-            font-weight: inherit;
-
-            text-align: left;
-
-            cursor: pointer;
-
-            transition:
-                background-color 0.2s ease,
-                color 0.2s ease,
-                transform 0.2s ease;
-        }
-
-
-        .logout-button i {
-            width: 20px;
-            min-width: 20px;
-
-            text-align: center;
-
-            font-size: 16px;
-        }
-
-
-        .logout-button span {
-            display: inline-block;
-        }
-
-
-        /*
-         * Hover
-         */
-
-        .logout-button:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: #ff5c5c;
-        }
-
-
-        /*
-         * Icono al pasar el mouse
-         */
-
-        .logout-button:hover i {
-            color: #ff5c5c;
-        }
-
-
-        /*
-         * Efecto de presión
-         */
-
-        .logout-button:active {
-            transform: scale(0.98);
-        }
-
-
-        /*
-         * Evita el borde azul del navegador
-         */
-
-        .logout-button:focus {
-            outline: none;
-            box-shadow: none;
-        }
-
-
-        .logout-button:focus-visible {
-            outline: 2px solid rgba(255, 92, 92, 0.5);
-            outline-offset: -2px;
-        }
-
-    </style>
-
-    <style>
-
-    .logout-item {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100%;
-        list-style: none;
-    }
-
-    .logout-item form {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    .logout-button {
-        width: 100%;
-        height: auto;
-
-        margin: 0 !important;
-        padding: 12px 18px !important;
-
-        border: none;
-        outline: none;
-
-        background: transparent;
-        color: inherit;
-
-        display: flex;
-        align-items: center;
-        gap: 12px;
-
-        font-family: inherit;
-        font-size: inherit;
-        font-weight: inherit;
-
-        text-align: left;
-
-        cursor: pointer;
-
-        box-sizing: border-box;
-
-        transition:
-            background-color 0.2s ease,
-            color 0.2s ease;
-    }
-
-    .logout-button i {
-        width: 20px;
-        min-width: 20px;
-
-        margin: 0;
-        padding: 0;
-
-        text-align: center;
-    }
-
-    .logout-button span {
-        margin: 0;
-        padding: 0;
-    }
-
-    .logout-button:hover {
-        background-color: rgba(255, 255, 255, 0.08);
-        color: #ff5c5c;
-    }
-
-    .logout-button:hover i {
-        color: #ff5c5c;
-    }
-
-    .logout-button:focus,
-    .logout-button:active {
-        outline: none;
-        box-shadow: none;
-    }
-
-</style>
-
-
-<style>
-    /* CERRAR SESIÓN */
-    .sidebar .menu .logout-item {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        display: block !important;
-    }
-
-    .sidebar .menu .logout-item form {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    .sidebar .menu .logout-item .logout-button {
-        /* Mismo espacio que un li normal */
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 12px 18px !important;
-
-        /* Quitar apariencia de botón */
-        border: 0 !important;
-        outline: 0 !important;
-        background: transparent !important;
-
-        /* Misma alineación */
-        display: flex !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-
-        /* Misma separación */
-        gap: 12px !important;
-
-        /* Texto */
-        text-align: left !important;
-        font-family: inherit !important;
-        font-size: inherit !important;
-        font-weight: inherit !important;
-        line-height: normal !important;
-
-        color: inherit !important;
-
-        box-sizing: border-box !important;
-
-        cursor: pointer;
-    }
-
-    .sidebar .menu .logout-item .logout-button i {
-        width: 20px !important;
-        min-width: 20px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        text-align: center !important;
-    }
-
-    .sidebar .menu .logout-item .logout-button span {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    .sidebar .menu .logout-item .logout-button:hover {
-        background: rgba(255, 255, 255, 0.08) !important;
-        color: #ff5c5c !important;
-    }
-
-    .sidebar .menu .logout-item .logout-button:hover i {
-        color: #ff5c5c !important;
-    }
-</style>
-
-{% include "partials/page_transition_assets.html" %}
 </head>
 
 
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
 
-<div class="wrapper">
-
+<div class="edc-app" data-edc-app>
 
     <!-- =====================================================
-         SIDEBAR
+         MENÚ LATERAL
     ====================================================== -->
 
-    <aside class="sidebar">
+    <aside class="edc-sidebar" id="edc-nav" aria-label="Navegación principal">
 
-
-        <!-- =================================================
-             LOGO
-        ================================================== -->
-
-        <div class="logo">
-
-            <i class="fa-solid fa-graduation-cap"></i>
-
-            <span>
-                Educatec
+        <a class="edc-sidebar__marca" href="{% url 'dashboard_alumnos' %}">
+            <span class="edc-sidebar__marca-icono"><i class="fa-solid fa-graduation-cap"></i></span>
+            <span class="edc-sidebar__marca-texto">
+                <strong>Educatec</strong>
+                <span>Estudiante</span>
             </span>
+        </a>
 
-        </div>
+        <nav class="edc-sidebar__nav">
 
+            <p class="edc-nav__seccion">Principal</p>
 
-        <!-- =================================================
-             MENÚ
-        ================================================== -->
-
-        <ul class="menu">
-
-
-            <!-- =================================================
-                 INICIO
-            ================================================== -->
-
-            <li
-                class="{% block active_inicio %}{% endblock %}"
-                onclick="window.location='{% url 'dashboard_alumnos' %}'"
+            <a
+                href="{% url 'dashboard_alumnos' %}"
+                class="edc-nav__enlace {% block active_inicio %}{% endblock %} {% if request.resolver_match.url_name == 'dashboard_alumnos' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-house"></i><span>Inicio</span>
+            </a>
 
-                <i class="fa-solid fa-house"></i>
+            <p class="edc-nav__seccion">Académico</p>
 
-                <span>
-                    Inicio
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 MATERIAS
-            ================================================== -->
-
-            <!--
-
-            <li
-                class="{% block active_materias %}{% endblock %}"
-                onclick="window.location='{% url 'materias_alumnos' %}'"
+            <a
+                href="{% url 'materias_alumnos' %}"
+                class="edc-nav__enlace {% block active_materias %}{% endblock %} {% if request.resolver_match.url_name == 'materias_alumnos' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-book-open"></i><span>Materias</span>
+            </a>
 
-                <i class="fa-solid fa-book-open"></i>
-
-                <span>
-                    Materias
-                </span>
-
-            </li>
-
-            -->
-
-
-            <!-- =================================================
-                 TAREAS
-            ================================================== -->
-
-            <li
-                onclick="window.location.href='{% url "listar_tareas_alumno" %}'"
+            <a
+                href="{% url 'listar_tareas_alumno' %}"
+                class="edc-nav__enlace {% block active_tareas %}{% endblock %} {% if request.resolver_match.url_name in 'listar_tareas_alumno,responder_tarea_alumno' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-clipboard-list"></i><span>Tareas</span>
+            </a>
 
-                <i class="fa-solid fa-book-open"></i>
-
-                <span>
-                    Tareas
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 CALIFICACIONES
-            ================================================== -->
-
-            <li
-                class="{% block active_calificaciones %}{% endblock %}"
-                onclick="window.location='{% url 'calificaciones_alumnos' %}'"
+            <a
+                href="{% url 'calificaciones_alumnos' %}"
+                class="edc-nav__enlace {% block active_calificaciones %}{% endblock %} {% if request.resolver_match.url_name == 'calificaciones_alumnos' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-chart-column"></i><span>Calificaciones</span>
+            </a>
 
-                <i class="fa-solid fa-chart-column"></i>
-
-                <span>
-                    Calificaciones
-                </span>
-
-            </li>
-
-            <li
-                class="{% block active_boletines %}{% endblock %}"
-                onclick="window.location='{% url 'mis_boletines' %}'"
+            <a
+                href="{% url 'mis_boletines' %}"
+                class="edc-nav__enlace {% block active_boletines %}{% endblock %} {% if request.resolver_match.url_name == 'mis_boletines' %}is-active{% endif %}"
             >
-                <i class="fa-solid fa-file-lines"></i>
-                <span>Mis boletines</span>
-            </li>
+                <i class="fa-solid fa-file-lines"></i><span>Mis boletines</span>
+            </a>
 
-
-            <!-- =================================================
-                 ASISTENCIA
-            ================================================== 
-
-            <li
-                class="{% block active_asistencia %}{% endblock %}"
-                onclick="window.location='{% url 'asistencia_alumnos' %}'"
+            <a
+                href="{% url 'horarios_alumnos' %}"
+                class="edc-nav__enlace {% block active_horarios %}{% endblock %} {% if request.resolver_match.url_name == 'horarios_alumnos' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-calendar-days"></i><span>Horarios</span>
+            </a>
 
-                <i class="fa-solid fa-calendar-check"></i>
+            <p class="edc-nav__seccion">Mi colegio</p>
 
-                <span>
-                    Asistencia
-                </span>
-
-            </li>-->
-
-
-            <!-- =================================================
-                 EVENTOS
-            ================================================== -->
-
-            <li
-                class="{% block active_eventos %}{% endblock %}"
-                onclick="window.location='{% url 'listar_eventos_alumno' %}'"
+            <a
+                href="{% url 'asistencia_alumnos' %}"
+                class="edc-nav__enlace {% block active_asistencia %}{% endblock %} {% if request.resolver_match.url_name in 'asistencia_alumnos,asistencia_alumno' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-calendar-check"></i><span>Asistencia</span>
+            </a>
 
-                <i class="fa-solid fa-calendar-days"></i>
-
-                <span>
-                    Eventos
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 HORARIOS
-            ================================================== -->
-
-            <li
-                class="{% block active_horarios %}{% endblock %}"
-                onclick="window.location='{% url 'horarios_alumnos' %}'"
+            <a
+                href="{% url 'logros_alumnos' %}"
+                class="edc-nav__enlace {% block active_logros %}{% endblock %} {% if request.resolver_match.url_name == 'logros_alumnos' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-trophy"></i><span>Logros</span>
+            </a>
 
-                <i class="fa-solid fa-calendar-check"></i>
-
-                <span>
-                    Horarios
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 LOGROS
-            ================================================== -->
-
-            <!--
-
-            <li
-                class="{% block active_logros %}{% endblock %}"
-                onclick="window.location='{% url 'logros_alumnos' %}'"
+            <a
+                href="{% url 'listar_eventos_alumno' %}"
+                class="edc-nav__enlace {% block active_eventos %}{% endblock %} {% if request.resolver_match.url_name == 'listar_eventos_alumno' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-calendar-days"></i><span>Eventos</span>
+            </a>
 
-                <i class="fa-solid fa-trophy"></i>
+            <p class="edc-nav__seccion">Sistema</p>
 
-                <span>
-                    Logros
-                </span>
-
-            </li>
-
-            -->
-
-
-            <!-- =================================================
-                 CONFIGURACIÓN
-            ================================================== -->
-
-            <li
-                class="{% block active_configuracion %}{% endblock %}"
-                onclick="window.location='{% url 'configuracion_alumnos' %}'"
+            <a
+                href="{% url 'configuracion_alumnos' %}"
+                class="edc-nav__enlace {% block active_configuracion %}{% endblock %} {% if request.resolver_match.url_name == 'configuracion_alumnos' %}is-active{% endif %}"
             >
+                <i class="fa-solid fa-gear"></i><span>Configuración</span>
+            </a>
 
-                <i class="fa-solid fa-gear"></i>
+            <a href="{% url 'cerrar_sesion' %}" id="logoutBtn" class="edc-nav__enlace edc-nav__enlace--salir">
+                <i class="fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+            </a>
 
-                <span>
-                    Configuración
-                </span>
+        </nav>
 
-            </li>
-
-
-            <!-- =================================================
-                 CERRAR SESIÓN
-            ================================================== -->
-
-            <li class="logout-item">
-
-            <li id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Cerrar Sesión
-            </li>
-
-        </li>
-
-        </ul>
-
-        <div class="sidebar-account" aria-label="Cuenta de {{ request.user.get_full_name|default:request.user.documento }}">
-            <div class="sidebar-account-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
-            <div class="sidebar-account-details">
-                <span class="sidebar-account-name">{{ request.user.get_full_name|default:request.user.documento }}</span>
-                <span class="sidebar-account-role">{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
+        <div class="edc-sidebar__cuenta">
+            <div class="edc-sidebar__avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
+            <div class="edc-sidebar__datos">
+                <span class="edc-sidebar__nombre">{{ request.user.get_full_name|default:request.user.documento }}</span>
+                <span class="edc-sidebar__rol">{{ request.user.rol.nombre|default:"Estudiante"|title }}</span>
             </div>
         </div>
 
     </aside>
 
+    <button type="button" class="edc-velo" data-edc-velo aria-label="Cerrar menú"></button>
 
     <!-- =====================================================
-         CONTENIDO PRINCIPAL
+         CONTENIDO
     ====================================================== -->
 
-    <main class="content">
+    <div class="edc-contenido">
 
-        {% block content %}
-        {% endblock %}
+        <header class="edc-topbar">
 
-    </main>
+            <button
+                type="button"
+                class="edc-icono-btn edc-icono-btn--menu"
+                data-edc-menu
+                aria-controls="edc-nav"
+                aria-expanded="false"
+                aria-label="Abrir menú"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
+            <h1 class="edc-topbar__titulo">
+                {% block page_title %}Portal estudiantil{% endblock %}
+                <small>{% block page_subtitle %}{% if nivel_curso %}{{ nivel_curso.nombre }}{% else %}Educatec{% endif %}{% endblock %}</small>
+            </h1>
+
+            <div class="edc-topbar__acciones">
+
+                <button
+                    type="button"
+                    class="edc-icono-btn"
+                    data-edc-colapsar
+                    aria-label="Contraer o expandir el menú lateral"
+                >
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+
+                <a class="edc-usuario" href="{% url 'configuracion_alumnos' %}">
+                    <span class="edc-usuario__avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</span>
+                    <span class="edc-usuario__texto">
+                        <strong>{{ request.user.get_full_name|default:request.user.documento }}</strong>
+                        <span>{% if nivel_curso %}{{ nivel_curso.nombre }}{% else %}Estudiante{% endif %}</span>
+                    </span>
+                </a>
+
+            </div>
+
+        </header>
+
+        <main class="edc-principal">
+
+            {% block content %}{% endblock %}
+
+        </main>
+
+    </div>
 
 </div>
 
@@ -584,9 +232,8 @@
      JAVASCRIPT
 ====================================================== -->
 
-<script
-    src="{% static 'js/paneles/dashboard_alumno.js' %}"
-></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/educatec/shell.js' %}"></script>
 <script src="{% static 'js/paneles/cuenta_tema.js' %}"></script>
 <script src="{% static 'js/paneles/fecha_nacimiento_edad.js' %}"></script>
 <script src="{% static 'js/paneles/confirmar_cierre_sesion.js' %}"></script>
@@ -594,9 +241,7 @@
 {% include 'paneles/partials/notificaciones_toast.html' %}
 <script src="{% static 'js/paneles/notificaciones_toast.js' %}"></script>
 
-{% block extra_js %}
-{% endblock %}
-
+{% block extra_js %}{% endblock %}
 
 </body>
 

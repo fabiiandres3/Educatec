@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -10,197 +12,225 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Crear cuenta | Educatec</title>
-
-    {% load static %}
+    <title>Crear cuenta · Educatec</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    <style>
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f8f9fa, #e9f2ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        rel="stylesheet"
+    >
 
-        .register-card {
-            width: 100%;
-            max-width: 520px;
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 40px 35px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-        }
+    <link rel="stylesheet" href="{% static 'css/educatec/sistema.css' %}">
 
-        .register-icon {
-            width: 75px;
-            height: 75px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            background: #0d6efd;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
-        }
+    <link rel="stylesheet" href="{% static 'css/educatec/acceso.css' %}">
 
-        .register-card h1 {
-            color: #111111;
-            font-size: 28px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 8px;
-        }
+    {% include "partials/page_transition_assets.html" %}
 
-        .register-description {
-            color: #6c757d;
-            text-align: center;
-            font-size: 15px;
-            margin-bottom: 30px;
-        }
-
-        .register-card form p {
-            margin-bottom: 17px;
-        }
-
-        .register-card form label {
-            display: block;
-            color: #212529;
-            font-weight: 600;
-            margin-bottom: 7px;
-        }
-
-        .register-card form input,
-        .register-card form select,
-        .register-card form textarea {
-            width: 100%;
-            padding: 11px 13px;
-            border: 1px solid #ced4da;
-            border-radius: 10px;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .register-card form input:focus,
-        .register-card form select:focus,
-        .register-card form textarea:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
-        }
-
-        .register-card form input[type="checkbox"] {
-            width: auto;
-            margin-right: 7px;
-        }
-
-        .register-card ul.errorlist {
-            color: #dc3545;
-            font-size: 14px;
-            padding-left: 20px;
-            margin-top: 6px;
-            margin-bottom: 5px;
-        }
-
-        .btn-register {
-            width: 100%;
-            background: #0d6efd;
-            border: none;
-            color: #ffffff;
-            padding: 13px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 16px;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        .btn-register:hover {
-            background: #0b5ed7;
-            color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(13, 110, 253, 0.25);
-        }
-
-        .login-link {
-            display: block;
-            text-align: center;
-            margin-top: 22px;
-            color: #0d6efd;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .login-link:hover {
-            color: #0b5ed7;
-            text-decoration: underline;
-        }
-
-        @media (max-width: 576px) {
-            .register-card {
-                padding: 32px 22px;
-            }
-
-            .register-card h1 {
-                font-size: 24px;
-            }
-        }
-    </style>
-
-{% include "partials/page_transition_assets.html" %}
 </head>
 
-<body>
+<body class="edc-acceso">
 
-    <div class="register-card">
+<div class="edc-acceso__marco">
 
-        <div class="register-icon">
-            👤
+    {% include "partials/edc_acceso_marca.html" with titulo="Crea tu cuenta en Educatec" texto="Regístrate con tus datos personales. Un administrador revisará tu solicitud y te asignará un rol dentro de la plataforma." %}
+
+    <main class="edc-acceso__panel">
+
+        <div class="edc-acceso__caja edc-acceso__caja--ancha">
+
+            <a href="{% url 'index' %}" class="edc-acceso__volver">
+                <i class="fa-solid fa-arrow-left"></i>
+                Volver al inicio
+            </a>
+
+            <h2>
+                Crear una cuenta
+            </h2>
+
+            <p class="edc-acceso__ayuda">
+                Completa tus datos para registrarte en Educatec.
+            </p>
+
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div
+                        class="edc-alerta {% if message.tags == 'success' %}edc-alerta--exito{% elif message.tags == 'error' %}edc-alerta--error{% elif message.tags == 'warning' %}edc-alerta--alerta{% else %}edc-alerta--info{% endif %}"
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+
+            {% if form.non_field_errors %}
+
+                <div class="edc-alerta edc-alerta--error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    {{ form.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+
+            <form
+                action="{% url 'registrar_usuario' %}"
+                method="POST"
+                class="edc-acceso__form"
+            >
+
+                {% csrf_token %}
+
+                <div class="edc-acceso__grid">
+
+                    <div class="edc-campo">
+
+                        <label for="{{ form.username.id_for_label }}">
+                            {{ form.username.label }}
+                        </label>
+
+                        {{ form.username }}
+
+                        {{ form.username.errors }}
+
+                    </div>
+
+
+                    <div class="edc-campo">
+
+                        <label for="{{ form.email.id_for_label }}">
+                            {{ form.email.label }}
+                        </label>
+
+                        {{ form.email }}
+
+                        {{ form.email.errors }}
+
+                    </div>
+
+
+                    <div class="edc-campo">
+
+                        <label for="{{ form.first_name.id_for_label }}">
+                            {{ form.first_name.label }}
+                        </label>
+
+                        {{ form.first_name }}
+
+                        {{ form.first_name.errors }}
+
+                    </div>
+
+
+                    <div class="edc-campo">
+
+                        <label for="{{ form.last_name.id_for_label }}">
+                            {{ form.last_name.label }}
+                        </label>
+
+                        {{ form.last_name }}
+
+                        {{ form.last_name.errors }}
+
+                    </div>
+
+
+                    <div class="edc-campo">
+
+                        <label for="{{ form.fecha_nacimiento.id_for_label }}">
+                            {{ form.fecha_nacimiento.label }}
+                        </label>
+
+                        {{ form.fecha_nacimiento }}
+
+                        {{ form.fecha_nacimiento.errors }}
+
+                    </div>
+
+
+                    <div class="edc-campo">
+
+                        <label for="{{ form.telefono.id_for_label }}">
+                            {{ form.telefono.label }}
+                        </label>
+
+                        {{ form.telefono }}
+
+                        {{ form.telefono.errors }}
+
+                    </div>
+
+
+                    <div class="edc-campo edc-campo--ancho">
+
+                        <label for="{{ form.direccion.id_for_label }}">
+                            {{ form.direccion.label }}
+                        </label>
+
+                        {{ form.direccion }}
+
+                        {{ form.direccion.errors }}
+
+                    </div>
+
+
+                    <div class="edc-campo">
+
+                        <label for="{{ form.password.id_for_label }}">
+                            {{ form.password.label }}
+                        </label>
+
+                        {{ form.password }}
+
+                        {{ form.password.errors }}
+
+                    </div>
+
+
+                    <div class="edc-campo">
+
+                        <label for="{{ form.password2.id_for_label }}">
+                            {{ form.password2.label }}
+                        </label>
+
+                        {{ form.password2 }}
+
+                        {{ form.password2.errors }}
+
+                    </div>
+
+                </div>
+
+
+                <button type="submit" class="edc-btn edc-btn--bloque">
+                    Crear cuenta
+                    <i class="fa-solid fa-user-plus"></i>
+                </button>
+
+            </form>
+
+
+            <p class="edc-acceso__registro">
+                ¿Ya tienes una cuenta?
+                <a href="{% url 'login' %}">Iniciar sesión</a>
+            </p>
+
         </div>
 
-        <h1>
-            Crear una cuenta
-        </h1>
+    </main>
 
-        <p class="register-description">
-            Completa tus datos para registrarte en Educatec.
-        </p>
+</div>
 
-        <form
-            action="{% url 'registrar_usuario' %}"
-            method="POST"
-        >
+<script src="{% static 'js/csrf_refresh.js' %}"></script>
 
-            {% csrf_token %}
-
-            {{ form.as_p }}
-
-            <button
-                type="submit"
-                class="btn-register"
-            >
-                Crear cuenta
-            </button>
-
-        </form>
-
-        <a
-            href="{% url 'login' %}"
-            class="login-link"
-        >
-            ¿Ya tienes una cuenta? Iniciar sesión
-        </a>
-
-    </div>
-
-    <script src="{% static 'js/csrf_refresh.js' %}"></script>
 </body>
 
 </html>

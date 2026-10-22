@@ -2,190 +2,232 @@
 {% load dict_extras %}
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-nivel="{{ nivel_educativo|default:'default' }}">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        Educatec - {% block title %}Panel docente{% endblock %}
-    </title>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Educatec - {% block title %}Panel docente{% endblock %}</title>
+
 
     <!-- Bootstrap -->
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
+
     <!-- Font Awesome -->
+
     <link
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         rel="stylesheet"
     >
 
-    <!-- CSS principal del panel docente -->
+
+    <!-- CSS heredado del panel (usado por las páginas internas) -->
+
     <link
         rel="stylesheet"
         href="{% static 'css/paneles/dashboard_docentes.css' %}"
     >
+
     <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
     <link rel="stylesheet" href="{% static 'css/paneles/notificaciones_toast.css' %}">
-    <style>
-        .sidebar { position: sticky; top: 0; align-self: flex-start; display: flex; flex: 0 0 190px; flex-direction: column; height: 100vh; }
-        .sidebar .menu { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
-        .sidebar .menu::-webkit-scrollbar { display: none; }
-        .profile { display: none !important; }
-        .user-area { gap: 20px; }
-        .user-area::after { content: "\f590"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 1.3rem; line-height: 1; color: inherit; }
-        .notification { display: flex; align-items: center; line-height: 1; }
-        .wave-hand { display: inline-block; transform-origin: 70% 80%; animation: wave-greeting 1.4s ease-in-out infinite; }
-        @keyframes wave-greeting { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(18deg); } 50% { transform: rotate(-8deg); } 75% { transform: rotate(18deg); } }
-        @media (prefers-reduced-motion: reduce) { .wave-hand { animation: none; } }
-    </style>
+
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
     {% block extra_css %}{% endblock %}
-{% include "partials/page_transition_assets.html" %}
+
+    <!-- Sistema de diseño Educatec (se carga al final para homogeneizar) -->
+
+    <link rel="stylesheet" href="{% static 'css/educatec/sistema.css' %}">
+
+    {% include "partials/page_transition_assets.html" %}
+
 </head>
+
 
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
 
-<div class="wrapper">
+<div class="edc-app" data-edc-app>
 
-    <!-- ========================================= -->
-    <!-- SIDEBAR -->
-    <!-- ========================================= -->
+    <!-- =====================================================
+         MENÚ LATERAL
+    ====================================================== -->
 
-    <aside class="sidebar">
+    <aside class="edc-sidebar" id="edc-nav" aria-label="Navegación principal">
 
-        <!-- LOGO -->
-        <div class="logo">
-            <i class="fa-solid fa-graduation-cap"></i>
-            <span>Educatec</span>
-        </div>
+        <a class="edc-sidebar__marca" href="{% url 'dashboard_docente' %}">
+            <span class="edc-sidebar__marca-icono"><i class="fa-solid fa-graduation-cap"></i></span>
+            <span class="edc-sidebar__marca-texto">
+                <strong>Educatec</strong>
+                <span>Docente</span>
+            </span>
+        </a>
 
+        <nav class="edc-sidebar__nav">
 
-        <!-- MENÚ -->
-        <ul class="menu">
+            <p class="edc-nav__seccion">Principal</p>
 
-            <!-- INICIO -->
-            <li
-                class="{% block active_inicio %}{% endblock %}"
-                onclick="window.location='{% url 'dashboard_docente' %}'"
+            <a
+                href="{% url 'dashboard_docente' %}"
+                class="edc-nav__enlace {% block active_inicio %}{% endblock %} {% if request.resolver_match.url_name == 'dashboard_docente' %}is-active{% endif %}"
             >
-                <i class="fa-solid fa-house"></i>
-                Inicio
-            </li>
+                <i class="fa-solid fa-house"></i><span>Inicio</span>
+            </a>
 
-
-            <!-- MIS GRADOS -->
-            <li
-                class="{% block active_cursos %}{% endblock %}"
-                onclick="window.location='{% url 'cursos_docente' %}'"
+            <a
+                href="{% url 'cursos_docente' %}"
+                class="edc-nav__enlace {% block active_cursos %}{% endblock %} {% if request.resolver_match.url_name in 'cursos_docente,carga_academica' %}is-active{% endif %}"
             >
-                <i class="fa-solid fa-school"></i>
-                Mis Grados
-            </li>
+                <i class="fa-solid fa-school"></i><span>Mis grados</span>
+            </a>
 
+            <p class="edc-nav__seccion">Gestión académica</p>
 
-            <!-- CALIFICACIONES -->
-            <li
-                class="{% block active_calificaciones %}{% endblock %}"
-                onclick="window.location='{% url 'calificaciones_docente' %}'"
+            <a
+                href="{% url 'calificaciones_docente' %}"
+                class="edc-nav__enlace {% block active_calificaciones %}{% endblock %} {% if request.resolver_match.url_name in 'calificaciones_docente,editar_nota,editar_calificacion,reporte_docente' %}is-active{% endif %}"
             >
-                <i class="fa-solid fa-chart-column"></i>
-                Calificaciones
-            </li>
+                <i class="fa-solid fa-chart-column"></i><span>Calificaciones</span>
+            </a>
 
-            <li class="{% block active_tarea  %}{% endblock %}" onclick="window.location='{% url 'listar_tareas_docentes' %}'">
-                <i class="fa-solid fa-chart-column"></i> Tareas
-            </li>
-
-            <li class="{% block active_boletines %}{% endblock %}" onclick="window.location='{% url 'boletines_docente' %}'">
-                <i class="fa-solid fa-file-lines"></i> Boletines
-            </li>
-
-
-            <!-- ASISTENCIA -->
-            <li
-                class="{% block active_asistencia %}{% endblock %}"
-                onclick="window.location='{% url 'asistencia_docente' %}'"
+            <a
+                href="{% url 'listar_tareas_docentes' %}"
+                class="edc-nav__enlace {% block active_tarea %}{% endblock %} {% if request.resolver_match.url_name in 'listar_tareas_docentes,crear_tarea,editar_tarea,docente_tareas,respuestas_tareas,respuesta_alumnos,ver_respuesta' %}is-active{% endif %}"
             >
-                <i class="fa-solid fa-calendar-check"></i>
-                Asistencia
-            </li>
+                <i class="fa-solid fa-clipboard-list"></i><span>Tareas</span>
+            </a>
 
-
-            <!-- HORARIOS -->
-            <li
-                class="{% block active_horarios %}{% endblock %}"
-                onclick="window.location='{% url 'horarios_docente' %}'"
+            <a
+                href="{% url 'boletines_docente' %}"
+                class="edc-nav__enlace {% block active_boletines %}{% endblock %} {% if request.resolver_match.url_name in 'boletines_docente,docente_lista' %}is-active{% endif %}"
             >
-                <i class="fa-solid fa-calendar"></i>
-                Horarios
-            </li>
+                <i class="fa-solid fa-file-lines"></i><span>Boletines</span>
+            </a>
 
-
-            <!-- EVENTOS -->
-            <li
-                class="{% block active_eventos %}{% endblock %}"
-                onclick="window.location='{% url 'listar_eventos_docente' %}'"
+            <a
+                href="{% url 'asistencia_docente' %}"
+                class="edc-nav__enlace {% block active_asistencia %}{% endblock %} {% if request.resolver_match.url_name in 'asistencia_docente,historial_asistencia,historial_asistencia_registros' %}is-active{% endif %}"
             >
-                <i class="fa-solid fa-calendar-days"></i>
-                Eventos
-            </li>
+                <i class="fa-solid fa-calendar-check"></i><span>Asistencia</span>
+            </a>
 
-
-            <!-- CONFIGURACIÓN -->
-            <li
-                class="{% block active_configuracion %}{% endblock %}"
-                onclick="window.location='{% url 'configuracion_docente' %}'"
+            <a
+                href="{% url 'horarios_docente' %}"
+                class="edc-nav__enlace {% block active_horarios %}{% endblock %} {% if request.resolver_match.url_name in 'horarios_docente,detalle_horario_docente' %}is-active{% endif %}"
             >
-                <i class="fa-solid fa-gear"></i>
-                Configuración
-            </li>
+                <i class="fa-solid fa-calendar"></i><span>Horarios</span>
+            </a>
 
+            <p class="edc-nav__seccion">Comunidad</p>
 
-            <!-- CERRAR SESIÓN -->
-            <li id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Cerrar Sesión
-            </li>
+            <a
+                href="{% url 'listar_eventos_docente' %}"
+                class="edc-nav__enlace {% block active_eventos %}{% endblock %} {% if request.resolver_match.url_name == 'listar_eventos_docente' %}is-active{% endif %}"
+            >
+                <i class="fa-solid fa-calendar-days"></i><span>Eventos</span>
+            </a>
 
-        </ul>
+            <p class="edc-nav__seccion">Sistema</p>
 
-        <div class="sidebar-account" aria-label="Cuenta de {{ request.user.get_full_name|default:request.user.documento }}">
-            <div class="sidebar-account-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
-            <div class="sidebar-account-details">
-                <span class="sidebar-account-name">{{ request.user.get_full_name|default:request.user.documento }}</span>
-                <span class="sidebar-account-role">{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
+            <a
+                href="{% url 'configuracion_docente' %}"
+                class="edc-nav__enlace {% block active_configuracion %}{% endblock %} {% if request.resolver_match.url_name == 'configuracion_docente' %}is-active{% endif %}"
+            >
+                <i class="fa-solid fa-gear"></i><span>Configuración</span>
+            </a>
+
+            <a href="{% url 'cerrar_sesion' %}" id="logoutBtn" class="edc-nav__enlace edc-nav__enlace--salir">
+                <i class="fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+            </a>
+
+        </nav>
+
+        <div class="edc-sidebar__cuenta">
+            <div class="edc-sidebar__avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
+            <div class="edc-sidebar__datos">
+                <span class="edc-sidebar__nombre">{{ request.user.get_full_name|default:request.user.documento }}</span>
+                <span class="edc-sidebar__rol">{{ request.user.rol.nombre|default:"Docente"|title }}</span>
             </div>
         </div>
 
     </aside>
 
+    <button type="button" class="edc-velo" data-edc-velo aria-label="Cerrar menú"></button>
 
-    <!-- ========================================= -->
-    <!-- CONTENIDO PRINCIPAL -->
-    <!-- ========================================= -->
+    <!-- =====================================================
+         CONTENIDO
+    ====================================================== -->
 
-    <main class="content">
+    <div class="edc-contenido">
 
-        {% block content %}
+        <header class="edc-topbar">
 
-        {% endblock %}
+            <button
+                type="button"
+                class="edc-icono-btn edc-icono-btn--menu"
+                data-edc-menu
+                aria-controls="edc-nav"
+                aria-expanded="false"
+                aria-label="Abrir menú"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
-    </main>
+            <h1 class="edc-topbar__titulo">
+                {% block page_title %}Panel docente{% endblock %}
+                <small>{% block page_subtitle %}Educatec · Docentes{% endblock %}</small>
+            </h1>
+
+            <div class="edc-topbar__acciones">
+
+                <button
+                    type="button"
+                    class="edc-icono-btn"
+                    data-edc-colapsar
+                    aria-label="Contraer o expandir el menú lateral"
+                >
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+
+                <a class="edc-usuario" href="{% url 'configuracion_docente' %}">
+                    <span class="edc-usuario__avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</span>
+                    <span class="edc-usuario__texto">
+                        <strong>{{ request.user.get_full_name|default:request.user.documento }}</strong>
+                        <span>Docente</span>
+                    </span>
+                </a>
+
+            </div>
+
+        </header>
+
+        <main class="edc-principal">
+
+            {% block content %}{% endblock %}
+
+        </main>
+
+    </div>
 
 </div>
 
 
-<!-- ========================================= -->
-<!-- JAVASCRIPT PRINCIPAL -->
-<!-- ========================================= -->
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
 
-<script src="{% static 'js/paneles/dashboard_docente.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/educatec/shell.js' %}"></script>
 <script src="{% static 'js/paneles/cuenta_tema.js' %}"></script>
 <script src="{% static 'js/paneles/fecha_nacimiento_edad.js' %}"></script>
 <script src="{% static 'js/paneles/confirmar_cierre_sesion.js' %}"></script>

@@ -1,0 +1,281 @@
+/* ==========================================================================
+   EDUCACTEC · SITIO PÚBLICO (NAVEGACIÓN Y PIE COMPARTIDOS)
+   Se carga después de index.css / programas.css / nosotros.css y de
+   sistema.css, y reutiliza los tokens --edc-*.
+   ========================================================================== */
+
+/* ---------- 1. LAYOUT ---------- */
+
+body.edc-publico {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--edc-fondo);
+    color: var(--edc-texto);
+}
+
+.edc-publico__contenido {
+    flex: 1 0 auto;
+}
+
+/* ---------- 2. BARRA DE NAVEGACIÓN ---------- */
+
+.edc-publico__barra {
+    background: rgba(255, 255, 255, .92) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--edc-borde);
+    box-shadow: var(--edc-sombra-sm);
+    padding: 12px 0;
+}
+
+.edc-publico__barra .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    color: var(--edc-texto) !important;
+}
+
+.edc-publico__barra .navbar-brand i {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--edc-azul-electrico), var(--edc-azul-profundo));
+    color: #FFFFFF;
+    font-size: 17px;
+}
+
+.edc-publico__barra .navbar-nav .nav-link {
+    margin: 0 4px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: var(--edc-texto-sec) !important;
+    font-size: 14.5px;
+    font-weight: 600;
+    transition: color var(--edc-transicion), background var(--edc-transicion);
+}
+
+.edc-publico__barra .navbar-nav .nav-link:hover {
+    color: var(--edc-primario-fuerte) !important;
+    background: var(--edc-primario-soft);
+}
+
+.edc-publico__barra .btn-apply {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--edc-azul-electrico), var(--edc-azul-profundo));
+    color: #FFFFFF;
+    font-size: 14.5px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform var(--edc-transicion), box-shadow var(--edc-transicion);
+}
+
+.edc-publico__barra .btn-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(14, 165, 233, .32);
+    color: #FFFFFF;
+}
+
+/* ---------- 3. PIE DE PÁGINA ---------- */
+
+.edc-publico__pie {
+    flex: 0 0 auto;
+    margin-top: 56px;
+    padding: 48px 0 24px;
+    background: var(--edc-azul-noche);
+    color: rgba(255, 255, 255, .78);
+}
+
+.edc-publico__marca {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    color: #FFFFFF;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+}
+
+.edc-publico__lema {
+    max-width: 42ch;
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, .7);
+}
+
+.edc-publico__titulo {
+    margin: 0 0 14px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #FFFFFF;
+}
+
+.edc-publico__enlaces {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.edc-publico__enlaces a {
+    font-size: 14.5px;
+    color: rgba(255, 255, 255, .74);
+    text-decoration: none;
+    transition: color var(--edc-transicion);
+}
+
+.edc-publico__enlaces a:hover {
+    color: var(--edc-azul-electrico);
+}
+
+.edc-publico__pie hr {
+    margin: 32px 0 16px;
+    border-color: rgba(255, 255, 255, .14);
+    opacity: 1;
+}
+
+.edc-publico__creditos {
+    margin: 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, .55);
+}
+
+/* ---------- 4. SECCIONES PÚBLICAS ---------- */
+
+.edc-publico__etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--edc-primario-fuerte);
+}
+
+.edc-publico__destacado {
+    color: var(--edc-azul-electrico);
+}
+
+.edc-publico__hero-img {
+    height: 460px;
+    border-radius: var(--edc-radio-lg);
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Enlaces-botón de los niveles */
+
+.btn-nivel {
+    text-decoration: none;
+}
+
+/* Etiqueta de etapa dentro de cada nivel */
+
+.nivel-etapa {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario-fuerte);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* Detalle de evento */
+
+.edc-tarjeta--evento {
+    overflow: hidden;
+}
+
+.edc-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--edc-texto-sec);
+    text-decoration: none;
+    transition: color var(--edc-transicion), gap var(--edc-transicion);
+}
+
+.edc-volver:hover {
+    gap: 12px;
+    color: var(--edc-primario-fuerte);
+}
+
+.edc-evento__portada {
+    display: block;
+    width: 100%;
+    max-height: 440px;
+    object-fit: cover;
+}
+
+.edc-evento__datos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 14px;
+    color: var(--edc-texto-sec);
+    font-size: 14px;
+}
+
+.edc-evento__datos i {
+    margin-right: 6px;
+    color: var(--edc-primario);
+}
+
+.edc-evento__detalle {
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--edc-texto);
+}
+
+/* ---------- 5. RESPONSIVE ---------- */
+
+@media (max-width: 991px) {
+
+    .edc-publico__barra .navbar-collapse {
+        padding-top: 14px;
+    }
+
+    .edc-publico__barra .navbar-nav .nav-link {
+        margin: 2px 0;
+        padding: 12px 14px;
+    }
+
+    .edc-publico__barra .btn-apply {
+        display: block;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+}
+
+/* ---------- 5. ACCESIBILIDAD ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .edc-publico__barra .navbar-nav .nav-link,
+    .edc-publico__barra .btn-apply,
+    .edc-publico__enlaces a {
+        transition: none;
+    }
+
+    .edc-publico__barra .btn-apply:hover {
+        transform: none;
+    }
+
+}

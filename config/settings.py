@@ -234,6 +234,8 @@ TEMPLATES = [
 
                 'django.contrib.messages.context_processors.messages',
 
+                'apps.paneles.context_processors.contexto_educatec',
+
             ],
 
         },

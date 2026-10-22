@@ -1,0 +1,249 @@
+/* =========================================================
+   EDUCATEC · PANEL CURSOS · SELECTOR DE CLASES Y DOCENTES
+   Estilos del componente "class-picker" (JS de filtrado y
+   contador). Usa los tokens del sistema de diseño.
+   ========================================================= */
+
+.class-picker {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio);
+    background: var(--edc-superficie-alt);
+}
+
+.class-picker-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.class-picker-title {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.class-picker-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    border-radius: var(--edc-radio-sm);
+    color: var(--edc-primario-fuerte);
+    background: var(--edc-primario-soft);
+    font-size: 16px;
+}
+
+.class-picker-title h4 {
+    margin: 0;
+    color: var(--edc-texto);
+    font-size: 15px;
+    font-weight: 750;
+}
+
+.class-picker-title p {
+    margin: 3px 0 0;
+    color: var(--edc-texto-sec);
+    font-size: 12px;
+}
+
+.class-picker-count {
+    padding: 6px 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+    color: var(--edc-primario-fuerte);
+    background: var(--edc-primario-soft);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.class-picker-tools {
+    display: flex;
+    gap: 9px;
+    margin-bottom: 14px;
+}
+
+.class-search-wrap {
+    position: relative;
+    flex: 1;
+    margin: 0 !important;
+}
+
+.class-search-wrap i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--edc-texto-sec);
+}
+
+.class-search {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 13px 9px 38px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie);
+    color: var(--edc-texto);
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color var(--edc-transicion), box-shadow var(--edc-transicion);
+}
+
+.class-search:focus {
+    border-color: var(--edc-primario);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, .18);
+}
+
+.class-picker-tool {
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    padding: 0 12px;
+    min-height: 42px;
+    background: var(--edc-superficie);
+    color: var(--edc-texto-sec);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color var(--edc-transicion), color var(--edc-transicion);
+}
+
+.class-picker-tool:hover {
+    border-color: var(--edc-primario);
+    color: var(--edc-primario-fuerte);
+}
+
+.class-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.class-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie);
+    cursor: pointer;
+    transition: border-color var(--edc-transicion), background var(--edc-transicion),
+        box-shadow var(--edc-transicion), transform var(--edc-transicion);
+}
+
+.class-option:hover {
+    border-color: var(--edc-primario);
+    transform: translateY(-1px);
+}
+
+.class-option.is-selected {
+    border-color: var(--edc-primario);
+    background: var(--edc-primario-soft);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, .12);
+}
+
+.class-option input {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--edc-primario);
+}
+
+.class-option-copy {
+    min-width: 0;
+    flex: 1;
+}
+
+.class-option-name {
+    display: block;
+    overflow: hidden;
+    color: var(--edc-texto);
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.class-option-checkmark {
+    color: var(--edc-primario-fuerte);
+    opacity: 0;
+    transition: opacity var(--edc-transicion);
+}
+
+.class-option.is-selected .class-option-checkmark {
+    opacity: 1;
+}
+
+.class-picker-empty {
+    display: none;
+    padding: 24px 16px;
+    border: 1px dashed var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    color: var(--edc-texto-sec);
+    text-align: center;
+    font-size: 13px;
+}
+
+.class-picker-empty.is-visible {
+    display: block;
+}
+
+.class-picker-none {
+    grid-column: 1 / -1;
+    padding: 22px;
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie);
+    color: var(--edc-texto-sec);
+    text-align: center;
+    font-size: 13px;
+}
+
+.class-picker-none i {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--edc-texto-sec);
+    font-size: 20px;
+}
+
+.class-picker-errors {
+    margin: 7px 0 0;
+    color: var(--edc-error);
+    font-size: 13px;
+    list-style: none;
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    .class-picker {
+        padding: 16px;
+    }
+
+    .class-picker-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .class-picker-tools {
+        flex-wrap: wrap;
+    }
+
+    .class-search-wrap {
+        flex-basis: 100%;
+    }
+
+    .class-options {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
+    }
+}

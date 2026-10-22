@@ -1,290 +1,51 @@
 {% extends "admin/dashboard.html" %}
+{% load static %}
 
 {% block title %}
 Crear horario
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/educatec/panel_horario.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<style>
+<div class="edc-pagina">
 
-    .crear-horario {
-        padding: 25px;
-    }
+    <header class="edc-pagina__cabecera">
 
-    .crear-header {
-        margin-bottom: 25px;
-    }
+        <div>
 
-    .crear-header h2 {
-        margin: 0;
-        font-size: 28px;
-        color: #1f2937;
-    }
+            <h1 class="edc-pagina__titulo">
+                <i class="fas fa-calendar-plus"></i>
+                Crear horario
+            </h1>
 
-    .crear-header p {
-        margin-top: 7px;
-        color: #6b7280;
-    }
+            <p class="edc-pagina__subtitulo">
+                Selecciona el período y el curso para comenzar.
+            </p>
 
-    .crear-card {
-        max-width: 850px;
-        background: #ffffff;
-        border-radius: 14px;
-        padding: 25px;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, .08);
-    }
+        </div>
 
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .campo {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .campo label {
-        font-size: 14px;
-        font-weight: 700;
-        color: #374151;
-    }
-
-    .campo select {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 12px 14px;
-        border: 1px solid #d1d5db;
-        border-radius: 9px;
-        background: #fff;
-        color: #374151;
-        font-size: 14px;
-        outline: none;
-    }
-
-    .campo select:focus {
-        border-color: #f39c12;
-        box-shadow: 0 0 0 3px rgba(243, 156, 18, .12);
-    }
-
-    .acciones {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 25px;
-    }
-
-    .btn {
-        border: none;
-        border-radius: 9px;
-        padding: 11px 18px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn-cancelar {
-        background: #e5e7eb;
-        color: #374151;
-    }
-
-    .btn-cancelar:hover {
-        background: #d1d5db;
-    }
-
-    .btn-crear {
-        background: #f39c12;
-        color: #ffffff;
-    }
-
-    .btn-crear:hover {
-        background: #d68910;
-    }
-
-    .info {
-        max-width: 850px;
-        margin-top: 18px;
-        padding: 15px 18px;
-        border-radius: 10px;
-        background: #fff7ed;
-        border: 1px solid #fed7aa;
-        color: #9a3412;
-        font-size: 14px;
-    }
-
-    /* =====================================================
-       NOTIFICACIONES
-       ===================================================== */
-
-    .notificacion {
-        position: fixed;
-        top: 25px;
-        right: 25px;
-        width: min(390px, calc(100vw - 40px));
-        background: #ffffff;
-        border-radius: 14px;
-        padding: 16px 18px;
-        display: flex;
-        align-items: flex-start;
-        gap: 13px;
-        box-shadow: 0 12px 35px rgba(0, 0, 0, .15);
-        border: 1px solid #e5e7eb;
-        z-index: 99999;
-        transform: translateX(120%);
-        opacity: 0;
-        transition: .35s ease;
-        overflow: hidden;
-    }
-
-    .notificacion.mostrar {
-        transform: translateX(0);
-        opacity: 1;
-    }
-
-    .notificacion-icono {
-        width: 38px;
-        height: 38px;
-        min-width: 38px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 17px;
-    }
-
-    .notificacion-contenido {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .notificacion-titulo {
-        margin: 0 0 4px;
-        font-size: 14px;
-        font-weight: 800;
-        color: #1f2937;
-    }
-
-    .notificacion-mensaje {
-        margin: 0;
-        font-size: 13px;
-        line-height: 1.45;
-        color: #6b7280;
-    }
-
-    .notificacion-cerrar {
-        border: none;
-        background: transparent;
-        color: #9ca3af;
-        cursor: pointer;
-        font-size: 17px;
-        padding: 2px;
-        line-height: 1;
-    }
-
-    .notificacion-cerrar:hover {
-        color: #374151;
-    }
-
-    .notificacion.advertencia {
-        border-left: 4px solid #f59e0b;
-    }
-
-    .notificacion.advertencia .notificacion-icono {
-        background: #fef3c7;
-        color: #d97706;
-    }
-
-    .notificacion.error {
-        border-left: 4px solid #dc2626;
-    }
-
-    .notificacion.error .notificacion-icono {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-
-    .notificacion-barra {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 3px;
-        width: 100%;
-        transform-origin: left;
-    }
-
-    .notificacion.advertencia .notificacion-barra {
-        background: #f59e0b;
-    }
-
-    .notificacion.error .notificacion-barra {
-        background: #dc2626;
-    }
-
-    @keyframes reducirBarra {
-        from {
-            transform: scaleX(1);
-        }
-
-        to {
-            transform: scaleX(0);
-        }
-    }
-
-    @media (max-width: 700px) {
-
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .acciones {
-            flex-direction: column;
-        }
-
-        .btn {
-            justify-content: center;
-        }
-
-    }
-
-</style>
+    </header>
 
 
-<div class="crear-horario">
+    <div class="edc-tarjeta">
 
-    <div class="crear-header">
+        <div class="edc-tarjeta__cuerpo">
 
-        <h2>
-            <i class="fas fa-calendar-plus"></i>
-            Crear horario
-        </h2>
-
-        <p>
-            Selecciona el período y el curso para comenzar.
-        </p>
-
-    </div>
-
-
-    <div class="crear-card">
-
-        <div class="form-grid">
+        <div class="edc-formulario">
 
             <!-- PERÍODO -->
 
-            <div class="campo">
+            <div class="edc-campo">
 
                 <label for="periodo">
                     Período
                 </label>
 
-                <select id="periodo">
+                <select id="periodo" class="edc-control">
 
                     <option value="">
                         Seleccionar período
@@ -311,13 +72,13 @@ Crear horario
 
             <!-- CURSO -->
 
-            <div class="campo">
+            <div class="edc-campo">
 
                 <label for="curso">
                     Curso
                 </label>
 
-                <select id="curso">
+                <select id="curso" class="edc-control">
 
                     <option value="">
                         Seleccionar curso
@@ -348,7 +109,7 @@ Crear horario
 
             <a
                 href="{% url 'listar_horario' %}"
-                class="btn btn-cancelar"
+                class="edc-btn edc-btn--secundario"
             >
                 <i class="fas fa-times"></i>
                 Cancelar
@@ -357,7 +118,7 @@ Crear horario
             <button
                 type="button"
                 id="btnCrearHorario"
-                class="btn btn-crear"
+                class="edc-btn"
             >
                 <i class="fas fa-calendar-plus"></i>
                 Crear horario
@@ -365,10 +126,12 @@ Crear horario
 
         </div>
 
+        </div>
+
     </div>
 
 
-    <div class="info">
+    <div class="edc-alerta edc-alerta--info">
 
         <i class="fas fa-info-circle"></i>
 

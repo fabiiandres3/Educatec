@@ -1,42 +1,8 @@
 {% extends 'programas/baseprogramas.html' %}
 {% load static %}
 <title>{% block title %}Educatec | Secundaria{% endblock %}</title>
-   
-{% block content %}
-<body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
-        <div class="container-fluid px-5">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-graduation-cap"></i>
-                <strong>Educatec</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#materias">Materias</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#proyectos">Proyectos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#tecnologia">Tecnología</a>
-                    </li>
-                    <li class="nav-item ms-3">
-                        <button class="btn btn-apply" style="background-color:#006eff; color:#fff;"><a href="login.html" style="color:#fff; text-decoration:none;">Iniciar
-                            Sesión</a></button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+{% block content %}
     <div class="container mt-4">
         <a href="{% url 'index' %}" class="btn btn-outline-primary rounded-pill">
         ← Volver al Inicio
@@ -307,7 +273,7 @@
                     Tecnología, conocimiento y habilidades para construir grandes oportunidades.
                 </p>
 
-                <a href="#" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
 
                 Comenzar Ahora
 
@@ -349,25 +315,4 @@
 
     </section>
 
-    <footer class="footer py-5">
-
-        <div class="container text-center">
-
-            <h3 class="mb-3">
-                Educatec
-            </h3>
-
-            <p>
-                Educación secundaria enfocada en la innovación, la tecnología y la formación integral.
-            </p>
-
-            <p class="mb-0">
-                © 2026 Educatec - Todos los derechos reservados.
-            </p>
-
-        </div>
-
-    </footer>
-
-</body>
 {% endblock %}

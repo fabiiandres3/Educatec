@@ -28,6 +28,10 @@ from apps.user.tokens import email_verification_token
 
 from apps.eventos.models import Evento
 from apps.alumnos.models import Alumnos
+from apps.docentes.models import Docente
+from apps.tareas.models import Tareas
+from apps.cursos.models import Cursos
+from apps.clases.models import Clases
 
 
 @ensure_csrf_cookie
@@ -98,11 +102,31 @@ def index(request):
         "hora_inicio"
     )
 
+    meses = ("ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC")
+    eventos_home = []
+    for evento in eventos:
+        hora = ""
+        if evento.hora_inicio:
+            hora = evento.hora_inicio.strftime("%H:%M")
+            if evento.hora_fin:
+                hora += f" – {evento.hora_fin.strftime('%H:%M')}"
+        eventos_home.append({
+            "id": evento.id,
+            "tipo": evento.tipo,
+            "titulo": evento.titulo,
+            "descripcion": evento.descripcion,
+            "dia": evento.fecha.strftime("%d"),
+            "mes": meses[evento.fecha.month - 1],
+            "hora": hora,
+            "img": evento.imagen.url if evento.imagen else "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=900",
+            "url": reverse("detalle_evento", kwargs={"id": evento.id}),
+        })
     return render(
         request,
         "index.html",
         {
             "eventos": eventos,
+            "eventos_home": eventos_home,
         }
     )
 
@@ -583,12 +607,26 @@ def dashboard(request):
         "-date_joined"
     )[:10]
 
+    # --------------------------------------------------------
+    # MÉTRICAS REALES DEL PANEL
+    # --------------------------------------------------------
+
+    total_alumnoss = Alumnos.objects.filter(activo=True).count()
+    total_docentees = Docente.objects.count()
+    total_tareas = Tareas.objects.count()
+    total_cursos = Cursos.objects.count()
+    total_materias = Clases.objects.count()
 
     return render(
         request,
         "admin/dashboard.html",
         {
             "usuarios_recientes": usuarios_recientes,
+            "total_alumnoss": total_alumnoss,
+            "total_docentees": total_docentees,
+            "total_tareas": total_tareas,
+            "total_cursos": total_cursos,
+            "total_materias": total_materias,
         }
     )
 

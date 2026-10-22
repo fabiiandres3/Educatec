@@ -6,703 +6,152 @@
   Cursos
 {% endblock %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/educatec/panel_cursos.css' %}">
+{% endblock %}
+
 {% block content %}
-  <link rel="stylesheet" href="{% static 'css/cursos/cursos.css' %}" />
-
-  <style>
-    /* Estilos base existentes... */
-    .cursos-wrapper { max-width: 1350px; margin: 0 auto; padding: 10px 5px 50px; }
-    .cursos-hero { position: relative; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px 34px; margin-bottom: 24px; background: linear-gradient(120deg, #ffffff 0%, #f4f7ff 100%); color: #172033; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); }
-    .cursos-hero::before { content: ''; position: absolute; width: 260px; height: 260px; border-radius: 50%; background: rgba(79, 70, 229, 0.06); right: -80px; top: -130px; }
-    .cursos-hero::after { content: ''; position: absolute; width: 180px; height: 180px; border-radius: 50%; background: rgba(37, 99, 235, 0.05); left: 45%; bottom: -120px; }
-    .cursos-hero-content { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
-    .cursos-hero h1 { font-size: 32px; font-weight: 800; margin: 0 0 7px; }
-    .cursos-hero p { margin: 0; color: #64748b; font-size: 14px; }
-    
-    .btn-crear-curso { display: inline-flex; align-items: center; gap: 9px; background: #3158c8; color: white; border: none; border-radius: 11px; padding: 12px 18px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; box-shadow: 0 5px 13px rgba(49, 88, 200, 0.18); }
-    .btn-crear-curso:hover { color: white; background: #2549b1; transform: translateY(-2px); box-shadow: 0 8px 17px rgba(49, 88, 200, 0.23); }
-    
-    .btn-registrar-alumno { display: inline-flex; align-items: center; gap: 9px; background: #2563eb; color: white; border: none; border-radius: 11px; padding: 11px 18px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); height: fit-content; cursor: pointer; }
-    .btn-registrar-alumno:hover { background: #1d4ed8; color: white; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3); }
-    
-    /* Nuevo estilo para el botón Editar Tabla */
-    .btn-editar-tabla { display: inline-flex; align-items: center; gap: 9px; background: #f59e0b; color: white; border: none; border-radius: 11px; padding: 11px 18px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); height: fit-content; cursor: pointer; }
-    .btn-editar-tabla:hover { background: #d97706; color: white; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3); }
-    .btn-editar-tabla.activo { background: #64748b; }
-
-    .cursos-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
-    .stat-card-curso { background: white; border: 1px solid #e5e7eb; border-radius: 18px; padding: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 7px 20px rgba(15, 23, 42, 0.05); }
-    .stat-icon-curso { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: #eff6ff; color: #2563eb; font-size: 20px; }
-    .stat-card-curso strong { display: block; color: #1e293b; font-size: 23px; line-height: 1.1; }
-    .stat-card-curso span { color: #64748b; font-size: 13px; }
-    
-    .section-card { background: white; border: 1px solid #e5e7eb; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 25px rgba(15, 23, 42, 0.05); margin-bottom: 28px; }
-    .section-header { padding: 22px 25px; border-bottom: 1px solid #eef2f7; display: flex; align-items: center; justify-content: space-between; }
-    .section-header-left { display: flex; align-items: center; gap: 13px; }
-    .section-header-icon { width: 43px; height: 43px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #eff6ff; color: #2563eb; }
-    .section-header h2 { margin: 0; font-size: 18px; font-weight: 750; color: #172033; }
-    .section-header p { margin: 3px 0 0; color: #94a3b8; font-size: 12px; }
-    .section-body { padding: 25px; }
-    
-    .cursos-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-    .curso-card { position: relative; z-index:0; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; overflow: visible; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
-    .curso-card:hover { z-index:5; transform: translateY(-5px); border-color: #bfdbfe; box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1); }
-    .curso-card-header { position: relative; overflow:hidden; border-radius:17px 17px 0 0; padding: 23px; background: linear-gradient(135deg, #eff6ff, #eef2ff); }
-    .curso-card-header::after { content: ''; position: absolute; width: 80px; height: 80px; border-radius: 50%; background: rgba(37, 99, 235, 0.07); right: -20px; top: -25px; }
-    .curso-icon { width: 43px; height: 43px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: white; color: #2563eb; margin-bottom: 14px; box-shadow: 0 5px 12px rgba(37, 99, 235, 0.1); }
-    .curso-card-header h3 { position: relative; z-index: 2; margin: 0; color: #172033; font-size: 19px; font-weight: 750; }
-    .curso-card-body { padding: 20px 23px; }
-    .curso-alumnos { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .curso-alumnos-label { color: #64748b; font-size: 13px; }
-    .curso-alumnos-number { color: #1e293b; font-weight: 750; font-size: 15px; }
-    .capacidad-bar { height: 7px; width: 100%; border-radius: 20px; background: #e2e8f0; overflow: hidden; }
-    .capacidad-progress { height: 100%; border-radius: 20px; background: linear-gradient(90deg, #2563eb, #6366f1); transition: width 0.3s ease; }
-    .capacidad-text { margin-top: 8px; color: #94a3b8; font-size: 11px; }
-    .curso-card-actions { padding: 15px 23px; border-top: 1px solid #f1f5f9; display: flex; gap: 8px; }
-    .cursos-hero h1 { display:flex; align-items:center; gap:15px; color: #172033; letter-spacing: -.035em; }
-    .cursos-hero h1 i { display:grid; place-items:center; flex:0 0 58px; width:58px; height:58px; border-radius:16px; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; font-size:24px; box-shadow:0 8px 20px rgba(37,99,235,.2); }
-    .section-card { border-color: #e6eaf1; box-shadow: 0 6px 22px rgba(15,23,42,.045); }
-    .curso-card { border-color: #e4e9f1; box-shadow: 0 3px 12px rgba(15,23,42,.035); }
-    .curso-card-header { padding: 19px 21px; }
-    .curso-card-body { padding: 17px 21px; }
-    .curso-card-actions { padding: 12px 21px; }
-    .curso-action { position:relative; box-sizing:border-box; flex:0 0 38px; width:38px; min-width:38px; max-width:38px; height:38px; min-height:38px; padding:0; border:0; border-radius:10px; display:flex; align-items:center; justify-content:center; text-decoration:none; transition:0.2s ease; cursor:pointer; }
-    .curso-action.edit { background: #fef3c7; color: #d97706; }
-    .curso-action.delete { background: #fee2e2; color: #dc2626; }
-    .curso-action:hover { transform: translateY(-2px); }
-    .curso-action::after { content:attr(data-tooltip); position:absolute; z-index:20; left:50%; bottom:calc(100% + 9px); padding:7px 10px; border-radius:7px; background:#172033; color:#fff; font-size:11px; font-weight:650; line-height:1.2; white-space:nowrap; pointer-events:none; opacity:0; transform:translate(-50%,4px); transition:opacity .16s ease,transform .16s ease; }
-    .curso-action:hover::after,.curso-action:focus-visible::after { opacity:1; transform:translate(-50%,0); }
-
-    .curso-delete-modal[hidden] { display:none; }
-    .curso-delete-modal { position:fixed; inset:0; z-index:2000; display:grid; place-items:center; padding:20px; background:rgba(15,23,42,.58); backdrop-filter:blur(4px); }
-    .curso-delete-dialog { width:min(100%,430px); padding:28px; border:1px solid #e5e7eb; border-radius:20px; background:#fff; box-shadow:0 24px 70px rgba(15,23,42,.25); text-align:center; animation:curso-modal-in .18s ease-out; }
-    .curso-delete-icon { width:58px; height:58px; display:grid; place-items:center; margin:0 auto 16px; border-radius:18px; color:#dc2626; background:#fee2e2; font-size:23px; }
-    .curso-delete-dialog h3 { margin:0 0 8px; color:#172033; font-size:20px; font-weight:750; }
-    .curso-delete-dialog p { margin:0; color:#64748b; font-size:14px; line-height:1.55; }
-    .curso-delete-name { display:block; margin-top:8px; color:#1e293b; font-weight:750; }
-    .curso-delete-actions { display:flex; justify-content:center; gap:10px; margin-top:24px; }
-    .curso-delete-btn { min-height:42px; padding:0 17px; border:1px solid #dbe2ea; border-radius:10px; background:#fff; color:#475569; font-size:13px; font-weight:700; cursor:pointer; }
-    .curso-delete-btn.confirm { border-color:#dc2626; background:#dc2626; color:#fff; }
-    .curso-delete-btn:hover { filter:brightness(.96); }
-    @keyframes curso-modal-in { from { opacity:0; transform:translateY(8px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
-    
-    .empty-cursos { text-align: center; padding: 55px 20px; color: #64748b; }
-    .empty-cursos-icon { width: 70px; height: 70px; border-radius: 20px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 27px; }
-    .empty-cursos h3 { color: #334155; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-    .empty-cursos p { font-size: 13px; margin-bottom: 20px; }
-    
-    .filtro-actions-wrapper { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 15px; padding: 18px; }
-    .filtro-container { flex: 1; margin-bottom: 0; }
-    .filtro-label { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 8px; }
-    .filtro-select { border-radius: 11px; border: 1px solid #dbe2ea; padding: 11px 13px; background: white; transition: 0.2s ease; width: 100%; }
-    .filtro-select:focus { border-color: #4f46e5; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
-    .acciones-grupo { display: flex; gap: 10px; }
-    
-    /* Estilos dinámicos para los botones de acción en la tabla */
-    .tabla-accion-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; margin: 0 3px; text-decoration: none; font-size: 13px; transition: 0.2s ease; }
-    .tabla-accion-edit { background: #fef3c7; color: #d97706; }
-    .tabla-accion-delete { background: #fee2e2; color: #dc2626; }
-    .tabla-accion-btn:hover { transform: scale(1.08); }
-
-    .alumnos-filter-row { display:grid; grid-template-columns:minmax(220px,1fr) minmax(240px,1fr) auto; align-items:end; gap:14px; width:100%; }
-    .alumnos-search-wrap { position:relative; min-width:0; }
-    .alumnos-search-wrap i { position:absolute; top:50%; left:14px; transform:translateY(-50%); color:#94a3b8; }
-    .alumnos-search { min-height:44px; padding-left:40px !important; border-radius:11px !important; border:1px solid #dbe2ea !important; background:#fff; }
-    .alumnos-table-shell { overflow:hidden; border:1px solid #e2e8f0; border-radius:16px; background:#fff; box-shadow:0 5px 18px rgba(15,23,42,.045); }
-    .alumnos-table-scroll { width:100%; overflow:auto; }
-    .alumnos-table { width:100%; min-width:1180px; margin:0; border-collapse:separate; border-spacing:0; color:#334155; font-size:12px; }
-    .alumnos-table thead th { position:sticky; top:0; z-index:1; padding:13px 14px; border:0; border-bottom:1px solid #e2e8f0; background:#f7f9fc; color:#64748b; font-size:10px; font-weight:750; letter-spacing:.055em; text-align:left; text-transform:uppercase; white-space:nowrap; }
-    .alumnos-table tbody td { max-width:220px; padding:12px 14px; border:0; border-bottom:1px solid #f0f3f7; vertical-align:middle; }
-    .alumnos-table tbody tr:last-child td { border-bottom:0; }
-    .alumnos-table tbody tr:not([hidden]):hover td { background:#f8faff; }
-    .alumno-identidad { display:flex; align-items:center; gap:10px; min-width:170px; }
-    .alumno-avatar { width:34px; height:34px; display:grid; place-items:center; flex:0 0 34px; border-radius:11px; background:#eaf0ff; color:#4263d8; font-size:12px; font-weight:800; }
-    .alumno-nombre { display:grid; gap:3px; min-width:0; }
-    .alumno-nombre strong { max-width:190px; overflow:hidden; color:#1e293b; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
-    .alumno-nombre small,.alumno-dato-secundario { color:#94a3b8; font-size:10px; }
-    .alumno-dato-principal { color:#334155; font-weight:650; white-space:nowrap; }
-    .alumno-email { display:block; max-width:190px; overflow:hidden; color:#5269b8; text-decoration:none; text-overflow:ellipsis; white-space:nowrap; }
-    .alumno-email:hover { color:#3452b2; text-decoration:underline; }
-    .alumno-direccion { display:block; max-width:170px; overflow:hidden; color:#64748b; text-overflow:ellipsis; white-space:nowrap; }
-    .alumno-dato-vacio { color:#a3adbb; }
-    .alumno-curso { display:inline-flex; padding:5px 9px; border-radius:999px; background:#eff6ff; color:#3158bb; font-size:11px; font-weight:700; white-space:nowrap; }
-    .alumno-sin-curso { display:inline-flex; padding:5px 9px; border-radius:999px; background:#fff7ed; color:#c2410c; font-size:11px; font-weight:700; white-space:nowrap; }
-    .alumno-estado { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; white-space:nowrap; }
-    .alumno-estado.activo { color:#15803d; }
-    .alumno-estado.inactivo { color:#b91c1c; }
-    .alumnos-vacio { padding:35px !important; color:#94a3b8 !important; text-align:center; }
-    .alumnos-table-footer { display:flex; justify-content:space-between; gap:14px; padding:11px 14px; border-top:1px solid #edf1f6; color:#94a3b8; font-size:11px; }
-    html[data-theme="dark"] .alumnos-table-shell { border-color:#344258; background:#192437; }
-    html[data-theme="dark"] .alumnos-table { color:#d0d9e8; }
-    html[data-theme="dark"] .alumnos-table thead th { border-color:#344258; background:#202e44; color:#aebbd0; }
-    html[data-theme="dark"] .alumnos-table tbody td { border-color:#2b394e; }
-    html[data-theme="dark"] .alumnos-table tbody tr:not([hidden]):hover td { background:#202e44; }
-    html[data-theme="dark"] .alumno-nombre strong,html[data-theme="dark"] .alumno-dato-principal { color:#e2e8f0; }
-    html[data-theme="dark"] .alumno-direccion { color:#b1bdcf; }
-    html[data-theme="dark"] .alumnos-search { border-color:#344258 !important; background:#202e44; color:#e2e8f0; }
-
-    @media (max-width: 900px) {
-      .cursos-stats { grid-template-columns: 1fr; }
-      .cursos-hero-content { flex-direction: column; align-items: flex-start; }
-      .alumnos-filter-row { grid-template-columns:1fr; }
-      .alumnos-table-footer { flex-direction:column; }
-    }
-    @media (max-width: 600px) {
-      .cursos-wrapper { padding: 5px 0 35px; }
-      .cursos-hero { padding: 27px 22px; }
-      .cursos-hero h1 { font-size: 26px; }
-      .section-body { padding: 18px; }
-      .section-header { padding: 18px; }
-      .cursos-container { grid-template-columns: 1fr; }
-      .filtro-actions-wrapper { flex-direction: column; align-items: stretch; }
-      .acciones-grupo { flex-direction: column; }
-      .btn-registrar-alumno, .btn-editar-tabla { justify-content: center; }
-    }
-
-    #modalCargarExcel .modal-content { background: #ffffff; color: #1e293b; border: none; border-radius: 18px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2); }
-    #modalCargarExcel .modal-header { background: #ffffff; border-bottom: 1px solid #e5e7eb; padding: 20px 24px; }
-    #modalCargarExcel .modal-title { color: #172033 !important; font-weight: 700; font-size: 18px; }
-    #modalCargarExcel .modal-body { background: #ffffff; color: #334155 !important; padding: 24px; }
-    #modalCargarExcel .modal-body label { color: #334155 !important; font-weight: 600; margin-bottom: 10px; display: block; }
-    #modalCargarExcel .form-control { color: #1e293b !important; background: #ffffff !important; border: 1px solid #cbd5e1; border-radius: 10px; }
-    #modalCargarExcel .form-control:focus { color: #1e293b !important; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
-    #modalCargarExcel .modal-footer { background: #ffffff; border-top: 1px solid #e5e7eb; padding: 16px 24px; }
-    #modalCargarExcel .btn-secondary { color: #334155 !important; background: #f1f5f9; border-color: #cbd5e1; }
-    #modalCargarExcel .btn-secondary:hover { background: #e2e8f0; color: #1e293b !important; }
-    #modalCargarExcel .btn-primary { background: #2563eb; border-color: #2563eb; color: #ffffff !important; }
-    #modalCargarExcel .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
-
-    
-/* =========================================================
-   NOTIFICACIONES
-   ========================================================= */
-
-.notificaciones-container {
-    position: fixed;
-    right: 25px;
-    bottom: 25px;
-
-    width: 380px;
-    max-width: calc(100vw - 30px);
-
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    z-index: 99999;
-}
-
-.notificacion {
-    position: relative;
-
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-
-    min-height: 70px;
-
-    padding: 16px 45px 16px 16px;
-
-    background: #ffffff;
-    border-radius: 12px;
-
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-
-    border-left: 5px solid;
-
-    animation: aparecerNotificacion 0.3s ease;
-}
-
-.notificacion-icono {
-    font-size: 22px;
-    margin-top: 2px;
-}
-
-.notificacion-contenido {
-    flex: 1;
-
-    font-size: 14px;
-    line-height: 1.5;
-
-    color: #333333;
-}
-
-.notificacion-cerrar {
-    position: absolute;
-
-    top: 10px;
-    right: 10px;
-
-    width: 28px;
-    height: 28px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-    background: transparent;
-
-    color: #777777;
-
-    border-radius: 50%;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
-}
-
-.notificacion-cerrar:hover {
-    background: #eeeeee;
-    color: #222222;
-}
-
-
-/* ÉXITO */
-
-.notificacion-exito {
-    border-left-color: #16a34a;
-}
-
-.notificacion-exito .notificacion-icono {
-    color: #16a34a;
-}
-
-
-/* ERROR */
-
-.notificacion-error {
-    border-left-color: #dc2626;
-}
-
-.notificacion-error .notificacion-icono {
-    color: #dc2626;
-}
-
-
-/* ADVERTENCIA */
-
-.notificacion-advertencia {
-    border-left-color: #f59e0b;
-}
-
-.notificacion-advertencia .notificacion-icono {
-    color: #f59e0b;
-}
-
-
-/* INFORMACIÓN */
-
-.notificacion-info {
-    border-left-color: #2563eb;
-}
-
-.notificacion-info .notificacion-icono {
-    color: #2563eb;
-}
-
-
-/* ANIMACIÓN */
-
-@keyframes aparecerNotificacion {
-
-    from {
-        opacity: 0;
-        transform: translateX(40px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-}
-
-
-/* RESPONSIVE */
-
-@media (max-width: 600px) {
-
-    .notificaciones-container {
-        right: 15px;
-        bottom: 15px;
-        width: calc(100vw - 30px);
-    }
-
-}
-
-/* =========================================================
-   MODAL CONFIRMACIÓN REGISTRO DE ALUMNOS
-   ========================================================= */
-
-#modalConfirmarRegistro .modal-dialog {
-    max-width: 440px;
-}
-
-.modal-confirmacion {
-    border: none;
-    border-radius: 18px;
-    overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-}
-
-
-/* ICONO */
-
-.confirmacion-icono {
-    width: 72px;
-    height: 72px;
-
-    margin: 28px auto 12px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #e8f3ff;
-    color: #006eff;
-
-    font-size: 30px;
-}
-
-
-/* CONTENIDO */
-
-.confirmacion-contenido {
-    padding: 5px 30px 20px;
-    text-align: center;
-}
-
-.confirmacion-contenido h4 {
-    margin: 5px 0 10px;
-
-    font-size: 22px;
-    font-weight: 700;
-
-    color: #1f2937;
-}
-
-.confirmacion-contenido p {
-    margin: 0 auto 15px;
-
-    color: #6b7280;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-
-/* ARCHIVO */
-
-.archivo-seleccionado {
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 12px 15px;
-
-    margin: 15px 0;
-
-    background: #f4f8ff;
-
-    border: 1px solid #dbeafe;
-
-    border-radius: 10px;
-
-    text-align: left;
-}
-
-.archivo-seleccionado i {
-    color: #16a34a;
-    font-size: 20px;
-}
-
-.archivo-seleccionado span {
-    flex: 1;
-
-    color: #374151;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-
-/* TEXTO INFORMATIVO */
-
-.confirmacion-info {
-    font-size: 13px !important;
-    color: #9ca3af !important;
-}
-
-
-/* BOTONES */
-
-.confirmacion-acciones {
-    display: flex;
-
-    justify-content: flex-end;
-
-    gap: 10px;
-
-    padding: 18px 25px;
-
-    background: #f9fafb;
-
-    border-top: 1px solid #eeeeee;
-}
-
-.btn-cancelar-confirmacion,
-.btn-confirmar-registro {
-    border: none;
-
-    padding: 10px 18px;
-
-    border-radius: 9px;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: all 0.2s ease;
-}
-
-
-/* CANCELAR */
-
-.btn-cancelar-confirmacion {
-    background: #eeeeee;
-    color: #4b5563;
-}
-
-.btn-cancelar-confirmacion:hover {
-    background: #e5e7eb;
-}
-
-
-/* CONFIRMAR */
-
-.btn-confirmar-registro {
-    background: #006eff;
-    color: white;
-}
-
-.btn-confirmar-registro:hover {
-    background: #0058cc;
-    transform: translateY(-1px);
-}
-
-.btn-confirmar-registro i {
-    margin-right: 5px;
-}
-
-
-/* ANIMACIÓN */
-
-#modalConfirmarRegistro .modal-content {
-    animation: aparecerConfirmacion 0.25s ease;
-}
-
-@keyframes aparecerConfirmacion {
-
-    from {
-        opacity: 0;
-        transform: scale(0.94) translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-
-}
-
-
-
-  </style>
+  <div class="edc-pagina">
 
     <!-- HERO -->
-    <div class="cursos-hero">
-      <div class="cursos-hero-content">
-        <div>
-          <h1>
-            <i class="fa-solid fa-graduation-cap"></i>
-            Cursos
-          </h1>
-          <p>Administra los cursos y consulta los alumnos registrados.</p>
-        </div>
-        <a href="{% url 'crear_curso' %}" class="btn-crear-curso">
-          <i class="fa-solid fa-plus"></i>
+    <header class="edc-pagina__cabecera">
+      <div>
+        <h1 class="edc-pagina__titulo">
+          <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
+          Cursos
+        </h1>
+        <p class="edc-pagina__subtitulo">Administra los cursos y consulta los alumnos registrados.</p>
+      </div>
+      <div class="edc-pagina__acciones">
+        <a href="{% url 'crear_curso' %}" class="edc-btn">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
           Crear curso
         </a>
       </div>
-    </div>
+    </header>
 
     <!-- ESTADÍSTICAS -->
-    <div class="cursos-stats">
-      <div class="stat-card-curso">
-        <div class="stat-icon-curso">
-          <i class="fa-solid fa-book-open"></i>
-        </div>
-        <div>
-          <strong>{{ cursos|length }}</strong>
-          <span>Cursos registrados</span>
-        </div>
+    <div class="edc-rejilla" aria-label="Resumen de cursos">
+      <div class="edc-stat">
+        <span class="edc-stat__icono"><i class="fa-solid fa-book-open" aria-hidden="true"></i></span>
+        <span class="edc-stat__texto">
+          <strong class="edc-stat__valor">{{ cursos|length }}</strong>
+          <span class="edc-stat__etiqueta">Cursos registrados</span>
+        </span>
       </div>
 
-      <div class="stat-card-curso">
-        <div class="stat-icon-curso">
-          <i class="fa-solid fa-users"></i>
-        </div>
-        <div>
-          <strong>{{ alumnos|length|default:'0' }}</strong>
-          <span>Alumnos registrados</span>
-        </div>
+      <div class="edc-stat">
+        <span class="edc-stat__icono edc-stat__icono--exito"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
+        <span class="edc-stat__texto">
+          <strong class="edc-stat__valor">{{ alumnos|length|default:'0' }}</strong>
+          <span class="edc-stat__etiqueta">Alumnos registrados</span>
+        </span>
       </div>
 
-      <div class="stat-card-curso">
-        <div class="stat-icon-curso">
-          <i class="fa-solid fa-chart-line"></i>
-        </div>
-        <div>
-          <strong>32</strong>
-          <span>Capacidad por curso</span>
-        </div>
+      <div class="edc-stat">
+        <span class="edc-stat__icono edc-stat__icono--alerta"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></span>
+        <span class="edc-stat__texto">
+          <strong class="edc-stat__valor">32</strong>
+          <span class="edc-stat__etiqueta">Capacidad por curso</span>
+        </span>
       </div>
     </div>
 
     <!-- CURSOS -->
-    <div class="section-card">
-      <div class="section-header">
-        <div class="section-header-left">
-          <div class="section-header-icon">
-            <i class="fa-solid fa-layer-group"></i>
-          </div>
-          <div>
-            <h2>Cursos disponibles</h2>
-            <p>Gestiona los cursos de la institución</p>
-          </div>
+    <section class="edc-tarjeta">
+      <div class="edc-tarjeta__cabeza">
+        <div>
+          <h2>Cursos disponibles</h2>
+          <p class="edc-ayuda">Gestiona los cursos de la institución</p>
         </div>
       </div>
 
-      <div class="section-body">
+      <div class="edc-tarjeta__cuerpo">
         {% if cursos %}
-          <div class="cursos-container">
+          <div class="edc-rejilla">
             {% for curso in cursos %}
-              <div class="curso-card">
-                <div class="curso-card-header">
-                  <div class="curso-icon">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                  </div>
-                  <h3>{{ curso.nombre }}</h3>
+              <article class="edc-tarjeta">
+                <div class="edc-tarjeta__cabeza">
+                  <h3><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> {{ curso.nombre }}</h3>
                 </div>
 
-                <div class="curso-card-body">
+                <div class="edc-tarjeta__cuerpo">
                   <div class="curso-alumnos">
-                    <span class="curso-alumnos-label">
-                      <i class="fa-solid fa-users"></i>
+                    <span class="edc-ayuda">
+                      <i class="fa-solid fa-users" aria-hidden="true"></i>
                       Alumnos
                     </span>
-                    <span class="curso-alumnos-number">{{ curso.cantidad_alumnos }}/32</span>
+                    <span class="edc-badge edc-badge--info">{{ curso.cantidad_alumnos }}/32</span>
                   </div>
 
-                  <div class="capacidad-bar">
+                  <div class="capacidad-bar" role="progressbar" aria-label="Capacidad utilizada del curso" aria-valuemin="0" aria-valuemax="32" aria-valuenow="{{ curso.cantidad_alumnos }}">
                     <div class="capacidad-progress" style="width: {% widthratio curso.cantidad_alumnos 32 100 %}%;"></div>
                   </div>
-                  <div class="capacidad-text">Capacidad utilizada del curso</div>
+                  <p class="edc-ayuda">Capacidad utilizada del curso</p>
                 </div>
 
-                <div class="curso-card-actions">
-                  <a href="{% url 'editar_curso' curso.id %}" class="curso-action edit" aria-label="Editar curso {{ curso.nombre }}" data-tooltip="Editar curso"><i class="fa-solid fa-pen"></i></a>
-                  <button type="button" class="curso-action delete js-confirmar-eliminar-curso" aria-label="Eliminar curso {{ curso.nombre }}" data-tooltip="Eliminar curso" data-delete-url="{% url 'eliminar_curso' curso.id %}" data-course-name="{{ curso.nombre }}"><i class="fa-solid fa-trash"></i></button>
+                <div class="edc-acciones curso-tarjeta__acciones">
+                  <a href="{% url 'editar_curso' curso.id %}" class="edc-accion" aria-label="Editar curso {{ curso.nombre }}" title="Editar curso"><i class="fa-solid fa-pen" aria-hidden="true"></i></a>
+                  <button type="button" class="edc-accion edc-accion--peligro js-confirmar-eliminar-curso" aria-label="Eliminar curso {{ curso.nombre }}" title="Eliminar curso" data-delete-url="{% url 'eliminar_curso' curso.id %}" data-course-name="{{ curso.nombre }}"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
                 </div>
-              </div>
+              </article>
             {% endfor %}
           </div>
         {% else %}
-          <div class="empty-cursos">
-            <div class="empty-cursos-icon">
-              <i class="fa-solid fa-graduation-cap"></i>
-            </div>
-            <h3>No hay cursos todavía</h3>
+          <div class="edc-vacio">
+            <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
+            <strong>No hay cursos todavía</strong>
             <p>Comienza creando el primer curso de la institución.</p>
-            <a href="{% url 'crear_curso' %}" class="btn btn-primary">
-              <i class="fa-solid fa-plus"></i>
+            <a href="{% url 'crear_curso' %}" class="edc-btn">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
               Crear primer curso
             </a>
           </div>
         {% endif %}
-
-        <div class="curso-delete-modal" id="curso-delete-modal" hidden>
-          <section class="curso-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="curso-delete-title" aria-describedby="curso-delete-description" tabindex="-1">
-            <div class="curso-delete-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div>
-            <h3 id="curso-delete-title">¿Seguro que deseas eliminar este curso?</h3>
-            <p id="curso-delete-description">Se eliminará el curso:</p>
-            <span class="curso-delete-name" id="curso-delete-name"></span>
-            <form method="post" id="curso-delete-form">
-              {% csrf_token %}
-              <div class="curso-delete-actions">
-                <button type="button" class="curso-delete-btn" id="cancelar-eliminar-curso">Cancelar</button>
-                <button type="submit" class="curso-delete-btn confirm"><i class="fa-solid fa-trash" aria-hidden="true"></i> Sí, eliminar</button>
-              </div>
-            </form>
-          </section>
-        </div>
       </div>
-    </div>
+    </section>
 
     <!-- ALUMNOS -->
-    <div class="section-card">
-      <div class="section-header">
-        <div class="section-header-left">
-          <div class="section-header-icon">
-            <i class="fa-solid fa-users"></i>
-          </div>
-          <div>
-            <h2>Alumnos registrados</h2>
-            <p>Consulta y filtra los estudiantes por curso.</p>
-          </div>
+    <section class="edc-tarjeta">
+      <div class="edc-tarjeta__cabeza">
+        <div>
+          <h2>Alumnos registrados</h2>
+          <p class="edc-ayuda">Consulta y filtra los estudiantes por curso.</p>
         </div>
       </div>
 
-      <div class="section-body">
-        <div class="filtro-actions-wrapper">
-          <div class="alumnos-filter-row">
-          <div class="filtro-container">
-            <label for="filtroCurso" class="filtro-label">
-              <i class="fa-solid fa-filter"></i>
-              Filtrar alumnos por curso
-            </label>
-            <select id="filtroCurso" class="form-select filtro-select">
-              <option value="">Todos los cursos</option>
-              <option value="sin-curso">Alumnos sin curso</option>
-              {% for curso in cursos_filtro %}
-                <option value="{{ curso.id }}">{{ curso.nombre }}</option>
-              {% endfor %}
-            </select>
+      <div class="edc-tarjeta__cuerpo">
+        <div class="edc-filtros">
+          <div class="edc-filtros__grupo">
+            <div class="edc-campo">
+              <label for="filtroCurso">
+                <i class="fa-solid fa-filter" aria-hidden="true"></i>
+                Filtrar alumnos por curso
+              </label>
+              <select id="filtroCurso" class="edc-control">
+                <option value="">Todos los cursos</option>
+                <option value="sin-curso">Alumnos sin curso</option>
+                {% for curso in cursos_filtro %}
+                  <option value="{{ curso.id }}">{{ curso.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
 
-          <label class="alumnos-search-wrap">
+          <label class="edc-buscador-campo">
             <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-            <input id="buscarAlumno" class="form-control alumnos-search" type="search" placeholder="Buscar por nombre, documento o correo" aria-label="Buscar alumnos">
+            <input id="buscarAlumno" type="search" placeholder="Buscar por nombre, documento o correo" aria-label="Buscar alumnos">
           </label>
 
-          <div class="acciones-grupo">
+          <div class="edc-filtros__grupo">
             <!-- BOTÓN QUE DISPARA EL MODAL DE EXCEL -->
             <button
               type="button"
-              class="btn-registrar-alumno"
+              class="edc-btn edc-btn--suave"
               data-bs-toggle="modal"
               data-bs-target="#modalCargarExcel"
             >
-              <i class="fa-solid fa-file-excel"></i>
+              <i class="fa-solid fa-file-excel" aria-hidden="true"></i>
               Registrar alumnos
             </button>
 
@@ -710,18 +159,34 @@
             <button
               type="button"
               id="btnToggleEditarTabla"
-              class="btn-editar-tabla"
+              class="edc-btn edc-btn--secundario"
             >
-              <i class="fa-solid fa-pen-to-square"></i>
+              <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
               Editar
             </button>
-          </div>
           </div>
         </div>
 
         <!-- TABLA -->
         {% include 'admin/cursos/partials/tabla_alumnos_detallada.html' %}
       </div>
+    </section>
+
+    <!-- MODAL DE CONFIRMACIÓN ELIMINAR CURSO -->
+    <div class="curso-delete-modal" id="curso-delete-modal" hidden>
+      <section class="curso-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="curso-delete-title" aria-describedby="curso-delete-description" tabindex="-1">
+        <div class="curso-delete-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div>
+        <h3 id="curso-delete-title">¿Seguro que deseas eliminar este curso?</h3>
+        <p id="curso-delete-description">Se eliminará el curso:</p>
+        <span class="curso-delete-name" id="curso-delete-name"></span>
+        <form method="post" id="curso-delete-form">
+          {% csrf_token %}
+          <div class="curso-delete-actions">
+            <button type="button" class="edc-btn edc-btn--secundario" id="cancelar-eliminar-curso">Cancelar</button>
+            <button type="submit" class="edc-btn edc-btn--peligro"><i class="fa-solid fa-trash" aria-hidden="true"></i> Sí, eliminar</button>
+          </div>
+        </form>
+      </section>
     </div>
   </div>
 
@@ -731,10 +196,10 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="modalCargarExcelLabel">
-            <i class="fa-solid fa-file-excel me-2" style="color: #16a34a;"></i>
+            <i class="fa-solid fa-file-excel me-2" aria-hidden="true"></i>
             Registrar Alumnos desde Excel
           </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
 
         <form
@@ -746,24 +211,26 @@
             {% csrf_token %}
 
             <div class="modal-body">
-                <label for="archivo_excel" class="form-label">
-                    Selecciona el archivo Excel (.xlsx):
-                </label>
+                <div class="edc-campo">
+                    <label for="archivo_excel">
+                        Selecciona el archivo Excel (.xlsx):
+                    </label>
 
-                <input
-                    type="file"
-                    class="form-control"
-                    id="archivo_excel"
-                    name="archivo_excel"
-                    accept=".xlsx, .xls"
-                    required
-                >
+                    <input
+                        type="file"
+                        class="edc-control"
+                        id="archivo_excel"
+                        name="archivo_excel"
+                        accept=".xlsx, .xls"
+                        required
+                    >
+                </div>
             </div>
 
             <div class="modal-footer">
                 <button
                     type="button"
-                    class="btn btn-secondary"
+                    class="edc-btn edc-btn--secundario"
                     data-bs-dismiss="modal"
                 >
                     Cancelar
@@ -771,10 +238,10 @@
 
                 <button
                     type="button"
-                    class="btn btn-primary"
+                    class="edc-btn"
                     id="btnAbrirConfirmacion"
                 >
-                    <i class="fa-solid fa-file-excel"></i>
+                    <i class="fa-solid fa-file-excel" aria-hidden="true"></i>
                     Cargar Alumnos
                 </button>
             </div>
@@ -792,13 +259,12 @@
     aria-hidden="true"
 >
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-confirmacion">
+        <div class="modal-content">
 
-            <div class="confirmacion-icono">
-                <i class="fa-solid fa-file-excel"></i>
-            </div>
-
-            <div class="confirmacion-contenido">
+            <div class="modal-body text-center">
+                <div class="edc-stat__icono edc-stat__icono--exito mx-auto mb-3">
+                    <i class="fa-solid fa-file-excel" aria-hidden="true"></i>
+                </div>
 
                 <h4>¿Registrar alumnos?</h4>
 
@@ -807,26 +273,23 @@
                     del archivo:
                 </p>
 
-                <div class="archivo-seleccionado">
-                    <i class="fa-solid fa-file-excel"></i>
-
+                <div class="edc-alerta edc-alerta--info mb-3">
+                    <i class="fa-solid fa-file-excel" aria-hidden="true"></i>
                     <span id="nombreArchivoConfirmacion">
                         archivo.xlsx
                     </span>
                 </div>
 
-                <p class="confirmacion-info">
+                <p class="edc-ayuda">
                     Los alumnos nuevos serán registrados y los
                     alumnos existentes podrán ser actualizados.
                 </p>
-
             </div>
 
-            <div class="confirmacion-acciones">
-
+            <div class="modal-footer">
                 <button
                     type="button"
-                    class="btn-cancelar-confirmacion"
+                    class="edc-btn edc-btn--secundario"
                     data-bs-dismiss="modal"
                 >
                     Cancelar
@@ -834,27 +297,24 @@
 
                 <button
                     type="button"
-                    class="btn-confirmar-registro"
+                    class="edc-btn"
                     id="btnConfirmarRegistro"
                 >
-                    <i class="fa-solid fa-check"></i>
+                    <i class="fa-solid fa-check" aria-hidden="true"></i>
                     Sí, registrar
                 </button>
-
             </div>
 
         </div>
     </div>
 </div>
 
-
-
       </div>
     </div>
   </div>
 
   <script src="{% static 'js/cursos/cursos.js' %}"></script>
-  
+
   <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -947,8 +407,6 @@ function cerrarNotificacion(boton) {
 }
 </script>
 
-
-```html
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -1082,8 +540,5 @@ document.addEventListener("DOMContentLoaded", () => {
   filterRows();
 });
 </script>
-
-
-
 
 {% endblock %}

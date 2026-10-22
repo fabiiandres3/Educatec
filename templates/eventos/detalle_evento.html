@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}{{ evento.titulo }} · Educatec{% endblock %}
+
+{% block content %}
+
+    <div class="container py-5">
+
+        <a href="{% url 'index' %}#eventos" class="edc-volver">
+            <i class="fas fa-arrow-left"></i>
+            Volver a eventos
+        </a>
+
+        <div class="row justify-content-center mt-4">
+
+            <div class="col-lg-9">
+
+                <article class="edc-tarjeta edc-tarjeta--evento">
+
+                    {% if evento.imagen %}
+
+                        <img
+                            src="{{ evento.imagen.url }}"
+                            alt="{{ evento.titulo }}"
+                            class="edc-evento__portada"
+                        >
+
+                    {% endif %}
+
+                    <div class="edc-tarjeta__cuerpo">
+
+                        <span class="edc-badge">
+                            {{ evento.get_tipo_display }}
+                        </span>
+
+                        <h1 class="edc-titulo-seccion mt-3">
+                            {{ evento.titulo }}
+                        </h1>
+
+                        <div class="edc-evento__datos">
+
+                            <span>
+                                <i class="fas fa-calendar"></i>
+                                {{ evento.fecha|date:"d/m/Y" }}
+                            </span>
+
+                            {% if evento.hora_inicio %}
+
+                                <span>
+                                    <i class="fas fa-clock"></i>
+                                    {{ evento.hora_inicio|time:"H:i" }}
+                                    {% if evento.hora_fin %}
+                                        – {{ evento.hora_fin|time:"H:i" }}
+                                    {% endif %}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                        <hr>
+
+                        <div class="edc-evento__detalle">
+                            {{ evento.descripcion|linebreaks }}
+                        </div>
+
+                        {% if evento.video %}
+
+                            <div class="mt-5">
+
+                                <h3 class="edc-titulo-seccion mb-3">
+                                    Video del evento
+                                </h3>
+
+                                <div class="ratio ratio-16x9">
+                                    <iframe
+                                        src="{{ evento.video }}"
+                                        title="Video del evento"
+                                        allowfullscreen
+                                    ></iframe>
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}

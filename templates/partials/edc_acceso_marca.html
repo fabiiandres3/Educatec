@@ -1,0 +1,46 @@
+{% comment %}
+Panel de marca de las páginas de acceso.
+Uso:
+{% include "partials/edc_acceso_marca.html" with titulo="..." texto="..." %}
+{% endcomment %}
+
+<aside class="edc-acceso__marca">
+
+    <div>
+
+        <div class="edc-acceso__logo">
+
+            <span class="edc-sidebar__marca-icono" aria-hidden="true">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </span>
+
+            <strong>Educatec</strong>
+
+        </div>
+
+        <h1>{{ titulo }}</h1>
+
+        <p>{{ texto }}</p>
+
+        <ul class="edc-acceso__lista">
+
+            <li>
+                <i class="fa-solid fa-chart-column"></i>
+                Seguimiento académico
+            </li>
+
+            <li>
+                <i class="fa-solid fa-calendar-days"></i>
+                Horarios y eventos
+            </li>
+
+            <li>
+                <i class="fa-solid fa-shield-halved"></i>
+                Acceso seguro por rol
+            </li>
+
+        </ul>
+
+    </div>
+
+</aside>

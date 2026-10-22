@@ -3,733 +3,93 @@
 
 {% block title %}Eventos{% endblock %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/educatec/panel_eventos.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<style>
-    /* =========================================================
-       CONTENEDOR
-    ========================================================= */
-
-    .eventos-page {
-        width: 100%;
-        max-width: 1450px;
-        margin: 0 auto;
-        padding: 30px 35px 50px;
-        box-sizing: border-box;
-    }
-
-    /* =========================================================
-       ENCABEZADO
-    ========================================================= */
-
-    .eventos-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 28px;
-    }
-
-    .eventos-title-area {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-
-    .eventos-icon {
-        width: 58px;
-        height: 58px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #006eff, #004dcc);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 25px;
-        box-shadow: 0 8px 22px rgba(0, 110, 255, .22);
-    }
-
-    .eventos-title-area h1 {
-        margin: 0;
-        font-size: 30px;
-        font-weight: 750;
-        color: #111827;
-        letter-spacing: -0.5px;
-    }
-
-    .eventos-title-area p {
-        margin: 5px 0 0;
-        color: #6b7280;
-        font-size: 14px;
-    }
-
-    /* =========================================================
-       CONTADOR
-    ========================================================= */
-
-    .eventos-count {
-        min-width: 120px;
-        padding: 13px 20px;
-        border-radius: 14px;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, .04);
-    }
-
-    .eventos-count-number {
-        display: block;
-        font-size: 25px;
-        font-weight: 750;
-        color: #006eff;
-        line-height: 1;
-    }
-
-    .eventos-count-label {
-        display: block;
-        margin-top: 5px;
-        color: #6b7280;
-        font-size: 12px;
-    }
-
-    /* =========================================================
-       BARRA DE HERRAMIENTAS
-    ========================================================= */
-
-    .eventos-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        padding: 17px;
-        margin-bottom: 28px;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        box-shadow: 0 5px 18px rgba(0, 0, 0, .04);
-    }
-
-    .eventos-search {
-        position: relative;
-        flex: 1;
-        max-width: 500px;
-    }
-
-    .eventos-search i {
-        position: absolute;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-        font-size: 15px;
-    }
-
-    .eventos-search input {
-        width: 100%;
-        height: 45px;
-        padding: 0 18px 0 43px;
-        border: 1px solid #e5e7eb;
-        border-radius: 11px;
-        outline: none;
-        background: #f9fafb;
-        color: #111827;
-        font-size: 14px;
-        box-sizing: border-box;
-        transition: .2s;
-    }
-
-    .eventos-search input:focus {
-        border-color: #006eff;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(0, 110, 255, .10);
-    }
-
-    .btn-crear-evento {
-        height: 45px;
-        padding: 0 20px;
-        display: inline-flex;
-        align-items: center;
-        gap: 9px;
-        border: none;
-        border-radius: 11px;
-        background: #006eff;
-        color: white;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 650;
-        cursor: pointer;
-        transition: .2s;
-        box-shadow: 0 5px 14px rgba(0, 110, 255, .20);
-    }
-
-    .btn-crear-evento:hover {
-        background: #005bd1;
-        color: white;
-        transform: translateY(-1px);
-        box-shadow: 0 7px 18px rgba(0, 110, 255, .28);
-    }
-
-    /* =========================================================
-       GRID
-    ========================================================= */
-
-    .eventos-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 24px;
-    }
-
-    /* =========================================================
-       TARJETA
-    ========================================================= */
-
-    .evento-card {
-        overflow: hidden;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 18px;
-        box-shadow: 0 7px 22px rgba(0, 0, 0, .055);
-        transition: transform .22s ease, box-shadow .22s ease;
-    }
-
-    .evento-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 32px rgba(0, 0, 0, .10);
-    }
-
-    /* =========================================================
-       IMAGEN
-    ========================================================= */
-
-    .evento-image {
-        position: relative;
-        height: 205px;
-        overflow: hidden;
-        background: linear-gradient(135deg, #eaf2ff, #dce9ff);
-    }
-
-    .evento-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        transition: transform .35s ease;
-    }
-
-    .evento-card:hover .evento-image img {
-        transform: scale(1.04);
-    }
-
-    .evento-image-placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #6b7280;
-        gap: 9px;
-    }
-
-    .evento-image-placeholder i {
-        font-size: 38px;
-        color: #006eff;
-        opacity: .65;
-    }
-
-    .evento-image-placeholder span {
-        font-size: 13px;
-    }
-
-    /* =========================================================
-       BADGES SOBRE IMAGEN
-    ========================================================= */
-
-    .evento-tipo {
-        position: absolute;
-        top: 14px;
-        left: 14px;
-        padding: 6px 11px;
-        border-radius: 20px;
-        background: rgba(17, 24, 39, .82);
-        backdrop-filter: blur(5px);
-        color: white;
-        font-size: 11px;
-        font-weight: 650;
-        text-transform: uppercase;
-        letter-spacing: .3px;
-    }
-
-    .evento-fecha-badge {
-        position: absolute;
-        right: 14px;
-        bottom: 14px;
-        width: 55px;
-        height: 55px;
-        border-radius: 13px;
-        background: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, .16);
-    }
-
-    .evento-fecha-dia {
-        font-size: 20px;
-        font-weight: 800;
-        line-height: 1;
-        color: #111827;
-    }
-
-    .evento-fecha-mes {
-        margin-top: 4px;
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #006eff;
-    }
-
-    /* =========================================================
-       CUERPO
-    ========================================================= */
-
-    .evento-body {
-        padding: 21px;
-    }
-
-    .evento-body h2 {
-        margin: 0 0 9px;
-        color: #111827;
-        font-size: 18px;
-        font-weight: 750;
-        line-height: 1.3;
-    }
-
-    .evento-description {
-        margin: 0 0 18px;
-        color: #6b7280;
-        font-size: 13px;
-        line-height: 1.6;
-        min-height: 42px;
-    }
-
-    /* =========================================================
-       INFORMACIÓN
-    ========================================================= */
-
-    .evento-info {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding-top: 15px;
-        border-top: 1px solid #f0f1f3;
-    }
-
-    .evento-info-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #4b5563;
-        font-size: 12.5px;
-    }
-
-    .evento-info-icon {
-        width: 29px;
-        height: 29px;
-        min-width: 29px;
-        border-radius: 8px;
-        background: #eff6ff;
-        color: #006eff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-    }
-
-    .evento-info-text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /* =========================================================
-       PIE
-    ========================================================= */
-
-    .evento-footer {
-        margin-top: 18px;
-        padding-top: 15px;
-        border-top: 1px solid #f0f1f3;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .evento-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        font-size: 11.5px;
-        font-weight: 650;
-    }
-
-    .evento-status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-    }
-
-    .status-publicado {
-        color: #15803d;
-    }
-
-    .status-publicado .evento-status-dot {
-        background: #22c55e;
-        box-shadow: 0 0 0 3px rgba(34, 197, 94, .12);
-    }
-
-    .status-no-publicado {
-        color: #b45309;
-    }
-
-    .status-no-publicado .evento-status-dot {
-        background: #f59e0b;
-        box-shadow: 0 0 0 3px rgba(245, 158, 11, .12);
-    }
-
-    /* =========================================================
-       ACCIONES
-    ========================================================= */
-
-    .evento-actions {
-        display: flex;
-        gap: 7px;
-    }
-
-    .evento-action {
-        width: 34px;
-        height: 34px;
-        border-radius: 9px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
-        transition: .2s;
-    }
-
-    .evento-edit {
-        color: #006eff;
-        background: #eff6ff;
-    }
-
-    .evento-edit:hover {
-        background: #dbeafe;
-        color: #005bd1;
-    }
-
-    .evento-delete {
-        color: #dc2626;
-        background: #fef2f2;
-    }
-
-    .evento-delete:hover {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-
-    /* =========================================================
-       SIN EVENTOS
-    ========================================================= */
-
-    .eventos-empty {
-        grid-column: 1 / -1;
-        padding: 70px 30px;
-        text-align: center;
-        background: white;
-        border: 1px dashed #d1d5db;
-        border-radius: 18px;
-    }
-
-    .eventos-empty i {
-        font-size: 45px;
-        color: #9ca3af;
-        margin-bottom: 15px;
-    }
-
-    .eventos-empty h3 {
-        margin: 0 0 7px;
-        color: #374151;
-        font-size: 18px;
-    }
-
-    .eventos-empty p {
-        margin: 0;
-        color: #9ca3af;
-        font-size: 13px;
-    }
-
-    /* =========================================================
-       MODAL
-    ========================================================= */
-
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        background: rgba(17, 24, 39, .58);
-        backdrop-filter: blur(4px);
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .modal-overlay.active {
-        display: flex;
-    }
-
-    .evento-modal {
-        width: 100%;
-        max-width: 430px;
-        background: white;
-        border-radius: 18px;
-        padding: 27px;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, .20);
-        animation: modalEntrada .2s ease;
-    }
-
-    @keyframes modalEntrada {
-        from {
-            opacity: 0;
-            transform: translateY(10px) scale(.98);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    .modal-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 13px;
-        background: #fef2f2;
-        color: #dc2626;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        margin-bottom: 17px;
-    }
-
-    .evento-modal h3 {
-        margin: 0 0 8px;
-        color: #111827;
-        font-size: 19px;
-    }
-
-    .evento-modal p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 13px;
-        line-height: 1.6;
-    }
-
-    .modal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 9px;
-        margin-top: 25px;
-    }
-
-    .modal-btn {
-        height: 40px;
-        padding: 0 17px;
-        border-radius: 9px;
-        border: none;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .modal-cancelar {
-        background: #f3f4f6;
-        color: #374151;
-    }
-
-    .modal-cancelar:hover {
-        background: #e5e7eb;
-    }
-
-    .modal-confirmar {
-        background: #dc2626;
-        color: white;
-    }
-
-    .modal-confirmar:hover {
-        background: #b91c1c;
-    }
-
-    /* =========================================================
-       RESPONSIVE
-    ========================================================= */
-
-    @media (max-width: 1100px) {
-        .eventos-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 760px) {
-        .eventos-page {
-            padding: 22px 18px 40px;
-        }
-
-        .eventos-header {
-            align-items: flex-start;
-        }
-
-        .eventos-count {
-            display: none;
-        }
-
-        .eventos-toolbar {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .eventos-search {
-            max-width: none;
-        }
-
-        .btn-crear-evento {
-            justify-content: center;
-        }
-
-        .eventos-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .eventos-title-area h1 {
-            font-size: 24px;
-        }
-
-        .eventos-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 13px;
-        }
-
-        .evento-image {
-            height: 190px;
-        }
-    }
-
-    .nav-listing-page { max-width: 1480px; margin: 0 auto; padding: 18px 8px 36px; }
-    .nav-overview { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; margin:0 0 20px; }
-    .nav-overview-card { position:relative; overflow:hidden; display:flex; align-items:center; gap:13px; min-height:82px; padding:15px 18px; border:1px solid #e8edf4; border-radius:15px; background:#fff; box-shadow:0 6px 18px rgba(15,23,42,.035); }
-    .nav-overview-card:after { content:""; position:absolute; right:-22px; bottom:-40px; width:100px; height:100px; border-radius:50%; background:var(--soft); opacity:.7; }
-    .nav-overview-icon { z-index:1; display:grid; place-items:center; flex:0 0 42px; width:42px; height:42px; border-radius:13px; color:var(--color); background:var(--soft); }
-    .nav-overview-copy { z-index:1; display:grid; gap:5px; }
-    .nav-overview-value { color:#172033; font-size:23px; font-weight:750; line-height:1; }
-    .nav-overview-label { color:#697586; font-size:11px; font-weight:650; }
-    .nav-list-tools { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:12px 16px; border:1px solid #e8edf4; border-radius:13px; background:#fff; }
-    .nav-list-filters { display:flex; align-items:center; flex-wrap:wrap; gap:5px; }
-    .nav-list-filter { border:1px solid transparent; border-radius:9px; padding:8px 11px; color:#64748b; background:transparent; font-size:12px; font-weight:650; cursor:pointer; transition:.18s ease; }
-    .nav-list-filter:hover { color:#4338ca; background:#f5f3ff; }
-    .nav-list-filter.active { border-color:#e0e7ff; color:#4338ca; background:#eef2ff; }
-    .nav-list-search { position:relative; width:min(340px,100%); }
-    .nav-list-search i { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:#94a3b8; }
-    .nav-list-search input { width:100%; height:41px; box-sizing:border-box; padding:0 13px 0 37px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; outline:none; }
-    .nav-list-search input:focus { border-color:#818cf8; background:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.11); }
-    .nav-list-count { color:#64748b; font-size:12px; font-weight:600; }
-    .nav-list-page .table-responsive { overflow-x:auto; }
-    .nav-list-page table thead th { background:#f8fafc; color:#7b8798; font-size:10px; letter-spacing:.08em; }
-    .nav-list-page table tbody tr { transition:background .18s ease; }
-    .nav-list-page table tbody tr:hover { background:#fafbff; }
-    @media(max-width:850px) { .nav-overview { grid-template-columns:repeat(2,minmax(0,1fr)); } .nav-overview-card:last-child { grid-column:1/-1; } }
-    @media(max-width:620px) { .nav-listing-page { padding:12px 0 28px; } .nav-overview { gap:8px; } .nav-overview-card { min-height:70px; padding:12px; gap:9px; } .nav-overview-icon { flex-basis:36px; width:36px; height:36px; } .nav-overview-value { font-size:21px; } .nav-list-tools { align-items:stretch; flex-direction:column; } .nav-list-filters { overflow-x:auto; flex-wrap:nowrap; } .nav-list-filter { white-space:nowrap; } .nav-list-search { width:100%; } }
-
-    .eventos-page { max-width:1480px; padding:18px 8px 36px; }
-    .eventos-header { padding:22px 24px; border:1px solid #e5eaf2; border-radius:18px; background:linear-gradient(125deg,#fff,#f4f7ff); box-shadow:0 8px 24px rgba(15,23,42,.04); }
-    .eventos-title-area h1 { color:#172033; font-size:clamp(26px,3vw,34px); letter-spacing:-.04em; }
-    .eventos-icon { border-radius:14px; background:linear-gradient(135deg,#6366f1,#4338ca); }
-    .eventos-toolbar { margin-bottom:12px; border-color:#e8edf4; border-radius:15px; box-shadow:0 6px 18px rgba(15,23,42,.035); }
-    .eventos-search input { border-radius:10px; background:#f8fafc; }
-    .eventos-grid { gap:18px; }
-    .evento-card { border-color:#e8edf4; box-shadow:0 7px 20px rgba(15,23,42,.05); }
-    @media(max-width:620px) { .eventos-page { padding:12px 0 28px; } .eventos-header { align-items:flex-start; padding:17px; flex-direction:column; } .eventos-title-area { align-items:flex-start; } .eventos-toolbar { align-items:stretch; flex-direction:column; padding:13px; } }
-</style>
-
-
-<div class="eventos-page">
+<div class="edc-pagina">
 
     <!-- =====================================================
          ENCABEZADO
     ====================================================== -->
 
-    <div class="eventos-header">
+    <header class="edc-pagina__cabecera">
 
-        <div class="eventos-title-area">
-
-            <div class="eventos-icon">
-                <i class="fas fa-calendar-alt"></i>
-            </div>
-
-            <div>
-                <h1>Eventos</h1>
-                <p>Administra los eventos y actividades de Educatec</p>
-            </div>
-
+        <div>
+            <h1 class="edc-pagina__titulo">
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                Eventos
+            </h1>
+            <p class="edc-pagina__subtitulo">
+                Administra los eventos y actividades de Educatec
+            </p>
         </div>
 
-        <div class="eventos-count">
-            <span class="eventos-count-number">
-                {{ eventos|length }}
-            </span>
-
-            <span class="eventos-count-label">
-                Evento{{ eventos|length|pluralize }}
+        <div class="edc-stat">
+            <span class="edc-stat__icono"><i class="fas fa-calendar-days" aria-hidden="true"></i></span>
+            <span class="edc-stat__texto">
+                <strong class="edc-stat__valor">{{ eventos|length }}</strong>
+                <span class="edc-stat__etiqueta">Evento{{ eventos|length|pluralize }}</span>
             </span>
         </div>
 
-    </div>
+    </header>
 
 
-    <section class="nav-overview" aria-label="Resumen de eventos">
-        <article class="nav-overview-card" style="--color:#4f46e5;--soft:#eef2ff"><span class="nav-overview-icon"><i class="fas fa-calendar-days"></i></span><span class="nav-overview-copy"><strong class="nav-overview-value">{{ eventos|length }}</strong><span class="nav-overview-label">Eventos registrados</span></span></article>
-        <article class="nav-overview-card" style="--color:#16a34a;--soft:#dcfce7"><span class="nav-overview-icon"><i class="fas fa-bullhorn"></i></span><span class="nav-overview-copy"><strong class="nav-overview-value">{{ eventos_publicados }}</strong><span class="nav-overview-label">Publicados</span></span></article>
-        <article class="nav-overview-card" style="--color:#d97706;--soft:#fef3c7"><span class="nav-overview-icon"><i class="fas fa-eye-slash"></i></span><span class="nav-overview-copy"><strong class="nav-overview-value">{{ eventos_no_publicados }}</strong><span class="nav-overview-label">Borradores</span></span></article>
+    <!-- =====================================================
+         RESUMEN
+    ====================================================== -->
+
+    <section class="edc-rejilla" aria-label="Resumen de eventos">
+
+        <div class="edc-stat">
+            <span class="edc-stat__icono"><i class="fas fa-calendar-days" aria-hidden="true"></i></span>
+            <span class="edc-stat__texto">
+                <strong class="edc-stat__valor">{{ eventos|length }}</strong>
+                <span class="edc-stat__etiqueta">Eventos registrados</span>
+            </span>
+        </div>
+
+        <div class="edc-stat">
+            <span class="edc-stat__icono edc-stat__icono--exito"><i class="fas fa-bullhorn" aria-hidden="true"></i></span>
+            <span class="edc-stat__texto">
+                <strong class="edc-stat__valor">{{ eventos_publicados }}</strong>
+                <span class="edc-stat__etiqueta">Publicados</span>
+            </span>
+        </div>
+
+        <div class="edc-stat">
+            <span class="edc-stat__icono edc-stat__icono--alerta"><i class="fas fa-eye-slash" aria-hidden="true"></i></span>
+            <span class="edc-stat__texto">
+                <strong class="edc-stat__valor">{{ eventos_no_publicados }}</strong>
+                <span class="edc-stat__etiqueta">Borradores</span>
+            </span>
+        </div>
+
     </section>
+
 
     <!-- =====================================================
          HERRAMIENTAS
     ====================================================== -->
 
-    <div class="eventos-toolbar">
+    <div class="edc-filtros">
 
-        <div class="eventos-search">
-
-            <i class="fas fa-search"></i>
-
+        <label class="edc-buscador-campo">
+            <i class="fas fa-search" aria-hidden="true"></i>
             <input
                 type="text"
                 id="buscarEvento"
                 placeholder="Buscar evento..."
                 autocomplete="off"
+                aria-label="Buscar evento"
             >
+        </label>
 
-        </div>
-
-        <a href="{% url 'crear_evento' %}" class="btn-crear-evento">
-            <i class="fas fa-plus"></i>
+        <a href="{% url 'crear_evento' %}" class="edc-btn">
+            <i class="fas fa-plus" aria-hidden="true"></i>
             Crear evento
         </a>
 
@@ -737,23 +97,29 @@
 
 
     <!-- =====================================================
+         FILTROS
+    ====================================================== -->
+
+    <div class="edc-filtros">
+        <div class="edc-filtros__grupo" role="group" aria-label="Filtrar eventos">
+            <button type="button" class="edc-btn edc-btn--secundario evento-filter active" data-event-filter="all">Todos</button>
+            <button type="button" class="edc-btn edc-btn--secundario evento-filter" data-event-filter="published">Publicados</button>
+            <button type="button" class="edc-btn edc-btn--secundario evento-filter" data-event-filter="draft">Borradores</button>
+        </div>
+        <span class="edc-ayuda" id="eventosVisibles"></span>
+    </div>
+
+
+    <!-- =====================================================
          EVENTOS
     ====================================================== -->
 
-    <div class="nav-list-tools" style="margin:0 0 18px">
-        <div class="nav-list-filters" role="group" aria-label="Filtrar eventos">
-            <button type="button" class="nav-list-filter active" data-event-filter="all">Todos</button>
-            <button type="button" class="nav-list-filter" data-event-filter="published">Publicados</button>
-            <button type="button" class="nav-list-filter" data-event-filter="draft">Borradores</button>
-        </div><span class="nav-list-count" id="eventosVisibles"></span>
-    </div>
-
-    <div class="eventos-grid" id="eventosGrid">
+    <div class="edc-rejilla edc-rejilla--2" id="eventosGrid">
 
         {% for evento in eventos %}
 
         <article
-            class="evento-card"
+            class="edc-tarjeta evento-card"
             data-evento-id="{{ evento.id }}"
             data-publicado="{% if evento.publicado %}published{% else %}draft{% endif %}"
             data-titulo="{{ evento.titulo|lower }}"
@@ -775,7 +141,7 @@
 
                     <div class="evento-image-placeholder">
 
-                        <i class="fas fa-calendar-day"></i>
+                        <i class="fas fa-calendar-day" aria-hidden="true"></i>
 
                         <span>Sin imagen</span>
 
@@ -837,7 +203,7 @@
                     <div class="evento-info-row">
 
                         <div class="evento-info-icon">
-                            <i class="far fa-calendar"></i>
+                            <i class="far fa-calendar" aria-hidden="true"></i>
                         </div>
 
                         <span class="evento-info-text">
@@ -852,7 +218,7 @@
                     <div class="evento-info-row">
 
                         <div class="evento-info-icon">
-                            <i class="far fa-clock"></i>
+                            <i class="far fa-clock" aria-hidden="true"></i>
                         </div>
 
                         <span class="evento-info-text">
@@ -883,7 +249,7 @@
                     <div class="evento-info-row">
 
                         <div class="evento-info-icon">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-users" aria-hidden="true"></i>
                         </div>
 
                         <span class="evento-info-text">
@@ -901,37 +267,32 @@
 
                     {% if evento.publicado %}
 
-                        <div class="evento-status status-publicado">
-
-                            <span class="evento-status-dot"></span>
-
+                        <span class="edc-badge edc-badge--exito">
+                            <i class="fas fa-circle-check" aria-hidden="true"></i>
                             Publicado
-
-                        </div>
+                        </span>
 
                     {% else %}
 
-                        <div class="evento-status status-no-publicado">
-
-                            <span class="evento-status-dot"></span>
-
+                        <span class="edc-badge edc-badge--alerta">
+                            <i class="fas fa-eye-slash" aria-hidden="true"></i>
                             No publicado
-
-                        </div>
+                        </span>
 
                     {% endif %}
 
 
-                    <div class="evento-actions">
+                    <div class="edc-acciones">
 
                         <!-- EDITAR -->
 
                         <a
                             href="{% url 'editar_evento' evento.id %}"
-                            class="evento-action evento-edit"
+                            class="edc-accion"
                             title="Editar evento"
+                            aria-label="Editar evento"
                         >
-                            <i class="fas fa-pen"></i>
+                            <i class="fas fa-pen" aria-hidden="true"></i>
                         </a>
 
 
@@ -939,14 +300,15 @@
 
                         <button
                             type="button"
-                            class="evento-action evento-delete"
+                            class="edc-accion edc-accion--peligro"
                             title="Eliminar evento"
+                            aria-label="Eliminar evento"
                             onclick="abrirModalEliminar(
                                 '{{ evento.id }}',
                                 '{{ evento.titulo|escapejs }}'
                             )"
                         >
-                            <i class="fas fa-trash-alt"></i>
+                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
                         </button>
 
                     </div>
@@ -959,9 +321,9 @@
 
         {% empty %}
 
-        <div class="eventos-empty">
+        <div class="edc-vacio evento-vacio">
 
-            <i class="far fa-calendar-times"></i>
+            <i class="far fa-calendar-times" aria-hidden="true"></i>
 
             <h3>No hay eventos registrados</h3>
 
@@ -994,7 +356,7 @@
     >
 
         <div class="modal-icon">
-            <i class="fas fa-trash-alt"></i>
+            <i class="fas fa-trash-alt" aria-hidden="true"></i>
         </div>
 
         <h3>Eliminar evento</h3>
@@ -1016,7 +378,7 @@
             </button>
 
             <a
-                href="#"
+                href="{% url 'eliminar_evento' 0 %}"
                 id="btnConfirmarEliminar"
                 class="modal-btn modal-confirmar"
             >

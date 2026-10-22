@@ -1,0 +1,676 @@
+/* =========================================================
+   EDUCATEC · PANEL EVENTOS
+   Solo los componentes sin equivalente en el sistema de diseño.
+   Usa exclusivamente los tokens --edc-*.
+   ========================================================= */
+
+/* ---------- Filtros de eventos ---------- */
+.evento-filter.active {
+    background: var(--edc-primario-soft);
+    border-color: var(--edc-primario);
+    color: var(--edc-primario-fuerte);
+}
+
+/* ---------- Tarjeta de evento ---------- */
+.evento-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ---------- Imagen ---------- */
+.evento-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: var(--edc-superficie-alt);
+}
+
+.evento-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+}
+
+.evento-card:hover .evento-image img {
+    transform: scale(1.04);
+}
+
+.evento-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    color: var(--edc-texto-sec);
+}
+
+.evento-image-placeholder i {
+    font-size: 36px;
+    color: var(--edc-primario);
+    opacity: .7;
+}
+
+.evento-image-placeholder span { font-size: 13px; }
+
+/* ---------- Insignias sobre la imagen ---------- */
+.evento-tipo {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(2, 6, 23, .82);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+}
+
+.evento-fecha-badge {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--edc-sombra);
+}
+
+.evento-fecha-dia {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--edc-texto);
+}
+
+.evento-fecha-mes {
+    margin-top: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--edc-primario-fuerte);
+}
+
+/* ---------- Cuerpo ---------- */
+.evento-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 20px;
+}
+
+.evento-body h2 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--edc-texto);
+}
+
+.evento-description {
+    margin: 0 0 16px;
+    min-height: 42px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--edc-texto-sec);
+}
+
+/* ---------- Información ---------- */
+.evento-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--edc-borde);
+}
+
+.evento-info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--edc-texto-sec);
+}
+
+.evento-info-icon {
+    display: grid;
+    place-items: center;
+    width: 29px;
+    height: 29px;
+    flex: 0 0 29px;
+    border-radius: 8px;
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario-fuerte);
+    font-size: 12px;
+}
+
+.evento-info-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- Pie ---------- */
+.evento-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid var(--edc-borde);
+}
+
+/* ---------- Sin eventos ---------- */
+.evento-vacio {
+    grid-column: 1 / -1;
+    padding: 60px 30px;
+    border: 1px dashed var(--edc-borde);
+    border-radius: var(--edc-radio);
+    background: var(--edc-superficie);
+}
+
+/* ---------- Modal de confirmación ---------- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(2, 6, 23, .58);
+}
+
+.modal-overlay.active { display: flex; }
+
+.evento-modal {
+    width: 100%;
+    max-width: 430px;
+    padding: 27px;
+    background: var(--edc-superficie);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-lg);
+    box-shadow: var(--edc-sombra-lg);
+}
+
+.modal-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 17px;
+    border-radius: var(--edc-radio-sm);
+    background: #FEE2E2;
+    color: var(--edc-error);
+    font-size: 20px;
+}
+
+.evento-modal h3 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--edc-texto);
+}
+
+.evento-modal p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--edc-texto-sec);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 25px;
+}
+
+.modal-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 17px;
+    border: none;
+    border-radius: var(--edc-radio-sm);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.modal-cancelar {
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto);
+}
+
+.modal-cancelar:hover { background: var(--edc-gris-claro); }
+
+.modal-confirmar {
+    background: var(--edc-error);
+    color: #FFFFFF;
+}
+
+.modal-confirmar:hover { background: #B91C1C; }
+
+/* =========================================================
+   EVENTOS · VISTA DE DOCENTES Y ALUMNOS
+   (antes <style> inline en eventos_docente.html / eventos_alumnos.html)
+   ========================================================= */
+
+/* ---------- Contenedor de la página ---------- */
+.eventos-page {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4px 10px 35px;
+}
+
+/* ---------- Encabezado ---------- */
+.eventos-hero-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.eventos-hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--edc-radio);
+    background: linear-gradient(135deg, var(--edc-azul-electrico), var(--edc-primario-fuerte));
+    color: var(--edc-superficie);
+    font-size: 22px;
+    box-shadow: var(--edc-sombra);
+}
+
+/* ---------- Contenedor principal ---------- */
+.eventos-container {
+    background: var(--edc-superficie);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-lg);
+    padding: 25px;
+    box-shadow: var(--edc-sombra-sm);
+}
+
+/* ---------- Encabezado de sección ---------- */
+.eventos-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.eventos-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eventos-section-title h2 {
+    margin: 0;
+    color: var(--edc-texto);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.eventos-section-title-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario);
+    font-size: 16px;
+}
+
+.eventos-section-description {
+    margin: 5px 0 0 44px;
+    color: var(--edc-texto-sec);
+    font-size: 13px;
+}
+
+/* ---------- Rejilla de eventos ---------- */
+.eventos-page .eventos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 300px));
+    gap: 24px;
+    justify-content: start;
+}
+
+/* ---------- Tarjeta ---------- */
+.eventos-page .evento-card {
+    position: relative;
+    width: 100%;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    background: var(--edc-superficie);
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio);
+    overflow: hidden;
+    transition: transform var(--edc-transicion), box-shadow var(--edc-transicion), border-color var(--edc-transicion);
+}
+
+.eventos-page .evento-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--edc-primario-soft);
+    box-shadow: var(--edc-sombra);
+}
+
+/* ---------- Imagen ---------- */
+.eventos-page .evento-imagen-wrapper {
+    position: relative;
+    width: 100%;
+    height: 210px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: var(--edc-superficie-alt);
+}
+
+.eventos-page .evento-imagen {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .4s ease;
+}
+
+.eventos-page .evento-card:hover .evento-imagen {
+    transform: scale(1.05);
+}
+
+.eventos-page .evento-imagen-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, .30), transparent 55%);
+    pointer-events: none;
+}
+
+/* ---------- Fecha sobre la imagen ---------- */
+.eventos-page .evento-fecha-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: auto;
+    bottom: auto;
+    z-index: 2;
+    display: block;
+    width: auto;
+    height: auto;
+    min-width: 54px;
+    padding: 7px 9px;
+    background: rgba(255, 255, 255, .96);
+    border-radius: var(--edc-radio-sm);
+    text-align: center;
+    box-shadow: var(--edc-sombra-sm);
+}
+
+.eventos-page .evento-fecha-dia {
+    display: block;
+    color: var(--edc-primario);
+    font-size: 18px;
+    line-height: 18px;
+    font-weight: 800;
+}
+
+.eventos-page .evento-fecha-mes {
+    display: block;
+    margin-top: 3px;
+    color: var(--edc-texto-sec);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+/* ---------- Evento sin imagen ---------- */
+.eventos-page .evento-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 210px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--edc-primario-soft), var(--edc-fondo));
+    color: var(--edc-primario);
+    font-size: 32px;
+}
+
+/* ---------- Contenido de la tarjeta ---------- */
+.eventos-page .evento-contenido {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+/* ---------- Badges ---------- */
+.eventos-page .evento-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 13px;
+}
+
+.eventos-page .evento-tipo,
+.eventos-page .evento-publico {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: var(--edc-radio-sm);
+    font-size: 10.5px;
+    font-weight: 650;
+}
+
+.eventos-page .evento-tipo {
+    position: static;
+    top: auto;
+    left: auto;
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario);
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.eventos-page .evento-publico {
+    background: var(--edc-superficie-alt);
+    color: var(--edc-texto-sec);
+}
+
+/* ---------- Título ---------- */
+.eventos-page .evento-titulo {
+    display: -webkit-box;
+    margin-bottom: 12px;
+    color: var(--edc-texto);
+    font-size: 17px;
+    font-weight: 750;
+    line-height: 1.4;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ---------- Fecha y hora ---------- */
+.eventos-page .evento-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-top: 0;
+    border-top: 0;
+    color: var(--edc-texto-sec);
+    font-size: 12px;
+    font-weight: 550;
+}
+
+.eventos-page .evento-info-icon {
+    display: inline;
+    width: auto;
+    height: auto;
+    flex: 0 0 auto;
+    border-radius: 0;
+    background: none;
+    color: var(--edc-primario);
+    font-size: 14px;
+}
+
+/* ---------- Divisor ---------- */
+.eventos-page .evento-divider {
+    width: 100%;
+    height: 1px;
+    margin: 2px 0 14px;
+    background: var(--edc-borde);
+}
+
+/* ---------- Descripción ---------- */
+.eventos-page .evento-descripcion {
+    display: -webkit-box;
+    color: var(--edc-texto-sec);
+    font-size: 13px;
+    line-height: 1.65;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ---------- Video ---------- */
+.eventos-page .evento-video {
+    margin-top: auto;
+    padding-top: 18px;
+}
+
+/* ---------- Sin eventos ---------- */
+.eventos-page .sin-eventos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    text-align: center;
+    border: 1px dashed var(--edc-borde);
+    border-radius: var(--edc-radio);
+    background: var(--edc-superficie);
+}
+
+.eventos-page .sin-eventos-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 62px;
+    height: 62px;
+    margin-bottom: 15px;
+    border-radius: var(--edc-radio-lg);
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario);
+    font-size: 26px;
+}
+
+.eventos-page .sin-eventos-icono i {
+    font-size: inherit;
+    color: inherit;
+}
+
+.eventos-page .sin-eventos strong {
+    display: block;
+    margin: 0 0 6px;
+    color: var(--edc-texto);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.eventos-page .sin-eventos p {
+    margin: 0;
+    color: var(--edc-texto-sec);
+    font-size: 13px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+
+    .eventos-page .eventos-grid {
+        grid-template-columns: repeat(2, minmax(260px, 300px));
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .eventos-page .eventos-grid {
+        grid-template-columns: minmax(260px, 340px);
+    }
+
+    .eventos-container {
+        padding: 20px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .eventos-page {
+        padding: 0 4px 25px;
+    }
+
+    .eventos-container {
+        padding: 14px;
+        border: none;
+        box-shadow: none;
+    }
+
+    .eventos-hero-content {
+        gap: 11px;
+    }
+
+    .eventos-hero-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 19px;
+    }
+
+    .eventos-page .edc-pagina__titulo {
+        font-size: 22px;
+    }
+
+    .eventos-section-description {
+        margin-top: 7px;
+        margin-left: 0;
+    }
+
+    .eventos-page .eventos-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .eventos-page .evento-card {
+        min-height: auto;
+    }
+
+    .eventos-page .evento-imagen-wrapper,
+    .eventos-page .evento-placeholder {
+        height: 220px;
+    }
+
+}

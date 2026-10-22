@@ -2,310 +2,426 @@
 
 
 {% block title %}
-
     Portal del Acudiente
+{% endblock %}
+
+
+{% block page_title %}Portal del acudiente{% endblock %}
+
+{% block page_subtitle %}Seguimiento de tus estudiantes{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    .edc-bloque {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .edc-mini {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin: 16px 0;
+    }
+
+    .edc-mini__caja {
+        padding: 12px;
+        border: 1px solid var(--edc-borde);
+        border-radius: var(--edc-radio-sm);
+        background: var(--edc-superficie-alt);
+        text-align: center;
+    }
+
+    .edc-mini__valor {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--edc-texto);
+        line-height: 1.1;
+    }
+
+    .edc-mini__etiqueta {
+        font-size: 11.5px;
+        color: var(--edc-texto-sec);
+        margin-top: 3px;
+    }
+
+    .edc-fecha {
+        flex: 0 0 58px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        border-radius: var(--edc-radio-sm);
+        background: var(--edc-primario-soft);
+        color: var(--edc-primario-fuerte);
+        font-weight: 800;
+    }
+
+    .edc-fecha strong { font-size: 20px; line-height: 1; }
+    .edc-fecha small { font-size: 11px; text-transform: uppercase; }
+
+    .edc-evento-preview {
+        align-items: flex-start;
+    }
+
+    .edc-evento-preview .edc-lista__principal strong {
+        margin-bottom: 3px;
+    }
+
+</style>
 
 {% endblock %}
 
 
 {% block content %}
 
-<style>
-    .guardian-hero { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:28px; margin-bottom:22px; color:#fff; border-radius:20px; background:linear-gradient(120deg,#173b75,#2563eb); box-shadow:0 12px 28px rgba(37,99,235,.18); }
-    .guardian-hero h1 { font-size:clamp(24px,3vw,34px); font-weight:800; margin:0 0 6px; }
-    .guardian-hero p { margin:0; color:#eaf2ff; }
-    .guardian-hero-icon { width:62px; height:62px; display:grid; place-items:center; border-radius:18px; background:rgba(255,255,255,.16); font-size:28px; }
-    .guardian-stat-card { height:100%; padding:18px; background:#fff; border:1px solid #dbe3ee; border-radius:16px; box-shadow:0 5px 18px rgba(15,23,42,.045); }
-    .guardian-stat-label { color:#475569; font-size:13px; font-weight:600; }
-    .guardian-stat-value { color:#172033; font-size:26px; font-weight:800; margin-top:6px; }
-    .guardian-stat-icon { width:40px; height:40px; border-radius:12px; display:grid; place-items:center; background:#eff6ff; color:#1d4ed8; }
-    .section-heading { display:flex; align-items:end; justify-content:space-between; gap:16px; margin:30px 0 16px; }
-    .section-heading h2 { margin:0; color:#172033; font-size:22px; font-weight:750; }
-    .event-panel { background:#fff; border:1px solid #dbe3ee; border-radius:16px; padding:20px; margin-bottom:28px; box-shadow:0 5px 18px rgba(15,23,42,.045); }
-    .event-preview { display:flex; gap:15px; padding:14px 0; border-bottom:1px solid #e2e8f0; }
-    .event-preview:last-child { border-bottom:0; }
-    .event-date { flex:0 0 60px; height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:12px; background:#eff6ff; color:#1d4ed8; }
-    .event-date strong { font-size:21px; line-height:1; }
-    .event-date small { font-size:11px; text-transform:uppercase; font-weight:700; }
-    .event-preview h3 { margin:0 0 4px; font-size:16px; color:#172033; font-weight:700; }
-    .event-meta { color:#475569; font-size:13px; }
-    .student-card { border:1px solid #dbe3ee; box-shadow:0 6px 20px rgba(15,23,42,.05); transition:transform .18s ease, box-shadow .18s ease; }
-    .student-card:hover { transform:translateY(-2px); box-shadow:0 12px 26px rgba(15,23,42,.09); }
-    .student-card h4, .student-card strong { color:#172033; }
-    .student-card .stat { border:1px solid #e2e8f0; }
-    .student-card .stat small { color:#475569; font-weight:600; }
-    @media(max-width:575px) { .guardian-hero { padding:22px; } .guardian-hero-icon { display:none; } .section-heading { align-items:start; flex-direction:column; } }
-</style>
+<div class="edc-bloque">
 
-{% comment %}Replaced by the guardian dashboard hero below.{% endcomment %}
-{% comment %}
-<div class="topbar">
 
-    <h2>
+    <!-- =====================================================
+         BIENVENIDA
+    ====================================================== -->
 
-        Hola,
-        {{ request.user.first_name|default:request.user.documento }}
-        👋
+    <section class="edc-bienvenida">
 
-    </h2>
+        <div>
 
-    <p class="text-muted mb-0">
+            <span class="edc-bienvenida__saludo">
+                <i class="fa-solid fa-hand-sparkles"></i>
+                {{ saludo|default:"Bienvenido" }}
+            </span>
 
-        Bienvenido al portal de acudientes de Educatec.
+            <h1>
+                {{ request.user.get_full_name|default:request.user.documento }}
+            </h1>
 
-    </p>
+            <p>
+                Consulta el progreso de tus estudiantes y mantente al día con
+                el colegio.
+            </p>
 
-</div>
-{% endcomment %}
+        </div>
 
-<section class="guardian-hero">
-    <div>
-        <h1>Hola, {{ request.user.first_name|default:request.user.documento }}</h1>
-        <p>Consulta el progreso de tus estudiantes y mantente al día con el colegio.</p>
-    </div>
-    <div class="guardian-hero-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-</section>
+        <div class="edc-bienvenida__arte" aria-hidden="true">
+            <i class="fa-solid fa-people-roof"></i>
+        </div>
 
-<div class="row g-3 mb-4">
-    <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-user-graduate"></i></div><div class="guardian-stat-label mt-3">Estudiantes vinculados</div><div class="guardian-stat-value">{{ alumnos|length }}</div></div></div>
-    <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-calendar-day"></i></div><div class="guardian-stat-label mt-3">Próximos eventos</div><div class="guardian-stat-value">{{ total_eventos_proximos }}</div></div></div>
-    <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-chart-line"></i></div><div class="guardian-stat-label mt-3">Promedio general</div><div class="guardian-stat-value">{% if promedio_general != None %}{{ promedio_general }}{% else %}—{% endif %}</div></div></div>
-    <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="guardian-stat-label mt-3">Requieren atención en asistencia</div><div class="guardian-stat-value">{{ alumnos_alerta }}</div></div></div>
-</div>
+    </section>
 
-<section class="event-panel">
-    <div class="section-heading mt-0">
-        <div><h2><i class="fa-regular fa-calendar me-2 text-primary"></i>Agenda del colegio</h2><p class="text-secondary mb-0 mt-1">Eventos publicados para acudientes y comunidad educativa.</p></div>
-        <a href="{% url 'eventos_acudiente' %}" class="btn btn-outline-primary">Ver todos <i class="fa-solid fa-arrow-right ms-1"></i></a>
-    </div>
-    {% for evento in eventos_proximos %}
-        <article class="event-preview">
-            <div class="event-date"><strong>{{ evento.fecha|date:'d' }}</strong><small>{{ evento.fecha|date:'M' }}</small></div>
-            <div><h3>{{ evento.titulo }}</h3><div class="event-meta"><span class="me-3"><i class="fa-regular fa-clock me-1"></i>{% if evento.hora_inicio %}{{ evento.hora_inicio|time:'H:i' }}{% else %}Todo el día{% endif %}</span><span class="badge text-bg-light border">{{ evento.get_tipo_display }}</span></div><p class="text-secondary mb-0 mt-2">{{ evento.descripcion|truncatewords:24 }}</p></div>
+
+    <!-- =====================================================
+         ESTADÍSTICAS
+    ====================================================== -->
+
+    <div class="edc-rejilla">
+
+        <!-- ESTUDIANTES -->
+
+        <article class="edc-stat">
+
+            <span class="edc-stat__icono" aria-hidden="true">
+                <i class="fa-solid fa-user-graduate"></i>
+            </span>
+
+            <div class="edc-stat__texto">
+                <div class="edc-stat__valor">
+                    {{ alumnos|length }}
+                </div>
+                <div class="edc-stat__etiqueta">
+                    Estudiantes vinculados
+                </div>
+            </div>
+
         </article>
-    {% empty %}
-        <p class="text-secondary mb-0">No hay eventos próximos publicados.</p>
-    {% endfor %}
-</section>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div>
+        <!-- PRÓXIMOS EVENTOS -->
 
-        <h3>
+        <article class="edc-stat">
 
-            Mis estudiantes
+            <span class="edc-stat__icono" aria-hidden="true">
+                <i class="fa-solid fa-calendar-day"></i>
+            </span>
 
-        </h3>
+            <div class="edc-stat__texto">
+                <div class="edc-stat__valor">
+                    {{ total_eventos_proximos|default:"0" }}
+                </div>
+                <div class="edc-stat__etiqueta">
+                    Próximos eventos
+                </div>
+            </div>
 
-        <p class="text-muted">
+        </article>
 
-            Consulta la información académica de tus estudiantes.
 
-        </p>
+        <!-- PROMEDIO -->
+
+        <article class="edc-stat">
+
+            <span class="edc-stat__icono edc-stat__icono--exito" aria-hidden="true">
+                <i class="fa-solid fa-chart-line"></i>
+            </span>
+
+            <div class="edc-stat__texto">
+                <div class="edc-stat__valor">
+                    {% if promedio_general is not None %}
+                        {{ promedio_general }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+                <div class="edc-stat__etiqueta">
+                    Promedio general
+                </div>
+            </div>
+
+        </article>
+
+
+        <!-- ALERTAS -->
+
+        <article class="edc-stat">
+
+            <span class="edc-stat__icono edc-stat__icono--error" aria-hidden="true">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </span>
+
+            <div class="edc-stat__texto">
+                <div class="edc-stat__valor">
+                    {{ alumnos_alerta|default:"0" }}
+                </div>
+                <div class="edc-stat__etiqueta">
+                    Requieren atención en asistencia
+                </div>
+            </div>
+
+        </article>
 
     </div>
 
-</div>
+
+    <!-- =====================================================
+         AGENDA DEL COLEGIO
+    ====================================================== -->
+
+    <section class="edc-tarjeta">
+
+        <div class="edc-tarjeta__cabeza">
+            <h2>
+                <i class="fa-regular fa-calendar"></i>
+                Agenda del colegio
+            </h2>
+            <a
+                class="edc-btn edc-btn--suave"
+                href="{% url 'eventos_acudiente' %}"
+            >
+                Ver todos
+            </a>
+        </div>
+
+        <div class="edc-tarjeta__cuerpo">
+
+            {% if eventos_proximos %}
+
+                <ul class="edc-lista">
+
+                    {% for evento in eventos_proximos %}
+
+                        <li class="edc-evento-preview">
+
+                            <span class="edc-fecha" aria-hidden="true">
+                                <strong>{{ evento.fecha|date:"d" }}</strong>
+                                <small>{{ evento.fecha|date:"M" }}</small>
+                            </span>
+
+                            <span class="edc-lista__principal">
+
+                                <strong>{{ evento.titulo }}</strong>
+
+                                <span>
+                                    {% if evento.hora_inicio %}
+                                        <i class="fa-regular fa-clock"></i>
+                                        {{ evento.hora_inicio|time:"H:i" }}
+                                        ·
+                                    {% endif %}
+                                    {{ evento.get_tipo_display }}
+                                </span>
+
+                            </span>
+
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <div class="edc-vacio">
+                    <i class="fa-regular fa-calendar-xmark"></i>
+                    <strong>No hay eventos próximos publicados</strong>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
 
 
-<div class="row g-4">
+    <!-- =====================================================
+         MIS ESTUDIANTES
+    ====================================================== -->
 
-    {% for alumno in alumnos %}
+    <section class="edc-bloque">
 
-        <div class="col-xl-6">
+        <h2 class="edc-titulo-seccion">
+            <i class="fa-solid fa-user-graduate"></i>
+            Mis estudiantes
+        </h2>
 
-            <div class="student-card">
+        <div class="edc-rejilla edc-rejilla--2">
 
-                <div class="d-flex align-items-center mb-4">
+            {% for alumno in alumnos %}
 
-                    <div class="student-icon me-3">
+                <article class="edc-tarjeta">
 
-                        <i class="fa-solid fa-user-graduate"></i>
+                    <div class="edc-tarjeta__cabeza">
 
-                    </div>
-
-                    <div>
-
-                        <h4 class="mb-1">
-
+                        <h3>
                             {{ alumno.usuario.get_full_name|default:alumno.usuario.documento }}
+                        </h3>
 
-                        </h4>
-
-                        <span class="text-muted">
-
-                            Código:
-                            {{ alumno.codigo|default:"Sin código" }}
-
+                        <span class="edc-badge edc-badge--info">
+                            {{ alumno.parentesco }}
                         </span>
 
                     </div>
 
-                </div>
+                    <div class="edc-tarjeta__cuerpo">
+
+                        <ul class="edc-lista">
+
+                            <li>
+                                <span class="edc-lista__punto" aria-hidden="true">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                </span>
+                                <span class="edc-lista__principal">
+                                    <strong>Curso</strong>
+                                    <span>{{ alumno.curso|default:"Sin curso asignado" }}</span>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span class="edc-lista__punto" aria-hidden="true">
+                                    <i class="fa-solid fa-book"></i>
+                                </span>
+                                <span class="edc-lista__principal">
+                                    <strong>Clase</strong>
+                                    <span>{{ alumno.clase|default:"Sin clase asignada" }}</span>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span class="edc-lista__punto" aria-hidden="true">
+                                    <i class="fa-solid fa-id-card"></i>
+                                </span>
+                                <span class="edc-lista__principal">
+                                    <strong>Documento</strong>
+                                    <span>{{ alumno.usuario.documento|default:"Sin documento" }}</span>
+                                </span>
+                            </li>
+
+                        </ul>
 
 
-                <div class="mb-4">
+                        <div class="edc-mini">
 
-                    <strong>
+                            <div class="edc-mini__caja">
+                                <div class="edc-mini__valor">
+                                    {{ alumno.promedio|default:"—" }}
+                                </div>
+                                <div class="edc-mini__etiqueta">
+                                    Promedio
+                                </div>
+                            </div>
 
-                        Curso:
+                            <div class="edc-mini__caja">
+                                <div class="edc-mini__valor">
+                                    {% if alumno.porcentaje_asistencia is not None %}
+                                        {{ alumno.porcentaje_asistencia }}%
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </div>
+                                <div class="edc-mini__etiqueta">
+                                    Asistencia
+                                </div>
+                            </div>
 
-                    </strong>
+                            <div class="edc-mini__caja">
+                                <div class="edc-mini__valor">
+                                    {{ alumno.tareas_pendientes|default:"0" }}
+                                </div>
+                                <div class="edc-mini__etiqueta">
+                                    Tareas
+                                </div>
+                            </div>
 
-                    {{ alumno.curso|default:"Sin curso asignado" }}
-
-                    <br>
-
-                    <strong>
-
-                        Clase:
-
-                    </strong>
-
-                    {{ alumno.clase|default:"Sin clase asignada" }}
-
-                    <br>
-
-                    <strong>
-
-                        Parentesco:
-
-                    </strong>
-
-                    {{ alumno.parentesco }}
-
-                </div>
+                        </div>
 
 
-                <div class="row g-3 mb-4">
+                        <div class="edc-bloque">
 
-                    <div class="col-4">
+                            <a
+                                href="{% url 'detalle_alumno_acudiente' alumno.id %}"
+                                class="edc-btn edc-btn--bloque"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                                Ver información del estudiante
+                            </a>
 
-                        <div class="stat text-center">
-
-                            <h4>
-
-                                {{ alumno.promedio|default:"—" }}
-
-                            </h4>
-
-                            <small>
-
-                                Promedio
-
-                            </small>
+                            <a
+                                href="{% url 'boletin_alumno_acudiente' alumno.id %}"
+                                class="edc-btn edc-btn--bloque edc-btn--secundario"
+                            >
+                                <i class="fa-solid fa-file-lines"></i>
+                                Ver boletín académico
+                            </a>
 
                         </div>
 
                     </div>
 
+                </article>
 
-                    <div class="col-4">
+            {% empty %}
 
-                        <div class="stat text-center">
+                <div class="edc-tarjeta">
 
-                            <h4>
-
-                                {% if alumno.porcentaje_asistencia != None %}
-
-                                    {{ alumno.porcentaje_asistencia }}%
-
-                                {% else %}
-
-                                    —
-
-                                {% endif %}
-
-                            </h4>
-
-                            <small>
-
-                                Asistencia
-
-                            </small>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="col-4">
-
-                        <div class="stat text-center">
-
-                            <h4>
-
-                                {{ alumno.tareas_pendientes }}
-
-                            </h4>
-
-                            <small>
-
-                                Tareas
-
-                            </small>
-
-                        </div>
-
+                    <div class="edc-vacio">
+                        <i class="fa-solid fa-users-slash"></i>
+                        <strong>No tienes estudiantes vinculados</strong>
+                        <p>
+                            Comunícate con la administración del colegio para
+                            vincular un estudiante a tu cuenta.
+                        </p>
                     </div>
 
                 </div>
 
-
-                <a
-                    href="{% url 'boletin_alumno_acudiente' alumno.id %}"
-                    class="btn btn-outline-primary w-100 mb-2"
-                >
-                    <i class="fa-solid fa-file-lines me-1"></i>
-                    Ver boletín académico
-                </a>
-
-                <a
-                    href="{% url 'detalle_alumno_acudiente' alumno.id %}"
-                    class="btn btn-primary w-100"
-                >
-
-                    <i class="fa-solid fa-eye"></i>
-
-                    Ver información del estudiante
-
-                </a>
-
-            </div>
+            {% endfor %}
 
         </div>
 
+    </section>
 
-    {% empty %}
-
-        <div class="col-12">
-
-            <div class="student-card text-center">
-
-                <i
-                    class="fa-solid fa-users-slash"
-                    style="font-size:50px;"
-                ></i>
-
-                <h4 class="mt-3">
-
-                    No tienes estudiantes vinculados
-
-                </h4>
-
-                <p class="text-muted">
-
-                    Comunícate con la administración del colegio
-                    para vincular un estudiante a tu cuenta.
-
-                </p>
-
-            </div>
-
-        </div>
-
-    {% endfor %}
 
 </div>
 

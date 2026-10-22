@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 
-<html lang="es">
+<html lang="es" data-nivel="{{ nivel_educativo|default:'default' }}">
 
 <head>
 
@@ -13,12 +13,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Educatec -
-        {% block title %}
-            Portal del Acudiente
-        {% endblock %}
-    </title>
+    <title>Educatec - {% block title %}Portal del Acudiente{% endblock %}</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -35,316 +30,171 @@
 
     <style>
 
-        body {
-
-            background: #f1f5f9;
-            color: #172033;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-        }
-
-        .sidebar {
-
-            display: flex;
-            flex-direction: column;
-            --sidebar-account-text: #172033;
-            --sidebar-account-muted: #64748b;
-
-            min-height: 100vh;
-
-            background: #ffffff;
-
-            border-right: 1px solid #e5e7eb;
-
-            padding: 25px 15px;
-            box-shadow: 4px 0 18px rgba(15, 23, 42, .04);
-
-        }
-
-        .logo {
-
-            font-size: 24px;
-
-            font-weight: 700;
-
-            margin-bottom: 35px;
-
-            color: #2563eb;
-
-        }
-
-        .menu-link {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            padding: 12px 15px;
-
-            margin-bottom: 8px;
-
-            border-radius: 10px;
-
-            text-decoration: none;
-
-            color: #334155;
-            font-weight: 600;
-
-            transition: .2s;
-
-        }
-
-        .menu-link:hover {
-
-            background: #eff6ff;
-
-            color: #2563eb;
-
-        }
-
-        .menu-link.active {
-            background: #dbeafe;
-            color: #1d4ed8;
-            font-weight: 700;
-        }
-
-        .menu-link:focus-visible, .logout-button:focus-visible {
-            outline: 3px solid #2563eb;
-            outline-offset: 2px;
-        }
-
-        .logout-button {
-
-            border: 0;
-
-            background: transparent;
-
-            width: 100%;
-
-            text-align: left;
-
-            color: #dc2626;
-
-            padding: 12px 15px;
-
-        }
+        /* Estilos propios del portal de acudientes (los usan las páginas internas) */
 
         .topbar {
-
             background: white;
-
             border-radius: 16px;
-
             padding: 25px;
-
             margin-bottom: 25px;
-
-            box-shadow:
-                0 4px 15px
-                rgba(0,0,0,.05);
-
-        }
-
-        .portal-content { max-width: 1500px; margin: 0 auto; }
-
-        @media (max-width: 991.98px) {
-            .sidebar { min-height: auto; padding: 16px; }
-            .logo { margin-bottom: 14px; }
-            .sidebar .menu-link { display: inline-flex; margin: 3px; }
-            main.col-lg-10 { width: 100%; }
-        }
-
-        @media (max-width: 575.98px) {
-            main.col-lg-10 { padding: 16px !important; }
-            .topbar { padding: 20px; }
+            box-shadow: 0 4px 15px rgba(0,0,0,.05);
         }
 
         .student-card {
-
             background: white;
-
             border-radius: 16px;
-
             padding: 25px;
-
             height: 100%;
-
-            box-shadow:
-                0 4px 15px
-                rgba(0,0,0,.05);
-
+            box-shadow: 0 4px 15px rgba(0,0,0,.05);
         }
 
         .student-icon {
-
             width: 60px;
-
             height: 60px;
-
             border-radius: 50%;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             background: #dbeafe;
-
             color: #2563eb;
-
             font-size: 25px;
-
         }
 
         .stat {
-
             background: #f8fafc;
-
             border-radius: 12px;
-
             padding: 15px;
-
         }
 
         .stat h4 {
-
             margin: 0;
-
             font-weight: 700;
-
         }
 
     </style>
 
-    {% block extra_css %}
-    {% endblock %}
+    {% block extra_css %}{% endblock %}
 
-{% include "partials/page_transition_assets.html" %}
+    <link rel="stylesheet" href="{% static 'css/educatec/sistema.css' %}">
+
+    {% include "partials/page_transition_assets.html" %}
+
 </head>
 
 
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
 
-<div class="container-fluid">
+<div class="edc-app" data-edc-app>
 
-    <div class="row">
+    <!-- =====================================================
+         MENÚ LATERAL
+    ====================================================== -->
 
-        <!-- =================================================
-             SIDEBAR
-        ================================================== -->
+    <aside class="edc-sidebar" id="edc-nav" aria-label="Navegación principal">
 
-        <aside class="col-lg-2 sidebar">
+        <a class="edc-sidebar__marca" href="{% url 'dashboard_acudiente' %}">
+            <span class="edc-sidebar__marca-icono"><i class="fa-solid fa-graduation-cap"></i></span>
+            <span class="edc-sidebar__marca-texto">
+                <strong>Educatec</strong>
+                <span>Acudiente</span>
+            </span>
+        </a>
 
-            <div class="logo">
+        <nav class="edc-sidebar__nav">
 
-                <i class="fa-solid fa-graduation-cap"></i>
-
-                Educatec
-
-            </div>
-
+            <p class="edc-nav__seccion">Principal</p>
 
             <a
                 href="{% url 'dashboard_acudiente' %}"
-                class="menu-link {% if request.resolver_match.url_name == 'dashboard_acudiente' %}active{% endif %}"
+                class="edc-nav__enlace {% if request.resolver_match.url_name in 'dashboard_acudiente,detalle_alumno_acudiente,boletin_alumno_acudiente' %}is-active{% endif %}"
             >
-
-                <i class="fa-solid fa-house"></i>
-
-                Inicio
-
+                <i class="fa-solid fa-house"></i><span>Inicio</span>
             </a>
 
-            <a href="{% url 'eventos_acudiente' %}"
-               class="menu-link {% if request.resolver_match.url_name == 'eventos_acudiente' %}active{% endif %}">
-                <i class="fa-solid fa-calendar-days"></i>
-                Eventos
+            <a
+                href="{% url 'eventos_acudiente' %}"
+                class="edc-nav__enlace {% if request.resolver_match.url_name == 'eventos_acudiente' %}is-active{% endif %}"
+            >
+                <i class="fa-solid fa-calendar-days"></i><span>Eventos</span>
             </a>
 
+            <p class="edc-nav__seccion">Sistema</p>
 
-            <div class="mt-4">
+            <a
+                href="{% url 'configuracion_cuenta' %}"
+                class="edc-nav__enlace {% if request.resolver_match.url_name == 'configuracion_cuenta' %}is-active{% endif %}"
+            >
+                <i class="fa-solid fa-gear"></i><span>Configuración de cuenta</span>
+            </a>
 
-                <a href="{% url 'configuracion_cuenta' %}" class="menu-link {% if request.resolver_match.url_name == 'configuracion_cuenta' %}active{% endif %}">
-                    <i class="fa-solid fa-gear"></i> Configuración de cuenta
+            <a href="{% url 'cerrar_sesion' %}" id="logoutBtn" class="edc-nav__enlace edc-nav__enlace--salir">
+                <i class="fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+            </a>
+
+        </nav>
+
+        <div class="edc-sidebar__cuenta">
+            <div class="edc-sidebar__avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
+            <div class="edc-sidebar__datos">
+                <span class="edc-sidebar__nombre">{{ request.user.get_full_name|default:request.user.documento }}</span>
+                <span class="edc-sidebar__rol">{{ request.user.rol.nombre|default:"Acudiente"|title }}</span>
+            </div>
+        </div>
+
+    </aside>
+
+    <button type="button" class="edc-velo" data-edc-velo aria-label="Cerrar menú"></button>
+
+    <!-- =====================================================
+         CONTENIDO
+    ====================================================== -->
+
+    <div class="edc-contenido">
+
+        <header class="edc-topbar">
+
+            <button
+                type="button"
+                class="edc-icono-btn edc-icono-btn--menu"
+                data-edc-menu
+                aria-controls="edc-nav"
+                aria-expanded="false"
+                aria-label="Abrir menú"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <h1 class="edc-topbar__titulo">
+                {% block page_title %}Portal del acudiente{% endblock %}
+                <small>{% block page_subtitle %}Educatec · Familias{% endblock %}</small>
+            </h1>
+
+            <div class="edc-topbar__acciones">
+
+                <button
+                    type="button"
+                    class="edc-icono-btn"
+                    data-edc-colapsar
+                    aria-label="Contraer o expandir el menú lateral"
+                >
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+
+                <a class="edc-usuario" href="{% url 'configuracion_cuenta' %}">
+                    <span class="edc-usuario__avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</span>
+                    <span class="edc-usuario__texto">
+                        <strong>{{ request.user.get_full_name|default:request.user.documento }}</strong>
+                        <span>Acudiente</span>
+                    </span>
                 </a>
 
             </div>
 
-            <div class="mt-4">
+        </header>
 
-                <small class="text-muted px-3">
+        <main class="edc-principal">
 
-                    CUENTA
-
-                </small>
-
-                <div class="mt-2">
-
-                    <span class="menu-link">
-
-                        <i class="fa-solid fa-user"></i>
-
-                        {{ request.user.get_full_name|default:request.user.documento }}
-
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="mt-4">
-
-                <form
-                    method="POST"
-                    action="{% url 'cerrar_sesion' %}"
-                >
-
-                    {% csrf_token %}
-
-                    <button
-                        type="submit"
-                        class="logout-button"
-                    >
-
-                        <i class="fa-solid fa-right-from-bracket"></i>
-
-                        Cerrar sesión
-
-                    </button>
-
-                </form>
-
-            </div>
-
-            <div class="sidebar-account" aria-label="Cuenta de {{ request.user.get_full_name|default:request.user.documento }}">
-                <div class="sidebar-account-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
-                <div class="sidebar-account-details">
-                    <span class="sidebar-account-name">{{ request.user.get_full_name|default:request.user.documento }}</span>
-                    <span class="sidebar-account-role">{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
-                </div>
-            </div>
-
-        </aside>
-
-
-        <!-- =================================================
-             CONTENIDO
-        ================================================== -->
-
-        <main class="col-lg-10 p-4">
-          <div class="portal-content">
-
-            {% block content %}
-            {% endblock %}
-          </div>
+            {% block content %}{% endblock %}
 
         </main>
 
@@ -352,16 +202,17 @@
 
 </div>
 
-{% block extra_js %}
-{% endblock %}
 
-{% include 'paneles/partials/notificaciones_toast.html' %}
-<script src="{% static 'js/paneles/notificaciones_toast.js' %}"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/educatec/shell.js' %}"></script>
 <script src="{% static 'js/paneles/cuenta_tema.js' %}"></script>
 <script src="{% static 'js/paneles/fecha_nacimiento_edad.js' %}"></script>
 <script src="{% static 'js/paneles/confirmar_cierre_sesion.js' %}"></script>
 <script src="{% static 'js/csrf_refresh.js' %}"></script>
+{% include 'paneles/partials/notificaciones_toast.html' %}
+<script src="{% static 'js/paneles/notificaciones_toast.js' %}"></script>
+
+{% block extra_js %}{% endblock %}
 
 </body>
 

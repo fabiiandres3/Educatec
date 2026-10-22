@@ -16,21 +16,6 @@ menuItems.forEach(item => {
 
 });
 
-// NOTIFICACIÓN
-
-const notification = document.querySelector('.notification');
-
-notification.addEventListener('click', () => {
-
-    alert(
-        'Tienes 3 notificaciones nuevas:\n\n' +
-        '- Nueva tarea de Matemáticas\n' +
-        '- Examen de Biología programado\n' +
-        '- Nuevo mensaje del docente'
-    );
-
-});
-
 // EFECTO TARJETAS
 
 const cards = document.querySelectorAll(

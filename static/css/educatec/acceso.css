@@ -1,0 +1,372 @@
+/* ==========================================================================
+   EDUCACTEC · ACCESO (LOGIN / REGISTRO / RECUPERACIÓN)
+   Se carga después de sistema.css y reutiliza sus tokens --edc-*.
+   ========================================================================== */
+
+body.edc-acceso {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--edc-fondo);
+    color: var(--edc-texto);
+}
+
+/* ---------- 1. MARCO DE DOS PANELES ---------- */
+
+.edc-acceso__marco {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+}
+
+/* ---------- 2. PANEL DE MARCA ---------- */
+
+.edc-acceso__marca {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    padding: 56px 56px 56px 64px;
+    overflow: hidden;
+    background: linear-gradient(120deg, #020617 0%, #1E40AF 58%, #0EA5E9 130%);
+    color: #FFFFFF;
+}
+
+.edc-acceso__marca::after {
+    content: "";
+    position: absolute;
+    right: -140px;
+    bottom: -140px;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .07);
+    pointer-events: none;
+}
+
+.edc-acceso__marca > div {
+    position: relative;
+    z-index: 1;
+    max-width: 460px;
+}
+
+.edc-acceso__logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.edc-acceso__logo strong {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+}
+
+.edc-acceso__marca h1 {
+    margin: 0 0 16px;
+    font-size: clamp(30px, 3.4vw, 42px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -.02em;
+}
+
+.edc-acceso__marca p {
+    margin: 0 0 32px;
+    max-width: 44ch;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, .82);
+}
+
+.edc-acceso__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.edc-acceso__lista li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .94);
+}
+
+.edc-acceso__lista i {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .14);
+    font-size: 14px;
+}
+
+/* ---------- 3. PANEL DEL FORMULARIO ---------- */
+
+.edc-acceso__panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 32px;
+    background: var(--edc-fondo);
+}
+
+.edc-acceso__caja {
+    width: 100%;
+    max-width: 420px;
+}
+
+.edc-acceso__caja h2 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--edc-texto);
+}
+
+.edc-acceso__ayuda {
+    margin: 0 0 24px;
+    font-size: 14.5px;
+    color: var(--edc-texto-sec);
+}
+
+/* ---------- 4. ENLACE VOLVER ---------- */
+
+.edc-acceso__volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--edc-texto-sec);
+    text-decoration: none;
+    transition: color var(--edc-transicion), gap var(--edc-transicion);
+}
+
+.edc-acceso__volver:hover {
+    gap: 12px;
+    color: var(--edc-primario-fuerte);
+}
+
+/* ---------- 5. FORMULARIO ---------- */
+
+.edc-acceso__form {
+    margin-bottom: 8px;
+}
+
+.edc-acceso__form input[type="text"],
+.edc-acceso__form input[type="password"],
+.edc-acceso__form input[type="email"],
+.edc-acceso__form input[type="date"],
+.edc-acceso__form input[type="tel"],
+.edc-acceso__form input[type="number"],
+.edc-acceso__form select,
+.edc-acceso__form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--edc-borde);
+    border-radius: 12px;
+    background: var(--edc-superficie);
+    color: var(--edc-texto);
+    font: inherit;
+    font-size: 14.5px;
+    transition: border-color var(--edc-transicion), box-shadow var(--edc-transicion);
+}
+
+.edc-acceso__form input::placeholder {
+    color: #94A3B8;
+}
+
+.edc-acceso__form input:focus {
+    outline: none;
+    border-color: var(--edc-primario);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, .2);
+}
+
+.edc-acceso__form .errorlist {
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12.5px;
+    color: var(--edc-error);
+}
+
+/* ---------- 6. ENLACES Y SEPARADOR ---------- */
+
+.edc-acceso__enlaces {
+    display: flex;
+    justify-content: flex-end;
+    margin: -4px 0 20px;
+}
+
+.edc-acceso__enlaces a {
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.edc-acceso__enlaces a:hover {
+    text-decoration: underline;
+}
+
+.edc-acceso__divisor {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 24px 0;
+    font-size: 12.5px;
+    color: var(--edc-texto-sec);
+}
+
+.edc-acceso__divisor::before,
+.edc-acceso__divisor::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--edc-borde);
+}
+
+/* ---------- 7. REGISTRO ---------- */
+
+.edc-acceso__registro {
+    margin: 24px 0 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--edc-texto-sec);
+}
+
+.edc-acceso__registro a {
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.edc-acceso__registro a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- 8. PÁGINAS DE ESTADO Y APOYO ---------- */
+
+.edc-acceso__caja--ancha { max-width: 560px; }
+
+.edc-acceso__caja--centrada {
+    text-align: center;
+}
+
+.edc-acceso__caja--centrada .edc-acceso__ayuda {
+    margin-bottom: 20px;
+}
+
+.edc-acceso__icono {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    background: var(--edc-primario-soft);
+    color: var(--edc-primario-fuerte);
+    font-size: 30px;
+}
+
+.edc-acceso__icono--exito { background: #DCFCE7; color: var(--edc-exito); }
+.edc-acceso__icono--alerta { background: #FEF3C7; color: var(--edc-advertencia); }
+.edc-acceso__icono--error { background: #FEE2E2; color: var(--edc-error); }
+
+.edc-acceso__roles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.edc-acceso__roles li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--edc-borde);
+    border-radius: var(--edc-radio-sm);
+    background: var(--edc-superficie);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.edc-acceso__roles i {
+    width: 18px;
+    color: var(--edc-primario);
+    text-align: center;
+}
+
+.edc-acceso__acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* ---------- 9. FORMULARIO EN DOS COLUMNAS ---------- */
+
+.edc-acceso__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+}
+
+.edc-acceso__grid > .edc-campo--ancho {
+    grid-column: 1 / -1;
+}
+
+/* ---------- 10. RESPONSIVE ---------- */
+
+@media (max-width: 991px) {
+
+    .edc-acceso__marco {
+        grid-template-columns: 1fr;
+    }
+
+    .edc-acceso__marca {
+        display: none;
+    }
+
+    .edc-acceso__panel {
+        padding: 40px 20px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .edc-acceso__panel {
+        padding: 32px 16px;
+    }
+
+    .edc-acceso__caja h2 {
+        font-size: 24px;
+    }
+
+    .edc-acceso__grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* ---------- 11. ACCESIBILIDAD ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .edc-acceso__volver {
+        transition: none;
+    }
+
+}

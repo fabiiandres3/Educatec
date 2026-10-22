@@ -1,416 +1,178 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-nivel="{{ nivel_educativo|default:'default' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin — Educatec</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>{% block title %}Administración — Educatec{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <!-- Hojas de panel existentes -->
     <link rel="stylesheet" href="{% static 'css/paneles/cuenta_tema.css' %}">
     <link rel="stylesheet" href="{% static 'css/paneles/notificaciones_toast.css' %}">
+
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
+
     {% block extra_css %}{% endblock %}
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #cfd4de;
-            color: #1f2937;
-            display: flex;
-            min-height: 100vh;
-        }
+    <!-- Sistema de diseño Educatec (se carga al final para homogeneizar) -->
+    <link rel="stylesheet" href="{% static 'css/educatec/sistema.css' %}">
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 220px;
-            background: #1e293b;
-            min-height: 100vh;
-            height: 100vh;
-            position: fixed;
-            top: 0; left: 0;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid #334155;
-            z-index: 100;
-            scrollbar-width: none;
-        }
-
-        .sidebar::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar { display: none; }
-
-        .sidebar-brand {
-            padding: 28px 24px;
-            border-bottom: 1px solid #334155;
-        }
-
-        .sidebar-brand h4 {
-            color: #38bdf8;
-            font-weight: 800;
-            font-size: 20px;
-            margin: 0;
-        }
-
-        .sidebar-brand span {
-            color: #cbd5e1;
-            font-size: 12px;
-        }
-
-        .sidebar-nav {
-            padding: 20px 0;
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-            scrollbar-width: none;
-        }
-
-        .nav-section {
-            padding: 8px 18px 4px;
-            font-size: 10px;
-            font-weight: 700;
-            color: #94a3b8;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .nav-link-admin {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 11px 18px;
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all .2s;
-            border-left: 3px solid transparent;
-        }
-
-        .nav-link-admin:hover,
-        .nav-link-admin.active {
-            background: rgba(56,189,248,.08);
-            color: #38bdf8;
-            border-left-color: #38bdf8;
-        }
-
-        .sidebar .nav-link-admin.active {
-            background: rgba(56,189,248,.14);
-            color: #7dd3fc;
-            border-left-color: #38bdf8;
-            font-weight: 700;
-        }
-
-        .nav-link-admin i {
-            width: 18px;
-            text-align: center;
-            font-size: 15px;
-        }
-
-        .sidebar-footer {
-            padding: 20px 24px;
-            border-top: 1px solid #334155;
-        }
-
-        .sidebar-footer a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #f87171;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: .2s;
-        }
-
-        .sidebar-footer a:hover { color: #fca5a5; }
-
-        .sidebar-account { display: flex; align-items: center; gap: 10px; padding: 14px 16px 18px; border-top: 1px solid #334155; color: #f1f5f9; }
-
-        /* MAIN */
-        .main-content {
-            margin-left: 220px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .topbar {
-            background: #1e293b;
-            border-bottom: 1px solid #334155;
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .topbar h5 {
-            margin: 0;
-            font-weight: 700;
-            color: #f1f5f9;
-            font-size: 18px;
-        }
-
-        .topbar-user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        .avatar-admin {
-            width: 36px; height: 36px;
-            background: #38bdf8;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0f172a;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .page-body {
-            padding: 32px;
-            flex: 1;
-        }
-
-        /* CARDS STATS */
-        .stat-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 24px;
-            transition: .3s;
-        }
-
-        .stat-card:hover {
-            border-color: #38bdf8;
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(56,189,248,.1);
-        }
-
-        .stat-icon {
-            width: 48px; height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 16px;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 800;
-            color: #f1f5f9;
-            line-height: 1;
-        }
-
-        .stat-label {
-            color: #cbd5e1;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        /* TABLES */
-        .admin-table {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .admin-table-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .admin-table-header h6 {
-            margin: 0;
-            font-weight: 700;
-            color: #f1f5f9;
-            font-size: 16px;
-        }
-
-        .table-dark-custom {
-            color: #cbd5e1;
-            margin: 0;
-        }
-
-        .table-dark-custom thead th {
-            background: #0f172a;
-            color: #64748b;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 14px 24px;
-            border: none;
-        }
-
-        .table-dark-custom tbody td {
-            padding: 14px 24px;
-            border-color: #334155;
-            vertical-align: middle;
-            font-size: 14px;
-        }
-
-        .table-dark-custom tbody tr:hover {
-            background: rgba(56,189,248,.05);
-        }
-
-        /* BADGES */
-        .badge-rol {
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .badge-docente  { background: rgba(56,189,248,.15); color: #38bdf8; }
-        .badge-alumno   { background: rgba(34,197,94,.15);  color: #22c55e; }
-        .badge-admin    { background: rgba(168,85,247,.15); color: #a855f7; }
-        .badge-usuario  { background: rgba(100,116,139,.15);color: #64748b; }
-
-        .badge-pendiente { background: rgba(251,191,36,.15); color: #fbbf24; }
-        .badge-entregada { background: rgba(34,197,94,.15);  color: #22c55e; }
-        .badge-vencida   { background: rgba(239,68,68,.15);  color: #ef4444; }
-
-        .btn-action {
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .btn-danger-soft {
-            background: rgba(239,68,68,.15);
-            color: #ef4444;
-        }
-
-        .btn-danger-soft:hover { background: #ef4444; color: white; }
-
-        .btn-success-soft {
-            background: rgba(34,197,94,.15);
-            color: #22c55e;
-        }
-
-        .btn-success-soft:hover { background: #22c55e; color: white; }
-
-        @media(max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .main-content { margin-left: 0; }
-        }
-    </style>
-{% include "partials/page_transition_assets.html" %}
+    {% include "partials/page_transition_assets.html" %}
 </head>
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sidebar-brand">
-        <h4><i class="fas fa-graduation-cap me-2"></i>Educatec</h4>
-        <span>Panel Administrador</span>
-    </div>
+<div class="edc-app" data-edc-app>
 
-    <nav class="sidebar-nav">
-        <div class="nav-section">Principal</div>
-        <a href="{% url 'dashboard_administrador' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'dashboard_administrador' %}active{% endif %}">
-            <i class="fas fa-gauge-high"></i> Dashboard
-        </a>
+    <!-- ============================= -->
+    <!-- MENÚ LATERAL                  -->
+    <!-- ============================= -->
+    <aside class="edc-sidebar" id="edc-nav" aria-label="Navegación principal">
 
-        <div class="nav-section mt-3">Gestión</div>
-        <a href="{% url 'listar_usuarios' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_usuarios' %}active{% endif %}">
-            <i class="fas fa-users-gear"></i> Usuarios
-        </a>
-        <a href="{% url 'listar_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_alumnos' %}active{% endif %}">
-            <i class="fas fa-user-graduate"></i> Alumnos
-        </a>
-        <a href="{% url 'administrar_acudientes' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'administrar_acudientes' %}active{% endif %}">
-            <i class="fas fa-people-roof"></i> Acudientes
-        </a>
-        <a href="{% url 'listar_docentes' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_docentes' %}active{% endif %}">
-            <i class="fas fa-chalkboard-user"></i> Docentes
-        </a>
-        <a href="{% url 'listar_tareas' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_tareas' %}active{% endif %}">
-            <i class="fas fa-clipboard-list"></i> Tareas
+        <a class="edc-sidebar__marca" href="{% url 'dashboard_administrador' %}">
+            <span class="edc-sidebar__marca-icono"><i class="fas fa-graduation-cap"></i></span>
+            <span class="edc-sidebar__marca-texto">
+                <strong>Educatec</strong>
+                <span>Administración</span>
+            </span>
         </a>
 
-        <a href="{% url 'listar_eventos' %}"
-   class="nav-link-admin {% if request.resolver_match.url_name == 'listar_eventos' %}active{% endif %}">
+        <nav class="edc-sidebar__nav">
 
-    <i class="fas fa-calendar-days"></i> Eventos
+            <p class="edc-nav__seccion">Principal</p>
 
-</a>
+            <a href="{% url 'dashboard_administrador' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'dashboard_administrador' %}is-active{% endif %}">
+                <i class="fas fa-gauge-high"></i><span>Panel</span>
+            </a>
 
-        <a href="{% url 'clases' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'clases' or request.resolver_match.url_name == 'crear_clase' or request.resolver_match.url_name == 'editar_clase' %}active{% endif %}">
-            <i class="fas fa-chalkboard"></i> Clases
-        </a>
+            <p class="edc-nav__seccion">Gestión académica</p>
 
-        <a href="{% url 'listar_cursos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_cursos' %}active{% endif %}">
-            <i class="fas fa-graduation-cap"></i> Cursos
-        </a>
+            <a href="{% url 'listar_cursos' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'listar_cursos' %}is-active{% endif %}">
+                <i class="fas fa-graduation-cap"></i><span>Cursos</span>
+            </a>
 
-        <a href="{% url 'listar_periodos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_periodos' %}active{% endif %}">
-            <i class="fas fa-clock"></i> Periodo / Horario
-        </a>
+            <a href="{% url 'clases' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name in 'clases,crear_clase,editar_clase' %}is-active{% endif %}">
+                <i class="fas fa-chalkboard"></i><span>Clases</span>
+            </a>
 
-        <a href="{% url 'boletines_administrador' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'boletines_administrador' %}active{% endif %}">
-            <i class="fas fa-file-invoice"></i> Boletines
-        </a>
+            <a href="{% url 'listar_periodos' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'listar_periodos' %}is-active{% endif %}">
+                <i class="fas fa-clock"></i><span>Periodos y horarios</span>
+            </a>
 
-        <div class="nav-section mt-3">Sistema</div>
-        <a href="{% url 'configuracion_cuenta' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'configuracion_cuenta' %}active{% endif %}">
-            <i class="fas fa-id-card"></i> Mi cuenta
-        </a>
-        <a href="/admin/" class="nav-link-admin">
-            <i class="fas fa-screwdriver-wrench"></i> Django Admin
-        </a>
+            <a href="{% url 'listar_tareas' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'listar_tareas' %}is-active{% endif %}">
+                <i class="fas fa-clipboard-list"></i><span>Tareas</span>
+            </a>
 
-        <div class="sidebar-footer">
-        <a href="{% url 'cerrar_sesion' %}" class="logout-confirm-link">
-            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-        </a>
-    </div>
-    </nav>
-    <div class="sidebar-account" aria-label="Cuenta de {{ request.user.get_full_name|default:request.user.documento }}">
-        <div class="sidebar-account-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
-        <div class="sidebar-account-details">
-            <span class="sidebar-account-name">{{ request.user.get_full_name|default:request.user.documento }}</span>
-            <span class="sidebar-account-role">{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
+            <a href="{% url 'boletines_administrador' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'boletines_administrador' %}is-active{% endif %}">
+                <i class="fas fa-file-invoice"></i><span>Boletines</span>
+            </a>
+
+            <a href="{% url 'listar_eventos' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'listar_eventos' %}is-active{% endif %}">
+                <i class="fas fa-calendar-days"></i><span>Eventos</span>
+            </a>
+
+            <p class="edc-nav__seccion">Comunidad</p>
+
+            <a href="{% url 'listar_usuarios' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'listar_usuarios' %}is-active{% endif %}">
+                <i class="fas fa-users-gear"></i><span>Usuarios</span>
+            </a>
+
+            <a href="{% url 'listar_alumnos' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'listar_alumnos' %}is-active{% endif %}">
+                <i class="fas fa-user-graduate"></i><span>Alumnos</span>
+            </a>
+
+            <a href="{% url 'listar_docentes' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'listar_docentes' %}is-active{% endif %}">
+                <i class="fas fa-chalkboard-user"></i><span>Docentes</span>
+            </a>
+
+            <a href="{% url 'administrar_acudientes' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'administrar_acudientes' %}is-active{% endif %}">
+                <i class="fas fa-people-roof"></i><span>Acudientes</span>
+            </a>
+
+            <p class="edc-nav__seccion">Sistema</p>
+
+            <a href="{% url 'configuracion_cuenta' %}"
+               class="edc-nav__enlace {% if request.resolver_match.url_name == 'configuracion_cuenta' %}is-active{% endif %}">
+                <i class="fas fa-id-card"></i><span>Mi cuenta</span>
+            </a>
+
+            <a href="/admin/" class="edc-nav__enlace">
+                <i class="fas fa-screwdriver-wrench"></i><span>Django Admin</span>
+            </a>
+
+            <a href="{% url 'cerrar_sesion' %}" id="logoutBtn" class="edc-nav__enlace edc-nav__enlace--salir">
+                <i class="fas fa-right-from-bracket"></i><span>Cerrar sesión</span>
+            </a>
+
+        </nav>
+
+        <div class="edc-sidebar__cuenta">
+            <div class="edc-sidebar__avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
+            <div class="edc-sidebar__datos">
+                <span class="edc-sidebar__nombre">{{ request.user.get_full_name|default:request.user.documento }}</span>
+                <span class="edc-sidebar__rol">{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
+            </div>
         </div>
-    </div>
-</aside>
 
-<!-- MAIN -->
-<div class="main-content">
-    <div class="topbar">
-        <h5>{% block page_title %}Dashboard{% endblock %}</h5>
-        <div class="topbar-user">
-            {% if request.user.documento %}
-                <div class="avatar-admin">
-                    {{ request.user.documento|first|upper }}
-                </div>
-                <span>{{ request.user.documento }}</span>
-            {% endif %}
-        </div>
-    </div>
+    </aside>
 
-    <div class="page-body">
+    <button type="button" class="edc-velo" data-edc-velo aria-label="Cerrar menú"></button>
 
-        {% block content %}{% endblock %}
+    <!-- ============================= -->
+    <!-- CONTENIDO                     -->
+    <!-- ============================= -->
+    <div class="edc-contenido">
+
+        <header class="edc-topbar">
+            <button type="button" class="edc-icono-btn edc-icono-btn--menu" data-edc-menu
+                    aria-controls="edc-nav" aria-expanded="false" aria-label="Abrir menú">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <h1 class="edc-topbar__titulo">
+                {% block page_title %}Panel{% endblock %}
+                <small>{% block page_subtitle %}Educatec · Administración{% endblock %}</small>
+            </h1>
+
+            <div class="edc-topbar__acciones">
+                <button type="button" class="edc-icono-btn" data-edc-colapsar
+                        aria-label="Contraer o expandir el menú lateral">
+                    <i class="fas fa-bars-staggered"></i>
+                </button>
+
+                <a class="edc-usuario" href="{% url 'configuracion_cuenta' %}">
+                    <span class="edc-usuario__avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</span>
+                    <span class="edc-usuario__texto">
+                        <strong>{{ request.user.get_full_name|default:request.user.documento }}</strong>
+                        <span>{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
+                    </span>
+                </a>
+            </div>
+        </header>
+
+        <main class="edc-principal">
+            {% block content %}{% endblock %}
+        </main>
+
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/educatec/shell.js' %}"></script>
 <script src="{% static 'js/paneles/cuenta_tema.js' %}"></script>
 <script src="{% static 'js/paneles/fecha_nacimiento_edad.js' %}"></script>
 <script src="{% static 'js/paneles/confirmar_cierre_sesion.js' %}"></script>
