@@ -907,7 +907,7 @@ Editar tarea
 
 
 
-<div class="editar-page">
+<div class="editar-page tarea-editor-page">
 
 
     <!-- =====================================================
@@ -1283,7 +1283,11 @@ Editar tarea
                     {% for video in videos %}
 
 
-                        <div class="elemento-actual">
+                        <div class="elemento-actual video-actual" data-video-url="{{ video.video }}">
+
+                            <div class="video-preview" data-video-preview>
+                                <div class="video-preview-empty"><i class="fas fa-circle-play"></i><span>Cargando vista previa…</span></div>
+                            </div>
 
 
                             <div class="elemento-info">
@@ -1294,9 +1298,7 @@ Editar tarea
                                 </div>
 
 
-                                <div class="elemento-nombre">
-                                    {{ video.video }}
-                                </div>
+                                <div class="elemento-nombre">{{ video.video }}</div>
 
 
                             </div>
@@ -1335,6 +1337,21 @@ Editar tarea
 
 
                 {% endif %}
+
+                <div class="video-add-panel">
+                    <div class="video-add-copy">
+                        <span class="video-add-icon"><i class="fas fa-link"></i></span>
+                        <div>
+                            <strong>Agregar un video</strong>
+                            <p>Pega una URL de YouTube para incluirla en esta tarea. La vista previa aparecerá aquí.</p>
+                        </div>
+                    </div>
+                    <label class="video-url-label" for="videoNuevaUrl">URL del video</label>
+                    <input class="video-url-input" id="videoNuevaUrl" type="url" name="videos" value="{{ video_url_nuevo }}" placeholder="https://www.youtube.com/watch?v=…" autocomplete="url">
+                    <div class="video-preview video-preview-new" id="videoNuevaPreview" aria-live="polite">
+                        <div class="video-preview-empty"><i class="fas fa-film"></i><span>La vista previa aparecerá al ingresar un enlace válido.</span></div>
+                    </div>
+                </div>
 
 
             </div>
@@ -1815,6 +1832,64 @@ Editar tarea
 
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function getYoutubeEmbedUrl(rawUrl) {
+        try {
+            var parsed = new URL(rawUrl.trim());
+            var host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+            var videoId = '';
+            if (host === 'youtu.be') {
+                videoId = parsed.pathname.split('/').filter(Boolean)[0] || '';
+            } else if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtube-nocookie.com') {
+                if (parsed.pathname === '/watch') videoId = parsed.searchParams.get('v') || '';
+                else videoId = parsed.pathname.match(/^\/(?:embed|shorts)\/([\w-]+)/)?.[1] || '';
+            }
+            return /^[\w-]{6,}$/.test(videoId)
+                ? 'https://www.youtube-nocookie.com/embed/' + videoId + '?origin=' + encodeURIComponent(window.location.origin)
+                : '';
+        } catch (error) {
+            return '';
+        }
+    }
+
+    function renderPreview(container, url) {
+        if (!container) return;
+        container.replaceChildren();
+        var embedUrl = getYoutubeEmbedUrl(url || '');
+        if (!embedUrl) {
+            var empty = document.createElement('div');
+            empty.className = 'video-preview-empty';
+            var icon = document.createElement('i');
+            icon.className = 'fas fa-film';
+            var message = document.createElement('span');
+            message.textContent = url ? 'Usa un enlace válido de YouTube para ver la vista previa.' : 'La vista previa aparecerá al ingresar un enlace válido.';
+            empty.append(icon, message);
+            container.appendChild(empty);
+            return;
+        }
+        var frame = document.createElement('iframe');
+        frame.src = embedUrl;
+        frame.title = 'Vista previa del video de la tarea';
+        frame.loading = 'lazy';
+        frame.referrerPolicy = 'origin';
+        frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        frame.allowFullscreen = true;
+        container.appendChild(frame);
+    }
+
+    document.querySelectorAll('[data-video-preview]').forEach(function (preview) {
+        renderPreview(preview, preview.closest('[data-video-url]')?.dataset.videoUrl || '');
+    });
+    var input = document.getElementById('videoNuevaUrl');
+    var newPreview = document.getElementById('videoNuevaPreview');
+    if (input) {
+        renderPreview(newPreview, input.value);
+        input.addEventListener('input', function () { renderPreview(newPreview, input.value); });
+    }
+});
+</script>
 
 
 {% endblock %}

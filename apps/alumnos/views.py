@@ -1,4 +1,4 @@
-from django.contrib import messages
+﻿from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
 from apps.user.models import Usuario
@@ -50,10 +50,24 @@ def administrar_acudientes(request):
         "acudientes": acudientes,
         "relaciones": relaciones,
         "relacion_form": relacion_form,
+        "editar_relacion_form": AcudienteAlumnoForm(prefix="editar"),
         "puede_relacionar": acudientes.exists() and Alumnos.objects.exists(),
         "acudientes_activos": acudientes.filter(is_active=True).count(),
     })
 
+
+@decorators.rol_requerido("administrador")
+def editar_relacion_acudiente(request, relacion_id):
+    relacion = get_object_or_404(AcudienteAlumno, pk=relacion_id)
+    if request.method == "POST":
+        form = AcudienteAlumnoForm(request.POST, instance=relacion, prefix="editar")
+        if form.is_valid():
+            with transaction.atomic():
+                form.save()
+            messages.success(request, "La relación entre acudiente y alumno se actualizó correctamente.")
+        else:
+            messages.error(request, "No se pudo actualizar la relación. Revisa los datos e inténtalo de nuevo.")
+    return redirect("administrar_acudientes")
 
 @decorators.rol_requerido("administrador")
 def eliminar_relacion_acudiente(request, relacion_id):

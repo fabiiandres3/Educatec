@@ -436,6 +436,109 @@
     @media (max-width: 680px) { .listing-page { padding: 12px 0 28px !important; } .listing-page .page-header { align-items: flex-start; padding: 17px; } .overview-grid { gap: 8px; } .overview-card { min-height: 72px; padding: 12px; gap: 9px; } .overview-icon { flex-basis: 36px; width: 36px; height: 36px; } .overview-value { font-size: 21px; } .listing-filter-bar { align-items: flex-start; flex-direction: column; } .listing-filters { overflow-x: auto; flex-wrap: nowrap; max-width: 100%; } .listing-filter { white-space: nowrap; } }
     @media (max-width: 420px) { .overview-grid { grid-template-columns: 1fr 1fr; } .overview-card:last-child { grid-column: 1 / -1; } }
 
+    /* Espacio de trabajo de tareas: jerarquía visual, superficies suaves y controles claros */
+    .tareas-page { max-width: 1540px; padding: 22px 14px 48px; }
+    .tareas-page .page-header {
+        position: relative; overflow: hidden; align-items: center; min-height: 174px;
+        padding: 30px 34px; margin-bottom: 20px; border: 1px solid #e2e9f5; border-radius: 25px;
+        background: radial-gradient(circle at 92% 8%, rgba(255,255,255,.8), transparent 27%), linear-gradient(115deg,#edf2ff 0%,#f7f8ff 55%,#eff8ff 100%);
+        box-shadow: 0 16px 42px rgba(38,58,98,.07);
+    }
+    .tareas-page .page-header:after { content:""; position:absolute; right:130px; bottom:-105px; width:245px; height:245px; border:1px solid rgba(111,132,220,.12); border-radius:50%; box-shadow:0 0 0 25px rgba(111,132,220,.035),0 0 0 50px rgba(111,132,220,.025); pointer-events:none; }
+    .tareas-page .page-header > div:first-child { position:relative; z-index:1; }
+    .tareas-page .page-title-icon { width:60px; height:60px; border-radius:19px; background:linear-gradient(145deg,#526fe0,#8294ef); box-shadow:0 10px 22px rgba(82,111,224,.25); }
+    .tareas-page .page-title { color:#192842; font-weight:820; }
+    .tareas-page .page-subtitle { color:#728098; font-size:13px; }
+    .tareas-page .overview-grid { gap:15px; margin-bottom:22px; }
+    .tareas-page .overview-card { min-height:96px; padding:19px 21px; border-color:#e8edf4; border-radius:19px; box-shadow:0 8px 22px rgba(30,46,76,.045); transition:transform .2s ease,box-shadow .2s ease; }
+    .tareas-page .overview-card:hover { transform:translateY(-2px); box-shadow:0 13px 27px rgba(30,46,76,.08); }
+    .tareas-page .overview-icon { width:46px; height:46px; flex-basis:46px; border-radius:15px; }
+    .tareas-workspace { overflow:hidden; border:1px solid #e6ebf2; border-radius:21px; background:#fff; box-shadow:0 14px 40px rgba(30,46,76,.06); }
+    .tareas-page .toolbar { padding:19px 21px 15px; margin:0; border-bottom:0; }
+    .tareas-page .search-box { width:min(390px,100%); }
+    .tareas-page .search-box input { height:47px; padding-left:43px; border-color:#e1e7f0; border-radius:13px; background:#f8fafe; color:#283750; font-size:13px; }
+    .tareas-page .search-icon { left:16px; }
+    .tareas-page .btn-create { height:47px; padding:0 19px; border-radius:13px; background:linear-gradient(135deg,#536fe0,#6e85eb); box-shadow:0 8px 18px rgba(83,111,224,.2); }
+    .tareas-page .btn-create:hover { transform:translateY(-1px); background:#435fcf; box-shadow:0 11px 21px rgba(83,111,224,.25); }
+    .tareas-page .listing-filter-bar { padding:0 21px 15px; border-bottom:1px solid #edf0f5; }
+    .tareas-page .listing-filter { padding:9px 13px; border-radius:10px; }
+    .tareas-page .listing-count { color:#8a95a7; font-size:11px; }
+    .tareas-page .table-card { border:0; border-radius:0; box-shadow:none; }
+    .tareas-page .tasks-table { min-width:980px; }
+    .tareas-page .tasks-table thead th { padding:14px 18px; background:#fafbfe; color:#8994a5; font-size:10px; letter-spacing:.09em; }
+    .tareas-page .tasks-table tbody td { padding:16px 18px; border-bottom-color:#f0f2f6; color:#536178; font-size:12px; }
+    .tareas-page .tasks-table tbody tr:last-child td { border-bottom:0; }
+    .tareas-page .tasks-table tbody tr:hover { background:#fafbff; }
+    .tareas-page .task-icon { width:39px; height:39px; border-radius:13px; background:#eff2ff; color:#5c73dc; }
+    .tareas-page .task-name { color:#26344d; font-weight:720; }
+    .tareas-page .badge-course, .tareas-page .badge-status { padding:7px 10px; border-radius:999px; font-size:10px; }
+    .tareas-page .badge-status { background:#eaf8f1; color:#21815a; }
+    .tareas-page .date { display:inline-flex; align-items:center; gap:7px; color:#65728a; }
+    .tareas-page .actions { gap:7px; }
+    .tareas-page .btn-action { width:36px; height:36px; border:1px solid transparent; border-radius:11px; }
+    .tareas-page .btn-action:hover { transform:translateY(-1px); box-shadow:0 5px 12px rgba(31,45,75,.09); }
+    .tareas-page .btn-info-soft { background:#eef5ff; color:#3472ce; }
+    .tareas-page .btn-primary-soft { background:#f0f1ff; color:#5b65cf; }
+    .tareas-page .btn-danger-soft { background:#fff1f1; color:#d3545e; }
+    .tareas-page .empty-state { padding:70px 24px !important; color:#7c899d !important; }
+    .tareas-page .empty-icon { width:68px; height:68px; border-radius:22px; background:#f0f3ff; color:#7485df; }
+    @media (max-width:680px) {
+        .tareas-page { padding:13px 2px 32px !important; }
+        .tareas-page .page-header { min-height:0; padding:22px; border-radius:20px; }
+        .tareas-page .page-header:after { right:-100px; }
+        .tareas-page .toolbar { align-items:stretch; flex-direction:column; padding:15px; }
+        .tareas-page .search-box { width:100%; }
+        .tareas-page .btn-create { justify-content:center; }
+        .tareas-page .listing-filter-bar { padding:0 15px 13px; }
+        .tareas-page .listing-count { display:none; }
+        .tareas-workspace { border-radius:17px; }
+    }
+    /* Presentación en tarjetas para distinguir cada tarea de un listado plano */
+    .tareas-page .page-header {
+        min-height: 190px;
+        border-color: #263d70;
+        background: radial-gradient(circle at 85% 15%,rgba(100,130,225,.42),transparent 29%),linear-gradient(120deg,#111d3a,#1e3260 62%,#263f76);
+        box-shadow: 0 20px 46px rgba(24,42,82,.2);
+    }
+    .tareas-page .page-title, .tareas-page .page-subtitle { color:#fff; }
+    .tareas-page .page-subtitle { color:#c2cce1; }
+    .tareas-page .page-title-icon { background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.18); box-shadow:none; }
+    .tareas-page .page-header:after { border-color:rgba(255,255,255,.12); box-shadow:0 0 0 25px rgba(255,255,255,.04),0 0 0 50px rgba(255,255,255,.025); }
+    .tareas-page .overview-card { min-height:104px; border-radius:20px; }
+    .tareas-page .tasks-table { display:block; min-width:0; }
+    .tareas-page .tasks-table thead { display:none; }
+    .tareas-page .tasks-table tbody { display:grid; gap:11px; padding:15px; }
+    .tareas-page .tasks-table tbody tr.task-row {
+        display:grid; grid-template-columns:minmax(190px,1.7fr) minmax(95px,.8fr) minmax(90px,.75fr) minmax(130px,1.1fr) minmax(110px,.9fr) minmax(100px,.8fr) minmax(78px,.55fr) auto;
+        align-items:center; min-width:0; border:1px solid #e9edf4; border-radius:16px; background:linear-gradient(110deg,#fff,#fcfdff); box-shadow:0 3px 10px rgba(31,48,78,.025); transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+    }
+    .tareas-page .tasks-table tbody tr.task-row:hover { transform:translateY(-1px); border-color:#d9e1f2; background:#fff; box-shadow:0 9px 20px rgba(31,48,78,.07); }
+    .tareas-page .tasks-table tbody td { min-width:0; padding:13px 11px; border:0; font-size:11px; }
+    .tareas-page .tasks-table tbody td:first-child { padding-left:16px; }
+    .tareas-page .task-title { min-width:0; }
+    .tareas-page .task-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .tareas-page .actions { justify-content:flex-end; padding-right:12px; }
+    .tareas-page .tasks-table tbody tr:has(.empty-state) { display:block; border:0; box-shadow:none; }
+    .tareas-page .empty-state { padding:55px 20px !important; }
+    @media (max-width:1050px) {
+        .tareas-page .tasks-table tbody tr.task-row { grid-template-columns:minmax(180px,1.5fr) minmax(90px,.8fr) minmax(90px,.8fr) minmax(120px,1fr) minmax(105px,.9fr) minmax(95px,.8fr) auto; }
+        .tareas-page .tasks-table tbody td:nth-child(4) { display:none; }
+    }
+    @media (max-width:720px) {
+        .tareas-page .tasks-table tbody { padding:11px; }
+        .tareas-page .tasks-table tbody tr.task-row { grid-template-columns:minmax(0,1fr) auto; padding:8px 5px; }
+        .tareas-page .tasks-table tbody td { padding:8px 10px; }
+        .tareas-page .tasks-table tbody td:first-child { grid-column:1; grid-row:1; }
+        .tareas-page .tasks-table tbody td:nth-child(3) { grid-column:1; grid-row:2; }
+        .tareas-page .tasks-table tbody td:nth-child(5),.tareas-page .tasks-table tbody td:nth-child(6),.tareas-page .tasks-table tbody td:nth-child(7) { grid-column:1; }
+        .tareas-page .tasks-table tbody td:nth-child(2) { display:none; }
+        .tareas-page .tasks-table tbody td:nth-child(8) { grid-column:2; grid-row:1 / span 4; }
+        .tareas-page .tasks-table tbody td:nth-child(5)::before { content:"Entrega · "; color:#97a1b0; }
+        .tareas-page .tasks-table tbody td:nth-child(6)::before { content:"Estado · "; color:#97a1b0; }
+        .tareas-page .tasks-table tbody td:nth-child(7)::before { content:"Entregas · "; color:#97a1b0; }
+        .tareas-page .actions { flex-direction:column; padding-right:4px; }
+    }
+
 </style>
 
 
@@ -487,6 +590,8 @@
         <article class="overview-card" style="--accent:#16a34a;--accent-soft:#dcfce7"><span class="overview-icon"><i class="fas fa-circle-check"></i></span><span class="overview-copy"><strong class="overview-value">{{ tareas_activas }}</strong><span class="overview-label">Tareas activas</span></span></article>
         <article class="overview-card" style="--accent:#d97706;--accent-soft:#fef3c7"><span class="overview-icon"><i class="fas fa-circle-pause"></i></span><span class="overview-copy"><strong class="overview-value">{{ tareas_inactivas }}</strong><span class="overview-label">Tareas inactivas</span></span></article>
     </section>
+
+    <div class="tareas-workspace">
 
     <!-- HERRAMIENTAS -->
 
@@ -736,6 +841,8 @@
             </table>
 
         </div>
+
+    </div>
 
     </div>
 

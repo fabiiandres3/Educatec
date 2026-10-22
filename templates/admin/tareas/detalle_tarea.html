@@ -3,7 +3,7 @@
 {% block title %}Detalle de Tarea{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-4 tarea-detail-page">
 
     <!-- TAREA -->
     <div class="card shadow-sm mb-4">
@@ -92,8 +92,10 @@
 
             <div style="max-width: 600px;">
                 <div class="ratio ratio-16x9 mb-4">
-                    <iframe src="https://www.youtube.com/embed/{{ video.video|cut:'https://www.youtube.com/watch?v=' }}"
-                        aFllowfullscreen>
+                    <iframe data-youtube-url="{{ video.video }}"
+                        title="Video de la tarea" loading="lazy" referrerpolicy="origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
                     </iframe>
                 </div>
             </div>
@@ -106,8 +108,7 @@
 
     <!-- PREGUNTAS -->
 
-    <form method="POST">
-        {% csrf_token %}
+    <section class="task-questions">
 
         <div class="card shadow-sm">
 
@@ -129,13 +130,6 @@
                         <h4 class="mb-3">
                             Pregunta {{ forloop.counter }}
                         </h4>
-
-
-                        <!-- DATOS OCULTOS PARA EL SERVICIO -->
-
-                        <input type="hidden" name="pregunta_{{ forloop.counter0 }}" value="{{ pregunta.descripcion }}">
-
-                        <input type="hidden" name="tipo_{{ forloop.counter0 }}" value="{{ pregunta.tipo }}">
 
 
                         <div class="mb-3">
@@ -168,48 +162,15 @@
 
 
 
-                        <!-- RESPUESTA TEXTO -->
-
-                        {% if pregunta.tipo == 'texto' %}
-
-                        {% if not pregunta.respondida %}
-
-                        <div class="mb-3">
-
-                            <label class="form-label fw-bold">
-                                Tu respuesta:
-                            </label>
-
-                            <textarea class="form-control" rows="4" name="respuesta_{{ forloop.counter0 }}"></textarea>
-
-                        </div>
-
-                        {% else %}
-
-                        <div class="alert alert-success">
-                            Ya respondiste esta pregunta.
-                        </div>
-
-                        {% endif %}
-
-                        {% endif %}
-
-
                         <!-- OPCIONES -->
 
                         {% if pregunta.tipo == 'opcion' %}
-
-                        {% if not pregunta.respondida %}
-
                         <div class="opciones-container">
 
                             {% for opcion in pregunta.opciones.all %}
 
                             <label class="opcion-item">
-
-                                <input type="radio" name="opcion_seleccionada_{{ forloop.parentloop.counter0 }}"
-                                    value="{{ opcion.id }}" class="opcion-check">
-
+                                <span class="detail-option-marker" aria-hidden="true"></span>
                                 <span>
                                     {{ opcion.opcion }}
                                 </span>
@@ -219,14 +180,6 @@
                             {% endfor %}
 
                         </div>
-
-                        {% else %}
-
-                        <div class="alert alert-success">
-                            Ya respondiste esta pregunta.
-                        </div>
-
-                        {% endif %}
 
                         {% endif %}
                     </div>
@@ -238,41 +191,64 @@
 
 
 
-                <!-- BOTÓN SUBMIT -->
-
-                <div class="text-end mt-4">
-
-                    <button type="submit" class="btn btn-success">
-                        Enviar respuestas
-                    </button>
-
-                </div>
-
-
             </div>
 
         </div>
-    </form>
+    </section>
 
+    {% if nota != None %}
     <div class="alert alert-info">
         Nota actual:
         <strong>{{ nota }}</strong>
     </div>
+    {% endif %}
 
     <!-- BOTONES -->
     <div class="mt-4">
 
-        <a href="{% url 'editar_tarea' tarea.id %}" class="btn btn-warning">
+        <a href="{% url 'editar_tarea' tarea.id %}" class="btn detail-action detail-action-edit">
+            <i class="fas fa-pen-to-square" aria-hidden="true"></i>
             Editar
         </a>
 
-        <a href="{% url 'listar_tareas' %}" class="btn btn-secondary">
+        <a href="{% url 'listar_tareas' %}" class="btn detail-action detail-action-back">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
             Volver
         </a>
 
     </div>
 
 </div>
+
+<script>
+document.querySelectorAll('[data-youtube-url]').forEach(function (frame) {
+    try {
+        var parsed = new URL(frame.dataset.youtubeUrl);
+        var host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+        var videoId = '';
+        if (host === 'youtu.be') videoId = parsed.pathname.split('/').filter(Boolean)[0] || '';
+        else if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtube-nocookie.com') {
+            if (parsed.pathname === '/watch') videoId = parsed.searchParams.get('v') || '';
+            else videoId = parsed.pathname.match(/^\/(?:embed|shorts)\/([\w-]+)/)?.[1] || '';
+        }
+        if (/^[\w-]{6,}$/.test(videoId)) {
+            frame.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?origin=' + encodeURIComponent(window.location.origin);
+        } else if (parsed.protocol === 'https:' && ['youtube.com', 'm.youtube.com', 'youtu.be', 'youtube-nocookie.com'].includes(host)) {
+            var fallback = document.createElement('a');
+            fallback.className = 'video-unavailable-link';
+            fallback.href = parsed.href;
+            fallback.target = '_blank';
+            fallback.rel = 'noopener noreferrer';
+            fallback.textContent = 'Abrir video en YouTube';
+            frame.closest('.ratio').replaceChildren(fallback);
+        } else {
+            frame.remove();
+        }
+    } catch (error) {
+        frame.remove();
+    }
+});
+</script>
 
 <style>
     .opciones-container {
@@ -310,5 +286,19 @@
     .opcion-item:has(.opcion-check:checked) {
         background: #d8e6dc;
     }
+
+    .tarea-detail-page .video-unavailable-link {
+        display: grid;
+        place-items: center;
+        width: 100%;
+        height: 100%;
+        min-height: 180px;
+        border-radius: 15px;
+        background: #17233d;
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+    }
+    .tarea-detail-page .video-unavailable-link:hover { background: #26385b; color: #fff; }
 </style>
 {% endblock %}

@@ -239,6 +239,7 @@ def Editar_tarea(request, tarea_id):
             "imagenes": tarea.imagenes.all(),
             "archivos": tarea.archivos.all(),
             "videos": tarea.video_set.all(),
+            "video_url_nuevo": request.POST.get("videos", "") if request.method == "POST" else "",
         },
     )
 

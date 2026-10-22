@@ -2,7 +2,7 @@
 
 
 {% block title %}
-Editar Alumno
+Editar alumno
 {% endblock %}
 
 
@@ -378,6 +378,56 @@ Editar Alumno
             width: 100%;
         }
     }
+
+    /* Diseño moderno alineado con la edición de usuarios */
+    .editar-page { max-width: 1120px; padding: 34px clamp(16px, 4vw, 48px) 56px; color: #17243b; }
+    .editar-header {
+        align-items: center; margin-bottom: 28px; padding: 28px 30px;
+        border: 1px solid rgba(219,228,243,.85); border-radius: 24px;
+        background: radial-gradient(circle at 90% 10%, rgba(255,255,255,.75), transparent 34%), linear-gradient(125deg,#eef3ff 0%,#f6f8ff 58%,#f1f8ff 100%);
+        box-shadow: 0 14px 38px rgba(37,59,103,.07);
+    }
+    .editar-header-left { align-items: center; gap: 18px; }
+    .editar-title-icon, .editar-card-icon {
+        width: 54px; height: 54px; border-radius: 18px;
+        background: linear-gradient(145deg,#536fe0,#7a8df0); color: #fff;
+        box-shadow: 0 10px 20px rgba(83,111,224,.23);
+    }
+    .editar-title { color: #17243b; font-size: clamp(25px,3vw,34px); font-weight: 800; letter-spacing: -.045em; }
+    .editar-subtitle { margin-top: 8px; color: #6b7890; font-size: 14px; }
+    .btn-volver, .btn-cancelar {
+        min-height: 43px; padding: 0 16px; border-radius: 12px; border-color: #e1e7f1;
+        background: rgba(255,255,255,.85); color: #52617a; box-shadow: 0 4px 12px rgba(33,47,75,.04);
+    }
+    .editar-card { border: 1px solid #e6ebf3; border-radius: 22px; background: #fff; box-shadow: 0 18px 48px rgba(29,45,76,.08); }
+    .editar-card-header { gap: 15px; padding: 22px 28px; border-bottom-color: #edf0f6; background: linear-gradient(180deg,#fff,#fcfdff); }
+    .editar-card-icon { width: 44px; height: 44px; border-radius: 15px; font-size: 16px; }
+    .editar-card-header h3 { color: #202e47; font-size: 16px; font-weight: 750; }
+    .editar-card-header p { color: #8a95a8; font-size: 12px; }
+    .editar-card-body { padding: 30px; }
+    .form-section { margin: 0 0 26px; padding: 22px; border: 1px solid #edf0f6; border-radius: 17px; background: #fcfdff; }
+    .form-section-title { margin-bottom: 20px; padding-bottom: 13px; border-bottom-color: #e9edf4; }
+    .form-section-title i { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 11px; background: #eef1ff; color: #5b72dc; font-size: 13px; }
+    .form-section-title span { color: #293750; font-size: 14px; font-weight: 750; }
+    .django-form { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 20px; }
+    .django-form p { min-width: 0; margin: 0 0 18px; }
+    .django-form label { margin-bottom: 8px; color: #41506a; font-size: 12px; font-weight: 750; }
+    .django-form input, .django-form select, .django-form textarea { min-height: 48px; padding: 11px 14px; border: 1px solid #e0e6ef; border-radius: 13px; background: #fff; color: #25334c; font-size: 13px; }
+    .django-form input:focus, .django-form select:focus, .django-form textarea:focus { border-color: #8396ed; box-shadow: 0 0 0 4px rgba(99,120,224,.11); }
+    .django-form ul.errorlist { grid-column: 1 / -1; padding: 9px 12px; border-radius: 10px; background: #fff3f2; }
+    .mensaje-container .alert { border: 0; border-radius: 13px; box-shadow: 0 6px 18px rgba(31,50,89,.06); }
+    .editar-separador { margin: 3px 0 22px; background: #edf0f5; }
+    .editar-actions { gap: 12px; }
+    .btn-cancelar, .btn-guardar { min-height: 46px; padding: 0 19px; border-radius: 12px; font-size: 13px; }
+    .btn-guardar { border-color: #536fe0; background: linear-gradient(135deg,#536fe0,#6a82eb); box-shadow: 0 8px 17px rgba(83,111,224,.22); }
+    .btn-guardar:hover { border-color: #435fcf; background: #435fcf; box-shadow: 0 11px 20px rgba(83,111,224,.27); }
+    @media (max-width: 768px) {
+        .editar-header { align-items: flex-start; padding: 22px; }
+        .editar-header-left { align-items: flex-start; }
+        .editar-card-body { padding: 20px; }
+        .form-section { padding: 17px; }
+        .django-form { grid-template-columns: 1fr; }
+    }
 </style>
 
 
@@ -417,9 +467,9 @@ Editar Alumno
         </div>
 
 
-        <a href="{% url 'listar_usuarios' %}" class="btn-volver">
+        <a href="{% url 'listar_alumnos' %}" class="btn-volver">
             <i class="fas fa-arrow-left"></i>
-            Volver a usuarios
+            Volver a alumnos
         </a>
 
 
@@ -586,7 +636,7 @@ Editar Alumno
                 <div class="editar-actions">
 
 
-                    <a href="{% url 'listar_usuarios' %}"
+                    <a href="{% url 'listar_alumnos' %}"
                        class="btn-cancelar">
 
 

@@ -1,276 +1,158 @@
-{% extends 'admin/base_admin.html' %}
+﻿{% extends 'admin/base_admin.html' %}
 
-
-{% block page_title %}Dashboard{% endblock %}
-
+{% block page_title %}Inicio{% endblock %}
 
 {% block content %}
+<style>
+    .dashboard-modern { --ink:#172033; --muted:#768198; --line:#e8edf5; color:var(--ink); }
+    .dashboard-modern * { box-sizing:border-box; }
+    .dashboard-hero { position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:32px 36px; margin-bottom:24px; border:1px solid #e7edfb; border-radius:26px; background:radial-gradient(circle at 90% 10%,rgba(129,164,255,.22),transparent 30%),linear-gradient(120deg,#fff 0%,#f5f8ff 100%); box-shadow:0 14px 40px rgba(31,50,89,.06); }
+    .dashboard-hero:after { content:""; position:absolute; width:190px;height:190px;right:16%;bottom:-145px;border:1px solid rgba(95,125,210,.16);border-radius:50%;box-shadow:0 0 0 24px rgba(95,125,210,.035),0 0 0 50px rgba(95,125,210,.025); }
+    .dashboard-eyebrow { display:inline-flex; align-items:center; gap:8px; margin-bottom:11px; color:#506fe5; font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    .dashboard-eyebrow i { font-size:8px; }
+    .dashboard-hero h1 { margin:0; color:#18243b; font-size:clamp(25px,3vw,34px); font-weight:800; letter-spacing:-.04em; }
+    .dashboard-hero p { max-width:540px; margin:9px 0 0; color:#758198; font-size:14px; line-height:1.65; }
+    .dashboard-hero-link { position:relative;z-index:1;display:inline-flex;align-items:center;gap:10px;padding:12px 17px;border:1px solid #e4eaf5;border-radius:13px;background:#fff;color:#34415c;text-decoration:none;font-size:13px;font-weight:700;box-shadow:0 5px 14px rgba(25,39,70,.05);transition:transform .2s,box-shadow .2s,color .2s;white-space:nowrap; }
+    .dashboard-hero-link:hover { color:#4968df;transform:translateY(-2px);box-shadow:0 10px 22px rgba(25,39,70,.1); }
+    .dashboard-stats { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:26px; }
+    .dashboard-stat { min-width:0;padding:20px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 8px 24px rgba(31,50,89,.045);transition:transform .2s,box-shadow .2s; }
+    .dashboard-stat:hover { transform:translateY(-3px);box-shadow:0 14px 30px rgba(31,50,89,.09); }
+    .dashboard-stat-top { display:flex;align-items:center;justify-content:space-between;gap:12px; }
+    .dashboard-stat-label { color:#7c879c;font-size:12px;font-weight:650; }
+    .dashboard-stat-icon { display:grid;place-items:center;width:39px;height:39px;border-radius:13px;background:var(--tint);color:var(--accent);font-size:15px; }
+    .dashboard-stat-value { margin-top:14px;color:#202c43;font-size:29px;font-weight:800;line-height:1;letter-spacing:-.04em; }
+    .dashboard-stat-note { margin-top:8px;color:#9aa3b3;font-size:11px; }
+    .dashboard-section { overflow:hidden;margin-bottom:23px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 9px 30px rgba(31,50,89,.05); }
+    .dashboard-section-head { display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 25px;border-bottom:1px solid #edf0f6; }
+    .dashboard-section-heading { display:flex;align-items:center;gap:13px;min-width:0; }
+    .dashboard-section-icon { display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:14px;background:#edf2ff;color:#5672e8; }
+    .dashboard-section-head h2 { margin:0;color:#202b41;font-size:15px;font-weight:800; }
+    .dashboard-section-head p { margin:4px 0 0;color:#8b95a8;font-size:12px; }
+    .dashboard-pill { display:inline-flex;align-items:center;gap:7px;white-space:nowrap;padding:8px 11px;border-radius:999px;background:#f0f4ff;color:#526fe0;font-size:11px;font-weight:750; }
+    .dashboard-pill i { font-size:9px; }
+    .dashboard-search { position:relative;flex:0 1 260px; }
+    .dashboard-search i { position:absolute;top:50%;left:13px;transform:translateY(-50%);color:#9aa4b6;font-size:12px; }
+    .dashboard-search input { width:100%;height:39px;padding:0 13px 0 35px;border:1px solid #e5eaf2;border-radius:12px;background:#fbfcfe;color:#253149;font-size:12px;outline:none;transition:border-color .2s,box-shadow .2s; }
+    .dashboard-search input:focus { border-color:#9aabf7;box-shadow:0 0 0 3px rgba(86,114,232,.1); }
+    .pending-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr));gap:13px;padding:18px; }
+    .pending-card { min-width:0;padding:17px;border:1px solid #edf0f6;border-radius:17px;background:linear-gradient(145deg,#fff,#fbfcff);transition:border-color .2s,transform .2s,box-shadow .2s; }
+    .pending-card:hover { transform:translateY(-2px);border-color:#dce4ff;box-shadow:0 9px 22px rgba(40,60,110,.07); }
+    .pending-user { display:flex;align-items:center;gap:11px;min-width:0; }
+    .pending-avatar { display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:15px;background:linear-gradient(145deg,#e7edff,#f0edff);color:#5b69c9;font-size:13px;font-weight:800; }
+    .pending-user-copy { min-width:0; }
+    .pending-user-copy strong { display:block;overflow:hidden;color:#29354c;font-size:13px;text-overflow:ellipsis;white-space:nowrap; }
+    .pending-user-copy span { display:block;overflow:hidden;margin-top:4px;color:#8c96a8;font-size:11px;text-overflow:ellipsis;white-space:nowrap; }
+    .pending-user-date { margin-left:auto;color:#9aa3b3;font-size:10px;white-space:nowrap; }
+    .pending-email { overflow:hidden;margin:13px 0 14px;padding:10px 11px;border-radius:10px;background:#f7f8fb;color:#69758b;font-size:11px;text-overflow:ellipsis;white-space:nowrap; }
+    .pending-email i { margin-right:7px;color:#98a3b6; }
+    .pending-form { display:flex;gap:9px; }
+    .pending-form select { flex:1;min-width:0;height:39px;padding:0 11px;border:1px solid #e4e9f1;border-radius:11px;background:#fff;color:#34415a;font-size:12px; }
+    .pending-form button { display:inline-flex;align-items:center;justify-content:center;gap:7px;height:39px;padding:0 14px;border:0;border-radius:11px;background:#526fe0;color:#fff;font-size:11px;font-weight:750;box-shadow:0 5px 12px rgba(82,111,224,.2);transition:background .2s,transform .2s; }
+    .pending-form button:hover { transform:translateY(-1px);background:#405bd0; }
+    .dashboard-empty { grid-column:1/-1;padding:34px 16px;text-align:center;color:#8d98aa;font-size:13px; }
+    .dashboard-empty i { display:block;margin-bottom:10px;color:#a7b5ec;font-size:23px; }
+    .recent-table-wrap { overflow-x:auto; }
+    .recent-table { width:100%;min-width:680px;border-collapse:collapse; }
+    .recent-table th { padding:12px 20px;background:#fafbfe;color:#99a2b2;text-align:left;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase; }
+    .recent-table td { padding:14px 20px;border-top:1px solid #f0f2f6;color:#667187;font-size:12px; }
+    .recent-table tbody tr { transition:background .15s; }
+    .recent-table tbody tr:hover { background:#fafbff; }
+    .recent-user { display:flex;align-items:center;gap:10px;color:#354158;font-weight:700; }
+    .recent-avatar { display:grid;place-items:center;flex:0 0 33px;width:33px;height:33px;border-radius:12px;background:#eff2fa;color:#6473b8;font-size:11px;font-weight:800; }
+    .recent-email { max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .recent-status { display:inline-flex;align-items:center;gap:6px;white-space:nowrap; }
+    .recent-status:before { content:"";width:7px;height:7px;border-radius:50%;background:#31bd83; }
+    .recent-status.is-inactive:before { background:#ef7878; }
+    .recent-role { display:inline-flex;padding:5px 9px;border-radius:999px;background:#f0f3fa;color:#64718a;font-size:10px;font-weight:750; }
+    .recent-link { display:inline-flex;align-items:center;gap:7px;color:#526fe0;text-decoration:none;font-size:11px;font-weight:750;white-space:nowrap; }
+    .recent-link:hover { color:#344fc1; }
+    .dashboard-modern .alert { border:0;border-radius:13px;box-shadow:0 5px 14px rgba(31,50,89,.05); }
+    @media(max-width:1000px) { .dashboard-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:640px) { .dashboard-hero{align-items:flex-start;flex-direction:column;padding:25px 22px;border-radius:21px}.dashboard-hero-link{white-space:normal}.dashboard-stats{gap:10px}.dashboard-stat{padding:15px;border-radius:16px}.dashboard-stat-value{font-size:25px}.dashboard-section-head{align-items:flex-start;flex-wrap:wrap;padding:18px}.dashboard-search{flex-basis:100%;max-width:none}.pending-grid{padding:12px}.pending-card{padding:14px}.pending-user-date{display:none} }
+</style>
 
+<div class="dashboard-modern">
+    {% if messages %}
+        {% for message in messages %}{% if "Bienvenido," not in message %}<div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>{% endif %}{% endfor %}
+    {% endif %}
 
-<!-- STATS -->
-<div class="row g-4 mb-4">
-
-
-    <div class="col-md-4 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(254, 254, 254, 0.15);">
-                <i class="fas fa-user-graduate" style="color:#38bdf8;"></i>
-            </div>
-            <div class="stat-value">{{ total_alumnoss }}</div>
-            <div class="stat-label">alumnos</div>
+    <section class="dashboard-hero">
+        <div>
+            <span class="dashboard-eyebrow"><i class="fas fa-circle"></i> Panel de administración</span>
+            <h1>¡Hola, {{ request.user.first_name|default:request.user.username }}!</h1>
+            <p>Este es el resumen de la plataforma. Revisa la actividad de las cuentas y gestiona los nuevos usuarios desde un solo lugar.</p>
         </div>
-    </div>
+        <a class="dashboard-hero-link" href="{% url 'listar_usuarios' %}"><i class="fas fa-users"></i> Administrar usuarios <i class="fas fa-arrow-right"></i></a>
+    </section>
 
+    <section class="dashboard-stats" aria-label="Resumen de usuarios">
+        <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Cuentas registradas</span><span class="dashboard-stat-icon" style="--accent:#5571df;--tint:#eef1ff"><i class="fas fa-users"></i></span></div><div class="dashboard-stat-value">{{ total_usuarios }}</div><div class="dashboard-stat-note">Total de cuentas en la plataforma</div></article>
+        <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Pendientes de rol</span><span class="dashboard-stat-icon" style="--accent:#e19a36;--tint:#fff5e7"><i class="fas fa-user-clock"></i></span></div><div class="dashboard-stat-value">{{ total_pendientes_rol }}</div><div class="dashboard-stat-note">Requieren revisión del administrador</div></article>
+        <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Cuentas activas</span><span class="dashboard-stat-icon" style="--accent:#26a879;--tint:#e9f8f1"><i class="fas fa-user-check"></i></span></div><div class="dashboard-stat-value">{{ total_usuarios_activos }}</div><div class="dashboard-stat-note">Pueden acceder a Educatec</div></article>
+        <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Nuevos esta semana</span><span class="dashboard-stat-icon" style="--accent:#9870d5;--tint:#f3edfc"><i class="fas fa-chart-line"></i></span></div><div class="dashboard-stat-value">{{ total_usuarios_semana }}</div><div class="dashboard-stat-note">Registros de los últimos siete días</div></article>
+    </section>
 
-    <div class="col-md-4 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(168,85,247,.15);">
-                <i class="fas fa-chalkboard-teacher" style="color:#a855f7;"></i>
-            </div>
-            <div class="stat-value">{{ total_docentees }}</div>
-            <div class="stat-label">docentes</div>
-        </div>
-    </div>
-
-
-    <div class="col-md-4 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(251,191,36,.15);">
-                <i class="fas fa-tasks" style="color:#fbbf24;"></i>
-            </div>
-            <div class="stat-value">{{ total_tareas }}</div>
-            <div class="stat-label">Tareas</div>
-        </div>
-    </div>
-
-
-    <div class="col-md-6 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(34,197,94,.15);">
-                <i class="fas fa-book" style="color:#22c55e;"></i>
-            </div>
-            <div class="stat-value">{{ total_cursos }}</div>
-            <div class="stat-label">Cursos</div>
-        </div>
-    </div>
-
-
-    <div class="col-md-6 col-lg-2-4">
-        <div class="stat-card">
-            <div class="stat-icon" style="background:rgba(239,68,68,.15);">
-                <i class="fas fa-atom" style="color:#ef4444;"></i>
-            </div>
-            <div class="stat-value">{{ total_materias }}</div>
-            <div class="stat-label">Materias</div>
-        </div>
-    </div>
-
-
-</div>
-
-
-
-
-<!-- USUARIOS RECIENTES -->
-<div class="admin-table">
-
-
-    <div class="admin-table-header">
-
-
-        <h6>
-            <i class="fas fa-clock me-2" style="color:#38bdf8;"></i>
-            Usuarios Recientes
-        </h6>
-
-
-        <a href="{#}"
-           style="color:#38bdf8; font-size:13px; text-decoration:none;">
-            Ver todos
-            <i class="fas fa-arrow-right ms-1"></i>
-        </a>
-
-
-    </div>
-
-
-
-
-    <table class="table table-dark-custom">
-
-
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Fecha registro</th>
-            </tr>
-        </thead>
-
-
-        <tbody>
-
-
-            {% for u in usuarios_recientes %}
-
-
-            <tr>
-
-
-                <!-- USUARIO -->
-                <td>
-
-
-                    <div style="display:flex; align-items:center; gap:10px;">
-
-
-                        <div class="avatar-admin"
-                             style="width:32px;height:32px;font-size:12px;">
-                            {{ u.documento|default:"?"|first|upper }}
-                        </div>
-
-
-                        {{ u.documento|default:"—" }}
-
-
+    <section class="dashboard-section" aria-labelledby="nuevosUsuariosTitulo">
+        <header class="dashboard-section-head">
+            <div class="dashboard-section-heading"><span class="dashboard-section-icon"><i class="fas fa-user-plus"></i></span><div><h2 id="nuevosUsuariosTitulo">Nuevos usuarios</h2><p>Asigna un rol a las cuentas recién registradas.</p></div><span class="dashboard-pill"><i class="fas fa-circle"></i>{{ total_pendientes_rol }} pendientes</span></div>
+            <label class="dashboard-search"><i class="fas fa-search"></i><input id="buscarPendientes" type="search" placeholder="Buscar por nombre o correo…" autocomplete="off" aria-label="Buscar nuevos usuarios"></label>
+        </header>
+        <div class="pending-grid" id="listaPendientes">
+            {% for usuario_nuevo in usuarios_pendientes_rol %}
+                <article class="pending-card" data-pending-user>
+                    <div class="pending-user">
+                        <span class="pending-avatar">{{ usuario_nuevo.first_name|default:usuario_nuevo.username|first|upper }}{{ usuario_nuevo.last_name|default:""|first|upper }}</span>
+                        <div class="pending-user-copy"><strong>{{ usuario_nuevo.get_full_name|default:usuario_nuevo.username }}</strong><span>@{{ usuario_nuevo.username }}</span></div>
+                        <time class="pending-user-date">{{ usuario_nuevo.date_joined|date:"d/m/Y" }}</time>
                     </div>
-
-
-                </td>
-
-
-
-
-                <!-- EMAIL -->
-                <td style="color:#64748b;">
-                    {{ u.email|default:"—" }}
-                </td>
-
-
-
-
-                <!-- ROL -->
-                <td>
-
-
-                    {% if u.is_superuser %}
-
-
-                        <span class="badge-rol badge-admin">
-                            Admin
-                        </span>
-
-
-                    {% elif u.rol %}
-
-
-                        <span class="badge-rol
-                            {% if u.rol.nombre|lower == 'docente' %}
-                                badge-docente
-                            {% elif u.rol.nombre|lower == 'alumnos' %}
-                                badge-alumno
-                            {% else %}
-                                badge-usuario
-                            {% endif %}">
-
-
-                            {{ u.rol.nombre }}
-
-
-                        </span>
-
-
-                    {% else %}
-
-
-                        <span class="badge-rol badge-usuario">
-                            Sin rol
-                        </span>
-
-
-                    {% endif %}
-
-
-                </td>
-
-
-
-
-                <!-- ESTADO -->
-                <td>
-
-
-                    {% if u.is_active %}
-
-
-                        <span style="color:#22c55e; font-size:13px;">
-                            <i class="fas fa-circle"
-                               style="font-size:8px;"></i>
-                            Activo
-                        </span>
-
-
-                    {% else %}
-
-
-                        <span style="color:#ef4444; font-size:13px;">
-                            <i class="fas fa-circle"
-                               style="font-size:8px;"></i>
-                            Inactivo
-                        </span>
-
-
-                    {% endif %}
-
-
-                </td>
-
-
-
-
-                <!-- FECHA -->
-                <td style="color:#64748b;">
-                    {{ u.date_joined|date:"d/m/Y" }}
-                </td>
-
-
-            </tr>
-
-
-
-
-            {% empty %}
-
-
-            <tr>
-
-
-                <td colspan="5"
-                    class="text-center"
-                    style="color:#475569; padding:40px;">
-
-
-                    No hay usuarios registrados
-
-
-                </td>
-
-
-            </tr>
-
-
-            {% endfor %}
-
-
-        </tbody>
-
-
-    </table>
-
-
+                    <div class="pending-email"><i class="far fa-envelope"></i>{{ usuario_nuevo.email|default:"Sin correo registrado" }}</div>
+                    <form method="post" class="pending-form">
+                        {% csrf_token %}<input type="hidden" name="accion" value="asignar_rol"><input type="hidden" name="usuario_id" value="{{ usuario_nuevo.id }}">
+                        <select name="rol_id" aria-label="Rol para {{ usuario_nuevo.get_full_name|default:usuario_nuevo.username }}" required>{% for rol in roles_disponibles %}<option value="{{ rol.id }}" {% if rol.id == usuario_nuevo.rol_id %}selected{% endif %}>{{ rol.nombre|title }}</option>{% endfor %}</select>
+                        <button type="submit"><i class="fas fa-check"></i> Asignar rol</button>
+                    </form>
+                </article>
+            {% empty %}<div class="dashboard-empty"><i class="fas fa-check-circle"></i>Todo está al día. No hay cuentas pendientes de asignar.</div>{% endfor %}
+            <div class="dashboard-empty" id="sinResultadosPendientes" hidden><i class="fas fa-search"></i>No encontramos usuarios con esa búsqueda.</div>
+        </div>
+    </section>
+
+    <section class="dashboard-section" aria-labelledby="usuariosRecientesTitulo">
+        <header class="dashboard-section-head">
+            <div class="dashboard-section-heading"><span class="dashboard-section-icon"><i class="fas fa-clock"></i></span><div><h2 id="usuariosRecientesTitulo">Actividad reciente</h2><p>Cuentas registradas en los últimos 15 días.</p></div></div>
+            <label class="dashboard-search"><i class="fas fa-search"></i><input id="buscarRecientes" type="search" placeholder="Buscar usuario…" autocomplete="off" aria-label="Buscar usuarios recientes"></label>
+            <a class="recent-link" href="{% url 'listar_usuarios' %}">Ver todos <i class="fas fa-arrow-right"></i></a>
+        </header>
+        <div class="recent-table-wrap"><table class="recent-table"><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Registro</th></tr></thead><tbody id="tablaRecientes">
+            {% for u in usuarios_recientes %}
+                <tr data-recent-user><td><div class="recent-user"><span class="recent-avatar">{{ u.documento|default:u.username|first|upper }}</span>{{ u.get_full_name|default:u.documento|default:u.username }}</div></td><td class="recent-email">{{ u.email|default:"—" }}</td><td><span class="recent-role">{% if u.is_superuser %}Administrador{% elif u.rol %}{{ u.rol.nombre|title }}{% else %}Sin rol{% endif %}</span></td><td><span class="recent-status {% if not u.is_active %}is-inactive{% endif %}">{% if u.is_active %}Activa{% else %}Inactiva{% endif %}</span></td><td>{{ u.date_joined|date:"d/m/Y" }}</td></tr>
+            {% empty %}<tr><td colspan="5" class="dashboard-empty">No hay cuentas registradas en los últimos 15 días.</td></tr>{% endfor %}
+            <tr id="sinResultadosRecientes" hidden><td colspan="5" class="dashboard-empty">No encontramos usuarios con esa búsqueda.</td></tr>
+        </tbody></table></div>
+    </section>
 </div>
 
-
+<script>
+(function () {
+    function activarBusqueda(inputId, selector, emptyId, readContainer) {
+        var input = document.getElementById(inputId);
+        var empty = document.getElementById(emptyId);
+        var container = document.getElementById(readContainer);
+        if (!input || !container) return;
+        input.addEventListener('input', function () {
+            var query = input.value.trim().toLocaleLowerCase();
+            var items = container.querySelectorAll(selector);
+            var visible = 0;
+            items.forEach(function (item) {
+                var matches = item.textContent.toLocaleLowerCase().includes(query);
+                item.hidden = !matches;
+                if (matches) visible += 1;
+            });
+            if (empty) empty.hidden = visible !== 0 || query.length === 0;
+        });
+    }
+    activarBusqueda('buscarPendientes', '[data-pending-user]', 'sinResultadosPendientes', 'listaPendientes');
+    activarBusqueda('buscarRecientes', '[data-recent-user]', 'sinResultadosRecientes', 'tablaRecientes');
+})();
+</script>
 {% endblock %}

@@ -46,10 +46,25 @@
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
 
     {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/tareas/tareas_modern_suite.css' %}?v=20261022">
 {% include "partials/page_transition_assets.html" %}
+<style>
+.nav-toggle-button { display:none; }
+.nav-menu-overlay { display:none; }
+@media (max-width:768px) {
+  .nav-toggle-button { position:fixed; top:14px; left:14px; z-index:1200; display:grid; place-items:center; width:44px; height:44px; border:1px solid #334155; border-radius:12px; background:#081b3a; color:#fff; font-size:19px; box-shadow:0 6px 18px rgba(15,23,42,.22); cursor:pointer; }
+  .nav-toggle-button:hover { background:#006eff; }
+  .nav-menu-overlay { position:fixed; inset:0; z-index:1090; background:rgba(15,23,42,.48); }
+  body.nav-open .nav-menu-overlay { display:block; }
+  .sidebar { position:fixed; inset:0 auto 0 0; z-index:1100; width:min(280px,85vw); height:100dvh; overflow-y:auto; transform:translateX(-100%); transition:transform .25s ease; }
+  .sidebar.is-open { transform:translateX(0); }
+  .content { min-width:0; }
+}
+</style>
 </head>
 
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
+<button type="button" class="nav-toggle-button" aria-label="Abrir menú de navegación" aria-controls="panel-navigation" aria-expanded="false"><i class="fas fa-bars" aria-hidden="true"></i></button><div class="nav-menu-overlay" aria-hidden="true"></div>
 
 <div class="wrapper">
 
@@ -57,7 +72,7 @@
     <!-- SIDEBAR -->
     <!-- ========================================= -->
 
-    <aside class="sidebar">
+    <aside id="panel-navigation" class="sidebar">
 
         <!-- LOGO -->
         <div class="logo">
@@ -195,6 +210,8 @@
 
 {% block extra_js %}{% endblock %}
 
+<script src="{% static 'js/paneles/nav_toggle.js' %}"></script>
+{% include 'paneles/partials/soporte_flotante.html' %}
 </body>
 
 </html>

@@ -1,6 +1,7 @@
-from django.contrib import admin
+﻿from django.contrib import admin
 from django.urls import path, include
 from apps.alumnos import views as alumnos_views
+from apps.user import views as user_views
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -9,6 +10,12 @@ from django.conf.urls.static import static
 urlpatterns = [
 
     # Rutas del panel propio antes de Django Admin, que captura el prefijo /admin/.
+    path("admin/notificaciones-correo/", user_views.notificaciones_correo_admin, name="notificaciones_correo_admin"),
+    path(
+        "admin/acudientes/relacion/<int:relacion_id>/editar/",
+        alumnos_views.editar_relacion_acudiente,
+        name="editar_relacion_acudiente",
+    ),
     path(
         "admin/acudientes/relacion/<int:relacion_id>/eliminar/",
         alumnos_views.eliminar_relacion_acudiente,

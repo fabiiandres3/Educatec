@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="{% static 'css/paneles/notificaciones_toast.css' %}">
     <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
     {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/tareas/tareas_modern_suite.css' %}?v=20261022-video1">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -129,6 +131,7 @@
         /* MAIN */
         .main-content {
             margin-left: 220px;
+            transition: margin-left .22s ease;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -311,11 +314,96 @@
         }
     </style>
 {% include "partials/page_transition_assets.html" %}
+<style>
+.sidebar { transition: width .32s cubic-bezier(.22,1,.36,1); }
+.main-content { transition: margin-left .32s cubic-bezier(.22,1,.36,1); }
+.sidebar-brand, .sidebar-nav, .sidebar-footer, .sidebar-account { transition: padding .32s cubic-bezier(.22,1,.36,1); }
+.nav-link-admin { transition: color .2s ease, background-color .2s ease, border-color .2s ease, padding .32s cubic-bezier(.22,1,.36,1), gap .32s cubic-bezier(.22,1,.36,1); }
+@media (max-width:768px) {
+  .sidebar { transition: transform .32s cubic-bezier(.22,1,.36,1), width .32s cubic-bezier(.22,1,.36,1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar, .main-content, .sidebar-brand, .sidebar-nav, .sidebar-footer, .sidebar-account, .nav-link-admin { transition-duration: .01ms !important; }
+}
+.nav-toggle-button { display:grid; place-items:center; flex:0 0 40px; width:40px; height:40px; border:1px solid #475569; border-radius:11px; background:#0f172a; color:#e2e8f0; font-size:16px; cursor:pointer; transition:background .18s ease,color .18s ease; }
+.nav-toggle-button:hover { background:#334155; color:#7dd3fc; }
+body.sidebar-collapsed .sidebar { width:76px; }
+body.sidebar-collapsed .main-content { margin-left:76px; }
+body.sidebar-collapsed .sidebar-brand { padding:28px 24px; }
+body.sidebar-collapsed .sidebar-brand h4 { overflow:hidden; color:transparent; white-space:nowrap; }
+body.sidebar-collapsed .sidebar-brand h4 i { color:#38bdf8; }
+body.sidebar-collapsed .sidebar-brand span, body.sidebar-collapsed .sidebar-account-details { display:none; }
+body.sidebar-collapsed .nav-section { color:transparent; }
+body.sidebar-collapsed .sidebar .nav-link-admin, body.sidebar-collapsed .sidebar .nav-link-admin.active { color:transparent; }
+body.sidebar-collapsed .nav-link-admin { justify-content:flex-start; gap:12px; overflow:hidden; padding:11px 18px; color:transparent; font-size:14px; white-space:nowrap; }
+body.sidebar-collapsed .nav-link-admin i { flex:0 0 18px; width:18px; color:#94a3b8; font-size:15px; }
+body.sidebar-collapsed .nav-link-admin:hover i { color:#38bdf8; }
+body.sidebar-collapsed .nav-link-admin.active i { color:#7dd3fc; }
+body.sidebar-collapsed .sidebar-footer { padding:20px 24px; }
+body.sidebar-collapsed .sidebar-footer a { justify-content:flex-start; gap:10px; overflow:hidden; color:transparent; font-size:14px; white-space:nowrap; }
+body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-size:16px; }
+.admin-email-notification { position:relative; flex:0 0 auto; }
+.admin-email-button { position:relative; display:grid; place-items:center; width:42px; height:42px; border:1px solid #3a4960; border-radius:14px; background:linear-gradient(145deg,#17263b,#111c2f); color:#d5e0f1; font-size:16px; cursor:pointer; transition:transform .2s,border-color .2s,background .2s,box-shadow .2s; }
+.admin-email-button:hover, .admin-email-button[aria-expanded="true"] { transform:translateY(-1px);border-color:#60a5fa;background:#1c3550;color:#93c5fd;box-shadow:0 7px 18px rgba(2,8,23,.2); }
+.admin-email-count { position:absolute; top:-6px; right:-7px; display:grid; min-width:19px; height:19px; padding:0 5px; place-items:center; border:2px solid #101a2a; border-radius:999px; background:#f05c70; color:#fff; font-size:9px; font-weight:800;box-shadow:0 2px 7px rgba(240,92,112,.35); }
+.admin-email-count[hidden], .admin-email-panel[hidden] { display:none !important; }
+.admin-email-panel { position:absolute; z-index:1300; top:calc(100% + 13px); right:-55px; width:min(430px,calc(100vw - 28px)); overflow:hidden; border:1px solid #e7ebf2; border-radius:23px; background:#fff;box-shadow:0 24px 70px rgba(11,24,48,.25);color:#19263c;transform-origin:top right;animation:adminInboxIn .2s cubic-bezier(.2,.8,.2,1); }
+@keyframes adminInboxIn { from { opacity:0;transform:translateY(-7px) scale(.98) } to { opacity:1;transform:translateY(0) scale(1) } }
+.admin-email-panel > header { display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:21px 21px 17px;border-bottom:1px solid #eef1f6;background:radial-gradient(circle at 100% 0,rgba(105,139,255,.11),transparent 40%),#fff; }
+.admin-email-brand { display:flex;align-items:center;gap:13px;min-width:0; }
+.admin-email-brand-icon { display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:16px;background:linear-gradient(145deg,#eaf0ff,#f0edff);color:#5872df;font-size:17px; }
+.admin-email-title-copy { display:grid;gap:5px;min-width:0;text-align:left; }
+.admin-email-title-copy strong { color:#1d2940;font-size:15px;font-weight:800;letter-spacing:-.02em; }
+.admin-email-title-copy small { display:flex;align-items:center;gap:6px;color:#8490a3;font-size:11px; }
+.admin-email-title-copy small:before { content:"";width:7px;height:7px;border-radius:50%;background:#aab4c3; }
+.admin-email-title-copy small.is-connected:before { background:#36b77f;box-shadow:0 0 0 3px #e8f8f0; }
+.admin-email-title-copy small.is-error:before { background:#ef7078;box-shadow:0 0 0 3px #fff0f0; }
+.admin-email-controls { display:flex;gap:6px; }
+.admin-email-controls button { display:grid;place-items:center;width:32px;height:32px;border:1px solid #edf0f5;border-radius:10px;background:#fff;color:#7d899d;cursor:pointer;transition:background .18s,color .18s,transform .18s; }
+.admin-email-controls button:hover { transform:translateY(-1px);background:#f3f6ff;color:#536fda; }
+.admin-email-refresh.is-loading i { animation:adminInboxSpin .8s linear infinite; }
+@keyframes adminInboxSpin { to { transform:rotate(360deg) } }
+.admin-email-summary { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 21px;background:#fafbfe;color:#77849a;font-size:11px; }
+.admin-email-summary strong { color:#516ed9;font-size:11px; }
+.admin-email-list { max-height:min(430px,58vh);overflow:auto;overscroll-behavior:contain; }
+.admin-email-item { position:relative;display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;padding:16px 21px;border-bottom:1px solid #f0f2f6;text-align:left;transition:background .18s; }
+.admin-email-item:hover { background:#f9faff; }
+.admin-email-sender-avatar { display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:linear-gradient(145deg,#edf2ff,#f3efff);color:#6474c6;font-size:12px;font-weight:800; }
+.admin-email-item-copy { min-width:0; }
+.admin-email-item-top { display:flex;align-items:center;justify-content:space-between;gap:8px;margin:1px 0 6px; }
+.admin-email-item span.admin-email-sender { overflow:hidden;color:#4a5870;font-size:11px;font-weight:700;text-overflow:ellipsis;white-space:nowrap; }
+.admin-email-item time { flex:0 0 auto;color:#9aa4b4;font-size:9px;white-space:nowrap; }
+.admin-email-item strong { display:block;overflow:hidden;color:#202c43;font-size:12px;font-weight:750;text-overflow:ellipsis;white-space:nowrap; }
+.admin-email-item-note { margin-top:6px;color:#8c97a9;font-size:10px; }
+.admin-email-empty { display:grid;justify-items:center;gap:8px;margin:0;padding:38px 24px;color:#8490a3;font-size:12px;line-height:1.5;text-align:center; }
+.admin-email-empty i { display:grid;place-items:center;width:48px;height:48px;border-radius:17px;background:#f1f4ff;color:#7386e2;font-size:19px; }
+.admin-email-open { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 21px;background:#fff;color:#536fda;font-size:11px;font-weight:750;text-decoration:none;transition:background .18s; }
+.admin-email-open:hover { background:#f7f8ff;color:#3f5cc8; }
+.admin-email-open span { display:flex;align-items:center;gap:9px; }
+.admin-email-open-icon { display:grid;place-items:center;width:27px;height:27px;border-radius:9px;background:#f0f3ff; }
+.topbar-user-name { color:#f1f5f9; font-weight:600; }
+.topbar-user-role { color:#94a3b8; font-size:11px; line-height:1.2; }
+.topbar-user-copy { display:grid; gap:2px; }
+.nav-menu-overlay { display:none; }
+@media (max-width:768px) {
+  .topbar { padding-left:68px; }
+  body.sidebar-collapsed .sidebar { z-index:1100; width:76px; transform:translateX(0); }
+  body.sidebar-collapsed .main-content { margin-left:76px; }
+  .admin-email-panel { right:auto; left:0; width:min(430px,calc(100vw - 88px)); }
+  .nav-toggle-button { position:fixed; top:14px; left:14px; z-index:1200; width:44px; height:44px; background:#1e293b; color:#f8fafc; font-size:19px; box-shadow:0 6px 18px rgba(15,23,42,.22); }
+  .nav-toggle-button:hover { background:#334155; color:#7dd3fc; }
+  .nav-menu-overlay { position:fixed; inset:0; z-index:1090; background:rgba(15,23,42,.48); }
+  body.nav-open .nav-menu-overlay { display:block; }
+  .sidebar { z-index:1100; transition:transform .25s ease; }
+  .sidebar.is-open { transform:translateX(0); }
+}
+</style>
 </head>
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
+<div class="nav-menu-overlay" aria-hidden="true"></div>
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside id="panel-navigation" class="sidebar">
     <div class="sidebar-brand">
         <h4><i class="fas fa-graduation-cap me-2"></i>Educatec</h4>
         <span>Panel Administrador</span>
@@ -340,6 +428,8 @@
         <a href="{% url 'listar_docentes' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_docentes' %}active{% endif %}">
             <i class="fas fa-chalkboard-user"></i> Docentes
         </a>
+        <div class="nav-section mt-3">Procesos</div>
+
         <a href="{% url 'listar_tareas' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_tareas' %}active{% endif %}">
             <i class="fas fa-clipboard-list"></i> Tareas
         </a>
@@ -395,11 +485,37 @@
     <div class="topbar">
         <h5>{% block page_title %}Dashboard{% endblock %}</h5>
         <div class="topbar-user">
-            {% if request.user.documento %}
+            {% if request.user.is_authenticated %}
+            {% if request.user.rol.nombre|lower == "administrador" %}
+            <div class="admin-email-notification">
+                <button type="button" class="admin-email-button" id="adminEmailButton" data-inbox-url="{% url 'notificaciones_correo_admin' %}" aria-label="Consultar correos de soporte" aria-expanded="false" aria-controls="adminEmailPanel" title="Correos de soporte">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    <span class="admin-email-count" id="adminEmailCount" aria-live="polite" hidden></span>
+                </button>
+                <section class="admin-email-panel" id="adminEmailPanel" aria-labelledby="adminEmailTitle" hidden>
+                    <header>
+                        <div class="admin-email-brand">
+                            <span class="admin-email-brand-icon"><i class="fas fa-headset" aria-hidden="true"></i></span>
+                            <span class="admin-email-title-copy"><strong id="adminEmailTitle">Bandeja de soporte</strong><small id="adminEmailStatus" aria-live="polite">Conectando con Gmail…</small></span>
+                        </div>
+                        <div class="admin-email-controls">
+                            <button type="button" class="admin-email-refresh" id="adminEmailRefresh" aria-label="Actualizar bandeja" title="Actualizar"><i class="fas fa-rotate-right"></i></button>
+                            <button type="button" id="adminEmailClose" aria-label="Cerrar bandeja" title="Cerrar"><i class="fas fa-xmark"></i></button>
+                        </div>
+                    </header>
+                    <div class="admin-email-summary"><span>Mensajes de soporte sin leer</span><strong id="adminEmailSummaryCount">Consultando…</strong></div>
+                    <div class="admin-email-list" id="adminEmailList" aria-live="polite"><p class="admin-email-empty"><i class="fas fa-envelope-open-text"></i>Estamos buscando mensajes nuevos…</p></div>
+                    <a class="admin-email-open" id="adminEmailOpenGmail" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true"><span><span class="admin-email-open-icon"><i class="fas fa-inbox"></i></span>Abrir la bandeja en Gmail</span><i class="fas fa-arrow-up-right-from-square"></i></a>
+                </section>
+            </div>
+            {% endif %}
+            {% endif %}
+            <button type="button" class="nav-toggle-button" aria-label="Contraer menú de navegación" aria-controls="panel-navigation" aria-expanded="true" title="Contraer o expandir menú" onclick="window.toggleAdminSidebar && window.toggleAdminSidebar()"><i class="fas fa-bars" aria-hidden="true"></i></button>
+            {% if request.user.documento or request.user.first_name or request.user.username %}
                 <div class="avatar-admin">
-                    {{ request.user.documento|first|upper }}
+                    {{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}
                 </div>
-                <span>{{ request.user.documento }}</span>
+                <span class="topbar-user-copy"><span class="topbar-user-name">{{ request.user.get_full_name|default:request.user.documento }}</span><span class="topbar-user-role">{{ request.user.rol.nombre|default:"Usuario"|title }}</span></span>
             {% endif %}
         </div>
     </div>
@@ -418,5 +534,7 @@
 {% include 'paneles/partials/notificaciones_toast.html' %}
 <script src="{% static 'js/paneles/notificaciones_toast.js' %}"></script>
 {% block extra_js %}{% endblock %}
+<script src="{% static 'js/paneles/nav_toggle.js' %}?v=20261022"></script>
+<script src="{% static 'js/paneles/admin_mail_notifications.js' %}?v=20261022-support6"></script>
 </body>
 </html>

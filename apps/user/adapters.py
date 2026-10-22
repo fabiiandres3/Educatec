@@ -1,4 +1,4 @@
-from datetime import date
+﻿from datetime import date
 
 from allauth.socialaccount.adapter import (
     DefaultSocialAccountAdapter
@@ -30,7 +30,8 @@ class AccountSignupForm(AccountSignupFormBase):
 
     def custom_signup(self, request, user):
         user.fecha_nacimiento = self.cleaned_data["fecha_nacimiento"]
-        user.save(update_fields=["fecha_nacimiento"])
+        user.rol, _ = Roles.objects.get_or_create(nombre__iexact="usuario", defaults={"nombre": "Usuario"})
+        user.save(update_fields=["fecha_nacimiento", "rol"])
 
 
 class GoogleSignupForm(SignupForm):
@@ -222,20 +223,10 @@ class CustomSocialAccountAdapter(
         # ASIGNAR ROL USUARIO
         # =====================================================
 
-        try:
-
-            rol_usuario = Roles.objects.get(
-
-                nombre__iexact="usuario"
-
-            )
-
-            usuario.rol = rol_usuario
-
-
-        except Roles.DoesNotExist:
-
-            usuario.rol = None
+        usuario.rol, _ = Roles.objects.get_or_create(
+            nombre__iexact="usuario",
+            defaults={"nombre": "Usuario"},
+        )
 
 
         # =====================================================
