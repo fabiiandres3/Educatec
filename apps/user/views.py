@@ -113,6 +113,7 @@ def index(request):
         eventos_home.append({
             "id": evento.id,
             "tipo": evento.tipo,
+            "tipo_label": evento.get_tipo_display(),
             "titulo": evento.titulo,
             "descripcion": evento.descripcion,
             "dia": evento.fecha.strftime("%d"),
