@@ -81,13 +81,18 @@ def eliminar_relacion_acudiente(request, relacion_id):
 
 
 def Listar_alumnos(request):
-    alumnos = Usuario.objects.filter(rol__nombre='alumno').select_related(
-        "rol", "alumno__curso"
+    alumnos = Alumnos.objects.filter(usuario__rol__nombre__iexact="alumno").select_related(
+        "usuario__rol",
+        "curso"
+    ).order_by(
+        "usuario__last_name",
+        "usuario__first_name",
+        "usuario__documento"
     )
     return render(request, 'admin/alumnos/alumnos.html', {
         "alumnos": alumnos,
-        "alumnos_con_curso": alumnos.filter(alumno__curso__isnull=False).count(),
-        "alumnos_sin_curso": alumnos.filter(alumno__curso__isnull=True).count(),
+        "alumnos_con_curso": alumnos.filter(curso__isnull=False).count(),
+        "alumnos_sin_curso": alumnos.filter(curso__isnull=True).count(),
     })
 
 
@@ -121,6 +126,21 @@ def Editar_alumno(request, alumno_id):
         if usuario_form.is_valid() and alumno_form.is_valid():
 
             nuevo_curso = alumno_form.cleaned_data.get("curso")
+            if nuevo_curso and nuevo_curso.pk != alumno.curso_id:
+                rol = usuario.rol
+                if not rol or rol.nombre.strip().casefold() != "alumno":
+                    messages.error(
+                        request,
+                        "Solo las cuentas con rol Alumno pueden asignarse a un curso."
+                    )
+                    return render(
+                        request,
+                        "admin/alumnos/editar_alumno.html",
+                        {
+                            "usuario_form": usuario_form,
+                            "alumno_form": alumno_form,
+                        },
+                    )
 
             # Verificar si se está asignando un curso
             if nuevo_curso:

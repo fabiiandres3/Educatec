@@ -1,174 +1,86 @@
 {% load static %}
 {% load socialaccount %}
-
 <!DOCTYPE html>
-
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Iniciar Sesión - Educatec</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1f56">
+  <title>Iniciar sesión | Educatec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/login/login.css' %}?v=login-reset-20261023">
+</head>
+<body class="login-body">
+  <div class="login-ambient" aria-hidden="true">
+    <img class="ambient-photo ambient-photo--one" src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=500&q=75" alt="">
+    <img class="ambient-photo ambient-photo--two" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=500&q=75" alt="">
+    <img class="ambient-photo ambient-photo--three" src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=500&q=75" alt="">
+    <span class="ambient-glow ambient-glow--one"></span><span class="ambient-glow ambient-glow--two"></span>
+  </div>
 
-    <link rel="stylesheet" href="{% static 'css/login/login.css' %}" />
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-  </head>
-
-  <body class="login-body">
-    <div class="container d-flex align-items-center justify-content-center min-vh-100 py-5">
-     <div class="card login-card shadow-lg border-0 overflow-hidden">
-        <div class="row g-0 h-100">
-          <!-- ========================================= -->
-          <!-- IZQUIERDA - FORMULARIO DE LOGIN -->
-          <!-- ========================================= -->
-
-          <div class="col-lg-6 d-flex align-items-center bg-white">
-            <div class="p-4 p-md-5 w-100">
-              <!-- Volver -->
-              <div class="mb-4">
-                <a href="{% url 'index' %}" class="text-decoration-none small fw-semibold text-secondary back-to-home">
-                  <i class="fas fa-arrow-left me-2"></i>
-
-                  Volver al inicio
-                </a>
-              </div>
-
-              <!-- Logo y título -->
-              <div class="mb-4 text-center text-lg-start">
-                <div class="login-brand mb-2">
-                  <i class="fas fa-graduation-cap text-primary fs-3"></i>
-
-                  <span class="fw-bold fs-4 text-navy ms-2">Educatec</span>
-                </div>
-
-                <h3 class="fw-bold text-navy">Bienvenido de nuevo</h3>
-
-                <p class="text-muted small">Ingresa a la plataforma educativa del bachillerato.</p>
-              </div>
-
-              <!-- ========================================= -->
-              <!-- MENSAJES -->
-              <!-- ========================================= -->
-
-              {% if messages %}
-                {% for message in messages %}
-                  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-              {% endif %}
-
-              <!-- ========================================= -->
-              <!-- ERRORES DEL FORMULARIO -->
-              <!-- ========================================= -->
-
-              {% if form.errors %}
-                <div class="alert alert-danger">Usuario o contraseña incorrectos.</div>
-              {% endif %}
-
-              <!-- ========================================= -->
-              <!-- FORMULARIO LOGIN -->
-              <!-- ========================================= -->
-
-              <form method="POST">
-                {% csrf_token %}
-
-                <!-- Usuario -->
-                <div class="mb-3">
-                  <label for="{{ form.username.id_for_label }}" class="form-label">Documento de identidad</label>
-
-                  {{ form.username }}
-
-                  {{ form.username.errors }}
-                </div>
-
-                <!-- Contraseña -->
-                <div class="mb-3">
-                  <label for="{{ form.password.id_for_label }}" class="form-label">Contraseña</label>
-
-                  {{ form.password }}
-
-                  {{ form.password.errors }}
-                </div>
-
-                <!-- Recordarme y contraseña -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe" />
-
-                    <label class="form-check-label small text-muted" for="rememberMe">Recordarme</label>
-                  </div>
-
-                  <a href="{% url 'account_reset_password' %}">¿Olvidaste tu contraseña?</a>
-                </div>
-
-                <!-- ========================================= -->
-                <!-- BOTÓN LOGIN NORMAL -->
-                <!-- ========================================= -->
-
-                <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm mb-4">
-                  Iniciar Sesión
-
-                  <i class="fas fa-sign-in-alt ms-2"></i>
-                </button>
-
-                <!-- ========================================= -->
-                <!-- DIVISOR -->
-                <!-- ========================================= -->
-
-                <div class="position-relative text-center my-4 login-divider">
-                  <span class="bg-white px-3 text-muted small position-relative z-2">O continuar con</span>
-                </div>
-
-                <!-- ========================================= -->
-                <!-- BOTÓN LOGIN CON GOOGLE -->
-                <!-- ========================================= -->
-
-                <div class="row g-3 mb-3 justify-content-center">
-                  <div class="col-auto">
-                    <a href="{% provider_login_url 'google' process='login' %}" class="btn btn-social-circle btn-social-google" title="Iniciar sesión con Google"><i class="fab fa-google"></i></a>
-                  </div>
-                </div>
-              </form>
-
-              <!-- ========================================= -->
-              <!-- REGISTRO -->
-              <!-- ========================================= -->
-
-              <div class="text-center mt-4">
-                <p class="small text-muted mb-2">¿No tienes una cuenta?</p>
-
-                <a href="{% url 'registrar_usuario' %}" class="btn btn-outline-primary">Registrarse</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- ========================================= -->
-          <!-- DERECHA - PANEL INFORMATIVO -->
-          <!-- ========================================= -->
-
-          <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center login-panel-right">
-            <div class="text-center text-white p-5 login-right-content position-relative">
-              <h2 class="fw-bold mb-3">Portal de Bachillerato</h2>
-
-              <p class="mx-auto text-light opacity-75 small" style="max-width: 340px;">Accede a tus clases virtuales, calificaciones, proyectos tecnológicos y eventos de la comunidad escolar.</p>
-
-              <div class="mt-4 login-mini-stats d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-2 rounded-pill">
-                <i class="fas fa-shield-alt text-cyan"></i>
-
-                <span class="small fw-semibold">Conexión 100% Segura</span>
-              </div>
-            </div>
-          </div>
+  <main class="login-shell container-fluid">
+    <a href="{% url 'index' %}" class="login-home-link"><i class="fa-solid fa-arrow-left"></i><span>Volver al inicio</span></a>
+    <section class="login-card" aria-label="Acceso a Educatec">
+      <div class="login-form-panel">
+        <a href="{% url 'index' %}" class="login-brand" aria-label="Educatec, inicio">
+          <span class="login-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span><span>Educatec</span>
+        </a>
+        <div class="login-heading">
+          <span class="login-eyebrow"><i class="fa-solid fa-sparkles"></i> Tu espacio educativo</span>
+          <h1>Qué bueno<br>tenerte <span>de vuelta.</span></h1>
+          <p>Ingresa a tu cuenta y continúa conectado con tu comunidad escolar.</p>
         </div>
-      </div>```
-    </div>
 
-    <!-- JavaScript -->
+        {% if messages %}
+          {% for message in messages %}<div class="alert alert-{{ message.tags }} login-alert" role="status">{{ message }}</div>{% endfor %}
+        {% endif %}
+        {% if form.errors %}<div class="alert alert-danger login-alert" role="alert">Revisa tu documento y contraseña e inténtalo de nuevo.</div>{% endif %}
 
-    <script src="{% static 'js/login/login.js' %}"></script>
-    <script src="{% static 'js/csrf_refresh.js' %}"></script>
+        <form method="POST" id="loginForm" class="login-form" novalidate>
+          {% csrf_token %}
+          <div class="login-field">
+            <label for="{{ form.username.id_for_label }}">Documento de identidad</label>
+            <div class="login-input-wrap"><i class="fa-regular fa-id-card" aria-hidden="true"></i>{{ form.username }}</div>
+            {{ form.username.errors }}
+          </div>
+          <div class="login-field">
+            <label for="{{ form.password.id_for_label }}">Contraseña</label>
+            <div class="login-input-wrap login-password-wrap"><i class="fa-solid fa-lock" aria-hidden="true"></i>{{ form.password }}<button type="button" class="password-toggle" data-password-toggle aria-label="Mostrar contraseña"><i class="fa-regular fa-eye"></i></button></div>
+            {{ form.password.errors }}
+          </div>
+          <div class="login-options"><span><i class="fa-solid fa-shield-halved"></i> Acceso seguro</span><a href="{% url 'account_reset_password' %}">¿Olvidaste tu contraseña?</a></div>
+          <button type="submit" class="login-submit"><span>Iniciar sesión</span><i class="fa-solid fa-arrow-right"></i></button>
+        </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+        <div class="login-separator"><span>O continúa con</span></div>
+        <a href="{% provider_login_url 'google' process='login' %}" class="login-google"><span class="google-mark">G</span><span>Continuar con Google</span></a>
+        <p class="login-register">¿Aún no tienes cuenta? <a href="{% url 'registrar_usuario' %}">Regístrate aquí</a></p>
+        <p class="login-privacy"><i class="fa-solid fa-lock"></i> Tus datos están protegidos</p>
+      </div>
+
+      <aside class="login-visual" aria-label="Comunidad Educatec">
+        <img class="login-visual-main" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=85" alt="Estudiantes colaborando en un espacio educativo">
+        <div class="login-visual-shade"></div>
+        <span class="visual-orbit visual-orbit--one"></span><span class="visual-orbit visual-orbit--two"></span>
+        <div class="visual-floating visual-floating--top"><img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=350&q=75" alt=""><i class="fa-solid fa-book-open"></i></div>
+        <div class="visual-floating visual-floating--bottom"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=350&q=75" alt=""><i class="fa-solid fa-lightbulb"></i></div>
+        <div class="login-visual-copy">
+          <span class="visual-pill"><span></span> Aprender nos conecta</span>
+          <h2>Un mismo lugar.<br><span>Un futuro lleno</span><br>de posibilidades.</h2>
+          <p>Clases, avances y actividades de tu colegio, siempre cerca de ti.</p>
+          <div class="visual-trust"><span class="trust-icon"><i class="fa-solid fa-users"></i></span><span><strong>Una comunidad que crece</strong><small>Estudiantes · docentes · familias</small></span></div>
+        </div>
+        <span class="visual-decoration visual-decoration--one"></span><span class="visual-decoration visual-decoration--two"></span>
+      </aside>
+    </section>
+    <footer class="login-footer"><span>© {% now "Y" %} Educatec</span><span>La tecnología al servicio de la educación</span></footer>
+  </main>
+  <script src="{% static 'js/login/login.js' %}?v=login-reset-20261023" defer></script>
+  <script src="{% static 'js/csrf_refresh.js' %}" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+</body>
 </html>

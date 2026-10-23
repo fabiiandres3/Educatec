@@ -57,11 +57,11 @@
             <div>
 
                 <strong>
-                    {{ alumnos.nombre }}
+                    {{ alumno.usuario.get_full_name|default:alumno.usuario.documento }}
                 </strong>
 
                 <small>
-                    {{ alumnos.curso }}
+                    {% if alumno.curso_id %}{{ alumno.curso.nombre }}{% else %}Sin curso asignado{% endif %}
                 </small>
 
             </div>

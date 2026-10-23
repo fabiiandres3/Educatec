@@ -1,653 +1,122 @@
 {% extends 'base.html' %}
 {% load static %}
 
-<title>{% block title %}Index{% endblock %}</title>
-
-{% block content %}
-
-<link rel="stylesheet" href="{% static 'css/index.css' %}">
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
-        <div class="container-fluid px-5">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-graduation-cap"></i>
-                <strong>Educatec</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#programas">Programas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#eventos">Eventos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#sobre-nosotros">Sobre Nosotros</a>
-                    </li>
-                    <li class="nav-item ms-3">
-                        <a href="{% url 'login' %}" 
-                                class="btn btn-apply"
-                                style="background-color:#006eff; color:#fff; text-decoration:none;">
-                                    Iniciar Sesión
-                                </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 hero-content">
-                    <div class="badge-admission" style="color: #006eff;">
-                        <i class="fas fa-check-circle" style="color: #006eff;"></i> ADMISIONES ABIERTAS 2024-2025
-                    </div>
-
-                    <h1 class="hero-title">
-                        Donde la tecnología <br>impulsar el <span style="color: #006eff;">SABER</span>
-                    </h1>
-
-                    <p class="hero-description">
-                        En Scholaris Academy, fusionamos el rigor académico con la innovación creativa para formar
-                        ciudadanos globales capaces de transformar el mundo.
-                    </p>
-
-                    <div class="hero-buttons">
-                        <button class="btn btn-primary-hero" style="color:white;">
-                            Explorar Programas
-                            <i class="fas fa-arrow-right" style="color: #fff;"></i>
-                        </button>
-                        <button class="btn btn-secondary-hero" style="color:#fff;">
-                            Agendar una Visita
-                        </button>
-                    </div>
-
-                    <div class="student-stats">
-                        <div class="avatar-group">
-                            <div class="avatar" style="background-color: #006eff; color: #fff;">JD</div>
-                            <div class="avatar" style="background-color: #006eff; color: #fff;">MR</div>
-                            <div class="avatar" style="background-color: #006eff; color: #fff;">AK</div>
-                        </div>
-                        <div>
-                            <div class="stats-count">+500</div>
-                            <div class="stats-text">alumnoss confían en nosotros</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 hero-image">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <img src="https://images.adsttc.com/media/images/512b/a69d/b3fc/4b11/a700/c02a/large_jpg/1316631078-bmasc-colegio-en-piedralaves-04.jpg?1361815198"
-                            alt="" class="img-fluid w-100" style="height:500px; object-fit:cover; object-position:top;">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- NIVELES EDUCATIVOS -->
-    <section id="programas" class="niveles-modernos py-5">
-        <div class="container">
-
-            <div class="text-center mb-5">
-                <span class="nivel-badge">Formación Integral</span>
-
-                <h2 class="niveles-title mt-3">
-                    Acompañamos cada etapa del crecimiento
-                </h2>
-
-                <p class="niveles-subtitle">
-                    Desde los primeros años hasta la preparación para la educación superior, ofrecemos una experiencia
-                    educativa enfocada en el desarrollo académico, humano y tecnológico.
-                </p>
-            </div>
-            <div class="row g-4">
-
-                <!-- PREESCOLAR -->
-                <div class="col-lg-4">
-                    <div class="nivel-card-modern">
-
-                        <div class="nivel-image">
-                            <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200"
-                                class="img-fluid w-100">
-                        </div>
-
-                        <div class="nivel-content">
-
-                            <span class="nivel-etapa">
-                                🌈 2 a 5 años
-                            </span>
-
-                            <h3>Preescolar</h3>
-
-                            <p>
-                                Un entorno seguro y divertido donde los niños desarrollan creatividad, autonomía y
-                                habilidades sociales mediante el aprendizaje basado en el juego.
-                            </p>
-
-                            <ul>
-                                <li>✓ Estimulación temprana</li>
-                                <li>✓ Desarrollo psicomotor</li>
-                                <li>✓ Inglés inicial</li>
-                                <li>✓ Expresión artística</li>
-                            </ul>
-
-                            <a href="{% url 'prescolar' %}" style="text-decoration: none;" class="btn-nivel">
-                                Conocer más
-                            </a>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- PRIMARIA -->
-                <div class="col-lg-4">
-                    <div class="nivel-card-modern">
-
-                        <div class="nivel-image">
-                            <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=1200"
-                                class="img-fluid w-100">
-                        </div>
-
-                        <div class="nivel-content">
-
-                            <span class="nivel-etapa">
-                                📚 6 a 11 años
-                            </span>
-
-                            <h3>Primaria</h3>
-
-                            <p>
-                                Fomentamos el pensamiento crítico, la curiosidad y el trabajo colaborativo mediante
-                                experiencias de aprendizaje innovadoras.
-                            </p>
-
-                            <ul>
-                                <li>✓ Ciencias y matemáticas</li>
-                                <li>✓ Tecnología educativa</li>
-                                <li>✓ Inglés intensivo</li>
-                                <li>✓ Proyectos STEAM</li>
-                            </ul>
-
-                            <a href="{% url 'primaria' %}" style="text-decoration: none;" class="btn-nivel">
-                                Conocer más
-                            </a>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- SECUNDARIA -->
-                <div class="col-lg-4">
-                    <div class="nivel-card-modern">
-
-                        <div class="nivel-image">
-                            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200"
-                                class="img-fluid w-100">
-                        </div>
-
-                        <div class="nivel-content">
-
-                            <span class="nivel-etapa">
-                                🚀 12 a 17 años
-                            </span>
-
-                            <h3>Secundaria</h3>
-
-                            <p>
-                                Preparamos a nuestros alumnoss para afrontar retos académicos y profesionales
-                                mediante liderazgo, innovación y orientación vocacional.
-                            </p>
-
-                            <ul>
-                                <li>✓ Programación y tecnología</li>
-                                <li>✓ Liderazgo estudiantil</li>
-                                <li>✓ Orientación vocacional</li>
-                                <li>✓ Preparación universitaria</li>
-                            </ul>
-
-                            <a href="{% url 'secundaria' %}" style="text-decoration: none;" class="btn-nivel">
-                                Conocer más
-                            </a>
-
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- LINEA DE CRECIMIENTO -->
-
-            <div class="timeline-educativa mt-5">
-
-                <div class="timeline-item">
-                    <div class="timeline-circle">🌈</div>
-                    <h6>Preescolar</h6>
-                    <span>2 - 5 años</span>
-                </div>
-
-                <div class="timeline-line"></div>
-
-                <div class="timeline-item">
-                    <div class="timeline-circle">📚</div>
-                    <h6>Primaria</h6>
-                    <span>6 - 11 años</span>
-                </div>
-
-                <div class="timeline-line"></div>
-
-                <div class="timeline-item">
-                    <div class="timeline-circle">🚀</div>
-                    <h6>Secundaria</h6>
-                    <span>12 - 17 años</span>
-                </div>
-
-            </div>
-
-        </div>
-    </section>
-
-
-    <!-- Eventos Section -->
-    <!-- =====================================================
-     EVENTOS DEL COLEGIO
-====================================================== -->
-
-    <section id="eventos" class="eventos-section">
-
-        <div class="container">
-
-            <!-- ENCABEZADO -->
-
-            <div class="eventos-header">
-
-                <div>
-
-                    <span class="nivel-badge">
-                        Actividades
-                    </span>
-
-                    <h2 class="section-title">
-                        Eventos del Colegio
-                    </h2>
-
-                    <p class="section-description">
-                        Participamos en actividades que fortalecen
-                        el espíritu de comunidad, la competencia sana
-                        y el desarrollo integral.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            {% if eventos %}
-
-            <!-- CARRUSEL -->
-
-            <div class="eventos-carousel-wrapper">
-
-                <!-- FLECHA IZQUIERDA -->
-
-                <button
-                    type="button"
-                    class="carousel-arrow carousel-prev"
-                    id="btnPrev"
-                    aria-label="Evento anterior"
-                >
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-
-
-                <!-- VENTANA DEL CARRUSEL -->
-
-                <div
-                    class="eventos-carousel"
-                    id="eventosCarousel"
-                >
-
-                    <!-- TRACK -->
-
-                    <div
-                        class="eventos-track"
-                        id="eventosTrack"
-                    >
-
-                        {% for evento in eventos %}
-
-                        <article class="evento-card">
-
-                            <!-- IMAGEN -->
-
-                            <div class="evento-image">
-
-                                {% if evento.imagen %}
-
-                                    <img
-                                        src="{{ evento.imagen.url }}"
-                                        alt="{{ evento.titulo }}"
-                                        loading="lazy"
-                                    >
-
-                                {% else %}
-
-                                    <div class="evento-no-image">
-
-                                        <i class="fas fa-calendar-alt"></i>
-
-                                    </div>
-
-                                {% endif %}
-
-                                <!-- TIPO DEL EVENTO -->
-
-                                <div class="evento-type">
-
-                                    {% if evento.tipo == "academico" %}
-                                        <i class="fas fa-flask"></i>
-                                        Académico
-
-                                    {% elif evento.tipo == "reunion" %}
-                                        <i class="fas fa-users"></i>
-                                        Reunión
-
-                                    {% elif evento.tipo == "evaluacion" %}
-                                        <i class="fas fa-clipboard-check"></i>
-                                        Evaluación
-
-                                    {% elif evento.tipo == "actividad" %}
-                                        <i class="fas fa-bullseye"></i>
-                                        Actividad
-
-                                    {% elif evento.tipo == "aviso" %}
-                                        <i class="fas fa-bullhorn"></i>
-                                        Aviso
-
-                                    {% else %}
-                                        <i class="fas fa-calendar"></i>
-                                        General
-                                    {% endif %}
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- CONTENIDO -->
-
-                            <div class="evento-content">
-
-                                <h3 class="evento-title">
-                                    {{ evento.titulo }}
-                                </h3>
-
-
-                                {% if evento.descripcion %}
-
-                                <p class="evento-description">
-                                    {{ evento.descripcion|truncatechars:130 }}
-                                </p>
-
-                                {% else %}
-
-                                <p class="evento-description">
-                                    Conoce todos los detalles de esta actividad
-                                    organizada por Educatec.
-                                </p>
-
-                                {% endif %}
-
-
-                                <!-- INFORMACIÓN -->
-
-                                <div class="evento-details">
-
-                                    <div class="evento-info">
-
-                                        <i class="fas fa-calendar-alt"></i>
-
-                                        <span>
-                                            {{ evento.fecha|date:"d/m/Y" }}
-                                        </span>
-
-                                    </div>
-
-
-                                    {% if evento.hora %}
-
-                                    <div class="evento-info">
-
-                                        <i class="fas fa-clock"></i>
-
-                                        <span>
-                                            {{ evento.hora|time:"H:i" }}
-                                        </span>
-
-                                    </div>
-
-                                    {% endif %}
-
-
-                                    {% if evento.lugar %}
-
-                                    <div class="evento-info">
-
-                                        <i class="fas fa-map-marker-alt"></i>
-
-                                        <span>
-                                            {{ evento.lugar }}
-                                        </span>
-
-                                    </div>
-
-                                    {% endif %}
-
-                                </div>
-
-
-                                <!-- BOTÓN -->
-
-                                <a
-                                    href="{% url 'detalle_evento' evento.id %}"
-                                    class="evento-button"
-                                >
-
-                                    Ver detalles
-
-                                    <i class="fas fa-arrow-right"></i>
-
-                                </a>
-
-                            </div>
-
-                        </article>
-
-                        {% endfor %}
-
-                    </div>
-
-                </div>
-
-
-                <!-- FLECHA DERECHA -->
-
-                <button
-                    type="button"
-                    class="carousel-arrow carousel-next"
-                    id="btnNext"
-                    aria-label="Evento siguiente"
-                >
-
-                    <i class="fas fa-chevron-right"></i>
-
-                </button>
-
-            </div>
-
-
-            <!-- INDICADORES -->
-
-            <div
-                class="eventos-indicators"
-                id="eventosIndicators"
-            ></div>
-
-
-            {% else %}
-
-            <!-- SIN EVENTOS -->
-
-            <div class="eventos-empty">
-
-                <div class="eventos-empty-icon">
-
-                    <i class="fas fa-calendar-times"></i>
-
-                </div>
-
-                <h3>
-                    No hay eventos disponibles
-                </h3>
-
-                <p>
-                    Próximamente publicaremos nuevas actividades.
-                </p>
-
-            </div>
-
-            {% endif %}
-
-        </div>
-
-    </section>
-
-    <!-- SOBRE NOSOTROS: BACHILLERATO CON GALERÍA -->
-    <section id="sobre-nosotros" class="sobre-nosotros-section py-5">
-        <div class="container">
-            <div class="row align-items-center g-5">
-
-                <!-- NUEVA COLUMNA: CUADRÍCULA DE IMÁGENES -->
-                <div class="col-lg-6">
-                    <div class="row g-3 sobre-nosotros-galeria-grid">
-                        <!-- Foto 1: Laboratorio / Ciencia -->
-                        <div class="col-6">
-                            <div class="galeria-item shadow-sm rounded-4 overflow-hidden position-relative">
-                                <img src="https://images.unsplash.com/photo-1562774053-701939374585?w=600"
-                                    alt="Laboratorio de ciencias" class="img-fluid w-100 h-100 object-fit-cover">
-                                <span
-                                    class="badge bg-dark position-absolute bottom-0 start-0 m-2 bg-opacity-75">Ciencias</span>
-                            </div>
-                        </div>
-                        <!-- Foto 2: Aula / Tecnología -->
-                        <div class="col-6">
-                            <div class="galeria-item shadow-sm rounded-4 overflow-hidden position-relative mt-4">
-                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600"
-                                    alt="alumnoss con portátiles" class="img-fluid w-100 h-100 object-fit-cover">
-                                <span
-                                    class="badge bg-dark position-absolute bottom-0 start-0 m-2 bg-opacity-75">Tecnología</span>
-                            </div>
-                        </div>
-                        <!-- Foto 3: Biblioteca / Estudio -->
-                        <div class="col-6">
-                            <div class="galeria-item shadow-sm rounded-4 overflow-hidden position-relative neg-mt-top">
-                                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600"
-                                    alt="Trabajo en equipo en biblioteca"
-                                    class="img-fluid w-100 h-100 object-fit-cover">
-                                <span
-                                    class="badge bg-dark position-absolute bottom-0 start-0 m-2 bg-opacity-75">Biblioteca</span>
-                            </div>
-                        </div>
-                        <!-- Foto 4: Campus / Convivencia -->
-                        <div class="col-6">
-                            <div class="galeria-item shadow-sm rounded-4 overflow-hidden position-relative">
-                                <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600"
-                                    alt="alumnoss en el campus" class="img-fluid w-100 h-100 object-fit-cover">
-                                <span
-                                    class="badge bg-dark position-absolute bottom-0 start-0 m-2 bg-opacity-75">Comunidad</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Columna de Texto (Misión y Visión) -->
-                <div class="col-lg-6">
-                    <div class="ps-lg-4">
-                        <span class="text-primary fw-bold text-uppercase tracking-wider subtitle-badge">Sobre
-                            nosotros</span>
-                        <h2 class="section-title mt-2 mb-4">Una institución enfocada en el futuro y la excelencia</h2>
-
-                        <p class="section-description mb-4 w-100">
-                            Nuestra propuesta educativa para el nivel de bachillerato se centra en dotar a los jóvenes
-                            de herramientas críticas, científicas y tecnológicas necesarias para afrontar los retos
-                            universitarios y del entorno global[cite: 1]. Fomentamos la autonomía, el
-                            liderazgo y el desarrollo del pensamiento complejo en un ambiente de alta exigencia
-                            académica[cite: 1].
-                        </p>
-
-                        <!-- Bloques de Misión y Visión -->
-                        <div class="row g-4 pt-2">
-                            <div class="col-12">
-                                <div class="card-mision-vision p-4 rounded-3 shadow-sm bg-light mb-3">
-                                    <div class="d-flex gap-3 align-items-center mb-2">
-                                        <div class="icon-container-mv bg-white p-2 rounded-3 text-primary shadow-sm">
-                                            <i class="fas fa-bullseye fa-lg"></i>
-                                        </div>
-                                        <h4 class="fw-bold text-navy mb-0">Misión</h4>
-                                    </div>
-                                    <p class="text-muted small mb-0">
-                                        Brindar una educación integral de alta calidad en el nivel de bachillerato,
-                                        desarrollando en los alumnoss competencias académicas, tecnológicas y
-                                        humanas[cite: 1]. Buscamos formar jóvenes conscientes de su entorno, capaces de
-                                        ingresar con éxito a la
-                                        educación superior y liderar proyectos de transformación social.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="card-mision-vision p-4 rounded-3 shadow-sm bg-light">
-                                    <div class="d-flex gap-3 align-items-center mb-2">
-                                        <div class="icon-container-mv bg-white p-2 rounded-3 text-primary shadow-sm">
-                                            <i class="fas fa-eye fa-lg"></i>
-                                        </div>
-                                        <h4 class="fw-bold text-navy mb-0">Visión</h4>
-                                    </div>
-                                    <p class="text-muted small mb-0">
-                                        Consolidarnos para el año 2030 como el colegio de bachillerato líder en
-                                        innovación pedagógica y tecnológica[cite: 1]. Seremos reconocidos a nivel
-                                        nacional por el alto desempeño de nuestros egresados en pruebas de estado, su
-                                        pensamiento crítico y su capacidad
-                                        de adaptación a un mundo en constante evolución.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <script src="{% static 'js/index.js' %}"></script>
-
-</body>
+{% block title %}Educatec · Plataforma educativa{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&family=Figtree:wght@400;500;600&family=Sora:wght@600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/home_moderno.css' %}?v=hero-floats-20261023">
 {% endblock %}
 
-</html>
+{% block content %}
+<div class="educatec-home" id="inicio">
+  <div class="home-scroll-progress" aria-hidden="true"></div>
+  <header class="home-header" id="home-header">
+    <div class="home-nav glass-panel">
+      <a class="home-brand" href="#inicio" aria-label="Educatec, inicio">
+        <span class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></span><span>Educatec</span>
+      </a>
+      <nav class="home-nav-links" aria-label="Navegación principal">
+        <a href="#niveles">Niveles</a><a href="#plataforma">Plataforma</a><a href="#eventos">Eventos</a><a href="#nosotros">Nosotros</a>
+      </nav>
+      <a class="home-login d-none d-md-inline-flex" href="{% url 'login' %}">Iniciar sesión</a>
+      <button class="home-menu-toggle d-md-none" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="home-mobile-nav"><i class="fa-solid fa-bars"></i></button>
+    </div>
+    <nav class="home-mobile-nav glass-panel" id="home-mobile-nav" aria-label="Navegación móvil" hidden>
+      <a href="#niveles">Niveles</a><a href="#plataforma">Plataforma</a><a href="#eventos">Eventos</a><a href="#nosotros">Nosotros</a>
+      <a class="home-login" href="{% url 'login' %}">Iniciar sesión</a>
+    </nav>
+  </header>
+
+  <div class="home-content">
+    <section class="home-hero" id="portada">
+      <div class="hero-sticky">
+        <div class="hero-grid" aria-hidden="true"></div><div class="hero-orb" aria-hidden="true"></div>
+        <div class="hero-intro">
+          <p class="hero-kicker reveal"><i class="fa-solid fa-sparkles"></i> Plataforma educativa</p>
+          <h1><span class="hero-title-line hero-wordmark"><span class="text-gradient">Educatec</span><i class="fa-solid fa-graduation-cap hero-wordmark-logo" aria-hidden="true"></i></span></h1>
+        </div>
+        <div class="hero-floats" id="hero-floats" aria-hidden="true">
+          <figure class="hero-float hero-float--one"><img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=500&q=75" alt=""></figure>
+          <figure class="hero-float hero-float--two"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=500&q=75" alt=""></figure>
+          <figure class="hero-float hero-float--three"><img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=500&q=75" alt=""></figure>
+          <figure class="hero-float hero-float--four"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=500&q=75" alt=""></figure>
+        </div>
+        <div class="hero-visual" id="hero-visual">
+          <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80" alt="Estudiantes trabajando en equipo" fetchpriority="high">
+          <div class="hero-overlay" id="hero-overlay">
+            <p class="hero-statement">Educatec reúne a <strong>estudiantes</strong>, <strong>docentes</strong> y <strong>familias</strong> en un mismo entorno.</p>
+            <div class="hero-actions"><a class="button-primary" href="#niveles">Explorar niveles <i class="fa-solid fa-arrow-right"></i></a><a class="button-glass" href="{% url 'login' %}">Iniciar sesión</a></div>
+          </div>
+        </div>
+        <div class="hero-scroll-hint" id="hero-scroll-hint">Desliza<span></span></div>
+      </div>
+    </section>
+
+    <section class="home-manifesto container-lg" aria-label="Sobre Educatec"><p id="manifesto-text">Seguimiento académico, tareas, calificaciones, horarios y eventos del colegio. Todo en un solo lugar.</p></section>
+
+    <section class="home-levels" id="niveles">
+      <div class="levels-sticky">
+        <div class="section-heading container-fluid">
+          <p class="section-eyebrow">Formación integral</p>
+          <div class="heading-row"><h2>Acompañamos cada etapa del crecimiento.</h2><p>Desde los primeros años hasta la preparación para la educación superior, cada nivel cuenta con su propio panel dentro de la plataforma.</p></div>
+          <div class="levels-progress"><span id="levels-progress-bar"></span></div>
+        </div>
+        <div class="levels-track" id="levels-track">
+          <article class="level-slide"><div class="level-layout container-fluid"><div class="level-photo"><img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1400" alt="Niños aprendiendo y jugando" loading="lazy"><span>01</span></div><div class="level-copy glass-panel"><div class="level-meta"><span class="level-icon"><i class="fa-solid fa-shapes"></i></span><span>2 – 5 años</span></div><h3>Preescolar</h3><p>Un entorno seguro y divertido donde los niños desarrollan creatividad, autonomía y habilidades sociales mediante el aprendizaje basado en el juego.</p><div class="level-tags"><span>Estimulación temprana</span><span>Desarrollo psicomotor</span><span>Inglés inicial</span><span>Expresión artística</span></div><a class="text-link" href="{% url 'prescolar' %}">Conocer más <i class="fa-solid fa-arrow-right"></i></a></div></div></article>
+          <article class="level-slide"><div class="level-layout container-fluid"><div class="level-photo"><img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=1400" alt="Estudiantes de primaria en el aula" loading="lazy"><span>02</span></div><div class="level-copy glass-panel"><div class="level-meta"><span class="level-icon"><i class="fa-solid fa-book-open"></i></span><span>6 – 11 años</span></div><h3>Primaria</h3><p>Fomentamos el pensamiento crítico, la curiosidad y el trabajo colaborativo mediante experiencias de aprendizaje innovadoras.</p><div class="level-tags"><span>Ciencias y matemáticas</span><span>Tecnología educativa</span><span>Inglés intensivo</span><span>Proyectos STEAM</span></div><a class="text-link" href="{% url 'primaria' %}">Conocer más <i class="fa-solid fa-arrow-right"></i></a></div></div></article>
+          <article class="level-slide"><div class="level-layout container-fluid"><div class="level-photo"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1400" alt="Estudiantes colaborando en secundaria" loading="lazy"><span>03</span></div><div class="level-copy glass-panel"><div class="level-meta"><span class="level-icon"><i class="fa-solid fa-rocket"></i></span><span>12 – 17 años</span></div><h3>Secundaria</h3><p>Preparamos a nuestros alumnos para afrontar retos académicos y profesionales mediante liderazgo, innovación y orientación vocacional.</p><div class="level-tags"><span>Programación y tecnología</span><span>Liderazgo estudiantil</span><span>Orientación vocacional</span><span>Preparación universitaria</span></div><a class="text-link" href="{% url 'secundaria' %}">Conocer más <i class="fa-solid fa-arrow-right"></i></a></div></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-platform container-fluid" id="plataforma">
+      <h2 class="section-title reveal">Una plataforma. <span class="text-gradient">Toda la comunidad.</span></h2>
+      <div class="platform-grid">
+        <article class="feature-card feature-main tilt-card"><i class="fa-solid fa-chart-column feature-icon blue"></i><h3>Seguimiento académico</h3><p>Estudiantes, docentes y familias ven el progreso en tiempo real.</p><div class="chart-bars" aria-label="Gráfico ilustrativo de progreso"><span style="--bar:40%"></span><span style="--bar:65%"></span><span style="--bar:50%"></span><span style="--bar:80%"></span><span style="--bar:70%"></span><span style="--bar:95%"></span><span style="--bar:85%"></span></div></article>
+        <article class="feature-card tilt-card"><i class="fa-solid fa-pen-to-square feature-icon cyan"></i><h3>Tareas</h3><p>Entregas y pendientes organizados.</p></article>
+        <article class="feature-card tilt-card"><i class="fa-solid fa-clipboard-check feature-icon blue"></i><h3>Calificaciones</h3><strong class="grade-value">4.8</strong></article>
+        <article class="feature-card feature-wide tilt-card"><div><i class="fa-regular fa-calendar-days feature-icon cyan"></i><h3>Horarios y eventos del colegio</h3></div><div class="week-days"><span>Lun</span><span>Mar</span><span class="active">Mié</span><span>Jue</span><span>Vie</span></div></article>
+      </div>
+    </section>
+
+    <section class="home-events container-fluid" id="eventos">
+      <div class="events-heading"><div><p class="section-eyebrow">Actividades</p><h2>Eventos del colegio.</h2></div><p>Actividades que fortalecen el espíritu de comunidad, la competencia sana y el desarrollo integral.</p></div>
+      {% if eventos_home %}
+      <div class="events-carousel" data-events-carousel>
+        <div class="events-carousel-toolbar">
+          <span class="events-carousel-note"><i class="fa-solid fa-sparkles"></i> Historias que nos unen</span>
+          <div class="events-carousel-controls">
+            <button type="button" class="events-carousel-button" data-events-prev aria-label="Evento anterior"><i class="fa-solid fa-arrow-left"></i></button>
+            <button type="button" class="events-carousel-button" data-events-next aria-label="Siguiente evento"><i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="events-carousel-viewport" data-events-viewport tabindex="0" aria-label="Carrusel de eventos">
+          <div class="events-carousel-track" data-events-track>
+            {% for evento in eventos_home %}
+            <a class="event-card" href="{{ evento.url }}">
+              <div class="event-card-image"><img src="{{ evento.img }}" alt="" loading="lazy"><span class="event-card-date"><strong>{{ evento.dia }}</strong><small>{{ evento.mes }}</small></span><span class="event-card-category"><i class="fa-regular fa-calendar"></i>{{ evento.tipo_label }}</span><span class="event-card-image-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></span></div>
+              <div class="event-card-content"><div class="event-card-meta"><span><i class="fa-regular fa-clock"></i>{{ evento.hora }}</span><span class="event-card-more">Ver evento <i class="fa-solid fa-arrow-right"></i></span></div><h3>{{ evento.titulo }}</h3><p>{{ evento.descripcion }}</p></div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="events-carousel-footer"><div class="events-carousel-dots" data-events-dots aria-label="Seleccionar evento"></div><span class="events-carousel-counter"><strong data-events-current>01</strong><span>/</span><span data-events-total>{{ eventos_home|length|stringformat:"02d" }}</span></span></div>
+      </div>
+      {% else %}<div class="empty-events glass-panel"><i class="fa-regular fa-calendar-days"></i><h3>No hay eventos disponibles</h3><p>Próximamente publicaremos nuevas actividades.</p></div>{% endif %}
+    </section>
+
+    <section class="home-about" id="nosotros">
+      <div class="container-lg about-intro"><p class="section-eyebrow">Sobre nosotros</p><h2 class="reveal">Una institución enfocada en el <span class="text-gradient">futuro</span> y la excelencia.</h2><p>Nuestra propuesta educativa se centra en dotar a los jóvenes de herramientas críticas, científicas y tecnológicas necesarias para afrontar los retos universitarios y del entorno global. Fomentamos la autonomía, el liderazgo y el desarrollo del pensamiento complejo en un ambiente de alta exigencia académica.</p></div>
+      <div class="about-gallery container-fluid"><figure class="tilt-card"><img src="https://images.unsplash.com/photo-1562774053-701939374585?w=600" alt="Laboratorio de ciencias" loading="lazy"><figcaption>Ciencias</figcaption></figure><figure class="tilt-card"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600" alt="Alumnos con portátiles" loading="lazy"><figcaption>Tecnología</figcaption></figure><figure class="tilt-card"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600" alt="Trabajo en equipo en la biblioteca" loading="lazy"><figcaption>Biblioteca</figcaption></figure><figure class="tilt-card"><img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600" alt="Alumnos en el campus" loading="lazy"><figcaption>Comunidad</figcaption></figure></div>
+      <div class="mission-grid container-fluid"><article class="feature-card tilt-card"><div class="mission-label"><span class="level-icon"><i class="fa-solid fa-bullseye"></i></span><span>01</span></div><h3>Misión</h3><p>Brindar una educación integral de alta calidad, desarrollando en los alumnos competencias académicas, tecnológicas y humanas. Buscamos formar jóvenes conscientes de su entorno, capaces de ingresar con éxito a la educación superior y liderar proyectos de transformación social.</p></article><article class="feature-card tilt-card"><div class="mission-label"><span class="level-icon"><i class="fa-regular fa-eye"></i></span><span>02</span></div><h3>Visión</h3><p>Consolidarnos para el año 2030 como una institución líder en innovación pedagógica y tecnológica. Seremos reconocidos por el alto desempeño de nuestros egresados, su pensamiento crítico y su capacidad de adaptación a un mundo en constante evolución.</p></article></div>
+    </section>
+
+    <section class="home-cta"><div class="marquee-track" aria-hidden="true"><span>Preescolar ✦ Primaria ✦ Secundaria ✦ Tareas ✦ Calificaciones ✦ Horarios ✦ Eventos ✦ Preescolar ✦ Primaria ✦ Secundaria ✦ Tareas ✦ Calificaciones ✦ Horarios ✦ Eventos ✦</span></div><div class="cta-content reveal"><h2>El futuro de tu colegio empieza aquí.</h2><a class="button-primary" href="{% url 'login' %}">Iniciar sesión <i class="fa-solid fa-arrow-right"></i></a></div><footer class="home-footer container-fluid"><span><i class="fa-solid fa-graduation-cap"></i> Educatec · Plataforma educativa</span><span>La tecnología al servicio de la educación</span></footer></section>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/home_moderno.js' %}?v=hero-floats-20261023" defer></script>{% endblock %}

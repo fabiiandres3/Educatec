@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+:root{--panel-ink:#101a35;--panel-muted:#64748b;--panel-blue:#1e40af;--panel-cyan:#0ea5e9;--panel-line:rgba(30,64,175,.12);--panel-surface:rgba(255,255,255,.82);--panel-shadow:0 16px 44px rgba(19,43,91,.08);--panel-font:'Figtree',system-ui,sans-serif;--panel-display:'Outfit','Figtree',sans-serif}
+html{min-height:100%;background:#edf3fb}
+body{min-height:100vh;overflow-x:hidden;background:radial-gradient(ellipse at 8% 0,rgba(14,165,233,.1),transparent 28%),radial-gradient(ellipse at 95% 95%,rgba(30,64,175,.08),transparent 30%),linear-gradient(135deg,#f4f7fc,#edf3fb)!important;color:var(--panel-ink)!important;font-family:var(--panel-font)!important}
+body :is(h1,h2,h3,h4,h5,h6){font-family:var(--panel-display)}
+.wrapper,.main-content{min-height:100vh;background:transparent!important}
+.content{min-width:0;min-height:100vh;padding:clamp(18px,2.5vw,36px)!important;background:transparent!important;color:var(--panel-ink)}
+.portal-content{width:min(100%,1500px);margin:0 auto;color:var(--panel-ink)}
+.page-body{min-width:0;background:transparent!important;color:var(--panel-ink)}
+.sidebar{background:linear-gradient(160deg,#081b3a 0%,#102f72 54%,#0a1c45 100%)!important;border-color:rgba(148,180,235,.2)!important;color:#f8fbff!important;box-shadow:12px 0 38px rgba(13,34,79,.13)!important}
+.sidebar .logo{color:#fff!important;font-family:var(--panel-display);letter-spacing:-.04em}
+.sidebar .logo i,.sidebar-brand h4 i{color:#71d8ff!important;filter:drop-shadow(0 0 10px rgba(113,216,255,.32))}
+.sidebar-brand{border-color:rgba(203,222,255,.15)!important}
+.sidebar-brand h4{font-family:var(--panel-display)}
+.sidebar .menu li,.sidebar .menu-link,.sidebar .nav-link-admin{border-radius:13px;transition:color .2s ease,background .2s ease,transform .2s ease,box-shadow .2s ease}
+.sidebar .menu li{color:#d7e5fb}
+.sidebar .menu li:hover,.sidebar .menu li.active,.sidebar .menu .active{background:linear-gradient(110deg,rgba(37,99,235,.92),rgba(14,165,233,.76))!important;color:#fff!important;box-shadow:0 8px 20px rgba(2,12,35,.18)}
+.sidebar .menu li:not(.active):hover,.sidebar .menu-link:not(.active):hover,.sidebar .nav-link-admin:not(.active):hover{background:rgba(255,255,255,.1)!important;color:#fff!important;transform:translateX(3px)}
+.sidebar .menu-link,.sidebar .nav-link-admin{color:#d5e2f5!important}
+.sidebar .menu-link.active,.sidebar .nav-link-admin.active{background:linear-gradient(110deg,rgba(37,99,235,.92),rgba(14,165,233,.76))!important;color:#fff!important;border-color:#6ecbff!important;box-shadow:0 8px 20px rgba(2,12,35,.18)}
+.sidebar .nav-section{color:#91a9cb!important;letter-spacing:.14em}
+.sidebar-account{--sidebar-account-text:#f1f6ff!important;--sidebar-account-muted:#a9bddb!important;border-color:rgba(203,222,255,.18)!important}
+.sidebar-account-avatar{background:linear-gradient(135deg,#38bdf8,#2563eb)!important;color:#fff!important;box-shadow:0 6px 18px rgba(37,99,235,.28)}
+.sidebar #logoutBtn,.sidebar #logoutBtn i,.sidebar .logout-button,.sidebar .logout-button i{color:#ff9fae}
+.sidebar #logoutBtn:hover,.sidebar .logout-button:hover,.sidebar .logout-button:hover i{color:#ffc1ca}
+.topbar{position:relative;z-index:5;gap:16px;border:1px solid rgba(255,255,255,.85)!important;border-radius:22px!important;padding:17px 22px!important;background:rgba(255,255,255,.78)!important;color:var(--panel-ink)!important;box-shadow:0 12px 34px rgba(19,43,91,.07)!important;backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);animation:panel-enter .65s both cubic-bezier(.22,1,.36,1)}
+.topbar h2,.topbar h5,.welcome h2{color:var(--panel-ink);font-weight:750;letter-spacing:-.035em}
+.topbar p,.welcome p{color:var(--panel-muted)}
+.topbar-user-name{color:#243653!important}.topbar-user-role{color:#7b8aa2!important}
+.user-area,.topbar-user{color:var(--panel-muted)}
+.notification,.admin-email-button{transition:transform .2s ease,color .2s ease,box-shadow .2s ease}
+.notification:hover,.admin-email-button:hover{transform:translateY(-2px)}
+.content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.event-preview,.attendance-stat,.attendance-table-card,.schedule-card,.schedule-horario-detalle,.student-card,.guardian-stat-card,.calx-assignment,.calx-course,.calx-stat,.calx-risk,.calx-book,.calx-activity,.calx-activities),.portal-content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.event-preview,.attendance-stat,.attendance-table-card,.schedule-card,.schedule-horario-detalle,.student-card,.guardian-stat-card),.page-body :is(.section-card,.stat-card,.card,.account-card,.admin-table,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.attendance-table-card,.schedule-card,.student-card,.guardian-stat-card){border:1px solid var(--panel-line);border-radius:20px;box-shadow:var(--panel-shadow);transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s,border-color .25s}
+.content :is(.stat-card,.section-card,.account-card,.subject-card,.achievement,.student-card,.guardian-stat-card):hover,.portal-content :is(.stat-card,.section-card,.account-card,.subject-card,.achievement,.student-card,.guardian-stat-card):hover,.page-body :is(.stat-card,.section-card,.account-card,.student-card):hover{transform:translateY(-3px);border-color:rgba(37,99,235,.24);box-shadow:0 22px 48px rgba(19,43,91,.12)}
+.content :is(.stat-card,.section-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.attendance-table-card,.schedule-card,.student-card,.guardian-stat-card,.calx-course,.calx-stat),.portal-content :is(.stat-card,.section-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.schedule-card,.student-card,.guardian-stat-card),.page-body :is(.stat-card,.section-card,.card,.account-card,.admin-table,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.schedule-card,.student-card,.guardian-stat-card){animation:panel-enter .62s both cubic-bezier(.22,1,.36,1)}
+:is(.stats,.stats-grid,.dashboard-grid,.cards-grid,.row) > :is(.stat-card,.card,[class*='col-']){animation:panel-enter .62s both cubic-bezier(.22,1,.36,1)}
+:is(.stats,.stats-grid,.dashboard-grid,.cards-grid) > :nth-child(2){animation-delay:.06s}:is(.stats,.stats-grid,.dashboard-grid,.cards-grid) > :nth-child(3){animation-delay:.12s}:is(.stats,.stats-grid,.dashboard-grid,.cards-grid) > :nth-child(4){animation-delay:.18s}
+.content :is(.btn-primary,.btn-outline-primary,.btn-action),.portal-content :is(.btn-primary,.btn-outline-primary,.btn-action),.page-body :is(.btn-primary,.btn-outline-primary,.btn-action){border-radius:11px;font-weight:700;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.content .btn-primary,.portal-content .btn-primary,.page-body .btn-primary{border-color:transparent;background:linear-gradient(110deg,#163a83,#2563cf 58%,#0b82ba);box-shadow:0 8px 18px rgba(30,64,175,.18)}
+.content .btn-primary:hover,.portal-content .btn-primary:hover,.page-body .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(30,64,175,.25)}
+.content :is(input:not([type=checkbox]):not([type=radio]),select,textarea),.portal-content :is(input:not([type=checkbox]):not([type=radio]),select,textarea),.page-body :is(input:not([type=checkbox]):not([type=radio]),select,textarea){max-width:100%;border-radius:11px;transition:border-color .18s,box-shadow .18s,background-color .18s}
+.content :is(input,select,textarea):focus,.portal-content :is(input,select,textarea):focus,.page-body :is(input,select,textarea):focus{border-color:#5c8dea;box-shadow:0 0 0 3px rgba(37,99,235,.12);outline:0}
+.content :is(table,.table),.portal-content :is(table,.table),.page-body :is(table,.table){border-color:#e6edf6}
+.content :is(th,.table th),.portal-content :is(th,.table th),.page-body :is(th,.table th){font-weight:700}
+.content :is(tbody tr,.table tbody tr),.portal-content :is(tbody tr,.table tbody tr),.page-body :is(tbody tr,.table tbody tr){transition:background-color .18s ease}
+.content tbody tr:hover,.portal-content tbody tr:hover,.page-body tbody tr:hover{background:rgba(37,99,235,.045)}
+.content :focus-visible,.portal-content :focus-visible,.page-body :focus-visible,.sidebar a:focus-visible,.sidebar li:focus-visible{outline:3px solid rgba(14,165,233,.65);outline-offset:3px}
+.main-content>.topbar{margin:18px 24px 0}
+.main-content>.page-body{padding:clamp(18px,2.5vw,34px)!important}
+.admin-table,.table-responsive{overflow-x:auto}
+.admin-table{background:rgba(255,255,255,.84)!important;border-color:var(--panel-line)!important}
+.admin-table-header{background:transparent!important;border-color:#e7edf6!important}
+.admin-table-header h6,.stat-value{color:#14264c!important}
+.stat-label{color:#687994!important}
+.table-dark-custom{--bs-table-bg:transparent;--bs-table-color:#334155;--bs-table-border-color:#e7edf6;color:#334155!important}
+.table-dark-custom thead th{background:#f0f5fc!important;color:#5d6e88!important;border-color:#e7edf6!important}
+.table-dark-custom tbody td{background:transparent!important;color:#34445d!important;border-color:#e7edf6!important}
+.table-dark-custom tbody tr:hover{background:rgba(37,99,235,.05)!important}
+.avatar-admin{background:linear-gradient(135deg,#38bdf8,#2563eb)!important;color:#fff!important}
+.nav-toggle-button{border-color:rgba(37,99,235,.15)!important;background:linear-gradient(140deg,#102f72,#1e40af)!important;color:#fff!important;box-shadow:0 8px 22px rgba(30,64,175,.25)!important;transition:transform .2s,filter .2s}
+.nav-toggle-button:hover{transform:translateY(-2px);filter:brightness(1.12)}
+@keyframes panel-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:991.98px){.content{padding:18px!important}.main-content>.topbar{margin:14px 16px 0}.main-content>.page-body{padding:20px!important}.portal-content{max-width:100%}.topbar{flex-wrap:wrap}.sidebar{box-shadow:16px 0 44px rgba(5,18,48,.25)!important}}
+@media(max-width:767.98px){.content{padding:14px 12px!important}.main-content>.topbar{margin:10px 10px 0;padding:14px 15px!important;border-radius:17px!important}.main-content>.page-body{padding:14px 12px!important}.topbar h2,.topbar h5,.welcome h2{font-size:1.25rem}.user-area,.topbar-user{gap:10px}.content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.attendance-table-card,.schedule-card,.student-card,.guardian-stat-card),.portal-content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.schedule-card,.student-card,.guardian-stat-card),.page-body :is(.section-card,.stat-card,.card,.account-card,.admin-table,.task-card,.subject-card,.achievement,.event-panel,.schedule-card,.student-card,.guardian-stat-card){border-radius:16px}.table-responsive{max-width:100%;overscroll-behavior-inline:contain}.content table:not(.calx-table),.portal-content table,.page-body table{display:block;max-width:100%;overflow-x:auto;white-space:nowrap}.content :is(.form-control,.form-select),.portal-content :is(.form-control,.form-select),.page-body :is(.form-control,.form-select){min-height:42px}.page-body .topbar{padding-left:64px!important}}
+@media(max-width:420px){.topbar-user-copy{display:none}.content{padding:11px 9px!important}.main-content>.page-body{padding:12px 9px!important}.main-content>.topbar{margin:8px 8px 0}.content :is(.btn,.btn-action),.portal-content :is(.btn,.btn-action),.page-body :is(.btn,.btn-action){max-width:100%;white-space:normal}}
+html[data-theme=dark]{background:#0e1522}
+html[data-theme=dark] body{background:radial-gradient(ellipse at 8% 0,rgba(14,165,233,.08),transparent 28%),linear-gradient(135deg,#0e1522,#111b2b)!important;color:#e6edf7!important}
+html[data-theme=dark] .sidebar{background:linear-gradient(160deg,#08152c 0%,#14294c 56%,#0a182e 100%)!important}
+html[data-theme=dark] .topbar{background:rgba(23,34,53,.9)!important;border-color:#34445d!important;color:#e6edf7!important;box-shadow:0 12px 34px #0003!important}
+html[data-theme=dark] .topbar :is(h2,h5),html[data-theme=dark] .welcome h2,html[data-theme=dark] .topbar-user-name{color:#e6edf7!important}
+html[data-theme=dark] .topbar p,html[data-theme=dark] .welcome p,html[data-theme=dark] .topbar-user-role{color:#aab8cc!important}
+html[data-theme=dark] .admin-table{background:#172235!important;border-color:#34445d!important}
+html[data-theme=dark] .admin-table-header h6,html[data-theme=dark] .stat-value{color:#e6edf7!important}
+html[data-theme=dark] .stat-label{color:#aab8cc!important}
+html[data-theme=dark] .table-dark-custom thead th{background:#202d42!important;color:#cbd7e8!important;border-color:#34445d!important}
+html[data-theme=dark] .table-dark-custom tbody td{background:#172235!important;color:#d5deea!important;border-color:#34445d!important}
+html[data-theme=dark] .content tbody tr:hover,html[data-theme=dark] .portal-content tbody tr:hover,html[data-theme=dark] .page-body tbody tr:hover{background:rgba(96,165,250,.08)!important}
+@media(prefers-reduced-motion:reduce){.content,.portal-content,.page-body,.topbar,.content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.attendance-table-card,.schedule-card,.student-card,.guardian-stat-card),.portal-content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.schedule-card,.student-card,.guardian-stat-card),.page-body :is(.section-card,.stat-card,.card,.account-card,.admin-table,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.schedule-card,.student-card,.guardian-stat-card),.sidebar :is(.menu li,.menu-link,.nav-link-admin),.nav-toggle-button{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Paleta oficial tomada de la referencia del usuario. */
+:root{--panel-ink:#020617;--panel-muted:#334155;--panel-blue:#1E40AF;--panel-cyan:#0EA5E9;--panel-line:rgba(2,6,23,.15);--panel-surface:rgba(255,255,255,.84);--panel-shadow:0 16px 44px rgba(2,6,23,.1)}
+html{background:#E2E8F0}
+body{background:radial-gradient(ellipse at 8% 0,rgba(14,165,233,.12),transparent 28%),radial-gradient(ellipse at 95% 95%,rgba(30,64,175,.1),transparent 30%),linear-gradient(135deg,#E2E8F0,#E2E8F0)!important;color:#020617!important}
+.content,.portal-content,.page-body{color:#020617}
+.sidebar{background:linear-gradient(160deg,#020617 0%,#1E40AF 54%,#020617 100%)!important;color:#E2E8F0!important}
+.sidebar .menu li:hover,.sidebar .menu li.active,.sidebar .menu .active,.sidebar .menu-link.active,.sidebar .nav-link-admin.active{background:linear-gradient(110deg,#1E40AF,#0EA5E9)!important;color:#fff!important}
+.sidebar .menu-link,.sidebar .nav-link-admin,.sidebar .menu li{color:#E2E8F0!important}
+.sidebar .logo i,.sidebar-brand h4 i{color:#0EA5E9!important}
+.sidebar-account{--sidebar-account-text:#E2E8F0!important;--sidebar-account-muted:#E2E8F0!important}
+.sidebar-account-avatar,.avatar-admin{background:linear-gradient(135deg,#0EA5E9,#1E40AF)!important;color:#fff!important}
+.topbar h2,.topbar h5,.welcome h2,.topbar-user-name,.admin-table-header h6,.stat-value{color:#020617!important}
+.topbar p,.welcome p,.topbar-user-role,.stat-label{color:#334155!important}
+.content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.event-preview,.attendance-stat,.attendance-table-card,.schedule-card,.schedule-horario-detalle,.student-card,.guardian-stat-card,.calx-assignment,.calx-course,.calx-stat,.calx-risk,.calx-book,.calx-activity,.calx-activities),.portal-content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.event-preview,.attendance-stat,.attendance-table-card,.schedule-card,.schedule-horario-detalle,.student-card,.guardian-stat-card),.page-body :is(.section-card,.stat-card,.card,.account-card,.admin-table,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.attendance-table-card,.schedule-card,.student-card,.guardian-stat-card){border-color:rgba(2,6,23,.15);box-shadow:0 16px 44px rgba(2,6,23,.1)}
+.content :is(.stat-card,.section-card,.account-card,.subject-card,.achievement,.student-card,.guardian-stat-card):hover,.portal-content :is(.stat-card,.section-card,.account-card,.subject-card,.achievement,.student-card,.guardian-stat-card):hover,.page-body :is(.stat-card,.section-card,.account-card,.student-card):hover{border-color:rgba(14,165,233,.55);box-shadow:0 22px 48px rgba(30,64,175,.16)}
+.content .btn-primary,.portal-content .btn-primary,.page-body .btn-primary{background:linear-gradient(110deg,#1E40AF,#0EA5E9);box-shadow:0 8px 18px rgba(30,64,175,.22)}
+.content .btn-primary:hover,.portal-content .btn-primary:hover,.page-body .btn-primary:hover{box-shadow:0 12px 24px rgba(30,64,175,.3)}
+.content :is(input,select,textarea):focus,.portal-content :is(input,select,textarea):focus,.page-body :is(input,select,textarea):focus{border-color:#0EA5E9;box-shadow:0 0 0 3px rgba(14,165,233,.18)}
+.content tbody tr:hover,.portal-content tbody tr:hover,.page-body tbody tr:hover{background:rgba(14,165,233,.08)}
+.admin-table{background:rgba(255,255,255,.84)!important;border-color:rgba(2,6,23,.15)!important}
+.admin-table-header{border-color:rgba(2,6,23,.12)!important}
+.table-dark-custom thead th{background:#E2E8F0!important;color:#334155!important;border-color:rgba(2,6,23,.12)!important}
+.table-dark-custom tbody td{color:#020617!important;border-color:rgba(2,6,23,.12)!important}
+.nav-toggle-button{background:linear-gradient(140deg,#1E40AF,#0EA5E9)!important;box-shadow:0 8px 22px rgba(30,64,175,.28)!important}
+html[data-theme=dark]{background:#020617}
+html[data-theme=dark] body{background:radial-gradient(ellipse at 8% 0,rgba(14,165,233,.12),transparent 28%),linear-gradient(135deg,#020617,#020617)!important;color:#E2E8F0!important}
+html[data-theme=dark] .sidebar{background:linear-gradient(160deg,#020617 0%,#1E40AF 54%,#020617 100%)!important}
+html[data-theme=dark] .topbar{background:rgba(2,6,23,.92)!important;border-color:rgba(226,232,240,.16)!important;color:#E2E8F0!important}
+html[data-theme=dark] .topbar :is(h2,h5),html[data-theme=dark] .welcome h2,html[data-theme=dark] .topbar-user-name{color:#E2E8F0!important}
+html[data-theme=dark] .topbar p,html[data-theme=dark] .welcome p,html[data-theme=dark] .topbar-user-role{color:#E2E8F0!important;opacity:.75}
+html[data-theme=dark] .content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.event-preview,.attendance-stat,.attendance-table-card,.schedule-card,.schedule-horario-detalle,.student-card,.guardian-stat-card,.calx-assignment,.calx-course,.calx-stat,.calx-risk,.calx-book,.calx-activity,.calx-activities),html[data-theme=dark] .portal-content :is(.section-card,.stat-card,.card,.account-card,.task-card,.subject-card,.achievement,.event-panel,.event-preview,.attendance-stat,.attendance-table-card,.schedule-card,.student-card,.guardian-stat-card),html[data-theme=dark] .page-body :is(.section-card,.stat-card,.card,.account-card,.admin-table,.task-card,.subject-card,.achievement,.event-panel,.attendance-stat,.attendance-table-card,.schedule-card,.student-card,.guardian-stat-card){background:#020617!important;color:#E2E8F0!important;border-color:rgba(226,232,240,.16)!important}
+html[data-theme=dark] .admin-table-header h6,html[data-theme=dark] .stat-value,html[data-theme=dark] .table-dark-custom tbody td{color:#E2E8F0!important}
+html[data-theme=dark] .table-dark-custom thead th{background:#1E40AF!important;color:#E2E8F0!important}
+html[data-theme=dark] .table-dark-custom tbody td{background:#020617!important;border-color:rgba(226,232,240,.16)!important}
+/* Barra lateral sólida, sin degradados. */
+.sidebar{background-color:#020617!important;background-image:none!important;box-shadow:8px 0 28px rgba(2,6,23,.16)!important}
+.sidebar .menu li:hover,.sidebar .menu li.active,.sidebar .menu .active,.sidebar .menu-link.active,.sidebar .nav-link-admin.active{background:#1E40AF!important;background-image:none!important;color:#fff!important}
+.sidebar .menu li:not(.active):hover,.sidebar .menu-link:not(.active):hover,.sidebar .nav-link-admin:not(.active):hover{background:#1e293b!important;background-image:none!important;color:#E2E8F0!important;transform:none}
+html[data-theme=dark] .sidebar{background-color:#020617!important;background-image:none!important}
+/* Iconos superiores con el mismo tono sólido de la barra lateral. */
+.nav-toggle-button{background:#020617!important;background-image:none!important;border:1px solid rgba(226,232,240,.18)!important;color:#E2E8F0!important;box-shadow:0 8px 20px rgba(2,6,23,.2)!important}
+.nav-toggle-button:hover{background:#1E40AF!important;background-image:none!important;color:#fff!important}
+.avatar-admin{background:#020617!important;background-image:none!important;color:#E2E8F0!important;border:1px solid rgba(226,232,240,.2);box-shadow:0 5px 14px rgba(2,6,23,.2)}
+.admin-email-button{width:44px;height:44px;border:1px solid rgba(2,6,23,.14)!important;border-radius:14px!important;background:#E2E8F0!important;background-image:none!important;color:#1E40AF!important;font-size:18px!important;box-shadow:0 6px 16px rgba(2,6,23,.08)!important;transition:transform .2s,border-color .2s,background .2s,color .2s,box-shadow .2s!important}
+.admin-email-button:hover,.admin-email-button[aria-expanded=true]{transform:translateY(-2px);border-color:#0EA5E9!important;background:#1E40AF!important;color:#fff!important;box-shadow:0 9px 20px rgba(30,64,175,.22)!important}
+/* Colapso de navegación: marca e iconos centrados, sin etiquetas. */
+body.sidebar-collapsed .sidebar{width:78px!important}
+body.sidebar-collapsed .main-content{margin-left:78px!important}
+body.sidebar-collapsed .sidebar-brand{display:flex;justify-content:center;padding:22px 8px!important}
+body.sidebar-collapsed .sidebar-brand h4{display:flex;justify-content:center;width:100%;overflow:visible!important;color:transparent!important;font-size:0!important}
+body.sidebar-collapsed .sidebar-brand h4 i{margin:0!important;color:#0EA5E9!important;font-size:22px}
+body.sidebar-collapsed .sidebar-brand>span,body.sidebar-collapsed .sidebar-account-details,body.sidebar-collapsed .nav-section{display:none!important}
+body.sidebar-collapsed .sidebar .nav-link-admin,body.sidebar-collapsed .sidebar .nav-link-admin.active{display:flex;justify-content:center;gap:0;width:48px;margin:5px auto;overflow:visible;padding:13px 0!important;color:transparent!important;font-size:0!important}
+body.sidebar-collapsed .sidebar .nav-link-admin i{flex:0 0 auto;width:auto;margin:0!important;color:#E2E8F0!important;font-size:17px}
+body.sidebar-collapsed .sidebar .nav-link-admin:hover i,body.sidebar-collapsed .sidebar .nav-link-admin.active i{color:#0EA5E9!important}
+body.sidebar-collapsed .sidebar-footer{padding:14px 0!important}
+body.sidebar-collapsed .sidebar-footer a{display:flex;justify-content:center;gap:0;width:48px;margin:0 auto;overflow:visible;padding:13px 0!important;color:transparent!important;font-size:0!important}
+body.sidebar-collapsed .sidebar-footer a i{flex:0 0 auto;margin:0!important;color:#0EA5E9!important;font-size:17px}
+.nav-toggle-button{display:grid;place-items:center;width:44px!important;height:44px!important;flex:0 0 44px!important;border-radius:14px!important;font-size:18px!important;cursor:pointer}
+.nav-toggle-button i{transition:transform .2s ease}
+.nav-toggle-button:hover i{transform:scale(1.08)}
+.nav-toggle-button:focus-visible{outline:3px solid #0EA5E9!important;outline-offset:3px}
+@media(max-width:768px){body.sidebar-collapsed .sidebar{width:min(280px,85vw)!important;transform:translateX(-100%)}body.sidebar-collapsed .main-content{margin-left:0!important}.nav-toggle-button[aria-expanded=true]{background:#1E40AF!important}}
+@media(prefers-reduced-motion:reduce){.nav-toggle-button i{transition:none}}
+/* Barra lateral contra�da: conservar solamente los iconos. */
+body.sidebar-collapsed .sidebar .logo{display:flex;justify-content:center;gap:0;padding:20px 8px!important;font-size:0!important}
+body.sidebar-collapsed .sidebar .logo>span{display:none!important}
+body.sidebar-collapsed .sidebar .logo>i{font-size:22px!important}
+body.sidebar-collapsed .sidebar .menu{padding:8px 0!important}
+body.sidebar-collapsed .sidebar .menu li{display:flex;align-items:center;justify-content:center;gap:0;width:48px;min-height:46px;margin:5px auto;padding:12px 0!important;overflow:visible;font-size:0!important}
+body.sidebar-collapsed .sidebar .menu li>span{display:none!important}
+body.sidebar-collapsed .sidebar .menu li>i{flex:0 0 auto;width:auto;margin:0!important;font-size:17px!important}
+body.sidebar-collapsed .sidebar .menu-link{display:flex;align-items:center;justify-content:center;gap:0;width:48px;min-height:46px;margin:5px auto;padding:12px 0!important;overflow:visible;font-size:0!important}
+body.sidebar-collapsed .sidebar .menu-link>i{flex:0 0 auto;width:auto;margin:0!important;font-size:17px!important}
+body.sidebar-collapsed .sidebar .menu-link.active>i,body.sidebar-collapsed .sidebar .menu li.active>i{color:#0EA5E9!important}

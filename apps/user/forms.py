@@ -37,41 +37,41 @@ class RegistrarForm(forms.ModelForm):
     )
 
     direccion = forms.CharField(
-        label="DirecciÃ³n",
+        label="Dirección",
         max_length=255,
         required=True,
         widget=forms.TextInput(attrs={
             "class": "form-control",
-            "placeholder": "Ingrese su direcciÃ³n",
+            "placeholder": "Ingrese su dirección",
         }),
     )
 
     telefono = forms.CharField(
-        label="NÃºmero de telÃ©fono",
+        label="Número de teléfono",
         max_length=30,
         required=True,
         widget=forms.TextInput(attrs={
             "class": "form-control",
-            "placeholder": "Ingrese su nÃºmero de telÃ©fono",
+            "placeholder": "Ingrese su número de teléfono",
         }),
     )
 
     password = forms.CharField(
-        label="ContraseÃ±a",
+        label="Contraseña",
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Ingrese su contraseÃ±a"
+                "placeholder": "Ingrese su contraseña"
             }
         )
     )
 
     password2 = forms.CharField(
-        label="Confirmar contraseÃ±a",
+        label="Confirmar contraseña",
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "Confirme su contraseÃ±a"
+                "placeholder": "Confirme su contraseña"
             }
         )
     )
@@ -90,6 +90,14 @@ class RegistrarForm(forms.ModelForm):
             "telefono",
         ]
 
+        labels = {
+            "first_name": "Nombres",
+            "last_name": "Apellidos",
+            "fecha_nacimiento": "Fecha de nacimiento",
+            "email": "Correo electrónico",
+            "direccion": "Dirección",
+            "telefono": "Número de teléfono",
+        }
         widgets = {
 
             "username": forms.TextInput(
@@ -123,17 +131,17 @@ class RegistrarForm(forms.ModelForm):
             "email": forms.EmailInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Ingrese su correo electrÃ³nico",
+                    "placeholder": "Ingrese su correo electrónico",
                     "required": True
                 }
             ),
 
             "direccion": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Ingrese su direcciÃ³n"}
+                attrs={"class": "form-control", "placeholder": "Ingrese su dirección"}
             ),
 
             "telefono": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Ingrese su nÃºmero de telÃ©fono"}
+                attrs={"class": "form-control", "placeholder": "Ingrese su número de teléfono"}
             ),
         }
 
@@ -149,7 +157,7 @@ class RegistrarForm(forms.ModelForm):
         if not email:
 
             raise forms.ValidationError(
-                "El correo electrÃ³nico es obligatorio."
+                "El correo electrónico es obligatorio."
             )
 
         email = email.lower().strip()
@@ -159,7 +167,7 @@ class RegistrarForm(forms.ModelForm):
         ).exists():
 
             raise forms.ValidationError(
-                "Este correo electrÃ³nico ya estÃ¡ registrado."
+                "Este correo electrónico ya está registrado."
             )
 
         return email
@@ -189,7 +197,7 @@ class RegistrarForm(forms.ModelForm):
                 return username
 
             raise forms.ValidationError(
-                "Este documento ya estÃ¡ registrado."
+                "Este documento ya está registrado."
             )
 
         return username
@@ -213,7 +221,7 @@ class RegistrarForm(forms.ModelForm):
 
                 self.add_error(
                     "password2",
-                    "Las contraseÃ±as no coinciden."
+                    "Las contraseñas no coinciden."
                 )
 
         return cleaned_data
@@ -236,11 +244,11 @@ class LoginForm(forms.Form):
     )
 
     password = forms.CharField(
-        label="ContraseÃ±a",
+        label="Contraseña",
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "ContraseÃ±a"
+                "placeholder": "Contraseña"
             }
         )
     )

@@ -24,7 +24,7 @@ def listar_cursos(request):
     cantidad_alumnos=Count("alumnos"))
     cursos_filtro = Cursos.objects.order_by("nombre")
 
-    alumnos = Alumnos.objects.select_related(
+    alumnos = Alumnos.objects.filter(usuario__rol__nombre__iexact="alumno").select_related(
         "usuario",
         "curso",
         "clase"
@@ -50,7 +50,7 @@ def listar_alumnos(request):
 
     cursos_filtro = Cursos.objects.order_by("nombre")
 
-    alumnos = Alumnos.objects.select_related(
+    alumnos = Alumnos.objects.filter(usuario__rol__nombre__iexact="alumno").select_related(
         "usuario",
         "curso",
         "clase"
@@ -175,7 +175,7 @@ def filtrar_alumnos(request):
 
     print("CURSO RECIBIDO:", curso_id)
 
-    alumnos = Alumnos.objects.select_related(
+    alumnos = Alumnos.objects.filter(usuario__rol__nombre__iexact="alumno").select_related(
         "usuario",
         "curso",
         "clase"
@@ -195,84 +195,34 @@ def filtrar_alumnos(request):
     )
 
 
-def asignar_alumno_curso(
-    request,
-    alumno_id,
-    curso_id
-):
-
+def asignar_alumno_curso(request, alumno_id, curso_id):
     alumno = get_object_or_404(
-        Usuario,
-        id=alumno_id
+        Alumnos.objects.select_related("usuario__rol", "curso"),
+        usuario_id=alumno_id,
     )
+    curso = get_object_or_404(Cursos, id=curso_id)
 
-    curso = get_object_or_404(
-        Cursos,
-        id=curso_id
-    )
-
-    # --------------------------------------
-    # Verificar si ya tiene curso
-    # --------------------------------------
-
-    if alumno.curso is not None:
-
-        messages.error(
-            request,
-            "Este alumno ya está asignado a un curso."
-        )
-
+    rol = alumno.usuario.rol
+    if not rol or rol.nombre.strip().casefold() != "alumno":
+        messages.error(request, "Solo se pueden asignar a cursos personas con rol Alumno.")
         return redirect("listar_cursos")
 
+    if alumno.curso_id is not None:
+        messages.error(request, "Este alumno ya está asignado a un curso.")
+        return redirect("listar_cursos")
 
-    # --------------------------------------
-    # Contar alumnos del curso
-    # --------------------------------------
-
-    cantidad_alumnos = Usuario.objects.filter(
-        curso=curso,
-        rol__nombre="alumno"
-    ).count()
-
-
-    # --------------------------------------
-    # Verificar límite de 32 alumnos
-    # --------------------------------------
-
+    cantidad_alumnos = Alumnos.objects.filter(curso=curso).count()
     if cantidad_alumnos >= 32:
-
         messages.error(
             request,
-            "No se puede asignar el alumno. "
-            "El curso ya tiene 32 alumnos."
+            "No se puede asignar el alumno. El curso ya tiene 32 alumnos."
         )
-
         return redirect("listar_cursos")
-
-
-    # --------------------------------------
-    # Asignar curso al alumno
-    # --------------------------------------
 
     alumno.curso = curso
-
-    alumno.save()
-
-
-    messages.success(
-        request,
-        "Alumno asignado correctamente."
-    )
-
+    alumno.save(update_fields=["curso"])
+    messages.success(request, "Alumno asignado correctamente.")
     return redirect("listar_cursos")
-
-
-
-
-
-
-
-
 
 
 def cargar_alumnos_excel(request):
@@ -386,6 +336,12 @@ def cargar_alumnos_excel(request):
             fila_excel = numero_fila + 2
 
             try:
+
+                rol_excel = row.get('rol')
+                if rol_excel is None or str(rol_excel).strip().casefold() != 'alumno':
+                    raise ValueError(
+                        'el rol debe ser Alumno para registrar a una persona en un curso'
+                    )
 
                 # =================================================
                 # USERNAME
@@ -598,6 +554,9 @@ def cargar_alumnos_excel(request):
                 if usuario_username:
 
                     usuario_obj = usuario_username
+                    rol_actual = usuario_obj.rol
+                    if not rol_actual or rol_actual.nombre.strip().casefold() != "alumno":
+                        raise ValueError("la cuenta existente no tiene rol Alumno")
 
                     # El email pertenece a otro usuario
                     if (

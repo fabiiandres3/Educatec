@@ -642,13 +642,13 @@
 
                                 <div class="user-avatar">
 
-                                    {{ alumno.first_name|default:alumno.documento|slice:":1"|upper }}
+                                    {{ alumno.usuario.first_name|default:alumno.usuario.documento|slice:":1"|upper }}
 
                                 </div>
 
                                 <span class="username">
 
-                                    {{ alumno.documento }}
+                                    {{ alumno.usuario.documento }}
 
                                 </span>
 
@@ -662,7 +662,7 @@
 
                             <span class="student-name">
 
-                                {{ alumno.first_name|default:"—" }}
+                                {{ alumno.usuario.first_name|default:"—" }}
 
                             </span>
 
@@ -674,7 +674,7 @@
 
                             <span class="student-name">
 
-                                {{ alumno.last_name|default:"—" }}
+                                {{ alumno.usuario.last_name|default:"—" }}
 
                             </span>
 
@@ -686,7 +686,7 @@
 
                             <span class="email">
 
-                                {{ alumno.email|default:"—" }}
+                                {{ alumno.usuario.email|default:"—" }}
 
                             </span>
 
@@ -722,13 +722,13 @@
                         <!-- ROL -->
                         <td>
 
-                            {% if alumno.rol %}
+                            {% if alumno.usuario.rol %}
 
                                 <span class="badge-custom badge-role">
 
                                     <i class="fas fa-user-tag me-1"></i>
 
-                                    {{ alumno.rol.nombre }}
+                                    {{ alumno.usuario.rol.nombre }}
 
                                 </span>
 
@@ -753,7 +753,7 @@
 
                                 <!-- EDITAR -->
                                 <a
-                                    href="{% url 'editar_alumno' alumno.id %}"
+                                    href="{% url 'editar_alumno' alumno.usuario.id %}"
                                     class="action-btn btn-edit"
                                     title="Editar alumno"
                                 >
@@ -771,8 +771,8 @@
                                     class="action-btn btn-delete"
                                     title="Eliminar alumno"
                                     onclick="abrirModalEliminar(
-                                        '{{ alumno.id }}',
-                                        '{{ alumno.first_name }} {{ alumno.last_name }}'
+                                        '{{ alumno.usuario.id }}',
+                                        '{{ alumno.usuario.first_name }} {{ alumno.usuario.last_name }}'
                                     )"
                                 >
 

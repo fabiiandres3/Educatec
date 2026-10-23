@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ evento.titulo }} · Educatec{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/home_moderno.css' %}?v=hero-floats-20261023">
+{% endblock %}
+
+{% block content %}
+<main class="event-detail-page">
+  <div class="event-detail-shell">
+    <a class="event-detail-back" href="{% url 'index' %}#eventos">
+      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+      Volver a eventos
+    </a>
+
+    <article class="event-detail-card">
+      {% if evento.imagen %}
+      <img class="event-detail-image" src="{{ evento.imagen.url }}" alt="{{ evento.titulo }}">
+      {% else %}
+      <div class="event-detail-image event-detail-image--empty" aria-hidden="true">
+        <i class="fa-regular fa-calendar-days"></i>
+      </div>
+      {% endif %}
+
+      <div class="event-detail-content">
+        <span class="event-detail-category">{{ evento.get_tipo_display }}</span>
+        <h1>{{ evento.titulo }}</h1>
+
+        <div class="event-detail-meta">
+          <span><i class="fa-regular fa-calendar" aria-hidden="true"></i>{{ evento.fecha|date:"d/m/Y" }}</span>
+          {% if evento.hora_inicio %}
+          <span><i class="fa-regular fa-clock" aria-hidden="true"></i>
+            {{ evento.hora_inicio|time:"H:i" }}
+            {% if evento.hora_fin %} – {{ evento.hora_fin|time:"H:i" }}{% endif %}
+          </span>
+          {% endif %}
+        </div>
+
+        <hr>
+        <div class="event-detail-description">{{ evento.descripcion|linebreaks }}</div>
+
+        {% if evento.video %}
+        <a class="event-detail-video" href="{{ evento.video }}" target="_blank" rel="noopener noreferrer">
+          <i class="fa-solid fa-play" aria-hidden="true"></i>
+          Ver video del evento
+        </a>
+        {% endif %}
+      </div>
+    </article>
+  </div>
+</main>
+{% endblock %}
