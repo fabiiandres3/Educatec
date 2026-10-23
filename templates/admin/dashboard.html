@@ -38,7 +38,7 @@
     .pending-card { min-width:0;padding:17px;border:1px solid #edf0f6;border-radius:17px;background:linear-gradient(145deg,#fff,#fbfcff);transition:border-color .2s,transform .2s,box-shadow .2s; }
     .pending-card:hover { transform:translateY(-2px);border-color:#dce4ff;box-shadow:0 9px 22px rgba(40,60,110,.07); }
     .pending-user { display:flex;align-items:center;gap:11px;min-width:0; }
-    .pending-avatar { display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:15px;background:linear-gradient(145deg,#e7edff,#f0edff);color:#5b69c9;font-size:13px;font-weight:800; }
+    .pending-avatar { display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:15px;background:linear-gradient(145deg,#e7edff,#edf4ff);color:#5b89c9;font-size:13px;font-weight:800; }
     .pending-user-copy { min-width:0; }
     .pending-user-copy strong { display:block;overflow:hidden;color:#29354c;font-size:13px;text-overflow:ellipsis;white-space:nowrap; }
     .pending-user-copy span { display:block;overflow:hidden;margin-top:4px;color:#8c96a8;font-size:11px;text-overflow:ellipsis;white-space:nowrap; }
@@ -89,7 +89,7 @@
         <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Cuentas registradas</span><span class="dashboard-stat-icon" style="--accent:#5571df;--tint:#eef1ff"><i class="fas fa-users"></i></span></div><div class="dashboard-stat-value">{{ total_usuarios }}</div><div class="dashboard-stat-note">Total de cuentas en la plataforma</div></article>
         <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Pendientes de rol</span><span class="dashboard-stat-icon" style="--accent:#e19a36;--tint:#fff5e7"><i class="fas fa-user-clock"></i></span></div><div class="dashboard-stat-value">{{ total_pendientes_rol }}</div><div class="dashboard-stat-note">Requieren revisión del administrador</div></article>
         <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Cuentas activas</span><span class="dashboard-stat-icon" style="--accent:#26a879;--tint:#e9f8f1"><i class="fas fa-user-check"></i></span></div><div class="dashboard-stat-value">{{ total_usuarios_activos }}</div><div class="dashboard-stat-note">Pueden acceder a Educatec</div></article>
-        <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Nuevos esta semana</span><span class="dashboard-stat-icon" style="--accent:#9870d5;--tint:#f3edfc"><i class="fas fa-chart-line"></i></span></div><div class="dashboard-stat-value">{{ total_usuarios_semana }}</div><div class="dashboard-stat-note">Registros de los últimos siete días</div></article>
+        <article class="dashboard-stat"><div class="dashboard-stat-top"><span class="dashboard-stat-label">Nuevos esta semana</span><span class="dashboard-stat-icon" style="--accent:#709ad5;--tint:#f3edfc"><i class="fas fa-chart-line"></i></span></div><div class="dashboard-stat-value">{{ total_usuarios_semana }}</div><div class="dashboard-stat-note">Registros de los últimos siete días</div></article>
     </section>
 
     <section class="dashboard-section" aria-labelledby="nuevosUsuariosTitulo">

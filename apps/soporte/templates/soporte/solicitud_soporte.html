@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Solicitar soporte | Educatec</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;place-items:center;padding:28px;background:radial-gradient(circle at 10% 0,#e9efff 0,transparent 32%),radial-gradient(circle at 100% 100%,#e7f8f1 0,transparent 30%),#f4f6fb;color:#1c2940;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.support-wrap{width:min(100%,760px)}.support-back{display:inline-flex;align-items:center;gap:9px;margin:0 0 17px;color:#64718a;text-decoration:none;font-size:13px;font-weight:650}.support-back:hover{color:#526fe0}.support-card{overflow:hidden;border:1px solid #e7ebf3;border-radius:25px;background:#fff;box-shadow:0 24px 70px rgba(28,43,78,.1)}.support-head{padding:32px 36px 27px;background:linear-gradient(115deg,#f7f9ff,#edf2ff)}.support-icon{display:grid;place-items:center;width:50px;height:50px;margin-bottom:18px;border-radius:17px;background:#fff;color:#5c75dc;font-size:19px;box-shadow:0 7px 18px rgba(44,65,120,.09)}.support-kicker{margin:0 0 8px;color:#5a71d2;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.support-head h1{margin:0;color:#1d2940;font-size:clamp(25px,4vw,34px);font-weight:800;letter-spacing:-.04em}.support-head p{max-width:550px;margin:10px 0 0;color:#758198;font-size:14px;line-height:1.65}.support-form{padding:28px 36px 34px}.support-label{display:block;margin:0 0 8px;color:#344159;font-size:12px;font-weight:750}.support-control{width:100%;border:1px solid #e1e6ef;border-radius:12px;background:#fcfdff;color:#253149;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s}.support-control:focus{border-color:#94a7f4;box-shadow:0 0 0 4px rgba(86,114,232,.11)}input.support-control{height:46px;padding:0 14px}textarea.support-control{min-height:190px;padding:13px 14px;resize:vertical;line-height:1.6}.support-hint{margin-top:7px;color:#98a2b2;font-size:11px}.support-meta{display:flex;align-items:center;gap:9px;margin:17px 0 22px;padding:12px 14px;border:1px solid #e9edfa;border-radius:12px;background:#f8f9ff;color:#65728a;font-size:11px;line-height:1.5}.support-meta i{color:#647ae0}.support-actions{display:flex;justify-content:flex-end;gap:10px}.support-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:43px;padding:0 17px;border:0;border-radius:12px;background:#536fdf;color:#fff;text-decoration:none;font-size:12px;font-weight:750;box-shadow:0 7px 15px rgba(83,111,223,.2);transition:transform .2s,background .2s}.support-button:hover{transform:translateY(-1px);background:#405bc8;color:#fff}.support-cancel{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:0 15px;border:1px solid #e3e8f0;border-radius:12px;background:#fff;color:#65718a;text-decoration:none;font-size:12px;font-weight:700}.support-cancel:hover{background:#f8f9fc;color:#344159}.support-alert{margin:0 36px 18px;padding:12px 14px;border-radius:12px;background:#fff0f0;color:#4778bc;font-size:12px}.support-alert.success{background:#eaf8f1;color:#23805b}.support-errors{margin:0 36px 18px;padding:13px 16px;border-radius:12px;background:#fff2f1;color:#4a77b6;font-size:12px}.support-errors ul{margin:0;padding-left:18px}.support-footer{padding:15px 36px;border-top:1px solid #f0f2f6;color:#9aa4b4;font-size:10px;text-align:center}@media(max-width:560px){body{padding:15px}.support-card{border-radius:20px}.support-head{padding:25px 22px 22px}.support-form{padding:23px 22px 25px}.support-alert,.support-errors{margin-left:22px;margin-right:22px}.support-footer{padding:14px 20px}.support-actions{flex-direction:column-reverse}.support-actions>*{width:100%}}
+    </style>
+</head>
+<body>
+    <main class="support-wrap">
+        {% if next_url %}<a class="support-back" href="{{ next_url }}"><i class="fas fa-arrow-left"></i> Volver al panel</a>{% endif %}
+        <section class="support-card">
+            <header class="support-head">
+                <span class="support-icon"><i class="fas fa-headset"></i></span>
+                <p class="support-kicker">Estamos para ayudarte</p>
+                <h1>Solicitar soporte</h1>
+                <p>Cuéntanos qué sucede. Enviaremos tu solicitud por correo a todos los administradores de Educatec para que puedan atenderla.</p>
+            </header>
+            {% if messages %}{% for message in messages %}<div class="support-alert {% if message.tags == 'success' %}success{% endif %}">{{ message }}</div>{% endfor %}{% endif %}
+            {% if errores %}<div class="support-errors"><ul>{% for error in errores %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+            <form class="support-form" method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next_url }}">
+                <div class="mb-3"><label class="support-label" for="id_asunto">Asunto</label><input class="support-control" id="id_asunto" name="asunto" type="text" maxlength="120" minlength="4" value="{{ asunto }}" placeholder="Ej. No puedo acceder a mis calificaciones" required><div class="support-hint">Resume el motivo de tu solicitud.</div></div>
+                <div><label class="support-label" for="id_mensaje">¿En qué podemos ayudarte?</label><textarea class="support-control" id="id_mensaje" name="mensaje" minlength="10" maxlength="5000" placeholder="Describe lo que sucede y los pasos para reproducirlo…" required>{{ mensaje }}</textarea><div class="support-hint">Incluye los detalles necesarios para que podamos ayudarte.</div></div>
+                <div class="support-meta"><i class="fas fa-circle-info"></i><span>Usaremos {{ correo_solicitante }} como correo de contacto y te enviaremos una copia. Verifica que sea tu dirección correcta y que puedas recibir mensajes.</span></div>
+                <div class="support-actions"><a class="support-cancel" href="{{ next_url|default:'/' }}">Cancelar</a><button class="support-button" type="submit"><i class="fas fa-paper-plane"></i> Enviar solicitud</button></div>
+            </form>
+            <footer class="support-footer">Solicitud enviada de forma segura a los correos de los administradores.</footer>
+        </section>
+    </main>
+</body>
+</html>

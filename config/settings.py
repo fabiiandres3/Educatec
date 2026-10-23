@@ -64,6 +64,7 @@ INSTALLED_APPS = [
 
     'apps.alumnos',
     'apps.user',
+    'apps.soporte',
     'apps.paneles',
     'apps.clases',
     'apps.cursos',
@@ -407,4 +408,3 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =========================================================
 
 AUTH_USER_MODEL = 'user.Usuario'
-

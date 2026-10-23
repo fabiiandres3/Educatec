@@ -277,7 +277,7 @@
 
         .badge-docente  { background: rgba(56,189,248,.15); color: #38bdf8; }
         .badge-alumno   { background: rgba(34,197,94,.15);  color: #22c55e; }
-        .badge-admin    { background: rgba(168,85,247,.15); color: #a855f7; }
+        .badge-admin    { background: rgba(85, 153, 247, .15); color: #5599f7; }
         .badge-usuario  { background: rgba(100,116,139,.15);color: #64748b; }
 
         .badge-pendiente { background: rgba(251,191,36,.15); color: #fbbf24; }
@@ -351,7 +351,7 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
 @keyframes adminInboxIn { from { opacity:0;transform:translateY(-7px) scale(.98) } to { opacity:1;transform:translateY(0) scale(1) } }
 .admin-email-panel > header { display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:21px 21px 17px;border-bottom:1px solid #eef1f6;background:radial-gradient(circle at 100% 0,rgba(105,139,255,.11),transparent 40%),#fff; }
 .admin-email-brand { display:flex;align-items:center;gap:13px;min-width:0; }
-.admin-email-brand-icon { display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:16px;background:linear-gradient(145deg,#eaf0ff,#f0edff);color:#5872df;font-size:17px; }
+.admin-email-brand-icon { display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:16px;background:linear-gradient(145deg,#eaf0ff,#edf4ff);color:#5872df;font-size:17px; }
 .admin-email-title-copy { display:grid;gap:5px;min-width:0;text-align:left; }
 .admin-email-title-copy strong { color:#1d2940;font-size:15px;font-weight:800;letter-spacing:-.02em; }
 .admin-email-title-copy small { display:flex;align-items:center;gap:6px;color:#8490a3;font-size:11px; }
@@ -368,7 +368,7 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
 .admin-email-list { max-height:min(430px,58vh);overflow:auto;overscroll-behavior:contain; }
 .admin-email-item { position:relative;display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;padding:16px 21px;border-bottom:1px solid #f0f2f6;text-align:left;transition:background .18s; }
 .admin-email-item:hover { background:#f9faff; }
-.admin-email-sender-avatar { display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:linear-gradient(145deg,#edf2ff,#f3efff);color:#6474c6;font-size:12px;font-weight:800; }
+.admin-email-sender-avatar { display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:linear-gradient(145deg,#edf2ff,#eff6ff);color:#648dc6;font-size:12px;font-weight:800; }
 .admin-email-item-copy { min-width:0; }
 .admin-email-item-top { display:flex;align-items:center;justify-content:space-between;gap:8px;margin:1px 0 6px; }
 .admin-email-item span.admin-email-sender { overflow:hidden;color:#4a5870;font-size:11px;font-weight:700;text-overflow:ellipsis;white-space:nowrap; }
@@ -535,6 +535,6 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
 <script src="{% static 'js/paneles/notificaciones_toast.js' %}"></script>
 {% block extra_js %}{% endblock %}
 <script src="{% static 'js/paneles/nav_toggle.js' %}?v=20261022"></script>
-<script src="{% static 'js/paneles/admin_mail_notifications.js' %}?v=20261022-support6"></script>
+<script src="{% static 'soporte/admin_mail_notifications.js' %}?v=20261022-support6"></script>
 </body>
 </html>

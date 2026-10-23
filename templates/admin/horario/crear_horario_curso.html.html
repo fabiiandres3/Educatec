@@ -69,7 +69,7 @@ Crear horario - {{ curso.nombre }}
     }
 
     .badge i.periodo { color: #38bdf8; }
-    .badge i.curso   { color: #a855f7; }
+    .badge i.curso   { color: #5599f7; }
 
     /* =====================================================
        TABS DE JORNADA
@@ -107,9 +107,9 @@ Crear horario - {{ curso.nombre }}
     }
 
     .tab-jornada.activo {
-        background: linear-gradient(135deg, #0d6efd 0%, #4f46e5 100%);
+        background: linear-gradient(135deg, #0d6efd 0%, #4688e5 100%);
         color: #ffffff;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, .20);
+        box-shadow: 0 4px 12px rgba(70, 136, 229, .20);
     }
 
     .tab-jornada.activo i {
@@ -220,7 +220,7 @@ Crear horario - {{ curso.nombre }}
 
     .celda-horario:hover::after {
         opacity: 1;
-        background: linear-gradient(135deg, #0d6efd 0%, #4f46e5 100%);
+        background: linear-gradient(135deg, #0d6efd 0%, #4688e5 100%);
         color: #ffffff;
     }
 
@@ -247,7 +247,7 @@ Crear horario - {{ curso.nombre }}
         text-align: center;
         font-size: 12px;
         font-weight: 700;
-        color: #4f46e5;
+        color: #4688e5;
         letter-spacing: .8px;
         border-right: none;
     }
@@ -312,8 +312,8 @@ Crear horario - {{ curso.nombre }}
     .contador-horarios {
         padding: 9px 14px;
         border-radius: 8px;
-        background: rgba(79, 70, 229, .10);
-        color: #4338ca;
+        background: rgba(70, 136, 229, .10);
+        color: #3875ca;
         font-weight: 600;
         font-size: 13px;
         display: inline-flex;
@@ -322,7 +322,7 @@ Crear horario - {{ curso.nombre }}
     }
 
     .contador-horarios i {
-        color: #4f46e5;
+        color: #4688e5;
     }
 
     .btn {
@@ -562,7 +562,7 @@ Crear horario - {{ curso.nombre }}
         justify-content: space-between;
         align-items: center;
         padding: 18px 22px;
-        background: linear-gradient(135deg, #0d6efd 0%, #4f46e5 100%);
+        background: linear-gradient(135deg, #0d6efd 0%, #4688e5 100%);
         color: #ffffff;
     }
 
@@ -838,7 +838,7 @@ Crear horario - {{ curso.nombre }}
             role="tab"
             aria-selected="false"
         >
-            <i class="fas fa-cloud-sun" style="color:#8b5cf6;"></i>
+            <i class="fas fa-cloud-sun" style="color:#5c9cf6;"></i>
             Jornada Tarde
             <span style="opacity:.75; font-weight:600; font-size:12px;">12:30 - 17:00</span>
         </button>
@@ -1222,8 +1222,8 @@ Crear horario - {{ curso.nombre }}
                     <button
                         type="button"
                         class="color seleccionado"
-                        data-color="#6366f1"
-                        style="background:#6366f1"
+                        data-color="#639ef1"
+                        style="background:#639ef1"
                         aria-label="Color índigo"
                     ></button>
 
@@ -1406,7 +1406,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     let celdaActual = null;
-    let colorActual = "#6366f1";
+    let colorActual = "#639ef1";
     const horarios = {};
 
 
@@ -1703,7 +1703,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     modalDocente.value = datos.docente;
                     poblarClasesParaDocente(datos.docente, datos.clase);
                     modalNota.value = datos.nota || "";
-                    seleccionarColor(datos.color || "#6366f1");
+                    seleccionarColor(datos.color || "#639ef1");
 
                     eliminarCeldaBtn.style.display =
                         "inline-flex";
@@ -1728,7 +1728,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     modalClaseHint.style.color = "#94a3b8";
 
                     modalNota.value = "";
-                    seleccionarColor("#6366f1");
+                    seleccionarColor("#639ef1");
 
                     eliminarCeldaBtn.style.display = "none";
 

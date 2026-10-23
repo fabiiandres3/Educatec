@@ -1,12 +1,35 @@
 {% extends "admin/dashboard.html" %}
 
 {% block title %}
-    Horarios del curso
+    Gestión Académica
 {% endblock %}
 
 {% block content %}
 
 <style>
+.academic-tabs { display:inline-flex; align-items:center; gap:5px; padding:5px; margin:0 0 25px; background:#eef2f7; border:1px solid #e5e7eb; border-radius:12px; }
+.academic-tab { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-width:130px; padding:10px 18px; border:0; border-radius:9px; background:transparent; color:#64748b; font-size:14px; font-weight:650; text-decoration:none; cursor:pointer; transition:background .2s ease,color .2s ease,box-shadow .2s ease; }
+.academic-tab, .academic-tab:hover, .academic-tab:focus, .academic-tab:active { border-bottom:0 !important; text-decoration:none !important; }
+.academic-tab::after { display:none !important; content:none !important; }
+.academic-tab:hover { color:#0f172a; background:rgba(255,255,255,.7); }
+.academic-tab.active { background:#fff; color:#4688e5; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.academic-tab i { width:17px; height:17px; }
+@media(max-width:480px) { .academic-tabs { display:flex; width:100%; } .academic-tab { flex:1; min-width:0; padding:10px 12px; } }
+.academic-heading { display:flex; align-items:center; gap:15px; }
+.academic-title-icon { display:grid; place-items:center; flex:0 0 58px; width:58px; height:58px; border-radius:16px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; font-size:24px; box-shadow:0 8px 20px rgba(217,119,6,.2); }
+.academic-heading .schedule-title { margin:0; color:#0f172a; font-size:30px; font-weight:750; letter-spacing:-.6px; }
+.academic-heading .schedule-subtitle { margin:7px 0 0; color:#64748b; font-size:15px; line-height:1.6; }
+.academic-page { width:100%; max-width:1480px; margin:0 auto; padding:18px 8px 36px; box-sizing:border-box; }
+.academic-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; padding:22px 24px; border:1px solid #e5eaf2; border-radius:18px; background:linear-gradient(125deg,#fff,#f5f7ff); box-shadow:0 8px 24px rgba(15,23,42,.04); }
+.academic-heading .schedule-title { font-size:clamp(26px,3vw,34px); letter-spacing:-.04em; }
+.schedule-filters { padding:18px 20px; border:1px solid #e8edf4; border-radius:15px; background:#fff; box-shadow:0 6px 18px rgba(15,23,42,.035); }
+.schedule-card, .teachers-card { border-color:#e8edf4; border-radius:16px; box-shadow:0 8px 24px rgba(15,23,42,.04); }
+.schedule-card-header, .teachers-header { padding:18px 20px; background:linear-gradient(125deg,#fff,#f8f9ff); }
+.schedule-table thead th { background:#f8fafc; color:#7b8798; font-size:10px; letter-spacing:.08em; }
+.schedule-table tbody tr { transition:background .18s ease; }
+.schedule-table tbody tr:hover { background:#fafbff; }
+@media(max-width:620px) { .academic-heading .schedule-title { font-size:clamp(26px,3vw,34px); letter-spacing:-.04em; } }
+@media(max-width:620px) { .academic-page { padding:12px 0 28px; } .academic-header { padding:17px; } .schedule-filters { padding:15px; } .schedule-card-header, .teachers-header { padding:16px; } }
 /* =========================================================
    CONTENEDOR PRINCIPAL
    ========================================================= */
@@ -22,7 +45,7 @@
 
 .course-schedule {
     width: 100%;
-    padding: 20px 18px 24px 8px;
+    padding: 0 0 24px;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -440,7 +463,7 @@
 @media (max-width: 700px) {
 
     .course-schedule {
-        padding: 15px 10px;
+        padding: 0 0 24px;
     }
 
     .schedule-header {
@@ -477,27 +500,34 @@
 </style>
 
 
-<div class="course-schedule">
+<div class="academic-page">
 
     <!-- =====================================================
          ENCABEZADO
          ===================================================== -->
 
-    <div class="schedule-header">
+    <div class="academic-header">
 
-        <div>
-            <h1 class="schedule-title">
-                Horarios del curso
-            </h1>
-
-            <p class="schedule-subtitle">
-                Consulta y administra los horarios asignados a cada curso.
-            </p>
+        <div class="academic-heading">
+            <span class="academic-title-icon"><i class="fas fa-clock" aria-hidden="true"></i></span>
+            <div>
+                <h1 class="schedule-title">Gestión Académica</h1>
+                <p class="schedule-subtitle">Administra los períodos académicos y los horarios de los docentes.</p>
+            </div>
         </div>
 
     </div>
 
+    <nav class="academic-tabs" aria-label="Secciones de periodos y horarios">
+        <a href="{% url 'listar_periodos' %}" class="academic-tab">
+            <i class="fas fa-calendar" aria-hidden="true"></i><span>Periodos</span>
+        </a>
+        <a href="{% url 'listar_horarios' %}" class="academic-tab active" aria-current="page">
+            <i class="fas fa-clock" aria-hidden="true"></i><span>Horarios</span>
+        </a>
+    </nav>
 
+<div class="course-schedule">
     <!-- =====================================================
          FILTROS
          ===================================================== -->
@@ -791,6 +821,8 @@
         </div>
 
     </div>
+
+</div>
 
 </div>
 

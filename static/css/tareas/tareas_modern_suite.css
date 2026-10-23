@@ -3,7 +3,7 @@
     --task-ink:#17243b;
     --task-muted:#748198;
     --task-line:#e6ebf3;
-    --task-primary:#596fe0;
+    --task-primary:#5991e0;
     --task-primary-dark:#4059c5;
 }
 
@@ -16,7 +16,7 @@
 .tasks-wrapper .hero-tag { color:#dbe5ff; background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.13); }
 .tasks-wrapper .tasks-hero h1,.tasks-wrapper .tasks-hero p { color:#fff; }
 .tasks-wrapper .tasks-hero p { color:#c2cce1; }
-.tasks-wrapper .btn-create-task { border-radius:14px; background:linear-gradient(135deg,#6c82ef,#5369dc); box-shadow:0 10px 24px rgba(8,15,38,.22); }
+.tasks-wrapper .btn-create-task { border-radius:14px; background:linear-gradient(135deg,#6c82ef,#538cdc); box-shadow:0 10px 24px rgba(8,15,38,.22); }
 .tasks-wrapper .stat-card,.tasks-wrapper .task-card { border-color:var(--task-line); border-radius:20px; box-shadow:0 9px 25px rgba(27,43,72,.055); }
 .tasks-wrapper .task-card { overflow:hidden; transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease; }
 .tasks-wrapper .task-card:hover { transform:translateY(-3px); border-color:#cfd8f0; box-shadow:0 16px 34px rgba(27,43,72,.1); }
@@ -44,7 +44,7 @@
 .student-tasks-page .task-button,.answer-page .submit-answer,.answer-page .answer-submit { border-radius:12px; background:linear-gradient(135deg,#5b73e2,#7187ed); box-shadow:0 7px 16px rgba(83,111,224,.19); }
 .student-tasks-page .tasks-controls,.student-tasks-page .tasks-toolbar { border-radius:16px; }
 .answer-page .answer-field textarea,.answer-page .points-input input,.answer-page .teacher-comment textarea { border-color:#dfe6f0; border-radius:13px; }
-.answer-page .answer-field textarea:focus,.answer-page .teacher-comment textarea:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89,111,224,.11); }
+.answer-page .answer-field textarea:focus,.answer-page .teacher-comment textarea:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89, 145, 224, .11); }
 
 /* Formularios para crear y editar tareas del docente */
 .create-task-page .page-header { padding:24px 28px; border:1px solid #e2e9f5; border-radius:22px; background:linear-gradient(120deg,#edf2ff,#f7f8ff 58%,#eff8ff); }
@@ -52,9 +52,9 @@
 .create-task-page .form-card { overflow:hidden; border:1px solid var(--task-line); border-radius:20px; box-shadow:0 12px 32px rgba(29,45,76,.065); }
 .create-task-page .card-header { padding:20px 23px; background:linear-gradient(180deg,#fff,#fafbff); }
 .create-task-page .form-group input,.create-task-page .form-group textarea,.create-task-page select { border-color:#dfe6f0; border-radius:12px; }
-.create-task-page .form-group input:focus,.create-task-page .form-group textarea:focus,.create-task-page select:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89,111,224,.11); }
+.create-task-page .form-group input:focus,.create-task-page .form-group textarea:focus,.create-task-page select:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89, 145, 224, .11); }
 .create-task-page .course-card,.create-task-page .upload-box { border-radius:16px; }
-.create-task-page .save-button { border-radius:12px; background:linear-gradient(135deg,#596fe0,#7187ed); box-shadow:0 8px 18px rgba(83,111,224,.19); }
+.create-task-page .save-button { border-radius:12px; background:linear-gradient(135deg,#5991e0,#7187ed); box-shadow:0 8px 18px rgba(83,111,224,.19); }
 
 /* Gestión de tareas del administrador */
 .crear-tarea-wrapper .tarea-header {
@@ -72,9 +72,9 @@
 .tarea-detail-page .form-control { border:1px solid #dfe6f0; border-radius:12px; }
 .crear-tarea-wrapper .field-group input:focus,.crear-tarea-wrapper .field-group textarea:focus,.crear-tarea-wrapper .field-group select:focus,
 .tarea-editor-page .django-form input:focus,.tarea-editor-page .django-form textarea:focus,.tarea-editor-page .django-form select:focus,
-.tarea-detail-page .form-control:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89,111,224,.11); }
+.tarea-detail-page .form-control:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89, 145, 224, .11); }
 .crear-tarea-wrapper .resource-box,.crear-tarea-wrapper .eventos-box,.tarea-editor-page .pregunta-card { border-radius:16px; }
-.crear-tarea-wrapper .btn-create,.tarea-editor-page .btn-guardar,.tarea-detail-page .btn-success { border:0; border-radius:12px; background:linear-gradient(135deg,#596fe0,#7187ed); box-shadow:0 8px 18px rgba(83,111,224,.19); }
+.crear-tarea-wrapper .btn-create,.tarea-editor-page .btn-guardar,.tarea-detail-page .btn-success { border:0; border-radius:12px; background:linear-gradient(135deg,#5991e0,#7187ed); box-shadow:0 8px 18px rgba(83,111,224,.19); }
 .tarea-editor-page .editar-header { border:1px solid #e2e9f5; border-radius:22px; background:linear-gradient(120deg,#edf2ff,#f7f8ff 58%,#eff8ff); }
 .tarea-detail-page .card-header { padding:16px 20px; border-bottom:1px solid #edf0f5; background:#f8f9fd; color:#24324b; }
 .tarea-detail-page .card-header.bg-primary,.tarea-detail-page .card-header.bg-secondary { background:linear-gradient(120deg,#172748,#314d83)!important; color:#fff; }
@@ -113,14 +113,14 @@
 .tarea-detail-page .opcion-item { min-height:48px; margin:0; padding:12px 15px; background:#fbfcfe; color:#43516a; transition:background .18s,border-color .18s,transform .18s; }
 .tarea-detail-page .opcion-item:hover { transform:translateY(-1px); border-color:#bdc9f1; background:#f5f7ff; }
 .tarea-detail-page .opcion-item:has(.opcion-check:checked) { border-color:#899beb; background:#eef1ff; color:#344fc1; }
-.tarea-detail-page .opcion-check { accent-color:#596fe0; }
+.tarea-detail-page .opcion-check { accent-color:#5991e0; }
 .tarea-detail-page .detail-option-marker { display:inline-block; flex:0 0 16px; width:16px; height:16px; border:1.5px solid #cbd4e2; border-radius:50%; background:#fff; }
 .tarea-detail-page .alert { border:0; border-radius:14px; }
 .tarea-detail-page > .alert-info { padding:15px 18px; background:#eef3ff; color:#4a5eac; }
 .tarea-detail-page > .mt-4 { display:flex; justify-content:flex-end; gap:10px; }
 .tarea-detail-page > .mt-4 .detail-action { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-width:132px; min-height:46px; padding:0 18px; border:1px solid transparent; border-radius:13px; font-size:12px; font-weight:750; text-decoration:none; transition:transform .18s ease,box-shadow .18s ease,background .18s ease; }
 .tarea-detail-page > .mt-4 .detail-action:hover { transform:translateY(-2px); }
-.tarea-detail-page > .mt-4 .detail-action-edit { background:linear-gradient(135deg,#596fe0,#7187ed); color:#fff; box-shadow:0 8px 17px rgba(83,111,224,.22); }
+.tarea-detail-page > .mt-4 .detail-action-edit { background:linear-gradient(135deg,#5991e0,#7187ed); color:#fff; box-shadow:0 8px 17px rgba(83,111,224,.22); }
 .tarea-detail-page > .mt-4 .detail-action-edit:hover { background:#435fcf; color:#fff; box-shadow:0 11px 21px rgba(83,111,224,.28); }
 .tarea-detail-page > .mt-4 .detail-action-back { border-color:#e2e7ef; background:#fff; color:#56647a; box-shadow:0 5px 13px rgba(28,42,67,.06); }
 .tarea-detail-page > .mt-4 .detail-action-back:hover { border-color:#d5ddef; background:#f6f8fc; color:#34425a; }
@@ -150,7 +150,7 @@
 .tarea-editor-page .django-form label { margin-bottom:8px; color:#43516a; font-size:12px; font-weight:750; }
 .tarea-editor-page .django-form input,.tarea-editor-page .django-form select,.tarea-editor-page .django-form textarea { min-height:47px; padding:11px 14px; border-color:#e0e6ef; border-radius:12px; background:#fbfcfe; color:#293750; font-size:13px; }
 .tarea-editor-page .django-form textarea { min-height:116px; }
-.tarea-editor-page .django-form input:focus,.tarea-editor-page .django-form select:focus,.tarea-editor-page .django-form textarea:focus { border-color:#8295ec; background:#fff; box-shadow:0 0 0 4px rgba(89,111,224,.11); }
+.tarea-editor-page .django-form input:focus,.tarea-editor-page .django-form select:focus,.tarea-editor-page .django-form textarea:focus { border-color:#8295ec; background:#fff; box-shadow:0 0 0 4px rgba(89, 145, 224, .11); }
 .tarea-editor-page .section-title { display:flex; align-items:center; gap:10px; margin:6px 0 9px; padding-bottom:12px; border-bottom:1px solid #edf0f5; color:#2c3a53; font-size:13px; font-weight:780; }
 .tarea-editor-page .section-title i { display:grid; place-items:center; width:32px; height:32px; border-radius:11px; background:#eff2ff; color:#5a70dc; }
 .tarea-editor-page .section-description { color:#8792a5; font-size:12px; line-height:1.6; }
@@ -176,17 +176,17 @@
 .tarea-editor-page .video-add-copy { display:flex; align-items:flex-start; gap:13px; margin-bottom:17px; }
 .tarea-editor-page .video-add-copy strong { color:#293750; font-size:13px; font-weight:780; }
 .tarea-editor-page .video-add-copy p { margin:5px 0 0; color:#7d899d; font-size:11px; line-height:1.6; }
-.tarea-editor-page .video-add-icon { display:grid; flex:0 0 38px; place-items:center; width:38px; height:38px; border-radius:12px; background:#e9edff; color:#596fe0; }
+.tarea-editor-page .video-add-icon { display:grid; flex:0 0 38px; place-items:center; width:38px; height:38px; border-radius:12px; background:#e9edff; color:#5991e0; }
 .tarea-editor-page .video-url-label { display:block; margin-bottom:8px; color:#43516a; font-size:11px; font-weight:750; }
 .tarea-editor-page .video-url-input { display:block; width:100%; min-height:46px; margin-bottom:15px; padding:10px 13px; border:1px solid #dfe6f0; border-radius:12px; background:#fff; color:#293750; font-size:13px; outline:0; transition:border-color .18s,box-shadow .18s; }
-.tarea-editor-page .video-url-input:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89,111,224,.11); }
+.tarea-editor-page .video-url-input:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89, 145, 224, .11); }
 .tarea-editor-page .video-preview-new { width:min(100%,640px); }
 .tarea-editor-page > form > .editar-card:last-child { position:sticky; bottom:12px; z-index:8; margin-top:20px; border-color:rgba(221,228,240,.9); background:rgba(255,255,255,.92); backdrop-filter:blur(14px); box-shadow:0 12px 30px rgba(27,43,72,.12); }
 .tarea-editor-page > form > .editar-card:last-child .editar-card-body { padding:15px 20px; }
 .tarea-editor-page .acciones { gap:11px; }
 .tarea-editor-page .btn-cancelar,.tarea-editor-page .btn-guardar { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:45px; padding:0 19px; border-radius:12px; font-size:12px; font-weight:750; }
 .tarea-editor-page .btn-cancelar { border:1px solid #e1e6ef; background:#fff; color:#56647a; }
-.tarea-editor-page .btn-guardar { border:0; background:linear-gradient(135deg,#596fe0,#7187ed); color:#fff; box-shadow:0 8px 17px rgba(83,111,224,.22); }
+.tarea-editor-page .btn-guardar { border:0; background:linear-gradient(135deg,#5991e0,#7187ed); color:#fff; box-shadow:0 8px 17px rgba(83,111,224,.22); }
 .tarea-editor-page .btn-guardar:hover { background:#435fcf; box-shadow:0 11px 21px rgba(83,111,224,.28); }
 @media(max-width:760px) {
     .tarea-editor-page { padding:20px 12px 38px; }
@@ -213,7 +213,7 @@
 .responses-page .completion-card,.responses-page .students-card { overflow:hidden; border:1px solid var(--task-line); border-radius:19px; box-shadow:0 9px 27px rgba(29,45,76,.055); }
 .responses-page .students-table th { background:#f8f9fd; color:#8390a3; letter-spacing:.07em; }
 .responses-page .students-table tbody tr:hover { background:#f8f9ff; }
-.responses-page .view-response { border-radius:10px; background:linear-gradient(135deg,#596fe0,#7187ed); }
+.responses-page .view-response { border-radius:10px; background:linear-gradient(135deg,#5991e0,#7187ed); }
 .respuestas-page { max-width:1260px; margin:0 auto; padding:34px 28px 54px; color:var(--task-ink); }
 .respuestas-page .page-header { padding:25px 28px; border:1px solid #e3e9f4; border-radius:23px; background:linear-gradient(120deg,#edf2ff,#f7f8ff 58%,#eff8ff); box-shadow:0 13px 35px rgba(31,49,82,.065); }
 .respuestas-page .task-card,.respuestas-page .stat-card,.respuestas-page .student-card { border:1px solid var(--task-line); border-radius:18px; box-shadow:0 8px 23px rgba(29,45,76,.055); }
@@ -224,7 +224,7 @@
 .task-answer-list-page h1 { color:var(--task-ink); font-size:30px; font-weight:800; letter-spacing:-.04em; }
 .task-answer-list-page .student-card { display:flex; align-items:center; justify-content:space-between; gap:18px; margin:12px 0; padding:20px 22px; border:1px solid var(--task-line); border-radius:16px; background:linear-gradient(110deg,#fff,#fafbff); box-shadow:0 5px 15px rgba(29,45,76,.04); }
 .task-answer-list-page .student-card h3 { color:#26344d; font-size:15px; font-weight:750; }
-.task-answer-list-page .btn-ver-respuestas { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:0 15px; border:0; border-radius:11px; background:linear-gradient(135deg,#596fe0,#7187ed); color:#fff; font-weight:700; text-decoration:none; }
+.task-answer-list-page .btn-ver-respuestas { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:0 15px; border:0; border-radius:11px; background:linear-gradient(135deg,#5991e0,#7187ed); color:#fff; font-weight:700; text-decoration:none; }
 .task-answer-list-page .empty-state { padding:28px; border-radius:15px; background:#f8f9fd; color:#748198; text-align:center; }
 .answer-page .answer-header { padding:23px 27px; border:1px solid #e3e9f4; border-radius:22px; background:linear-gradient(120deg,#edf2ff,#f7f8ff 58%,#eff8ff); }
 .answer-page .grade-summary { overflow:hidden; border:1px solid var(--task-line); border-radius:20px; box-shadow:0 12px 32px rgba(29,45,76,.065); }
