@@ -140,7 +140,7 @@ body.sidebar-collapsed .sidebar-footer a i{flex:0 0 auto;margin:0!important;colo
 .nav-toggle-button:focus-visible{outline:3px solid #0EA5E9!important;outline-offset:3px}
 @media(max-width:768px){body.sidebar-collapsed .sidebar{width:min(280px,85vw)!important;transform:translateX(-100%)}body.sidebar-collapsed .main-content{margin-left:0!important}.nav-toggle-button[aria-expanded=true]{background:#1E40AF!important}}
 @media(prefers-reduced-motion:reduce){.nav-toggle-button i{transition:none}}
-/* Barra lateral contraída: conservar solamente los iconos. */
+/* Barra lateral contra?da: conservar solamente los iconos. */
 body.sidebar-collapsed .sidebar .logo{display:flex;justify-content:center;gap:0;padding:20px 8px!important;font-size:0!important}
 body.sidebar-collapsed .sidebar .logo>span{display:none!important}
 body.sidebar-collapsed .sidebar .logo>i{font-size:22px!important}
