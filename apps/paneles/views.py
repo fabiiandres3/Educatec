@@ -64,7 +64,8 @@ def dashboard_docente(request):
     eventos = Evento.objects.filter(
         publicado=True,
         publico__in=["todos", "docentes"],
-    ).order_by("fecha", "hora_inicio")
+        fecha__gte=timezone.localdate(),
+    ).order_by("fecha", F("hora_inicio").asc(nulls_last=True), "pk")
 
     conteos_alumnos = Alumnos.objects.filter(
         curso_id__in=cursos_ids,
@@ -1290,11 +1291,9 @@ def dashboard_alumnos(request):
 
     eventos = Evento.objects.filter(
         publicado=True,
-        publico__in=["todos", "alumnos"]
-    ).order_by(
-        "fecha",
-        "hora_inicio"
-    )
+        publico__in=["todos", "alumnos"],
+        fecha__gte=timezone.localdate(),
+    ).order_by("fecha", F("hora_inicio").asc(nulls_last=True), "pk")
 
     return render(
         request,

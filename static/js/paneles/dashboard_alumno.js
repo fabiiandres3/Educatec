@@ -20,7 +20,8 @@ menuItems.forEach(item => {
 
 const notification = document.querySelector('.notification');
 
-notification.addEventListener('click', () => {
+if (notification) {
+    notification.addEventListener('click', () => {
 
     alert(
         'Tienes 3 notificaciones nuevas:\n\n' +
@@ -29,7 +30,8 @@ notification.addEventListener('click', () => {
         '- Nuevo mensaje del docente'
     );
 
-});
+    });
+}
 
 // EFECTO TARJETAS
 

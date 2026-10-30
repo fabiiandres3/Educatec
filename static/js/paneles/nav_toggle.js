@@ -6,6 +6,7 @@
 
     const icon = button.querySelector("i");
     const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const supportsDesktopCollapse = Boolean(document.querySelector(".main-content"));
     const storageKey = "educatec-admin-sidebar-collapsed";
 
     function setMenuOpen(open) {
@@ -44,11 +45,15 @@
             document.body.classList.remove("sidebar-collapsed");
             setMenuOpen(sidebar.classList.contains("is-open"));
         } else {
-            document.body.classList.remove("nav-open");
-            sidebar.classList.remove("is-open");
-            let collapsed = false;
-            try { collapsed = localStorage.getItem(storageKey) === "true"; } catch (error) {}
-            setCollapsed(collapsed);
+            setMenuOpen(false);
+            if (supportsDesktopCollapse) {
+                let collapsed = false;
+                try { collapsed = localStorage.getItem(storageKey) === "true"; } catch (error) {}
+                setCollapsed(collapsed);
+            } else {
+                document.body.classList.remove("sidebar-collapsed");
+                button.setAttribute("aria-expanded", "false");
+            }
         }
     }
 
@@ -59,6 +64,12 @@
         }
         setCollapsed(!document.body.classList.contains("sidebar-collapsed"));
     };
+
+    if (!button.hasAttribute("onclick")) {
+        button.addEventListener("click", function () {
+            if (mobileQuery.matches) setMenuOpen(!sidebar.classList.contains("is-open"));
+        });
+    }
 
     overlay.addEventListener("click", function () { setMenuOpen(false); });
     sidebar.querySelectorAll("a, .menu li, button[type='submit']").forEach(function (item) {

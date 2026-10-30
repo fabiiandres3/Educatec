@@ -540,10 +540,10 @@
                                 📅
                                 {{ evento.fecha|date:"d/m/Y" }}
 
-                                {% if evento.hora %}
+                                {% if evento.hora_inicio %}
 
                                     · 🕐
-                                    {{ evento.hora|time:"H:i" }}
+                                    {{ evento.hora_inicio|time:"H:i" }}
 
                                 {% endif %}
 
@@ -577,17 +577,9 @@
                             {% if evento.video %}
 
                                 <div class="evento-video">
-
-                                    🎥
-
-                                    
-                                        href="{{ evento.video }}"
-                                        target="_blank"
-                                        rel="noopener"
-                                    >
-                                        Ver video
+                                    <a href="{{ evento.video }}" target="_blank" rel="noopener noreferrer">
+                                        <i class="fa-solid fa-play" aria-hidden="true"></i> Ver video
                                     </a>
-
                                 </div>
 
                             {% endif %}
