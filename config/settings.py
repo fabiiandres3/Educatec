@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 
 # =========================================================
@@ -272,6 +273,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # =========================================================
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
+IS_RENDER = os.environ.get("RENDER", "").lower() == "true"
+if IS_RENDER and not DATABASE_URL:
+    raise ImproperlyConfigured(
+        "Define DATABASE_URL in Render and point it to the PostgreSQL database."
+    )
+if IS_RENDER and not DATABASE_URL.startswith(("postgres://", "postgresql://")):
+    raise ImproperlyConfigured(
+        "DATABASE_URL in Render must point to PostgreSQL, not SQLite."
+    )
+
 if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(

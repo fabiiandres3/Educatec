@@ -49,6 +49,11 @@ class Migration(migrations.Migration):
             ),
         ),
 
+        migrations.AlterUniqueTogether(
+            name="asignaciondocente",
+            unique_together=set(),
+        ),
+
         migrations.RemoveField(
             model_name="asignaciondocente",
             name="clase",
