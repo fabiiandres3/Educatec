@@ -24,3 +24,6 @@ db.sqlite3
 /staticfiles/
 /media/*
 !/media/.gitkeep
+
+# Archivos privados para la migración de Educatec
+migration_preparacion/

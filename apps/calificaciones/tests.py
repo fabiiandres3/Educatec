@@ -37,6 +37,26 @@ class CalificacionesPorAsignacionTests(TestCase):
         self.alumno_usuario = Usuario.objects.create_user(username="alumno", email="alumno@example.com")
         Alumnos.objects.create(usuario=self.alumno_usuario, curso=self.curso, activo=True)
 
+    def test_iniciar_sesion_conserva_perfil_docente_y_registros_academicos(self):
+        tarea = Tareas.objects.create(
+            docente=self.docente_matematicas, curso=self.curso,
+            clase=self.matematicas, titulo="Registro que debe conservarse",
+        )
+        pregunta = Pregunta.objects.create(
+            tarea=tarea, descripcion="Pregunta", tipo="texto", puntaje=Decimal("5.00")
+        )
+        respuesta = RespuestaAlumno.objects.create(
+            alumno=self.alumno_usuario, pregunta=pregunta, respuesta_texto="Respuesta"
+        )
+
+        self.client.force_login(self.docente_matematicas.usuario)
+
+        self.assertTrue(Docente.objects.filter(pk=self.docente_matematicas.pk).exists())
+        self.assertTrue(AsignacionDocente.objects.filter(pk=self.asignacion_matematicas.pk).exists())
+        self.assertTrue(Tareas.objects.filter(pk=tarea.pk).exists())
+        self.assertTrue(Pregunta.objects.filter(pk=pregunta.pk).exists())
+        self.assertTrue(RespuestaAlumno.objects.filter(pk=respuesta.pk).exists())
+
     def test_cada_docente_ve_solo_su_materia_en_el_mismo_curso(self):
         tarea_mate = Tareas.objects.create(
             docente=self.docente_matematicas, curso=self.curso, clase=self.matematicas, titulo="Álgebra",

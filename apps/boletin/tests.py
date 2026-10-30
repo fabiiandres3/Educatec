@@ -26,12 +26,13 @@ class ConsolidadoBoletinTests(TestCase):
         alumno_usuario = Usuario.objects.create_user(username="alumno", email="a@e.co")
         alumno = Alumnos.objects.create(usuario=alumno_usuario, curso=curso, clase=materia)
         periodo = Periodo.objects.create(numero=1, anio=2026, fecha_inicio=date(2026, 1, 1), fecha_fin=date(2026, 3, 31))
-        tarea_periodo = Tareas.objects.create(docente=docente, curso=curso, clase=materia, titulo="Dentro", fecha_entrega=date(2026, 2, 15))
-        tarea_fuera = Tareas.objects.create(docente=docente, curso=curso, clase=materia, titulo="Fuera", fecha_entrega=date(2026, 4, 15))
+        periodo_siguiente = Periodo.objects.create(numero=2, anio=2026, fecha_inicio=date(2026, 4, 1), fecha_fin=date(2026, 6, 30))
+        tarea_periodo = Tareas.objects.create(docente=docente, curso=curso, clase=materia, titulo="Dentro", fecha_entrega=date(2026, 2, 15), periodo=periodo)
+        tarea_fuera = Tareas.objects.create(docente=docente, curso=curso, clase=materia, titulo="Fuera", fecha_entrega=date(2026, 4, 15), periodo=periodo_siguiente)
         Calificacion.objects.create(alumno=alumno_usuario, tarea=tarea_periodo, nota=Decimal("4.00"))
         Calificacion.objects.create(alumno=alumno_usuario, tarea=tarea_fuera, nota=Decimal("1.00"))
         contenido = ContenidoPedagogico.objects.create(asignacion=asignacion, periodo=periodo, competencias="Razonamiento")
-        ObservacionBoletin.objects.create(contenido=contenido, alumno=alumno, observacion="Buen proceso")
+        ObservacionBoletin.objects.create(contenido=contenido, alumno=alumno, observacion="Buen proceso", publicado=True)
 
         filas, promedio = construir_boletin(alumno, periodo, AsignacionDocente.objects.filter(pk=asignacion.pk))
 

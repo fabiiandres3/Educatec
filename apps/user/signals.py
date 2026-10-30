@@ -1,67 +1,46 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 from .models import Usuario
-
 from apps.docentes.models import Docente
-
-from apps.alumnos.models import (
-    Alumnos,
-    Acudiente,
-)
+from apps.alumnos.models import Alumnos, Acudiente
 
 
-# =========================================================
-# DOCENTE
-# =========================================================
+@receiver(pre_save, sender=Usuario)
+def recordar_rol_anterior(sender, instance, raw=False, **kwargs):
+    """Record the persisted role so ordinary account saves do not sync profiles."""
+    if raw or not instance.pk:
+        return
+    instance._rol_id_anterior = (
+        Usuario.objects.filter(pk=instance.pk)
+        .values_list("rol_id", flat=True)
+        .first()
+    )
+
 
 @receiver(post_save, sender=Usuario)
-def sincronizar_docente(
-    sender,
-    instance,
-    **kwargs
-):
+def sincronizar_perfiles_por_rol(sender, instance, created, raw=False, **kwargs):
+    """Create role profiles on creation or a real role change, never delete them."""
+    if raw:
+        return
 
-    if (
-        instance.rol
-        and instance.rol.nombre.lower().strip() == "docente"
-    ):
+    update_fields = kwargs.get("update_fields")
+    if update_fields is not None and "rol" not in update_fields:
+        return
 
-        Docente.objects.get_or_create(
-            usuario=instance
-        )
+    rol_anterior = getattr(instance, "_rol_id_anterior", None)
+    if not created and rol_anterior == instance.rol_id:
+        return
 
-    else:
+    rol_nombre = (instance.rol.nombre if instance.rol else "").strip().lower()
 
-        Docente.objects.filter(
-            usuario=instance
-        ).delete()
-
-
-# =========================================================
-# ALUMNO
-# =========================================================
-
-@receiver(post_save, sender=Usuario)
-def sincronizar_alumno(
-    sender,
-    instance,
-    **kwargs
-):
-
-    if (
-        instance.rol
-        and instance.rol.nombre.lower().strip() == "alumno"
-    ):
-
+    if rol_nombre == "docente":
+        Docente.objects.get_or_create(usuario=instance)
+    elif rol_nombre == "alumno":
         alumno, _ = Alumnos.objects.get_or_create(
             usuario=instance,
             defaults={"fecha_nacimiento": instance.fecha_nacimiento},
         )
-
-        # Los alumnos importados antiguamente podían tener la fecha solo
-        # en su perfil académico. Conserva ese dato en la cuenta y úsalo
-        # al crear o sincronizar el perfil según el rol.
         if instance.fecha_nacimiento and alumno.fecha_nacimiento != instance.fecha_nacimiento:
             alumno.fecha_nacimiento = instance.fecha_nacimiento
             alumno.save(update_fields=["fecha_nacimiento"])
@@ -70,41 +49,5 @@ def sincronizar_alumno(
                 fecha_nacimiento=alumno.fecha_nacimiento
             )
             instance.fecha_nacimiento = alumno.fecha_nacimiento
-
-    else:
-
-        alumno = Alumnos.objects.filter(usuario=instance).only("fecha_nacimiento").first()
-        if alumno and alumno.fecha_nacimiento and not instance.fecha_nacimiento:
-            Usuario.objects.filter(pk=instance.pk).update(
-                fecha_nacimiento=alumno.fecha_nacimiento
-            )
-            instance.fecha_nacimiento = alumno.fecha_nacimiento
-
-        Alumnos.objects.filter(usuario=instance).delete()
-
-
-# =========================================================
-# ACUDIENTE
-# =========================================================
-
-@receiver(post_save, sender=Usuario)
-def sincronizar_acudiente(
-    sender,
-    instance,
-    **kwargs
-):
-
-    if (
-        instance.rol
-        and instance.rol.nombre.lower().strip() == "acudiente"
-    ):
-
-        Acudiente.objects.get_or_create(
-            usuario=instance
-        )
-
-    else:
-
-        Acudiente.objects.filter(
-            usuario=instance
-        ).delete()
+    elif rol_nombre == "acudiente":
+        Acudiente.objects.get_or_create(usuario=instance)
