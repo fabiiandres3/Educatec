@@ -963,6 +963,9 @@ def configuracion_docente(request):
             "telefono",
             ""
         ).strip()
+        if len(telefono) > 30:
+            messages.error(request, "El telefono no puede superar 30 caracteres.")
+            return redirect("configuracion_docente")
 
         partes = nombre_completo.split(
             " ",
@@ -987,27 +990,8 @@ def configuracion_docente(request):
 
         usuario.save()
 
-        if telefono:
-
-            try:
-
-                docente.telefono = int(
-                    telefono
-                )
-
-                docente.save()
-
-            except ValueError:
-
-                messages.error(
-                    request,
-                    "El teléfono debe contener solo números."
-                )
-
-        else:
-
-            docente.telefono = None
-            docente.save()
+        docente.telefono = telefono or None
+        docente.save(update_fields=["telefono"])
 
         messages.success(
             request,
@@ -1618,15 +1602,11 @@ def _configuracion_cuenta(request):
             initial=perfil_initial,
         )
         if perfil_form.is_valid():
-            telefono_ingresado = (perfil_form.cleaned_data.get("telefono") or "").strip()
-            if isinstance(perfil, Docente) and telefono_ingresado and not telefono_ingresado.isdigit():
-                perfil_form.add_error("telefono", "Para este perfil, ingresa el teléfono solo con números.")
-        if perfil_form.is_valid():
             usuario = perfil_form.save()
             telefono = usuario.telefono or None
             direccion = usuario.direccion or ""
             if isinstance(perfil, Docente):
-                perfil.telefono = int(telefono) if telefono and telefono.isdigit() else None
+                perfil.telefono = telefono or None
                 perfil.direccion = direccion
                 perfil.save(update_fields=["telefono", "direccion"])
             elif isinstance(perfil, (Alumnos, Acudiente)):

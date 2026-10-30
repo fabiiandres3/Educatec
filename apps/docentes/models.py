@@ -15,9 +15,10 @@ class Docente(models.Model):
         related_name="docente"
     )
 
-    telefono = models.IntegerField(
+    telefono = models.CharField(
+        max_length=30,
         null=True,
-        blank=True
+        blank=True,
     )
 
     direccion = models.CharField(

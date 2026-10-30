@@ -88,7 +88,7 @@ class DocenteForm(forms.ModelForm):
         }
 
         widgets = {
-            "telefono": forms.NumberInput(
+            "telefono": forms.TextInput(
                 attrs={
                     "class": "form-control",
                     "placeholder": "TelÃ©fono"
