@@ -19,3 +19,8 @@ __pycache__/
 .idea/__pycache__/
 *.py[cod]
 db.sqlite3
+
+# Render y datos locales
+/staticfiles/
+/media/*
+!/media/.gitkeep

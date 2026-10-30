@@ -16,7 +16,7 @@ python -m venv env
 ```
 
 ## 3. Activar entorno virtual
-
+py
 ### Windows
 
 ```bash

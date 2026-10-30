@@ -1,4 +1,7 @@
 from pathlib import Path
+import os
+
+import dj_database_url
 
 
 # =========================================================
@@ -12,11 +15,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SEGURIDAD
 # =========================================================
 
-SECRET_KEY = 'django-insecure-u4pp=fbxptdt#zn2-uoq%&hfpl6v)ufd$qs640a#p56ggqejty'
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-local-development-only")
+DEBUG = os.environ.get("DEBUG", "false").lower() in {"1", "true", "yes"}
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if host.strip()]
 
-DEBUG = True
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-ALLOWED_HOSTS = []
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = bool(RENDER_EXTERNAL_HOSTNAME) and not DEBUG
+SESSION_COOKIE_SECURE = bool(RENDER_EXTERNAL_HOSTNAME) and not DEBUG
+CSRF_COOKIE_SECURE = bool(RENDER_EXTERNAL_HOSTNAME) and not DEBUG
 
 
 # =========================================================
@@ -81,7 +95,7 @@ INSTALLED_APPS = [
 # DJANGO SITES
 # =========================================================
 
-SITE_ID = 2
+SITE_ID = int(os.environ.get("SITE_ID", "2"))
 
 
 # =========================================================
@@ -178,6 +192,8 @@ MIDDLEWARE = [
 
     'django.middleware.security.SecurityMiddleware',
 
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
 
     'django.middleware.common.CommonMiddleware',
@@ -255,23 +271,23 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # BASE DE DATOS
 # =========================================================
 
-DATABASES = {
-
-    'default': {
-
-        'ENGINE':
-            'django.db.backends.sqlite3',
-
-        'NAME':
-            BASE_DIR / 'db.sqlite3',
-
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        ),
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        },
     }
 
-}
-
-
-# =========================================================
-# CONFIGURACIÓN DE CORREO GMAIL
 # =========================================================
 
 # Django utilizará el servidor SMTP de Gmail
@@ -300,30 +316,9 @@ EMAIL_USE_TLS = True
 # Cuenta Gmail que utilizará Educatec
 # para enviar los correos.
 
-EMAIL_HOST_USER = (
-    "yubenferneyvargascaro@gmail.com"
-)
-
-
-# =========================================================
-# CONTRASEÑA DE APLICACIÓN DE GMAIL
-# =========================================================
-
-# IMPORTANTE:
-#
-# NO utilices la contraseña normal de Gmail.
-#
-# Debes generar una contraseña de aplicación
-# desde la cuenta de Google.
-
-EMAIL_HOST_PASSWORD = (
-    "rdpoorqrogniqpjk"
-)
-
-
-# Dirección que aparecerá como remitente.
-
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 
 
 # =========================================================
@@ -383,14 +378,18 @@ USE_TZ = True
 # ARCHIVOS ESTÁTICOS
 # =========================================================
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
-
-STATICFILES_DIRS = [
-
-    BASE_DIR / 'static',
-
-]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 
 # =========================================================
