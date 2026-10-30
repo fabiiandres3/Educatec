@@ -10,6 +10,6 @@ services:
       - key: DEBUG
         value: "false"
       - key: SITE_ID
-        value: "1"
+        value: "2"
       - key: DATABASE_URL
         sync: false

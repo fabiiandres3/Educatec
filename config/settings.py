@@ -389,14 +389,20 @@ USE_TZ = True
 # ARCHIVOS ESTÁTICOS
 # =========================================================
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+from apps.eventos.storage import build_event_image_storage_config
+
 STORAGES = {
     "default": {
+        "BACKEND": "apps.eventos.storage.EventoImageStorageRouter",
+    },
+    "local_media": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
+    "event_images": build_event_image_storage_config(os.environ),
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
