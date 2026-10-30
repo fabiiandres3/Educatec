@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db import transaction
+from django.db.models import Avg, Count, F, Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -54,119 +55,48 @@ from .forms import CuentaPerfilForm
 
 @rol_requerido("docente")
 def dashboard_docente(request):
-
-    # --------------------------------------------------------
-    # DOCENTE ACTUAL
-    # --------------------------------------------------------
-
-    docente = Docente.objects.select_related(
-        "usuario"
-    ).get(
-        usuario=request.user
-    )
-
-    # --------------------------------------------------------
-    # ASIGNACIONES DEL DOCENTE
-    # --------------------------------------------------------
-
+    docente = Docente.objects.select_related("usuario").get(usuario=request.user)
     asignaciones = list(
-        AsignacionDocente.objects.filter(
-            docente=docente
-        )
+        AsignacionDocente.objects.filter(docente=docente).select_related("curso")
     )
-
-    # --------------------------------------------------------
-    # EVENTOS PARA DOCENTES
-    # --------------------------------------------------------
+    cursos_ids = {asignacion.curso_id for asignacion in asignaciones if asignacion.curso_id}
 
     eventos = Evento.objects.filter(
         publicado=True,
-        publico__in=["todos", "docentes"]
-    ).order_by(
-        "fecha",
-        "hora_inicio"
-    )
+        publico__in=["todos", "docentes"],
+    ).order_by("fecha", "hora_inicio")
 
-    # --------------------------------------------------------
-    # TOTAL DE ALUMNOS
-    # --------------------------------------------------------
+    conteos_alumnos = Alumnos.objects.filter(
+        curso_id__in=cursos_ids,
+        activo=True,
+    ).values("curso_id").annotate(total=Count("id"))
+    total_alumnoss = sum(item["total"] for item in conteos_alumnos)
 
-    cursos_ids = set()
-
-    for asignacion in asignaciones:
-
-        if asignacion.curso:
-            cursos_ids.add(
-                asignacion.curso.id
+    if cursos_ids:
+        tareas_recientes = list(
+            Tareas.objects.filter(
+                curso_id__in=cursos_ids,
+                clase__cursos__id=F("curso_id"),
             )
-
-    total_alumnoss = 0
-
-    for curso_id in cursos_ids:
-
-        total_alumnoss += contar_alumnos_curso(
-            curso_id
+            .select_related("curso", "clase")
+            .distinct()
+            .order_by("-fecha_creacion", "-id")[:5]
         )
-
-    # --------------------------------------------------------
-    # TAREAS RECIENTES
-    # --------------------------------------------------------
-
-    tareas_recientes = []
-
-    for asignacion in asignaciones:
-
-        if not asignacion.curso:
-            continue
-
-        # Buscar las clases del curso asignado
-        clases = Clases.objects.filter(
-            cursos=asignacion.curso
-        )
-
-        for clase in clases:
-
-            tareas_recientes += list(
-                obtener_tareas_docente(
-                    clase.id,
-                    asignacion.curso.id
-                )
-            )
-
-    # Ordenar si los objetos tienen fecha de creación
-    try:
-        tareas_recientes.sort(
-            key=lambda x: x.creado_en,
-            reverse=True
-        )
-    except AttributeError:
-        pass
-
-    tareas_recientes = tareas_recientes[:5]
-
-    total_tareas = len(
-        tareas_recientes
-    )
-
-    # --------------------------------------------------------
-    # ESTADÍSTICAS
-    # --------------------------------------------------------
+    else:
+        tareas_recientes = []
 
     registros_hoy = Asistencia.objects.filter(
         curso_id__in=cursos_ids,
         fecha=timezone.localdate(),
+    ).aggregate(
+        total=Count("id"),
+        asistieron=Count("id", filter=Q(estado__in=["P", "T"])),
     )
-    total_registros_hoy = registros_hoy.count()
-    asistieron_hoy = registros_hoy.filter(estado__in=["P", "T"]).count()
+    total_registros_hoy = registros_hoy["total"]
     porcentaje_asistencia = (
-        round(asistieron_hoy / total_registros_hoy * 100, 1)
-        if total_registros_hoy else "—"
+        round(registros_hoy["asistieron"] / total_registros_hoy * 100, 1)
+        if total_registros_hoy else "\u2014"
     )
-    promedio = "—"
-
-    # --------------------------------------------------------
-    # RENDER
-    # --------------------------------------------------------
 
     return render(
         request,
@@ -176,13 +106,12 @@ def dashboard_docente(request):
             "asignaciones": asignaciones,
             "eventos": eventos,
             "total_alumnoss": total_alumnoss,
-            "total_tareas": total_tareas,
+            "total_tareas": len(tareas_recientes),
             "porcentaje_asistencia": porcentaje_asistencia,
-            "promedio": promedio,
+            "promedio": "\u2014",
             "tareas_recientes": tareas_recientes,
-        }
+        },
     )
-
 
 # ============================================================
 #                    EVENTOS DOCENTE
@@ -1360,11 +1289,16 @@ def dashboard_alumnos(request):
         usuario=request.user,
         activo=True,
     )
-    asistencias_alumno = Asistencia.objects.filter(alumno=alumno)
-    presentes = asistencias_alumno.filter(estado="P").count()
-    tardanzas = asistencias_alumno.filter(estado="T").count()
-    ausentes = asistencias_alumno.filter(estado="A").count()
-    total_asistencias = asistencias_alumno.count()
+    estadisticas_asistencia = Asistencia.objects.filter(alumno=alumno).aggregate(
+        total=Count("id"),
+        presentes=Count("id", filter=Q(estado="P")),
+        tardanzas=Count("id", filter=Q(estado="T")),
+        ausentes=Count("id", filter=Q(estado="A")),
+    )
+    presentes = estadisticas_asistencia["presentes"]
+    tardanzas = estadisticas_asistencia["tardanzas"]
+    ausentes = estadisticas_asistencia["ausentes"]
+    total_asistencias = estadisticas_asistencia["total"]
     porcentaje_asistencia = (
         round((presentes + tardanzas) / total_asistencias * 100, 1)
         if total_asistencias else None
@@ -1829,7 +1763,6 @@ def horarios_alumnos(request):
 
 @rol_requerido("acudiente")
 def dashboard_acudiente(request):
-
     acudiente, _ = Acudiente.objects.get_or_create(
         usuario=request.user,
         defaults={
@@ -1841,12 +1774,11 @@ def dashboard_acudiente(request):
     if not acudiente.activo:
         return redirect("login")
 
-    relaciones = (
-        AcudienteAlumno.objects
-        .filter(
+    relaciones = list(
+        AcudienteAlumno.objects.filter(
             acudiente=acudiente,
             autorizado=True,
-            alumno__activo=True
+            alumno__activo=True,
         )
         .select_related(
             "alumno",
@@ -1854,118 +1786,60 @@ def dashboard_acudiente(request):
             "alumno__curso",
             "alumno__clase",
         )
-        .order_by(
-            "alumno__usuario__first_name",
-            "alumno__usuario__last_name"
+        .order_by("alumno__usuario__first_name", "alumno__usuario__last_name")
+    )
+
+    alumnos_ids = [relacion.alumno_id for relacion in relaciones]
+    usuarios_ids = [relacion.alumno.usuario_id for relacion in relaciones]
+    cursos_ids = {
+        relacion.alumno.curso_id
+        for relacion in relaciones
+        if relacion.alumno.curso_id
+    }
+
+    promedios_por_alumno = dict(
+        Calificacion.objects.filter(alumno_id__in=usuarios_ids)
+        .values("alumno_id")
+        .annotate(promedio=Avg("nota"))
+        .values_list("alumno_id", "promedio")
+    )
+    asistencia_por_alumno = {
+        item["alumno_id"]: item
+        for item in Asistencia.objects.filter(alumno_id__in=alumnos_ids)
+        .values("alumno_id")
+        .annotate(
+            total=Count("id"),
+            presentes=Count("id", filter=Q(estado="P")),
+            tardanzas=Count("id", filter=Q(estado="T")),
         )
+    }
+    tareas_por_curso = dict(
+        Tareas.objects.filter(curso_id__in=cursos_ids, activa=True)
+        .values("curso_id")
+        .annotate(total=Count("id"))
+        .values_list("curso_id", "total")
     )
 
     alumnos = []
-
     for relacion in relaciones:
-
         alumno = relacion.alumno
+        promedio = promedios_por_alumno.get(alumno.usuario_id)
+        promedio = round(float(promedio), 2) if promedio is not None else None
 
-        # -------------------------------------------------
-        # CALIFICACIONES
-        # -------------------------------------------------
-
-        calificaciones = (
-            Calificacion.objects
-            .filter(
-                alumno=alumno.usuario
-            )
-            .select_related(
-                "tarea"
-            )
-            .order_by(
-                "-id"
-            )
-        )
-
-        notas = [
-            float(cal.nota)
-            for cal in calificaciones
-            if cal.nota is not None
-        ]
-
-        promedio = (
-            round(
-                sum(notas) / len(notas),
-                2
-            )
-            if notas
-            else None
-        )
-
-        # -------------------------------------------------
-        # ASISTENCIA
-        # -------------------------------------------------
-
-        asistencias = Asistencia.objects.filter(
-            alumno=alumno
-        )
-
-        total_asistencias = (
-            asistencias.count()
-        )
-
-        presentes = (
-            asistencias
-            .filter(
-                estado="P"
-            )
-            .count()
-        )
-
-        tardanzas = asistencias.filter(estado="T").count()
-
+        asistencia = asistencia_por_alumno.get(alumno.id, {})
+        total_asistencias = asistencia.get("total", 0)
+        presentes = asistencia.get("presentes", 0)
+        tardanzas = asistencia.get("tardanzas", 0)
         porcentaje_asistencia = (
-
-            round(
-                (
-                    presentes + tardanzas
-                    / total_asistencias
-                ) * 100,
-                1
-            )
-
-            if total_asistencias > 0
-
-            else None
+            round((presentes + tardanzas / total_asistencias) * 100, 1)
+            if total_asistencias else None
         )
-
-        # -------------------------------------------------
-        # TAREAS
-        # -------------------------------------------------
-
-        tareas_pendientes = 0
-
-        if alumno.curso:
-
-            tareas_pendientes = alumno.curso.tareas_set.filter(activa=True).count()
-
-        # -------------------------------------------------
-        # DATOS PARA LA PLANTILLA
-        # -------------------------------------------------
 
         alumno.promedio = promedio
-
-        alumno.porcentaje_asistencia = (
-            porcentaje_asistencia
-        )
-
-        alumno.tareas_pendientes = (
-            tareas_pendientes
-        )
-
-        alumno.parentesco = (
-            relacion.parentesco
-        )
-
-        alumnos.append(
-            alumno
-        )
+        alumno.porcentaje_asistencia = porcentaje_asistencia
+        alumno.tareas_pendientes = tareas_por_curso.get(alumno.curso_id, 0)
+        alumno.parentesco = relacion.parentesco
+        alumnos.append(alumno)
 
     eventos_query = Evento.objects.filter(
         publicado=True,
@@ -1991,9 +1865,8 @@ def dashboard_acudiente(request):
             "total_eventos_proximos": total_eventos_proximos,
             "promedio_general": promedio_general,
             "alumnos_alerta": alumnos_alerta,
-        }
+        },
     )
-
 
 @rol_requerido("acudiente")
 def eventos_acudiente(request):

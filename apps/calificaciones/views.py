@@ -412,24 +412,6 @@ def calificaciones_alumnos(request):
         "tarea__docente"
     ).order_by("-id")
 
-    print("TOTAL CALIFICACIONES:", calificaciones.count())
-
-    for cal in calificaciones:
-        print(
-            "CALIFICACION:",
-            cal.id,
-            "| ALUMNO:",
-            cal.alumno_id,
-            "| TAREA:",
-            cal.tarea_id,
-            "| NOTA:",
-            cal.nota,
-            "| CURSO TAREA:",
-            cal.tarea.curso_id,
-            "| CLASE TAREA:",
-            cal.tarea.clase_id,
-        )
-
     registros = []
 
     for calificacion in calificaciones:

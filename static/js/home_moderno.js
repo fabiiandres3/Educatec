@@ -3,6 +3,7 @@
   if (!home) return;
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const touchDevice = window.matchMedia("(hover: none), (pointer: coarse)").matches;
   const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
   const progressBar = home.querySelector(".home-scroll-progress");
   const hero = home.querySelector(".home-hero");
@@ -14,6 +15,10 @@
   const levels = home.querySelector(".home-levels");
   const levelsTrack = home.querySelector("#levels-track");
   const levelsBar = home.querySelector("#levels-progress-bar");
+  const gallery = home.querySelector(".about-gallery");
+  const galleryFigures = gallery ? [...gallery.querySelectorAll("figure")] : [];
+  const words = home.querySelector("#manifesto-text");
+  let wordSpans = [];
   let mouseX = 0;
   let mouseY = 0;
   let ticking = false;
@@ -28,10 +33,10 @@
       const progress = clamp(-rect.top / range);
       const fade = clamp(progress / 0.22);
       heroFloats.style.opacity = String(1 - fade);
-      heroFloats.style.filter = `blur(${fade * 10}px)`;
+      if (!touchDevice) heroFloats.style.filter = `blur(${fade * 10}px)`;
     }
 
-    if (!reducedMotion && hero && heroVisual) {
+    if (!reducedMotion && !touchDevice && hero && heroVisual) {
       const rect = hero.getBoundingClientRect();
       const range = Math.max(1, rect.height - window.innerHeight);
       const progress = clamp(-rect.top / range);
@@ -48,15 +53,16 @@
       heroHint.style.opacity = String(1 - clamp(progress / 0.18));
     }
 
-    const gallery = home.querySelector(".about-gallery");
-    if (gallery && !reducedMotion) {
+    if (gallery && !reducedMotion && !touchDevice) {
       const rect = gallery.getBoundingClientRect();
       const progress = clamp((window.innerHeight - rect.top) / (window.innerHeight + rect.height));
-      gallery.querySelectorAll("figure").forEach((figure, index) => {
+      galleryFigures.forEach((figure, index) => {
         const offset = index % 2 === 0 ? 100 - 200 * progress : -60 + 120 * progress;
         figure.style.transform = `translateY(${offset}px)`;
       });
     }
+
+    if (words && wordSpans.length) updateWords();
 
     if (levels && levelsTrack) {
       const rect = levels.getBoundingClientRect();
@@ -103,18 +109,17 @@
     if (menuButton) menuButton.innerHTML = '<i class="fa-solid fa-bars"></i>';
   }));
 
-  const words = home.querySelector("#manifesto-text");
   if (words) {
     words.innerHTML = words.textContent.trim().split(/\s+/).map((word) => `<span class="manifesto-word">${word}</span>`).join(" ");
-    const wordSpans = [...words.querySelectorAll(".manifesto-word")];
-    const updateWords = () => {
-      const rect = words.getBoundingClientRect();
-      const progress = clamp((window.innerHeight * 0.82 - rect.top) / (rect.height + window.innerHeight * 0.3));
-      const litWords = Math.floor(progress * (wordSpans.length + 3));
-      wordSpans.forEach((word, index) => { word.style.color = index < litWords ? "#020617" : "#94a3b8"; });
-    };
-    window.addEventListener("scroll", updateWords, { passive: true });
-    updateWords();
+    wordSpans = [...words.querySelectorAll(".manifesto-word")];
+  }
+
+  function updateWords() {
+    const rect = words.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+    const progress = clamp((window.innerHeight * 0.82 - rect.top) / (rect.height + window.innerHeight * 0.3));
+    const litWords = Math.floor(progress * (wordSpans.length + 3));
+    wordSpans.forEach((word, index) => { word.style.color = index < litWords ? "#020617" : "#94a3b8"; });
   }
 
   const revealObserver = new IntersectionObserver((entries, observer) => {
@@ -219,7 +224,7 @@
       applyOffset();
     });
 
-    if (cards.length > 1 && cardPitch > 0) {
+    if (cards.length > 1 && cardPitch > 0 && !touchDevice && !reducedMotion) {
       carousel.classList.add("is-autoplaying");
       let previousFrame = 0;
       const pixelsPerSecond = reducedMotion ? 9 : 24;
