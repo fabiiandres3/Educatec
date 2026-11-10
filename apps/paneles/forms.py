@@ -38,9 +38,9 @@ class CuentaPerfilForm(forms.ModelForm):
         self.fields["last_name"].label = "Apellidos"
         self.fields["fecha_nacimiento"].label = "Fecha de nacimiento"
         self.fields["username"].label = "Documento de identidad"
-        self.fields["email"].label = "Correo electrÃ³nico"
-        self.fields["telefono"].label = "TelÃ©fono"
-        self.fields["direccion"].label = "DirecciÃ³n"
+        self.fields["email"].label = "Correo electrónico"
+        self.fields["telefono"].label = "Teléfono"
+        self.fields["direccion"].label = "Dirección"
 
     def clean_fecha_nacimiento(self):
         if self.add_prefix("fecha_nacimiento") not in self.data:

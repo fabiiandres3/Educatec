@@ -1,8 +1,10 @@
 {% load static %}
 {% load socialaccount %}
+{% get_providers as socialaccount_providers %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="icon" type="image/png" href="/static/images/educatec-logo-transparent.png?v=2">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b1f56">
@@ -12,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/login/login.css' %}?v=login-reset-20261023">
+  <link rel="stylesheet" href="{% static 'css/login/login.css' %}?v=social-login-20261110">
 </head>
 <body class="login-body">
   <div class="login-ambient" aria-hidden="true">
@@ -27,7 +29,7 @@
     <section class="login-card" aria-label="Acceso a Educatec">
       <div class="login-form-panel">
         <a href="{% url 'index' %}" class="login-brand" aria-label="Educatec, inicio">
-          <span class="login-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span><span>Educatec</span>
+          <span class="login-brand-icon"><img src="{% static 'images/educatec-logo-transparent.png' %}" alt=""></span><span>Educatec</span>
         </a>
         <div class="login-heading">
           <span class="login-eyebrow"><i class="fa-solid fa-sparkles"></i> Tu espacio educativo</span>
@@ -57,7 +59,12 @@
         </form>
 
         <div class="login-separator"><span>O continúa con</span></div>
-        <a href="{% provider_login_url 'google' process='login' %}" class="login-google"><span class="google-mark">G</span><span>Continuar con Google</span></a>
+        <div class="login-social-providers">
+          <a href="{% url 'google_login' %}" class="login-google"><span class="google-mark" aria-hidden="true">G</span><span>Continuar con Google</span></a>
+          {% for provider in socialaccount_providers %}
+            {% if provider.id == "microsoft" %}<a href="{% provider_login_url provider.id process='login' %}" class="login-microsoft"><span class="microsoft-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Continuar con Outlook</span></a>{% endif %}
+          {% endfor %}
+        </div>
         <p class="login-register">¿Aún no tienes cuenta? <a href="{% url 'registrar_usuario' %}">Regístrate aquí</a></p>
         <p class="login-privacy"><i class="fa-solid fa-lock"></i> Tus datos están protegidos</p>
       </div>

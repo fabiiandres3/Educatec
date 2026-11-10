@@ -53,6 +53,15 @@ def rol_requerido(*roles_permitidos):
 
                 return redirect("login")
 
+            roles_normalizados = [
+                rol.lower().strip()
+                for rol in roles_permitidos
+            ]
+
+            # Los superusuarios de Django pueden no tener un rol del sistema.
+            if request.user.is_superuser and "administrador" in roles_normalizados:
+                return view_func(request, *args, **kwargs)
+
             # -------------------------------------------------
             # SIN ROL
             # -------------------------------------------------
@@ -74,14 +83,6 @@ def rol_requerido(*roles_permitidos):
             # -------------------------------------------------
             # ROLES PERMITIDOS
             # -------------------------------------------------
-
-            roles_normalizados = [
-
-                rol.lower().strip()
-
-                for rol in roles_permitidos
-
-            ]
 
             # -------------------------------------------------
             # PERMITIDO

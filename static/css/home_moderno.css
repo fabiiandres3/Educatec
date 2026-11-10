@@ -63,3 +63,15 @@ body:has(.educatec-home){display:block!important;min-height:100vh;background:var
 @keyframes hero-float-drift{0%,100%{translate:0 0;rotate:-4deg}50%{translate:8px -14px;rotate:1deg}}
 @media(max-width:767.98px){.hero-float{width:clamp(76px,23vw,125px);border-radius:15px;opacity:.62;filter:blur(1px)}.hero-float--one{top:22%;left:1%}.hero-float--two{top:22%;right:1%}.hero-float--three{bottom:18%;left:2%}.hero-float--four{right:2%;bottom:18%}}
 @media(prefers-reduced-motion:reduce){.hero-float{animation:none}}
+.hero-wordmark{align-items:center;gap:.14em}
+.hero-wordmark-logo{display:block;flex:0 0 auto;align-self:center;font-size:1em;width:1.15em;height:1.15em;margin:0;border-radius:.14em;object-fit:cover;filter:none;animation:none}
+.hero-visual{opacity:0;transition:opacity .25s ease}
+.hero-visual>img{transform:scale(1.02);filter:none;opacity:1;animation:none}
+.hero-overlay{backdrop-filter:none;-webkit-backdrop-filter:none}
+.hero-overlay>*{filter:none;transition:none}
+.hero-floats,.hero-float{filter:none!important}
+.home-nav-links,.home-mobile-nav>a:not(.home-login){color:#111827}
+.educatec-home .home-nav-links a,.educatec-home .home-mobile-nav>a:not(.home-login){color:#020617!important;font-weight:600}
+.about-gallery img{filter:none;transform:none}
+.about-gallery figure{transition:scale .25s ease}
+.about-gallery figure:hover{scale:1.04;z-index:2}

@@ -31,25 +31,37 @@
       const rect = hero.getBoundingClientRect();
       const range = Math.max(1, rect.height - window.innerHeight);
       const progress = clamp(-rect.top / range);
-      const fade = clamp(progress / 0.22);
+      const fade = clamp(progress / 0.3);
       heroFloats.style.opacity = String(1 - fade);
-      if (!touchDevice) heroFloats.style.filter = `blur(${fade * 10}px)`;
+      heroFloats.style.filter = "none";
+    }
+
+    if (hero && heroVisual) {
+      const rect = hero.getBoundingClientRect();
+      const range = Math.max(1, rect.height - window.innerHeight);
+      const progress = clamp(-rect.top / range);
+      heroVisual.style.opacity = String(clamp(progress / 0.32));
+      if (reducedMotion || touchDevice) {
+        const zoom = reducedMotion ? 1 : clamp(progress / 0.62);
+        heroVisual.style.setProperty("--hero-scale", (0.62 + zoom * 0.38).toFixed(3));
+        heroVisual.style.setProperty("--hero-radius", `${48 * (1 - zoom)}px`);
+      }
     }
 
     if (!reducedMotion && !touchDevice && hero && heroVisual) {
       const rect = hero.getBoundingClientRect();
       const range = Math.max(1, rect.height - window.innerHeight);
       const progress = clamp(-rect.top / range);
-      const zoom = clamp(progress / 0.6);
-      heroVisual.style.setProperty("--hero-scale", (0.55 + zoom * 0.45).toFixed(3));
+      const zoom = clamp(progress / 0.62);
+      heroVisual.style.setProperty("--hero-scale", (0.62 + zoom * 0.38).toFixed(3));
       heroVisual.style.setProperty("--hero-radius", `${48 * (1 - zoom)}px`);
       heroVisual.style.setProperty("--hero-rx", `${mouseY * 6 * (1 - zoom)}deg`);
       heroVisual.style.setProperty("--hero-ry", `${mouseX * 6 * (1 - zoom)}deg`);
-      heroOverlay.style.setProperty("--hero-overlay", (clamp((progress - 0.55) / 0.3) * 0.6).toFixed(2));
-      heroOverlay.style.setProperty("--hero-blur", `${clamp((progress - 0.55) / 0.3) * 8}px`);
-      heroOverlay.style.setProperty("--hero-copy-blur", `${8 * (1 - clamp(progress / 0.55))}px`);
-      heroIntro.style.opacity = String(1 - clamp(progress / 0.3));
-      heroIntro.style.transform = `translateY(${-200 * clamp(progress / 0.4)}px)`;
+      heroOverlay.style.setProperty("--hero-overlay", "0");
+      heroOverlay.style.setProperty("--hero-blur", "0px");
+      heroOverlay.style.setProperty("--hero-copy-blur", "0px");
+      heroIntro.style.opacity = String(1 - clamp(progress / 0.36));
+      heroIntro.style.transform = `translateY(${-100 * clamp(progress / 0.42)}px)`;
       heroHint.style.opacity = String(1 - clamp(progress / 0.18));
     }
 

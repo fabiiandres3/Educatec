@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # =========================================================
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-local-development-only")
-DEBUG = os.environ.get("DEBUG", "false").lower() in {"1", "true", "yes"}
+DEBUG = os.environ.get("DEBUG", "true").lower() in {"1", "true", "yes"}
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if host.strip()]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.microsoft',
 
     # -----------------------------------------------------
     # Aplicaciones del proyecto
@@ -180,6 +181,11 @@ SOCIALACCOUNT_PROVIDERS = {
 
         },
 
+    },
+
+    "microsoft": {
+        "SCOPE": ["User.Read"],
+        "AUTH_PARAMS": {"prompt": "select_account"},
     },
 
 }

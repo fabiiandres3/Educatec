@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Educatec · Plataforma educativa{% endblock %}
+{% block title %}Educatec{% endblock %}
 
 {% block extra_css %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&family=Figtree:wght@400;500;600&family=Sora:wght@600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/home_moderno.css' %}?v=hero-floats-20261023">
+<link rel="stylesheet" href="{% static 'css/home_moderno.css' %}?v=gallery-frame-hover-20261110">
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
   <header class="home-header" id="home-header">
     <div class="home-nav glass-panel">
       <a class="home-brand" href="#inicio" aria-label="Educatec, inicio">
-        <span class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></span><span>Educatec</span>
+        <img src="{% static 'images/educatec-logo-transparent.png' %}" alt="" width="40" height="40" style="object-fit:cover;border-radius:10px"><span>Educatec</span>
       </a>
       <nav class="home-nav-links" aria-label="Navegación principal">
         <a href="#niveles">Niveles</a><a href="#plataforma">Plataforma</a><a href="#eventos">Eventos</a><a href="#nosotros">Nosotros</a>
@@ -36,7 +36,7 @@
         <div class="hero-grid" aria-hidden="true"></div><div class="hero-orb" aria-hidden="true"></div>
         <div class="hero-intro">
           <p class="hero-kicker reveal"><i class="fa-solid fa-sparkles"></i> Plataforma educativa</p>
-          <h1><span class="hero-title-line hero-wordmark"><span class="text-gradient">Educatec</span><i class="fa-solid fa-graduation-cap hero-wordmark-logo" aria-hidden="true"></i></span></h1>
+          <h1><span class="hero-title-line hero-wordmark"><span class="text-gradient">Educatec</span><img class="hero-wordmark-logo" src="{% static 'images/educatec-logo-transparent.png' %}" alt=""></span></h1>
         </div>
         <div class="hero-floats" id="hero-floats" aria-hidden="true">
           <figure class="hero-float hero-float--one"><img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=500&q=75" alt=""></figure>
@@ -114,9 +114,9 @@
       <div class="mission-grid container-fluid"><article class="feature-card tilt-card"><div class="mission-label"><span class="level-icon"><i class="fa-solid fa-bullseye"></i></span><span>01</span></div><h3>Misión</h3><p>Brindar una educación integral de alta calidad, desarrollando en los alumnos competencias académicas, tecnológicas y humanas. Buscamos formar jóvenes conscientes de su entorno, capaces de ingresar con éxito a la educación superior y liderar proyectos de transformación social.</p></article><article class="feature-card tilt-card"><div class="mission-label"><span class="level-icon"><i class="fa-regular fa-eye"></i></span><span>02</span></div><h3>Visión</h3><p>Consolidarnos para el año 2030 como una institución líder en innovación pedagógica y tecnológica. Seremos reconocidos por el alto desempeño de nuestros egresados, su pensamiento crítico y su capacidad de adaptación a un mundo en constante evolución.</p></article></div>
     </section>
 
-    <section class="home-cta"><div class="marquee-track" aria-hidden="true"><span>Preescolar ✦ Primaria ✦ Secundaria ✦ Tareas ✦ Calificaciones ✦ Horarios ✦ Eventos ✦ Preescolar ✦ Primaria ✦ Secundaria ✦ Tareas ✦ Calificaciones ✦ Horarios ✦ Eventos ✦</span></div><div class="cta-content reveal"><h2>El futuro de tu colegio empieza aquí.</h2><a class="button-primary" href="{% url 'login' %}">Iniciar sesión <i class="fa-solid fa-arrow-right"></i></a></div><footer class="home-footer container-fluid"><span><i class="fa-solid fa-graduation-cap"></i> Educatec · Plataforma educativa</span><span>La tecnología al servicio de la educación</span></footer></section>
+    <section class="home-cta"><div class="marquee-track" aria-hidden="true"><span>Preescolar ✦ Primaria ✦ Secundaria ✦ Tareas ✦ Calificaciones ✦ Horarios ✦ Eventos ✦ Preescolar ✦ Primaria ✦ Secundaria ✦ Tareas ✦ Calificaciones ✦ Horarios ✦ Eventos ✦</span></div><div class="cta-content reveal"><h2>El futuro de tu colegio empieza aquí.</h2><a class="button-primary" href="{% url 'login' %}">Iniciar sesión <i class="fa-solid fa-arrow-right"></i></a></div><footer class="home-footer container-fluid"><span><img src="{% static 'images/educatec-logo-transparent.png' %}" alt="" width="28" height="28" style="object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:7px">Educatec · Plataforma educativa</span><span>La tecnología al servicio de la educación</span></footer></section>
 </div>
 </div>
 {% endblock %}
 
-{% block extra_js %}<script src="{% static 'js/home_moderno.js' %}?v=hero-floats-20261023" defer></script>{% endblock %}
+{% block extra_js %}<script src="{% static 'js/home_moderno.js' %}?v=hero-clear-v2-20261110" defer></script>{% endblock %}

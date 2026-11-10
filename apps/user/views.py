@@ -162,6 +162,11 @@ def redireccionar_por_rol(request):
 
         return redirect("login")
 
+    # Los superusuarios creados con createsuperuser pueden no tener un rol
+    # asociado; en ese caso deben entrar al panel administrativo.
+    if request.user.is_superuser:
+        return redirect("dashboard_administrador")
+
     # -----------------------------------------------------
     # USUARIO SIN ROL
     # -----------------------------------------------------

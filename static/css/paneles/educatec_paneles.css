@@ -151,3 +151,5 @@ body.sidebar-collapsed .sidebar .menu li>i{flex:0 0 auto;width:auto;margin:0!imp
 body.sidebar-collapsed .sidebar .menu-link{display:flex;align-items:center;justify-content:center;gap:0;width:48px;min-height:46px;margin:5px auto;padding:12px 0!important;overflow:visible;font-size:0!important}
 body.sidebar-collapsed .sidebar .menu-link>i{flex:0 0 auto;width:auto;margin:0!important;font-size:17px!important}
 body.sidebar-collapsed .sidebar .menu-link.active>i,body.sidebar-collapsed .sidebar .menu li.active>i{color:#0EA5E9!important}
+.sidebar .logo>img,.sidebar-brand h4>img{flex:0 0 auto;object-fit:cover}
+body.sidebar-collapsed .sidebar .logo>img{width:34px!important;height:34px!important}

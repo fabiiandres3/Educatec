@@ -1558,7 +1558,11 @@ def configuracion_alumnos(request):
 
 @login_required
 def _configuracion_cuenta(request):
-    rol = request.user.rol.nombre.lower().strip() if request.user.rol else ""
+    rol = (
+        "administrador"
+        if request.user.is_superuser
+        else request.user.rol.nombre.lower().strip() if request.user.rol else ""
+    )
     bases = {
         "docente": "paneles/docentes/base.html",
         "alumno": "paneles/alumnos/base.html",
@@ -1594,6 +1598,7 @@ def _configuracion_cuenta(request):
         )
     perfil_form = CuentaPerfilForm(instance=request.user, initial=perfil_initial)
     password_form = PasswordChangeForm(user=request.user)
+    solicitud_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
     if request.method == "POST" and request.POST.get("action") == "profile":
         perfil_form = CuentaPerfilForm(
             request.POST,
@@ -1615,16 +1620,32 @@ def _configuracion_cuenta(request):
             if isinstance(perfil, Alumnos):
                 perfil.fecha_nacimiento = usuario.fecha_nacimiento
                 perfil.save(update_fields=["fecha_nacimiento"])
+            if solicitud_ajax:
+                return JsonResponse({"ok": True, "message": "Tus datos se guardaron correctamente."})
             messages.success(request, "Tu perfil se guardó correctamente.")
             return redirect(request.path)
+        if solicitud_ajax:
+            return JsonResponse({
+                "ok": False,
+                "message": "Revisa los campos marcados e inténtalo de nuevo.",
+                "errors": perfil_form.errors.get_json_data(),
+            }, status=400)
         messages.error(request, "Revisa los campos del perfil e inténtalo de nuevo.")
     elif request.method == "POST" and request.POST.get("action") == "password":
         password_form = PasswordChangeForm(request.user, request.POST)
         if password_form.is_valid():
             usuario = password_form.save()
             update_session_auth_hash(request, usuario)
+            if solicitud_ajax:
+                return JsonResponse({"ok": True, "message": "Tu contraseña se actualizó correctamente."})
             messages.success(request, "Tu contraseña se actualizó correctamente.")
             return redirect(request.path)
+        if solicitud_ajax:
+            return JsonResponse({
+                "ok": False,
+                "message": "No se pudo cambiar la contraseña. Revisa los datos ingresados.",
+                "errors": password_form.errors.get_json_data(),
+            }, status=400)
         messages.error(request, "No se pudo cambiar la contraseña. Revisa los datos ingresados.")
 
     for campo in password_form.fields.values():
