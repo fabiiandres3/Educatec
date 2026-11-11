@@ -72,6 +72,7 @@ env\Scripts\activate
 
 ### Configuracion de llaves local
 ```bash
+coy .env
 copy .env.example .env
 ```
 ### Linux / Mac
