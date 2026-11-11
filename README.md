@@ -70,6 +70,10 @@ py
 env\Scripts\activate
 ```
 
+### Configuracion de llaves local
+```bash
+copy .env.example .env
+```
 ### Linux / Mac
 
 ```bash
