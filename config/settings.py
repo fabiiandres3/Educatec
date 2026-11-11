@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from urllib.parse import urlparse
 
 import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
@@ -10,6 +11,26 @@ from django.core.exceptions import ImproperlyConfigured
 # =========================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def load_local_env(env_path):
+    """Carga pares KEY=VALUE desde .env sin requerir dependencias externas."""
+    if not env_path.is_file():
+        return
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            value = value[1:-1]
+        if key:
+            os.environ.setdefault(key, value)
+
+
+load_local_env(BASE_DIR / ".env")
 
 
 # =========================================================
@@ -190,6 +211,20 @@ SOCIALACCOUNT_PROVIDERS = {
 
 }
 
+# Credenciales opcionales por entorno. Si no están definidas, allauth toma la
+# aplicación Google guardada en Social applications de la base compartida.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "").strip()
+if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
+    SOCIALACCOUNT_PROVIDERS["google"]["APP"] = {
+        "client_id": GOOGLE_CLIENT_ID,
+        "secret": GOOGLE_CLIENT_SECRET,
+        "key": "",
+        # Prefiere la configuración de Django Admin cuando ya existe en la BD;
+        # usa estas credenciales como alternativa si no hay una SocialApp.
+        "settings": {"hidden": True},
+    }
+
 
 # =========================================================
 # MIDDLEWARE
@@ -290,11 +325,13 @@ if IS_RENDER and not DATABASE_URL.startswith(("postgres://", "postgresql://")):
     )
 
 if DATABASE_URL:
+    database_host = urlparse(DATABASE_URL).hostname or ""
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
+            ssl_require=database_host not in {"localhost", "127.0.0.1"},
         ),
     }
 else:

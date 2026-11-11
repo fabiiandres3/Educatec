@@ -2,6 +2,53 @@
 
 Plantilla base para proyectos Django.
 
+## Ejecutar localmente con la misma base de datos de Render
+
+Render y el servidor local pueden compartir PostgreSQL. En el panel de Render,
+copia la **External Database URL** de la base de datos (no la URL interna, que
+solo funciona dentro de Render) y úsala en `.env`:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Edita `.env` y reemplaza `DATABASE_URL` por la URL externa real. No compartas ni
+subas ese archivo: `.env` está excluido de Git. Si no se define `DATABASE_URL`,
+Django conserva SQLite para desarrollo aislado; para compartir datos con Render,
+la URL de PostgreSQL sí es necesaria. Las conexiones PostgreSQL remotas usan SSL.
+Con la URL externa de Render, las operaciones locales escriben directamente en
+la base de producción.
+
+Instala dependencias, aplica las migraciones y luego inicia el servidor local:
+
+```powershell
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+### Inicio de sesión con Google en localhost
+
+La aplicación Google guardada en Django Admin > **Social applications** se lee
+de la base compartida, si está asociada al sitio cuyo ID coincide con `SITE_ID`
+(por defecto `2`). En Google Cloud Console, agrega esta URI de redirección al
+cliente OAuth web:
+
+```text
+http://localhost:8000/accounts/google/login/callback/
+```
+
+Agrega también la URI de Render que corresponda a tu dominio desplegado. Como
+alternativa, define `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET` en `.env` y en
+las variables de entorno de Render. La URI local debe estar autorizada en
+Google para completar el retorno a localhost.
+
+Para este despliegue, la URI de retorno de Render es:
+
+```text
+https://educatec.onrender.com/accounts/google/login/callback/
+```
+
 ## 1. Clonar el proyecto
 
 ```bash
