@@ -911,46 +911,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function actualizarCursosSegunPeriodo(periodoId) {
         const cursoSeleccionado = cursoSelect.value;
         cursoSelect.innerHTML = OPTIONS_CURSOS_ORIGINALES;
-        if (!periodoId) {
-            cursoSelect.value = cursoSeleccionado;
-            return;
-        }
-
-        const cursosValidos = new Set(
-            horariosBD
-                .filter(function (h) {
-                    return String(h.periodo) === String(periodoId);
-                })
-                .map(function (h) { return String(h.curso); })
-        );
-
-        const refs = new Set(
-            CURSOS_REFS
-                .filter(function (c) {
-                    return String(c.periodo) === String(periodoId);
-                })
-                .map(function (c) { return String(c.id); })
-        );
-
-        cursosValidos.forEach(function (id) { refs.add(id); });
-        if (refs.size === 0) {
-            cursoSelect.value = cursoSeleccionado;
-            return;
-        }
-
-        Array.from(cursoSelect.options).forEach(function (opt) {
-            if (!opt.value) return;
-            if (!refs.has(String(opt.value))) {
-                opt.remove();
-            }
-        });
-
-        const existe = Array.from(cursoSelect.options)
-            .some(function (o) { return o.value === cursoSeleccionado; });
-
-        if (existe) {
-            cursoSelect.value = cursoSeleccionado;
-        }
+        // El período filtra los bloques del horario, no los cursos disponibles.
+        cursoSelect.value = cursoSeleccionado;
     }
 
 
