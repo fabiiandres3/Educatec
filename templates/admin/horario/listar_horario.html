@@ -166,6 +166,17 @@
     background: #1d4ed8;
 }
 
+.btn-editar:disabled {
+    background: #a8b4ca;
+    color: #f8fafc;
+    cursor: not-allowed;
+    opacity: .72;
+}
+
+.btn-editar:disabled:hover {
+    transform: none;
+}
+
 .btn-limpiar {
     background: #f3f4f6;
     color: #374151;
@@ -497,6 +508,33 @@
         grid-template-columns: 1fr;
     }
 }
+.schedule-item {
+    animation: horario-aparecer .5s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: var(--entry-delay, 0ms);
+}
+.schedule-table tbody tr {
+    animation: fila-horario-aparecer .58s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: var(--entry-delay, 0ms);
+}
+@keyframes fila-horario-aparecer {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes horario-aparecer {
+    from { opacity: 0; transform: translateY(4px) scale(.995); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.teacher-item {
+    animation: docente-aparecer .42s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: var(--entry-delay, 0ms);
+}
+@keyframes docente-aparecer {
+    from { opacity: 0; transform: translateX(4px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .schedule-table tbody tr, .schedule-item, .teacher-item { animation: none !important; }
+}
 </style>
 
 
@@ -629,14 +667,17 @@
             </a>
 
             <!-- EDITAR HORARIO -->
-            <a
-                href="#"
+            <button
+                type="button"
                 class="btn-horario btn-editar"
                 id="btnEditarHorario"
+                disabled
+                aria-disabled="true"
+                title="Selecciona un período y un curso para editar"
             >
-                <i class="fas fa-edit"></i>
+                <i class="fas fa-edit" aria-hidden="true"></i>
                 Editar
-            </a>
+            </button>
 
             <!-- LIMPIAR -->
             <button
@@ -779,42 +820,14 @@
                     Docentes
                 </h3>
 
-                <p class="teachers-subtitle">
-                    Docentes con horario asignado
-                </p>
+                <p class="teachers-subtitle">Docentes del horario seleccionado</p>
 
             </div>
 
 
-            <div class="teachers-list">
+            <div class="teachers-list" id="teachersList">
 
-                {% regroup horarios by docente as docentes %}
-
-                {% for docente in docentes %}
-
-                    <div class="teacher-item">
-
-                        <div class="teacher-avatar">
-
-                            <i class="fas fa-user"></i>
-
-                        </div>
-
-                        <div class="teacher-name">
-
-                            {{ docente.grouper }}
-
-                        </div>
-
-                    </div>
-
-                {% empty %}
-
-                    <div class="no-teachers">
-                        No hay docentes registrados.
-                    </div>
-
-                {% endfor %}
+                <div class="no-teachers">Selecciona un período y un curso para ver sus docentes.</div>
 
             </div>
 
@@ -853,6 +866,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const scheduleTitle = document.getElementById("scheduleTitle");
     const scheduleInfo = document.getElementById("scheduleInfo");
+
+    function renderizarDocentes(horariosFiltrados) {
+        const lista = document.getElementById("teachersList");
+
+        if (!periodoSelect.value || !cursoSelect.value) {
+            lista.innerHTML = '<div class="no-teachers">Selecciona un período y un curso para ver sus docentes.</div>';
+            return;
+        }
+
+        const docentes = new Map();
+        horariosFiltrados.forEach(function (horario) {
+            if (horario.docente && horario.docenteNombre) {
+                docentes.set(String(horario.docente), horario.docenteNombre);
+            }
+        });
+
+        if (docentes.size === 0) {
+            lista.innerHTML = '<div class="no-teachers">No hay docentes en este horario.</div>';
+            return;
+        }
+
+        lista.innerHTML = Array.from(docentes.values())
+            .sort(function (a, b) { return a.localeCompare(b, "es"); })
+            .map(function (nombre, indice) {
+                const retraso = Math.min(indice * 30, 180);
+                return '<div class="teacher-item" style="--entry-delay: ' + retraso + 'ms">' +
+                    '<div class="teacher-avatar"><i class="fas fa-user" aria-hidden="true"></i></div>' +
+                    '<div class="teacher-name">' + escapeHTML(nombre) + '</div>' +
+                '</div>';
+            })
+            .join("");
+    }
+
+    function actualizarEstadoBotonEditar() {
+        const habilitado = Boolean(periodoSelect.value && cursoSelect.value);
+        btnEditar.disabled = !habilitado;
+        btnEditar.setAttribute("aria-disabled", String(!habilitado));
+        btnEditar.title = habilitado
+            ? "Editar el horario seleccionado"
+            : "Selecciona un período y un curso para editar";
+    }
 
 
     /* =====================================================
@@ -911,7 +965,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function actualizarCursosSegunPeriodo(periodoId) {
         const cursoSeleccionado = cursoSelect.value;
         cursoSelect.innerHTML = OPTIONS_CURSOS_ORIGINALES;
-        // El período filtra los bloques del horario, no los cursos disponibles.
+        // El filtro de período afecta los bloques del horario, no la lista
+        // de cursos disponibles. Así también se pueden consultar los cursos
+        // que todavía no tienen clases guardadas en ese período.
         cursoSelect.value = cursoSeleccionado;
     }
 
@@ -1287,10 +1343,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderizarHorario() {
 
+        actualizarEstadoBotonEditar();
         scheduleBody.innerHTML = "";
 
         const horariosFiltrados =
             obtenerHorariosFiltrados();
+
+        renderizarDocentes(horariosFiltrados);
 
 
         /* -------------------------------------------------
@@ -1389,10 +1448,12 @@ document.addEventListener("DOMContentLoaded", function () {
            GENERAR FILAS
            ------------------------------------------------- */
 
-        bloques.forEach(function (bloque) {
+        bloques.forEach(function (bloque, indiceBloque) {
 
             const fila =
                 document.createElement("tr");
+            const retraso = Math.min(indiceBloque * 16, 160);
+            fila.style.setProperty("--entry-delay", retraso + "ms");
 
 
             /* ---------------------------------------------

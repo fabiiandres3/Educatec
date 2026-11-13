@@ -36,6 +36,11 @@ class PeriodoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.fields["numero"].choices = [
+            ("", "Selecciona una opción"),
+            *Periodo.PERIODOS,
+        ]
+
         hoy = timezone.localdate().isoformat()
 
         self.fields["fecha_inicio"].widget.attrs["min"] = hoy

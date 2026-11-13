@@ -80,6 +80,12 @@ urlpatterns = [
     ),
 
     path(
+        "crear_docente/<int:periodo_id>/<int:docente_id>/<int:curso_id>/",
+        views.crear_horario_docente,
+        name="crear_horario_docente",
+    ),
+
+    path(
         "editar/<int:periodo_id>/<int:curso_id>/",
         views.editar_horario,
         name="editar_horario"

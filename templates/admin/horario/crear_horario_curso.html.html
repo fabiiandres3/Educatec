@@ -124,6 +124,108 @@ Crear horario - {{ curso.nombre }}
        TABLA DE HORARIOS
        ===================================================== */
 
+    .seleccion-multiple {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 0 0 14px;
+        border: 1px solid #dbe5f6;
+        border-radius: 13px;
+        padding: 13px 16px;
+        background: linear-gradient(110deg, #f8faff, #fff);
+    }
+
+    .seleccion-multiple-info {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 0;
+    }
+
+    .seleccion-multiple-icono {
+        display: grid;
+        flex: 0 0 38px;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border-radius: 12px;
+        background: #eaf0ff;
+        color: #4265d8;
+    }
+
+    .seleccion-multiple-info strong {
+        display: block;
+        color: #24334d;
+        font-size: 13px;
+    }
+
+    .seleccion-multiple-info small {
+        display: block;
+        margin-top: 3px;
+        color: #78869d;
+        font-size: 11px;
+    }
+
+    .seleccion-multiple-conteo {
+        color: #4265d8;
+        font-weight: 800;
+    }
+
+    .btn-asignar-seleccion {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 40px;
+        border: 0;
+        border-radius: 9px;
+        padding: 0 15px;
+        background: #4265d8;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 750;
+        cursor: pointer;
+        transition: background .18s, transform .18s, box-shadow .18s, opacity .18s;
+    }
+
+    .btn-asignar-seleccion:not(:disabled):hover {
+        transform: translateY(-1px);
+        background: #3455c2;
+        box-shadow: 0 6px 16px rgba(66, 101, 216, .2);
+    }
+
+    .btn-asignar-seleccion:disabled {
+        cursor: not-allowed;
+        opacity: .48;
+    }
+
+    .celda-horario.seleccionada {
+        background: #eaf0ff !important;
+        box-shadow: inset 0 0 0 3px #4265d8 !important;
+    }
+
+    .celda-horario.seleccionada::after {
+        content: "✓";
+        top: 7px;
+        right: 7px;
+        left: auto;
+        width: 21px;
+        height: 21px;
+        transform: none;
+        border-radius: 50%;
+        background: #4265d8;
+        color: #fff;
+        font-size: 13px;
+        opacity: 1;
+        z-index: 2;
+    }
+
+    @media (max-width: 600px) {
+        .seleccion-multiple { align-items: stretch; flex-direction: column; }
+        .btn-asignar-seleccion { width: 100%; }
+    }
     .tabla-card {
         background: #ffffff;
         border-radius: 12px;
@@ -218,10 +320,65 @@ Crear horario - {{ curso.nombre }}
         transition: all .15s ease;
     }
 
-    .celda-horario:hover::after {
+    .celda-horario:not(.ocupada):not(.seleccionada):not(.no-disponible):hover::after {
         opacity: 1;
         background: linear-gradient(135deg, #0d6efd 0%, #4688e5 100%);
         color: #ffffff;
+    }
+
+    .celda-horario.ocupada { cursor: default; }
+    .celda-horario.ocupada:hover {
+        background-image: linear-gradient(145deg, rgba(255,255,255,.26), rgba(226,237,255,.28));
+        box-shadow: inset 0 0 0 2px rgba(66,101,216,.13), inset 0 -3px 0 rgba(66,101,216,.05);
+    }
+    .celda-horario.seleccionada:not(.ocupada)::after {
+        content: "\2713"; opacity: 1; background: linear-gradient(135deg,#3159d8,#6688f4); color: #fff;
+        box-shadow: 0 5px 14px rgba(49,89,216,.24);
+    }
+    .acciones-celda {
+        position: absolute; z-index: 5; top: 7px; right: 7px;
+        display: flex; gap: 5px; padding: 4px;
+        border: 1px solid rgba(255,255,255,.85); border-radius: 12px;
+        background: rgba(255,255,255,.88); backdrop-filter: blur(8px);
+        box-shadow: 0 5px 16px rgba(30,41,59,.16);
+        opacity: 0; transform: translateY(-5px) scale(.96); transform-origin: top right;
+        pointer-events: none; transition: opacity .2s ease, transform .2s cubic-bezier(.2,.8,.2,1);
+    }
+    .celda-horario.ocupada:hover .acciones-celda,
+    .celda-horario.ocupada:focus-within .acciones-celda {
+        opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+    }
+    .accion-celda {
+        display: grid; width: 31px; height: 31px; place-items: center;
+        border: 0; border-radius: 9px; color: #fff; cursor: pointer;
+        box-shadow: 0 2px 6px rgba(15,23,42,.16);
+        transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    .accion-mover { background: linear-gradient(145deg,#5276e8,#3455c2); }
+    .accion-eliminar { background: linear-gradient(145deg,#f06b73,#d9434f); }
+    .accion-celda:hover { filter: brightness(1.04); transform: translateY(-2px); box-shadow: 0 5px 10px rgba(15,23,42,.2); }
+    .accion-celda:active { transform: scale(.93); }
+    .accion-celda:focus-visible { outline: 3px solid #172554; outline-offset: 2px; }
+    .celda-horario.origen-movimiento {
+        z-index: 2; outline: 3px solid #4265d8; outline-offset: -3px;
+        background-image: linear-gradient(135deg,rgba(66,101,216,.17),rgba(99,158,241,.08));
+        animation: pulso-origen 1.5s ease-in-out infinite;
+    }
+    .tabla-horario.modo-mover .celda-horario:not(.ocupada):not(.no-disponible) { cursor: crosshair; }
+    .tabla-horario.modo-mover .celda-horario:not(.ocupada):not(.no-disponible):hover {
+        background: #e9efff; box-shadow: inset 0 0 0 2px rgba(66,101,216,.35);
+    }
+    @keyframes pulso-origen {
+        0%,100% { box-shadow: inset 0 0 0 2px rgba(66,101,216,.12), 0 0 0 0 rgba(66,101,216,.22); }
+        50% { box-shadow: inset 0 0 0 2px rgba(66,101,216,.2), 0 0 0 5px rgba(66,101,216,.08); }
+    }
+    @media (hover: none) {
+        .acciones-celda { opacity: 1; transform: none; pointer-events: auto; }
+        .accion-celda { width: 28px; height: 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .celda-horario.origen-movimiento { animation: none; }
+        .acciones-celda, .accion-celda { transition: none; }
     }
 
     .jornada-fila {
@@ -774,10 +931,66 @@ Crear horario - {{ curso.nombre }}
         transform: translateY(-1px);
     }
 
+    .confirmacion-salida {
+        position: fixed; inset: 0; z-index: 100000;
+        display: grid; place-items: center; padding: 20px;
+        background: rgba(15,23,42,.52); backdrop-filter: blur(7px);
+        opacity: 0; visibility: hidden; transition: opacity .22s ease, visibility .22s ease;
+    }
+    .confirmacion-salida.visible { opacity: 1; visibility: visible; }
+    .confirmacion-salida-panel {
+        width: min(430px,100%); padding: 30px; border: 1px solid rgba(255,255,255,.8);
+        border-radius: 22px; background: #fff; text-align: center;
+        box-shadow: 0 26px 80px rgba(15,23,42,.28);
+        transform: translateY(12px) scale(.97); transition: transform .24s cubic-bezier(.2,.8,.2,1);
+    }
+    .confirmacion-salida.visible .confirmacion-salida-panel { transform: translateY(0) scale(1); }
+    .confirmacion-salida-icono {
+        display: grid; width: 62px; height: 62px; margin: 0 auto 17px; place-items: center;
+        border-radius: 19px; color: #b45309; font-size: 25px;
+        background: linear-gradient(145deg,#fff4d6,#ffead0);
+        box-shadow: inset 0 0 0 1px rgba(217,119,6,.12);
+    }
+    .confirmacion-salida-panel h2 { margin: 0 0 9px; color: #172033; font-size: 21px; font-weight: 800; }
+    .confirmacion-salida-panel p { margin: 0; color: #667085; font-size: 14px; line-height: 1.65; }
+    .confirmacion-salida-acciones { display: flex; gap: 10px; margin-top: 25px; }
+    .confirmacion-salida-acciones button {
+        flex: 1; min-height: 44px; border: 0; border-radius: 11px; padding: 0 14px;
+        font: inherit; font-size: 13px; font-weight: 750; cursor: pointer;
+        transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+    .confirmacion-salida-acciones button:hover { transform: translateY(-1px); }
+    .confirmacion-seguir { color: #fff; background: linear-gradient(135deg,#4265d8,#3154c3); box-shadow: 0 5px 13px rgba(66,101,216,.23); }
+    .confirmacion-seguir:hover { box-shadow: 0 8px 18px rgba(66,101,216,.3); }
+    .confirmacion-descartar { color: #475467; background: #f1f3f7; }
+    .confirmacion-descartar:hover { background: #e7eaf0; }
+    @media (max-width: 480px) {
+        .confirmacion-salida-panel { padding: 25px 20px; }
+        .confirmacion-salida-acciones { flex-direction: column-reverse; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .confirmacion-salida, .confirmacion-salida-panel, .confirmacion-salida-acciones button { transition: none; }
+    }
+    .modo-docente .campo-docente-modal { display:none; }
+    .selector-docente-horario { display:flex; align-items:center; justify-content:space-between; gap:22px; margin:0 0 20px; padding:17px 20px; border:1px solid #e1e8f5; border-radius:16px; background:linear-gradient(110deg,#fff,#f7f9ff); box-shadow:0 7px 22px rgba(31,46,79,.055); }
+    .selector-docente-cabecera { display:flex; align-items:center; gap:12px; min-width:220px; }
+    .selector-docente-icono { display:grid; flex:0 0 42px; width:42px; height:42px; place-items:center; border-radius:13px; color:#4464c4; background:#eaf0ff; }
+    .selector-docente-cabecera strong,.selector-docente-cabecera small { display:block; }
+    .selector-docente-cabecera strong { color:#26344d; font-size:13px; }
+    .selector-docente-cabecera small { margin-top:4px; color:#7a879d; font-size:11px; }
+    .selector-docente-campos { display:flex; flex:1; justify-content:flex-end; gap:12px; }
+    .selector-docente-campos label { display:grid; gap:6px; min-width:min(220px,38%); color:#5b667a; font-size:11px; font-weight:750; }
+    .selector-docente-campos select { min-height:40px; padding:8px 34px 8px 11px; border:1px solid #dce3ef; border-radius:9px; color:#26344d; background:#fff; font:inherit; font-size:12px; }
+    .selector-docente-campos select:focus { outline:0; border-color:#6c86db; box-shadow:0 0 0 3px #4265d81c; }
+    .celda-horario.no-disponible { cursor:not-allowed; background:repeating-linear-gradient(135deg,#f4f6fa,#f4f6fa 7px,#ebeff5 7px,#ebeff5 14px) !important; }
+    .celda-horario.no-disponible::after { content:"Ocupada"; width:auto; height:auto; padding:5px 7px; border-radius:6px; color:#758198; background:#ffffffd9; font-size:9px; font-weight:800; opacity:0; }
+    .celda-horario.no-disponible:hover::after { opacity:1; }
+    @media (max-width:760px) { .selector-docente-horario { align-items:stretch; flex-direction:column; gap:15px; } .selector-docente-campos { justify-content:stretch; } .selector-docente-campos label { flex:1; min-width:0; } }
+    @media (max-width:480px) { .selector-docente-campos { flex-direction:column; } }
 </style>
 
 
-<div class="horario-container">
+<div class="horario-container{% if modo_docente %} modo-docente{% endif %}">
 
 
     <!-- CABECERA -->
@@ -788,12 +1001,14 @@ Crear horario - {{ curso.nombre }}
 
             <h2>
                 <i class="fas fa-calendar-check me-2"></i>
-                Crear horario semanal
+                {% if modo_docente %}Horario semanal por docente{% elif modo_edicion %}Editar horario semanal{% else %}Crear horario semanal{% endif %}
             </h2>
 
-            <p>
-                Haz clic en una celda para asignar una clase. Cambia de jornada para ver los horarios disponibles.
-            </p>
+            {% if modo_docente %}
+            <p>Consulta y organiza las clases de cada docente. Cambia el docente o el curso para ver otra asignación.</p>
+            {% else %}
+            <p>Selecciona una o varias celdas y asígnales docente y materia. La selección se conserva al cambiar de jornada.</p>
+            {% endif %}
 
         </div>
 
@@ -809,12 +1024,24 @@ Crear horario - {{ curso.nombre }}
                 <i class="fas fa-graduation-cap"></i>
                 {{ curso.nombre }}
             </div>
+            {% if modo_docente %}
+            <div class="badge"><i class="fas fa-chalkboard-teacher"></i>{{ docente_actual }}</div>
+            {% endif %}
 
         </div>
 
     </div>
 
 
+    {% if modo_docente %}
+    <section class="selector-docente-horario" aria-label="Cambiar docente o curso">
+        <div class="selector-docente-cabecera"><span class="selector-docente-icono"><i class="fas fa-sliders-h" aria-hidden="true"></i></span><div><strong>Vista por docente</strong><small>Cambia la selección para consultar otra asignación.</small></div></div>
+        <div class="selector-docente-campos">
+            <label for="docenteVista">Docente<select id="docenteVista">{% for opcion_docente in docentes_selector %}<option value="{{ opcion_docente.id }}" {% if opcion_docente.id == docente_actual.id %}selected{% endif %}>{{ opcion_docente }}</option>{% endfor %}</select></label>
+            <label for="cursoVista">Curso<select id="cursoVista">{% for opcion_curso in cursos_selector %}<option value="{{ opcion_curso.id }}" {% if opcion_curso.id == curso.id %}selected{% endif %}>{{ opcion_curso.nombre }}</option>{% endfor %}</select></label>
+        </div>
+    </section>
+    {% endif %}
     <!-- TABS JORNADA -->
 
     <div class="tabs-jornada" role="tablist" aria-label="Seleccionar jornada">
@@ -845,6 +1072,19 @@ Crear horario - {{ curso.nombre }}
 
     </div>
 
+    <div class="seleccion-multiple">
+        <div class="seleccion-multiple-info">
+            <span class="seleccion-multiple-icono"><i class="fas fa-object-group" aria-hidden="true"></i></span>
+            <div>
+                <strong><span class="seleccion-multiple-conteo" id="conteoSeleccion" aria-live="polite">0 celdas seleccionadas</span></strong>
+                <small id="seleccionAyuda">{% if modo_docente %}Selecciona las celdas donde dará clase {{ docente_actual }}.{% else %}Selecciona celdas vacías para asignar. En las ocupadas puedes mover o eliminar.{% endif %}</small>
+            </div>
+        </div>
+        <button type="button" class="btn-asignar-seleccion" id="btnAsignarSeleccion" disabled>
+            <i class="fas fa-user-plus" aria-hidden="true"></i>
+            Asignar docente y materia
+        </button>
+    </div>
 
     <!-- TABLA -->
 
@@ -1007,7 +1247,7 @@ Crear horario - {{ curso.nombre }}
                 class="btn btn-guardar"
             >
                 <i class="fas fa-save"></i>
-                Guardar horario
+                {% if modo_edicion %}Guardar cambios{% else %}Guardar horario{% endif %}
             </button>
 
         </div>
@@ -1021,6 +1261,17 @@ Crear horario - {{ curso.nombre }}
      NOTIFICACIÓN
      ===================================================== -->
 
+<div id="confirmacionSalida" class="confirmacion-salida" aria-hidden="true">
+    <section class="confirmacion-salida-panel" role="dialog" aria-modal="true" aria-labelledby="confirmacionSalidaTitulo" aria-describedby="confirmacionSalidaTexto">
+        <span class="confirmacion-salida-icono"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+        <h2 id="confirmacionSalidaTitulo">Tienes cambios sin guardar</h2>
+        <p id="confirmacionSalidaTexto">Si sales ahora, perderás las modificaciones que hiciste en este horario.</p>
+        <div class="confirmacion-salida-acciones">
+            <button type="button" class="confirmacion-descartar" id="btnSalirSinGuardar">Salir sin guardar</button>
+            <button type="button" class="confirmacion-seguir" id="btnSeguirEditando">Seguir editando</button>
+        </div>
+    </section>
+</div>
 <div
     id="notificacion"
     class="notificacion"
@@ -1137,7 +1388,7 @@ Crear horario - {{ curso.nombre }}
             </div>
 
 
-            <div class="campo">
+            <div class="campo campo-docente-modal">
 
                 <label for="modalDocente">
                     Docente <span class="requerido">*</span>
@@ -1404,10 +1655,97 @@ document.addEventListener("DOMContentLoaded", function () {
     const contadorHorariosSpan =
         document.getElementById("contadorHorarios");
 
+    const btnAsignarSeleccion =
+        document.getElementById("btnAsignarSeleccion");
+    const seleccionAyuda = document.getElementById("seleccionAyuda");
+    const tablaHorario = document.querySelector(".tabla-horario");
+    let celdaOrigenMovimiento = null;
 
-    let celdaActual = null;
-    let colorActual = "#639ef1";
-    const horarios = {};
+    const conteoSeleccion =
+        document.getElementById("conteoSeleccion");
+
+
+        let colorActual = "#639ef1";
+    const celdasSeleccionadas = new Set();
+    const modoDocente = {{ modo_docente|yesno:"true,false" }};
+    const modoEdicion = {{ modo_edicion|yesno:"true,false" }};
+    const ayudaSeleccionBase = modoDocente
+        ? "Selecciona las celdas donde dará clase {{ docente_actual|escapejs }}."
+        : "Selecciona celdas vacías para asignar. En las ocupadas puedes mover o eliminar.";
+    const horarios = {{ horarios_iniciales_json|default:"{}"|safe }};
+    const celdasOcupadas = new Set({{ celdas_ocupadas_json|default:"[]"|safe }});
+    const horariosEliminados = new Set();
+    let restaurarSelectoresDocente = null;
+    const periodoEditor = "{{ periodo.id }}";
+    const docenteEditor = "{{ docente_actual.id|default:"" }}";
+    const cursoEditor = "{{ curso.id|default:"" }}";
+    let cambiosSinGuardar = false;
+    let guardiaVolverActiva = false;
+    let confirmacionSalidaAbierta = false;
+    let salirDespuesDeConfirmar = null;
+    const confirmacionSalida = document.getElementById("confirmacionSalida");
+    const btnSeguirEditando = document.getElementById("btnSeguirEditando");
+    const btnSalirSinGuardar = document.getElementById("btnSalirSinGuardar");
+    function mostrarConfirmacionSalida(accion) {
+        salirDespuesDeConfirmar = accion || null;
+        confirmacionSalidaAbierta = true;
+        confirmacionSalida.classList.add("visible");
+        confirmacionSalida.setAttribute("aria-hidden", "false");
+        btnSeguirEditando.focus();
+    }
+    function cerrarConfirmacionSalida() {
+        confirmacionSalidaAbierta = false;
+        confirmacionSalida.classList.remove("visible");
+        confirmacionSalida.setAttribute("aria-hidden", "true");
+        salirDespuesDeConfirmar = null;
+    }
+    function marcarCambiosSinGuardar() {
+        cambiosSinGuardar = true;
+        if (!guardiaVolverActiva) {
+            history.pushState({ horarioPendiente: true }, "", location.href);
+            guardiaVolverActiva = true;
+        }
+    }
+    btnSeguirEditando.addEventListener("click", function () {
+        if (modoDocente && salirDespuesDeConfirmar) {
+            restaurarSelectoresDocente?.();
+        }
+        cerrarConfirmacionSalida();
+    });
+    btnSalirSinGuardar.addEventListener("click", function () {
+        const accion = salirDespuesDeConfirmar;
+        cerrarConfirmacionSalida();
+        cambiosSinGuardar = false;
+        if (accion) accion(); else history.go(-2);
+    });
+    confirmacionSalida.addEventListener("click", function (event) {
+        if (event.target === confirmacionSalida) cerrarConfirmacionSalida();
+    });
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && confirmacionSalidaAbierta) cerrarConfirmacionSalida();
+    });
+    window.addEventListener("popstate", function () {
+        if (!cambiosSinGuardar) return;
+        history.pushState({ horarioPendiente: true }, "", location.href);
+        guardiaVolverActiva = true;
+        if (!confirmacionSalidaAbierta) mostrarConfirmacionSalida();
+    });
+    document.addEventListener("click", function (event) {
+        if (!cambiosSinGuardar) return;
+        const enlace = event.target.closest("a[href]");
+        if (!enlace || enlace.target === "_blank" || enlace.hasAttribute("download") || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        const destino = new URL(enlace.href, location.href);
+        if (destino.href === location.href) return;
+        event.preventDefault();
+        mostrarConfirmacionSalida(function () {
+            location.assign(destino.href);
+        });
+    });
+    window.addEventListener("beforeunload", function (event) {
+        if (!cambiosSinGuardar) return;
+        event.preventDefault();
+        event.returnValue = "";
+    });
 
 
     /* ==========================================
@@ -1665,165 +2003,269 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    /* ==========================================
-       SELECCIONAR CELDA
-       ========================================== */
-
-    document
-        .querySelectorAll(".celda-horario")
-        .forEach(function (celda) {
-
-            celda.addEventListener("click", function () {
-
-                celdaActual = celda;
-
-                const dia = celda.dataset.dia;
-                const diaNombre = celda.dataset.diaNombre;
-                const jornada = celda.dataset.jornada;
-                const horaInicio = celda.dataset.horaInicio;
-                const horaFin = celda.dataset.horaFin;
-
-                const clave =
-                    `${dia}_${jornada}_${horaInicio}_${horaFin}`;
-
-                const datos = horarios[clave];
-
-
-                modalDia.value = diaNombre;
-                modalHora.value =
-                    `${horaInicio} - ${horaFin} · ${
-                        jornada === "manana" ? "Mañana" : "Tarde"
-                    }`;
-
-
-                if (datos) {
-
-                    modalTitulo.textContent = "Editar horario";
-
-                    modalDocente.value = datos.docente;
-                    poblarClasesParaDocente(datos.docente, datos.clase);
-                    modalNota.value = datos.nota || "";
-                    seleccionarColor(datos.color || "#639ef1");
-
-                    eliminarCeldaBtn.style.display =
-                        "inline-flex";
-
-                } else {
-
-                    modalTitulo.textContent = "Asignar horario";
-
-                    modalDocente.value = "";
-
-                    modalClase.innerHTML = "";
-                    const ph = document.createElement("option");
-                    ph.value = "";
-                    ph.textContent =
-                        "— Primero selecciona un docente —";
-                    modalClase.appendChild(ph);
-                    modalClase.disabled = true;
-
-                    modalClaseHint.innerHTML =
-                        '<i class="fas fa-info-circle me-1"></i>' +
-                        " Selecciona un docente para ver sus materias asignadas.";
-                    modalClaseHint.style.color = "#94a3b8";
-
-                    modalNota.value = "";
-                    seleccionarColor("#639ef1");
-
-                    eliminarCeldaBtn.style.display = "none";
-
-                }
-
-
-                modal.classList.add("activo");
-
+    if (modoDocente) {
+        const docenteVista = document.getElementById("docenteVista");
+        const cursoVista = document.getElementById("cursoVista");
+        const cursosDocente = {{ cursos_docente_json|default:"{}"|safe }};
+        const cursosDisponibles = Array.from(cursoVista.options).map(function (option) { return option.cloneNode(true); });
+        function filtrarCursosVista() {
+            const disponibles = cursosDocente[String(docenteVista.value)] || {};
+            const seleccionAnterior = cursoVista.value;
+            cursoVista.innerHTML = "";
+            cursosDisponibles.forEach(function (option) {
+                if (Object.prototype.hasOwnProperty.call(disponibles, String(option.value))) cursoVista.appendChild(option.cloneNode(true));
             });
+            if (Object.prototype.hasOwnProperty.call(disponibles, seleccionAnterior)) cursoVista.value = seleccionAnterior;
+            else if (cursoVista.options.length) cursoVista.selectedIndex = 0;
+        }
+        function abrirSeleccionVista() {
+            const docenteId = docenteVista.value;
+            const cursoId = cursoVista.value;
+            if (!docenteId || !cursoId || (docenteId === "{{ docente_actual.id }}" && cursoId === "{{ curso.id }}")) return;
+            const ruta = "{% url 'crear_horario_docente' periodo.id 0 0 %}";
+            const destino = ruta.replace("0/0/", docenteId + "/" + cursoId + "/");
+            if (cambiosSinGuardar) mostrarConfirmacionSalida(function () { location.assign(destino); });
+            else location.assign(destino);
+        }
+        restaurarSelectoresDocente = function () {
+            docenteVista.value = docenteEditor;
+            filtrarCursosVista();
+            cursoVista.value = cursoEditor;
+        };
+        docenteVista.addEventListener("change", function () {
+            filtrarCursosVista();
+            abrirSeleccionVista();
+        });
+        cursoVista.addEventListener("change", abrirSeleccionVista);
+        filtrarCursosVista();
+    }
+    const docenteInicial = "{{ docente_inicial|escapejs }}";
+    if (docenteInicial && modalDocente.querySelector(`option[value="${docenteInicial}"]`)) {
+        modalDocente.value = docenteInicial;
+        modalDocente.dispatchEvent(new Event("change"));
+    }
 
+    function claveCelda(celda) {
+        return [celda.dataset.dia, celda.dataset.jornada, celda.dataset.horaInicio, celda.dataset.horaFin].join("_");
+    }
+
+    function actualizarSeleccion() {
+        document.querySelectorAll(".celda-horario").forEach(function (celda) {
+            celda.classList.toggle("seleccionada", celdasSeleccionadas.has(celda));
         });
 
+        const cantidad = celdasSeleccionadas.size;
+        conteoSeleccion.textContent =
+            cantidad + (cantidad === 1 ? " celda seleccionada" : " celdas seleccionadas");
+        btnAsignarSeleccion.disabled = cantidad === 0;
+    }
+
+    function limpiarVisualCelda(celda) {
+        celda.querySelector(".contenido-celda").innerHTML = "";
+        celda.querySelector(".acciones-celda")?.remove();
+        celda.classList.remove("ocupada", "origen-movimiento");
+        celda.style.background = "";
+        celda.style.borderLeft = "";
+        celda.style.boxShadow = "";
+    }
+
+    function cancelarMovimiento() {
+        celdaOrigenMovimiento?.classList.remove("origen-movimiento");
+        celdaOrigenMovimiento = null;
+        tablaHorario?.classList.remove("modo-mover");
+        if (seleccionAyuda) seleccionAyuda.textContent = ayudaSeleccionBase;
+    }
+
+    function iniciarMovimiento(celda) {
+        if (celdaOrigenMovimiento === celda) { cancelarMovimiento(); return; }
+        celdasSeleccionadas.clear();
+        actualizarSeleccion();
+        cancelarMovimiento();
+        celdaOrigenMovimiento = celda;
+        celda.classList.add("origen-movimiento");
+        tablaHorario?.classList.add("modo-mover");
+        if (seleccionAyuda) seleccionAyuda.textContent = "Ahora haz clic en una celda vacía para mover aquí la asignación. Esc cancela.";
+        mostrarNotificacion("info", "Mover horario", "Selecciona una celda vacía como destino.");
+    }
+
+    function moverHorario(origen, destino) {
+        const claveOrigen = claveCelda(origen);
+        const claveDestino = claveCelda(destino);
+        const datos = horarios[claveOrigen];
+        if (!datos || horarios[claveDestino] || (modoDocente && celdasOcupadas.has(claveDestino))) return;
+        if (modoDocente && datos.id) horariosEliminados.add(String(datos.id));
+        const datosMovidos = {
+            ...datos,
+            dia: destino.dataset.dia,
+            jornada: destino.dataset.jornada,
+            horaInicio: destino.dataset.horaInicio,
+            horaFin: destino.dataset.horaFin,
+        };
+        if (modoDocente) delete datosMovidos.id;
+        horarios[claveDestino] = datosMovidos;
+        delete horarios[claveOrigen];
+        marcarCambiosSinGuardar();
+        limpiarVisualCelda(origen);
+        pintarCelda(destino, horarios[claveDestino]);
+        cancelarMovimiento();
+        actualizarContador();
+        mostrarNotificacion("exito", "Horario movido", "Pulsa Guardar horario para guardar el cambio.");
+    }
+
+    function prepararMateriaVacia() {
+        modalClase.innerHTML = "";
+        const opcion = document.createElement("option");
+        opcion.value = "";
+        opcion.textContent = "— Primero selecciona un docente —";
+        modalClase.appendChild(opcion);
+        modalClase.disabled = true;
+        modalClaseHint.innerHTML =
+            '<i class="fas fa-info-circle me-1"></i> Selecciona un docente para ver sus materias asignadas.';
+        modalClaseHint.style.color = "#94a3b8";
+    }
+
+    function abrirModalSeleccion() {
+        const seleccionadas = Array.from(celdasSeleccionadas);
+        if (!seleccionadas.length) return;
+
+        const asignaciones = seleccionadas.map(function (celda) {
+            return horarios[claveCelda(celda)] || null;
+        });
+        const asignadas = asignaciones.filter(Boolean);
+        const primera = asignadas[0] || null;
+        const todosConDocente = asignadas.length === seleccionadas.length &&
+            asignaciones.every(function (item) { return item.docente === primera.docente; });
+        const mismaMateria = todosConDocente &&
+            asignaciones.every(function (item) { return item.clase === primera.clase; });
+        const mismaNota = asignadas.length === seleccionadas.length &&
+            asignaciones.every(function (item) { return item.nota === primera.nota; });
+        const mismoColor = asignadas.length === seleccionadas.length &&
+            asignaciones.every(function (item) { return item.color === primera.color; });
+
+        modalDia.value = seleccionadas.length === 1
+            ? seleccionadas[0].dataset.diaNombre
+            : seleccionadas.length + " celdas seleccionadas";
+        modalHora.value = seleccionadas.length === 1
+            ? seleccionadas[0].dataset.horaInicio + " - " + seleccionadas[0].dataset.horaFin +
+                (seleccionadas[0].dataset.jornada === "manana" ? " · Mañana" : " · Tarde")
+            : "Varios días y horarios";
+
+        modalTitulo.textContent = seleccionadas.length === 1
+            ? (asignadas.length ? "Editar horario" : "Asignar horario")
+            : "Asignar a " + seleccionadas.length + " celdas";
+
+        guardarCeldaBtn.innerHTML = '<i class="fas fa-check"></i> ' +
+            (seleccionadas.length === 1 ? "Guardar celda" : "Aplicar a " + seleccionadas.length + " celdas");
+
+        if (modoDocente) {
+            modalDocente.value = docenteEditor;
+            poblarClasesParaDocente(docenteEditor, mismaMateria ? primera?.clase : null);
+        } else if (todosConDocente) {
+            modalDocente.value = String(primera.docente);
+            poblarClasesParaDocente(primera.docente, mismaMateria ? primera.clase : null);
+        } else {
+            modalDocente.value = "";
+            prepararMateriaVacia();
+        }
+
+        modalNota.value = mismaNota ? (primera?.nota || "") : "";
+        seleccionarColor(mismoColor ? (primera?.color || "#639ef1") : "#639ef1");
+        eliminarCeldaBtn.style.display = asignadas.length ? "inline-flex" : "none";
+        eliminarCeldaBtn.innerHTML = '<i class="fas fa-trash"></i> ' +
+            (asignadas.length > 1 ? "Eliminar " + asignadas.length + " horarios" : "Eliminar horario");
+
+        modal.classList.add("activo");
+    }
+
+    document.querySelectorAll(".celda-horario").forEach(function (celda) {
+        celda.addEventListener("click", function () {
+            if (modoDocente && celda.classList.contains("no-disponible")) {
+                mostrarNotificacion("advertencia", "Espacio ocupado", "Este curso ya tiene otra clase en ese horario.");
+                return;
+            }
+            if (celdaOrigenMovimiento) {
+                if (celda === celdaOrigenMovimiento) cancelarMovimiento();
+                else if (!horarios[claveCelda(celda)]) moverHorario(celdaOrigenMovimiento, celda);
+                return;
+            }
+            if (horarios[claveCelda(celda)]) return;
+            if (celdasSeleccionadas.has(celda)) {
+                celdasSeleccionadas.delete(celda);
+            } else {
+                celdasSeleccionadas.add(celda);
+            }
+            actualizarSeleccion();
+        });
+    });
+
+    btnAsignarSeleccion.addEventListener("click", abrirModalSeleccion);
+
 
     /* ==========================================
-       GUARDAR CELDA
+       GUARDAR CELDAS SELECCIONADAS
        ========================================== */
 
-    guardarCeldaBtn.addEventListener(
-        "click",
-        function () {
+    guardarCeldaBtn.addEventListener("click", function () {
+        const seleccionadas = Array.from(celdasSeleccionadas);
+        if (!seleccionadas.length) return;
 
-            if (!celdaActual) {
-                return;
-            }
+        const docente = modalDocente.value;
+        const clase = modalClase.value;
+        const docenteNombre = modalDocente.options[modalDocente.selectedIndex]?.textContent.trim() || "Docente";
+        const claseNombre = modalClase.options[modalClase.selectedIndex]?.textContent.trim() || "Clase";
 
-            const docente = modalDocente.value;
-            const clase = modalClase.value;
-            const docenteNombre =
-                modalDocente.options[modalDocente.selectedIndex]
-                    ?.textContent.trim() || "Docente";
-            const claseNombre =
-                modalClase.options[modalClase.selectedIndex]
-                    ?.textContent.trim() || "Clase";
+        if (!docente) {
+            mostrarNotificacion("error", "Selecciona un docente", "Debes elegir un docente para las celdas seleccionadas.");
+            modalDocente.focus();
+            return;
+        }
+        if (!clase) {
+            mostrarNotificacion("error", "Selecciona una materia", "El docente debe tener una materia asignada para este curso.");
+            modalClase.focus();
+            return;
+        }
 
-            if (!docente) {
-
-                mostrarNotificacion(
-                    "error",
-                    "Selecciona un docente",
-                    "Debes elegir un docente para esta celda."
-                );
-
-                modalDocente.focus();
-                return;
-
-            }
-
-            if (!clase) {
-
-                mostrarNotificacion(
-                    "error",
-                    "Selecciona una materia",
-                    "El docente seleccionado tiene que tener una materia asignada."
-                );
-
-                modalClase.focus();
-                return;
-
-            }
-
-            const dia = celdaActual.dataset.dia;
-            const jornada = celdaActual.dataset.jornada;
-            const horaInicio = celdaActual.dataset.horaInicio;
-            const horaFin = celdaActual.dataset.horaFin;
-
-            const clave =
-                `${dia}_${jornada}_${horaInicio}_${horaFin}`;
+        marcarCambiosSinGuardar();
+        seleccionadas.forEach(function (celda) {
+            const dia = celda.dataset.dia;
+            const jornada = celda.dataset.jornada;
+            const horaInicio = celda.dataset.horaInicio;
+            const horaFin = celda.dataset.horaFin;
+            const clave = claveCelda(celda);
+            const idExistente = horarios[clave]?.id;
 
             horarios[clave] = {
+                id: idExistente,
                 periodo: "{{ periodo.id }}",
-                curso:   "{{ curso.id }}",
+                curso: "{{ curso.id }}",
                 docente: docente,
-                clase:   clase,
-                dia:     dia,
+                clase: clase,
+                dia: dia,
                 jornada: jornada,
                 horaInicio: horaInicio,
-                horaFin:    horaFin,
+                horaFin: horaFin,
                 nota: modalNota.value.trim(),
                 color: colorActual,
                 docenteNombreCache: docenteNombre,
-                claseNombreCache:   claseNombre,
+                claseNombreCache: claseNombre,
             };
+            pintarCelda(celda, horarios[clave]);
+        });
 
-            pintarCelda(celdaActual, horarios[clave]);
-            actualizarContador();
-            modal.classList.remove("activo");
+        const cantidad = seleccionadas.length;
+        celdasSeleccionadas.clear();
+        actualizarSeleccion();
+        actualizarContador();
+        modal.classList.remove("activo");
 
-            mostrarNotificacion(
-                "exito",
-                "Celda guardada",
-                `${dia.charAt(0).toUpperCase() + dia.slice(1)} ${horaInicio}-${horaFin} · ${claseNombre}`
-            );
-
-        }
-    );
+        mostrarNotificacion(
+            "exito",
+            cantidad === 1 ? "Celda guardada" : "Celdas asignadas",
+            cantidad === 1
+                ? "Se asignó " + claseNombre + " a " + docenteNombre + "."
+                : "Se asignó " + claseNombre + " con " + docenteNombre + " a " + cantidad + " celdas."
+        );
+    });
 
 
     /* ==========================================
@@ -1871,6 +2313,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
+        celda.classList.add("ocupada");
+        const acciones = document.createElement("div");
+        acciones.className = "acciones-celda";
+        const moverBtn = document.createElement("button");
+        moverBtn.type = "button";
+        moverBtn.className = "accion-celda accion-mover";
+        moverBtn.title = "Mover asignación";
+        moverBtn.setAttribute("aria-label", "Mover asignación a otra celda");
+        moverBtn.innerHTML = '<i class="fas fa-arrows-alt" aria-hidden="true"></i>';
+        moverBtn.addEventListener("click", function (event) {
+            event.stopPropagation(); iniciarMovimiento(celda);
+        });
+        const eliminarBtn = document.createElement("button");
+        eliminarBtn.type = "button";
+        eliminarBtn.className = "accion-celda accion-eliminar";
+        eliminarBtn.title = "Eliminar asignación";
+        eliminarBtn.setAttribute("aria-label", "Eliminar asignación de esta celda");
+        eliminarBtn.innerHTML = '<i class="fas fa-trash" aria-hidden="true"></i>';
+        eliminarBtn.addEventListener("click", function (event) {
+            event.stopPropagation();
+            if ((modoDocente || modoEdicion) && horarios[claveCelda(celda)]?.id) horariosEliminados.add(String(horarios[claveCelda(celda)].id));
+            delete horarios[claveCelda(celda)];
+            marcarCambiosSinGuardar();
+            limpiarVisualCelda(celda);
+            celdasSeleccionadas.delete(celda);
+            actualizarSeleccion(); actualizarContador();
+            mostrarNotificacion("info", "Asignación eliminada", "Pulsa Guardar horario para guardar el cambio.");
+        });
+        acciones.append(moverBtn, eliminarBtn);
+        celda.appendChild(acciones);
+
         celda.style.background =
             datos.color + "18";
 
@@ -1884,48 +2357,52 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ==========================================
-       ELIMINAR CELDA
+       ELIMINAR CELDAS SELECCIONADAS
        ========================================== */
 
-    eliminarCeldaBtn.addEventListener(
-        "click",
-        function () {
-
-            if (!celdaActual) {
-                return;
+    if (modoDocente || modoEdicion) {
+        document.querySelectorAll(".celda-horario").forEach(function (celda) {
+            const clave = claveCelda(celda);
+            if (horarios[clave]) pintarCelda(celda, horarios[clave]);
+            else if (celdasOcupadas.has(clave)) {
+                celda.classList.add("no-disponible");
+                celda.title = "Otra clase ocupa este espacio para el curso.";
             }
+        });
+        actualizarContador();
+    }
 
-            const dia = celdaActual.dataset.dia;
-            const jornada = celdaActual.dataset.jornada;
-            const horaInicio = celdaActual.dataset.horaInicio;
-            const horaFin = celdaActual.dataset.horaFin;
+    eliminarCeldaBtn.addEventListener("click", function () {
+        const seleccionadas = Array.from(celdasSeleccionadas);
+        let eliminadas = 0;
 
-            const clave =
-                `${dia}_${jornada}_${horaInicio}_${horaFin}`;
+        seleccionadas.forEach(function (celda) {
+            const clave = claveCelda(celda);
+            if (horarios[clave]) {
+                if ((modoDocente || modoEdicion) && horarios[clave].id) horariosEliminados.add(String(horarios[clave].id));
+                delete horarios[clave];
+                eliminadas += 1;
+            }
+            celda.querySelector(".contenido-celda").innerHTML = "";
+            celda.style.background = "";
+            celda.style.borderLeft = "";
+            celda.style.boxShadow = "";
+        });
 
-            delete horarios[clave];
+        if (eliminadas > 0) marcarCambiosSinGuardar();
+        celdasSeleccionadas.clear();
+        actualizarSeleccion();
+        actualizarContador();
+        modal.classList.remove("activo");
 
-            const contenido =
-                celdaActual.querySelector(".contenido-celda");
-            contenido.innerHTML = "";
-
-            celdaActual.style.background = "";
-            celdaActual.style.borderLeft = "";
-            celdaActual.style.boxShadow = "";
-
-            actualizarContador();
-            modal.classList.remove("activo");
-
-            mostrarNotificacion(
-                "info",
-                "Horario eliminado",
-                `Se eliminó la celda ${
-                    dia.charAt(0).toUpperCase() + dia.slice(1)
-                } ${horaInicio}-${horaFin}.`
-            );
-
-        }
-    );
+        mostrarNotificacion(
+            "info",
+            "Horarios eliminados",
+            eliminadas === 1
+                ? "Se eliminó el horario de la celda seleccionada."
+                : "Se eliminaron " + eliminadas + " horarios de las celdas seleccionadas."
+        );
+    });
 
 
     /* ==========================================
@@ -1955,7 +2432,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            marcarCambiosSinGuardar();
             for (const clave in horarios) {
+                if ((modoDocente || modoEdicion) && horarios[clave]?.id) horariosEliminados.add(String(horarios[clave].id));
                 delete horarios[clave];
             }
 
@@ -1973,6 +2452,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 });
 
+            celdasSeleccionadas.clear();
+            actualizarSeleccion();
             actualizarContador();
 
             mostrarNotificacion(
@@ -2008,8 +2489,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function cerrar() {
         modal.classList.remove("activo");
-        celdaActual = null;
     }
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && celdaOrigenMovimiento) cancelarMovimiento();
+    });
 
 
     /* ==========================================
@@ -2022,7 +2506,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const datos = Object.values(horarios);
 
-            if (datos.length === 0) {
+            if (datos.length === 0 && (!(modoDocente || modoEdicion) || horariosEliminados.size === 0)) {
 
                 mostrarNotificacion(
                     "advertencia",
@@ -2040,10 +2524,15 @@ document.addEventListener("DOMContentLoaded", function () {
             try {
 
                 const formData = new FormData();
-                formData.append(
-                    "horarios",
-                    JSON.stringify(datos)
-                );
+                formData.append("horarios", JSON.stringify(datos));
+                if (modoDocente || modoEdicion) {
+                    if (modoEdicion) formData.append("modo_edicion", "1");
+                    if (modoDocente) formData.append("modo_docente", "1");
+                    formData.append("horariosEliminados", JSON.stringify(Array.from(horariosEliminados)));
+                    formData.append("periodo", periodoEditor);
+                    if (modoDocente) formData.append("docente", docenteEditor);
+                    formData.append("curso", cursoEditor);
+                }
 
                 const respuesta = await fetch(
                     "{% url 'guardar_horario_ajax' %}",
@@ -2073,6 +2562,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
 
+                cambiosSinGuardar = false;
                 mostrarNotificacion(
                     "exito",
                     "¡Horario creado!",
@@ -2080,8 +2570,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
                 setTimeout(function () {
-                    window.location.href =
-                        "{% url 'listar_horario' %}";
+                    if (modoDocente) window.location.reload();
+                    else window.location.href = "{% url 'listar_horario' %}";
                 }, 1800);
 
 
@@ -2101,7 +2591,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 guardarHorarioBtn.disabled = false;
                 guardarHorarioBtn.innerHTML =
-                    '<i class="fas fa-save"></i> Guardar horario';
+                    '<i class="fas fa-save"></i> {% if modo_edicion %}Guardar cambios{% else %}Guardar horario{% endif %}';
 
             }
 

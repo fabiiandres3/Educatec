@@ -1,213 +1,307 @@
 {% extends "admin/dashboard.html" %}
 
-{% block title %}
-{{ titulo }}
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .period-page {
+        --period-ink: #17243b;
+        --period-muted: #77849a;
+        --period-line: #e7edf5;
+        --period-blue: #4265d8;
+        max-width: 1050px;
+        margin: 0 auto;
+        color: var(--period-ink);
+    }
+    .period-page, .period-page * { box-sizing: border-box; }
+    .period-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 22px;
+        color: #61708a;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: color .18s, transform .18s;
+    }
+    .period-back:hover { color: var(--period-blue); transform: translateX(-2px); }
+    .period-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    .period-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 9px;
+        color: var(--period-blue);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+    }
+    .period-eyebrow i { font-size: 12px; }
+    .period-heading h1 {
+        margin: 0;
+        color: var(--period-ink);
+        font-size: clamp(26px, 3vw, 34px);
+        font-weight: 800;
+        letter-spacing: -.045em;
+    }
+    .period-heading p {
+        margin: 8px 0 0;
+        color: var(--period-muted);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    .period-heading-badge {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+        padding: 9px 13px;
+        border: 1px solid #e4eaff;
+        border-radius: 999px;
+        background: #f5f7ff;
+        color: #5269c6;
+        font-size: 11px;
+        font-weight: 750;
+    }
+    .period-card {
+        overflow: hidden;
+        border: 1px solid var(--period-line);
+        border-radius: 22px;
+        background: #fff;
+        box-shadow: 0 16px 45px rgba(25, 42, 74, .07);
+    }
+    .period-card-top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 22px 28px;
+        border-bottom: 1px solid #edf1f7;
+        background: linear-gradient(110deg, #fff 0%, #f8faff 100%);
+    }
+    .period-card-icon {
+        display: grid;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border-radius: 14px;
+        background: #edf2ff;
+        color: var(--period-blue);
+        font-size: 17px;
+    }
+    .period-card-top strong { display: block; color: #26344e; font-size: 14px; font-weight: 800; }
+    .period-card-top span { display: block; margin-top: 4px; color: #8994a7; font-size: 12px; }
+    .period-card-body { padding: 30px 32px 26px; }
+    .period-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 23px 22px; }
+    .period-field { min-width: 0; }
+    .period-field label {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 9px;
+        color: #38465e;
+        font-size: 12px;
+        font-weight: 750;
+    }
+    .period-field label i { width: 15px; color: #8290a8; text-align: center; }
+    .period-field input:not([type="checkbox"]),
+    .period-field select {
+        display: block;
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid #dfe6f0;
+        border-radius: 12px;
+        padding: 11px 14px;
+        background-color: #fbfcfe;
+        color: #26344e;
+        font: inherit;
+        font-size: 14px;
+        outline: none;
+        transition: border-color .18s, box-shadow .18s, background .18s;
+    }
+    .period-field input:focus,
+    .period-field select:focus {
+        border-color: #7890ed;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(82, 111, 224, .12);
+    }
+    .period-field input::placeholder { color: #aab3c1; }
+    .period-hint { margin: 7px 0 0; color: #98a2b2; font-size: 11px; }
+    .period-error {
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        margin-top: 8px;
+        color: #c53b50;
+        font-size: 11px;
+        line-height: 1.45;
+    }
+    .period-error i { margin-top: 2px; }
+    .period-alert {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 23px;
+        border: 1px solid #f2cbd1;
+        border-radius: 13px;
+        padding: 13px 15px;
+        background: #fff6f7;
+        color: #a92f43;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+    .period-alert i { margin-top: 2px; }
+    .period-active {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 25px;
+        border: 1px solid #e8edf5;
+        border-radius: 14px;
+        padding: 15px 16px;
+        background: #fafbfe;
+    }
+    .period-active input[type="checkbox"] {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        accent-color: var(--period-blue);
+        cursor: pointer;
+    }
+    .period-active label { margin: 0; color: #35435b; font-size: 12px; font-weight: 750; cursor: pointer; }
+    .period-active small { display: block; margin-top: 3px; color: #8a96a9; font-size: 11px; font-weight: 400; }
+    .period-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 27px;
+        border-top: 1px solid #edf1f6;
+        padding-top: 22px;
+    }
+    .period-button {
+        display: inline-flex;
+        min-height: 43px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid transparent;
+        border-radius: 11px;
+        padding: 0 17px;
+        font-size: 12px;
+        font-weight: 750;
+        text-decoration: none;
+        transition: transform .18s, box-shadow .18s, background .18s;
+    }
+    .period-button:hover { transform: translateY(-1px); }
+    .period-button-save { background: linear-gradient(135deg, #4f6fe0, #3d5ed0); color: #fff; box-shadow: 0 7px 16px rgba(66, 101, 216, .2); }
+    .period-button-save:hover { color: #fff; box-shadow: 0 10px 22px rgba(66, 101, 216, .28); }
+    .period-button-cancel { border-color: #e1e7ef; background: #fff; color: #647189; }
+    .period-button-cancel:hover { background: #f7f9fc; color: #34425b; }
+    @media (max-width: 700px) {
+        .period-heading { align-items: flex-start; flex-direction: column; gap: 14px; }
+        .period-heading-badge { margin: 0; }
+        .period-card-top { padding: 18px 20px; }
+        .period-card-body { padding: 22px 20px; }
+        .period-form-grid { grid-template-columns: 1fr; gap: 19px; }
+    }
+    @media (max-width: 420px) {
+        .period-actions { flex-direction: column-reverse; }
+        .period-button { width: 100%; }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-
-<div class="container py-4">
-
-    <div class="row justify-content-center">
-
-        <div class="col-lg-7">
-
-            <!-- TARJETA -->
-
-            <div class="card border-0 shadow-sm">
-
-                <!-- HEADER -->
-
-                <div class="card-header bg-white py-3">
-
-                    <h4 class="mb-1">
-                        {{ titulo }}
-                    </h4>
-
-                    <p class="text-muted mb-0">
-                        Configura las fechas del período académico.
-                    </p>
-
-                </div>
-
-
-                <!-- BODY -->
-
-                <div class="card-body p-4">
-
-                    <!-- ERRORES GENERALES -->
-
-                    {% if form.non_field_errors %}
-
-                        <div class="alert alert-danger">
-
-                            {% for error in form.non_field_errors %}
-
-                                <div>
-                                    {{ error }}
-                                </div>
-
-                            {% endfor %}
-
-                        </div>
-
-                    {% endif %}
-
-
-                    <form method="POST">
-
-                        {% csrf_token %}
-
-
-                        <!-- PERÍODO -->
-
-                        <div class="mb-3">
-
-                            <label
-                                for="{{ form.numero.id_for_label }}"
-                                class="form-label"
-                            >
-                                Período
-                            </label>
-
-                            {{ form.numero }}
-
-                            {% for error in form.numero.errors %}
-
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-
-                            {% endfor %}
-
-                        </div>
-
-
-                        <!-- AÑO -->
-
-                        <div class="mb-3">
-
-                            <label
-                                for="{{ form.anio.id_for_label }}"
-                                class="form-label"
-                            >
-                                Año académico
-                            </label>
-
-                            {{ form.anio }}
-
-                            {% for error in form.anio.errors %}
-
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-
-                            {% endfor %}
-
-                        </div>
-
-
-                        <!-- FECHAS -->
-
-                        <div class="row">
-
-                            <!-- INICIO -->
-
-                            <div class="col-md-6 mb-3">
-
-                                <label
-                                    for="{{ form.fecha_inicio.id_for_label }}"
-                                    class="form-label"
-                                >
-                                    Fecha de inicio
-                                </label>
-
-                                {{ form.fecha_inicio }}
-
-                                {% for error in form.fecha_inicio.errors %}
-
-                                    <div class="text-danger small mt-1">
-                                        {{ error }}
-                                    </div>
-
-                                {% endfor %}
-
-                            </div>
-
-
-                            <!-- FINALIZACIÓN -->
-
-                            <div class="col-md-6 mb-3">
-
-                                <label
-                                    for="{{ form.fecha_fin.id_for_label }}"
-                                    class="form-label"
-                                >
-                                    Fecha de finalización
-                                </label>
-
-                                {{ form.fecha_fin }}
-
-                                {% for error in form.fecha_fin.errors %}
-
-                                    <div class="text-danger small mt-1">
-                                        {{ error }}
-                                    </div>
-
-                                {% endfor %}
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- ACTIVO -->
-
-                        <div class="form-check mb-4">
-
-                            {{ form.activo }}
-
-                            <label
-                                class="form-check-label"
-                                for="{{ form.activo.id_for_label }}"
-                            >
-                                Período activo
-                            </label>
-
-                        </div>
-
-
-                        <!-- BOTONES -->
-
-                        <div class="d-flex gap-2">
-
-                            <button
-                                type="submit"
-                                class="btn btn-primary"
-                            >
-                                Guardar período
-                            </button>
-
-
-                            <a
-                                href="{% url 'listar_periodos' %}"
-                                class="btn btn-secondary"
-                            >
-                                Cancelar
-                            </a>
-
-                        </div>
-
-                    </form>
-
-                </div>
-
+<main class="period-page">
+    <a class="period-back" href="{% url 'listar_periodos' %}">
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        Volver a períodos
+    </a>
+
+    <header class="period-heading">
+        <div>
+            <span class="period-eyebrow"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Gestión académica</span>
+            <h1>{{ titulo }}</h1>
+            <p>Define el calendario y el estado del período académico.</p>
+        </div>
+        <span class="period-heading-badge"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Configuración del calendario</span>
+    </header>
+
+    <section class="period-card" aria-label="{{ titulo }}">
+        <div class="period-card-top">
+            <span class="period-card-icon"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></span>
+            <div>
+                <strong>Datos del período</strong>
+                <span>Completa la información para mantener organizado el año escolar.</span>
             </div>
-
         </div>
 
-    </div>
+        <div class="period-card-body">
+            {% if form.non_field_errors %}
+                <div class="period-alert" role="alert">
+                    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                    <div>{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
+                </div>
+            {% endif %}
 
-</div>
+            <form method="post">
+                {% csrf_token %}
 
+                <div class="period-form-grid">
+                    <div class="period-field">
+                        <label for="{{ form.numero.id_for_label }}"><i class="fa-solid fa-list-ol" aria-hidden="true"></i> Período académico</label>
+                        {{ form.numero }}
+                        {% for error in form.numero.errors %}<div class="period-error"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><span>{{ error }}</span></div>{% endfor %}
+                    </div>
+
+                    <div class="period-field">
+                        <label for="{{ form.anio.id_for_label }}"><i class="fa-regular fa-calendar" aria-hidden="true"></i> Año académico</label>
+                        {{ form.anio }}
+                        <p class="period-hint">Indica el año al que pertenece este período.</p>
+                        {% for error in form.anio.errors %}<div class="period-error"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><span>{{ error }}</span></div>{% endfor %}
+                    </div>
+
+                    <div class="period-field">
+                        <label for="{{ form.fecha_inicio.id_for_label }}"><i class="fa-solid fa-calendar-plus" aria-hidden="true"></i> Fecha de inicio</label>
+                        {{ form.fecha_inicio }}
+                        <p class="period-hint">El período no puede comenzar antes de hoy.</p>
+                        {% for error in form.fecha_inicio.errors %}<div class="period-error"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><span>{{ error }}</span></div>{% endfor %}
+                    </div>
+
+                    <div class="period-field">
+                        <label for="{{ form.fecha_fin.id_for_label }}"><i class="fa-solid fa-calendar-minus" aria-hidden="true"></i> Fecha de finalización</label>
+                        {{ form.fecha_fin }}
+                        <p class="period-hint">Debe ser igual o posterior a la fecha de inicio.</p>
+                        {% for error in form.fecha_fin.errors %}<div class="period-error"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><span>{{ error }}</span></div>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="period-active">
+                    {{ form.activo }}
+                    <div>
+                        <label for="{{ form.activo.id_for_label }}">Período activo</label>
+                        <small>El período estará disponible para organizar horarios y actividades.</small>
+                    </div>
+                </div>
+
+                <div class="period-actions">
+                    <a href="{% url 'listar_periodos' %}" class="period-button period-button-cancel">Cancelar</a>
+                    <button type="submit" class="period-button period-button-save">
+                        <i class="fa-solid {% if periodo %}fa-floppy-disk{% else %}fa-plus{% endif %}" aria-hidden="true"></i>
+                        {% if periodo %}Guardar cambios{% else %}Crear período{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
 {% endblock %}

@@ -57,9 +57,10 @@ def crear_periodo(request):
 
     return render(
         request,
-        "admin/horario/periodo/crear.html",
+        "admin/horario/periodo/formulario.html",
         {
             "form": form,
+            "titulo": "Crear período",
         }
     )
 
@@ -101,6 +102,7 @@ def editar_periodo(request, pk):
         {
             "form": form,
             "periodo": periodo,
+            "titulo": "Editar período",
         }
     )
 
@@ -220,7 +222,23 @@ def crear_horario(request):
 
     periodos = Periodo.objects.all()
 
-    cursos = Cursos.objects.all()
+    cursos = Cursos.objects.all().order_by("nombre")
+
+    asignaciones_docente_curso = list(
+        AsignacionDocente.objects
+        .filter(curso__isnull=False, clase__isnull=False)
+        .values_list("docente_id", "curso_id")
+        .distinct()
+    )
+    docentes_ids = sorted({docente_id for docente_id, _ in asignaciones_docente_curso})
+    docentes = (
+        Docente.objects.filter(id__in=docentes_ids)
+        .select_related("usuario")
+        .order_by("usuario__first_name", "usuario__last_name")
+    )
+    cursos_por_docente = {}
+    for docente_id, curso_id in asignaciones_docente_curso:
+        cursos_por_docente.setdefault(str(docente_id), []).append(curso_id)
 
     parejas_periodo_curso_con_horario = list(
         Horario.objects
@@ -237,6 +255,8 @@ def crear_horario(request):
         {
             "periodos": periodos,
             "cursos": cursos,
+            "docentes": docentes,
+            "cursos_por_docente_json": json.dumps(cursos_por_docente),
             "parejas_periodo_curso_json": json.dumps(
                 parejas_periodo_curso_con_horario
             ),
@@ -280,6 +300,64 @@ def editar_horario(request, periodo_id, curso_id):
             "hora_inicio"
         )
     )
+
+    # La edición usa el mismo planificador semanal de la creación, cargando
+    # las celdas existentes para poder modificarlas, moverlas o eliminarlas.
+    if request.method != "POST":
+        asignaciones = (
+            AsignacionDocente.objects
+            .filter(curso=curso, clase__isnull=False)
+            .select_related("docente__usuario", "clase")
+            .order_by("docente__usuario__first_name", "docente__usuario__last_name", "clase__titulo")
+        )
+        docentes_ids = asignaciones.values_list("docente_id", flat=True).distinct()
+        docentes = list(
+            Docente.objects.filter(id__in=docentes_ids)
+            .select_related("usuario")
+            .order_by("usuario__first_name", "usuario__last_name")
+        )
+        clases_por_docente = {}
+        for asignacion in asignaciones:
+            clases = clases_por_docente.setdefault(str(asignacion.docente_id), [])
+            if not any(clase["id"] == asignacion.clase_id for clase in clases):
+                clases.append({"id": asignacion.clase_id, "titulo": asignacion.clase.titulo})
+
+        clases_curso = list(curso.clases.values("id", "titulo").order_by("titulo"))
+        horarios_iniciales = {}
+        for horario in horarios_queryset:
+            clave = "_".join((horario.dia, horario.jornada, horario.hora_inicio.strftime("%H:%M"), horario.hora_fin.strftime("%H:%M")))
+            horarios_iniciales[clave] = {
+                "id": horario.id,
+                "periodo": periodo.id,
+                "curso": curso.id,
+                "docente": horario.docente_id,
+                "clase": horario.clase_id,
+                "dia": horario.dia,
+                "jornada": horario.jornada,
+                "horaInicio": horario.hora_inicio.strftime("%H:%M"),
+                "horaFin": horario.hora_fin.strftime("%H:%M"),
+                "docenteNombreCache": str(horario.docente),
+                "claseNombreCache": str(horario.clase) if horario.clase_id else "Materia sin asignar",
+                "color": "#639ef1",
+            }
+
+        return render(
+            request,
+            "admin/horario/editar_horario.html",
+            {
+                "modo_edicion": True,
+                "periodo": periodo,
+                "curso": curso,
+                "docentes": docentes,
+                "clases_curso_json": json.dumps(clases_curso),
+                "clases_por_docente_json": json.dumps(clases_por_docente),
+                "horarios_iniciales_json": json.dumps(horarios_iniciales),
+                "celdas_ocupadas_json": "[]",
+                "dias": [("lunes", "Lunes"), ("martes", "Martes"), ("miercoles", "Miércoles"), ("jueves", "Jueves"), ("viernes", "Viernes")],
+                "horas_manana": [("06:00", "07:00"), ("07:00", "08:00"), ("08:00", "09:00"), ("09:00", "10:00"), ("10:00", "11:00"), ("11:00", "12:00")],
+                "horas_tarde": [("12:30", "13:30"), ("13:30", "14:30"), ("14:30", "15:30"), ("15:30", "16:30"), ("16:30", "17:00")],
+            },
+        )
 
     # =====================================================
     # GUARDAR CAMBIOS
@@ -753,12 +831,106 @@ def crear_horario_curso(request, periodo_id, curso_id):
             "docentes": docentes,
             "clases_curso_json": json.dumps(clases_curso),
             "clases_por_docente_json": json.dumps(clases_por_docente),
+            "docente_inicial": str(request.GET.get("docente", "")) if str(request.GET.get("docente", "")) in {str(docente_id) for docente_id in docentes_ids} else "",
             "dias": dias,
             "horas_manana": horas_manana,
             "horas_tarde": horas_tarde,
         },
     )
 
+
+# ============================================================
+# CREAR HORARIO CON ENFOQUE EN DOCENTE
+# ============================================================
+
+def crear_horario_docente(request, periodo_id, docente_id, curso_id):
+    periodo = get_object_or_404(Periodo, pk=periodo_id)
+    docente = get_object_or_404(Docente.objects.select_related("usuario"), pk=docente_id)
+    curso = get_object_or_404(Cursos, pk=curso_id)
+
+    asignaciones = list(
+        AsignacionDocente.objects
+        .filter(curso__isnull=False, docente__isnull=False, clase__isnull=False)
+        .select_related("docente__usuario", "curso", "clase")
+        .order_by("docente__usuario__first_name", "docente__usuario__last_name", "curso__nombre", "clase__titulo")
+    )
+    pares_docente_curso = {
+        (asignacion.docente_id, asignacion.curso_id)
+        for asignacion in asignaciones
+    }
+    if (docente.id, curso.id) not in pares_docente_curso:
+        messages.error(request, "El docente no tiene asignaciones en el curso seleccionado.")
+        return redirect("crear_horario")
+
+    docentes_por_id = {}
+    cursos_por_id = {}
+    cursos_por_docente = {}
+    clases_por_docente = {}
+    for asignacion in asignaciones:
+        docentes_por_id[asignacion.docente_id] = asignacion.docente
+        cursos_por_id[asignacion.curso_id] = asignacion.curso
+        cursos_por_docente.setdefault(str(asignacion.docente_id), {})[asignacion.curso_id] = asignacion.curso.nombre
+        if asignacion.clase_id:
+            clases_por_docente.setdefault(str(asignacion.docente_id), {}).setdefault(asignacion.curso_id, {})[asignacion.clase_id] = asignacion.clase.titulo
+
+    clases_actuales = clases_por_docente.get(str(docente.id), {}).get(curso.id, {})
+    horarios_actuales = Horario.objects.filter(
+        periodo=periodo, curso=curso, docente=docente
+    ).select_related("clase")
+    horarios_iniciales = {}
+    for horario in horarios_actuales:
+        clave = "_".join((horario.dia, horario.jornada, horario.hora_inicio.strftime("%H:%M"), horario.hora_fin.strftime("%H:%M")))
+        horarios_iniciales[clave] = {
+            "id": horario.id,
+            "periodo": periodo.id,
+            "curso": curso.id,
+            "docente": docente.id,
+            "clase": horario.clase_id,
+            "dia": horario.dia,
+            "jornada": horario.jornada,
+            "horaInicio": horario.hora_inicio.strftime("%H:%M"),
+            "horaFin": horario.hora_fin.strftime("%H:%M"),
+            "docenteNombreCache": str(docente),
+            "claseNombreCache": str(horario.clase) if horario.clase_id else "Materia sin asignar",
+            "color": "#639ef1",
+        }
+
+    horarios_ocupados = Horario.objects.filter(
+        periodo=periodo, curso=curso
+    ).exclude(docente=docente).values_list("dia", "jornada", "hora_inicio", "hora_fin")
+    celdas_ocupadas = [
+        "_".join((dia, jornada, hora_inicio.strftime("%H:%M"), hora_fin.strftime("%H:%M")))
+        for dia, jornada, hora_inicio, hora_fin in horarios_ocupados
+    ]
+    clases_curso = [
+        {"id": clase_id, "titulo": titulo}
+        for clase_id, titulo in clases_actuales.items()
+    ]
+    clases_por_docente_actual = {str(docente.id): clases_curso}
+
+    return render(
+        request,
+        "admin/horario/crear_horario_curso.html.html",
+        {
+            "modo_docente": True,
+            "periodo": periodo,
+            "curso": curso,
+            "docente_actual": docente,
+            "docentes_selector": sorted(docentes_por_id.values(), key=lambda item: str(item).casefold()),
+            "cursos_selector": sorted(cursos_por_id.values(), key=lambda item: item.nombre.casefold()),
+            "cursos_docente_json": json.dumps(cursos_por_docente),
+            "docente_curso_seleccion": {"docente": docente.id, "curso": curso.id},
+            "docentes": [docente],
+            "clases_curso_json": json.dumps(clases_curso),
+            "clases_por_docente_json": json.dumps(clases_por_docente_actual),
+            "horarios_iniciales_json": json.dumps(horarios_iniciales),
+            "celdas_ocupadas_json": json.dumps(celdas_ocupadas),
+            "docente_inicial": str(docente.id),
+            "dias": [("lunes", "Lunes"), ("martes", "Martes"), ("miercoles", "Miércoles"), ("jueves", "Jueves"), ("viernes", "Viernes")],
+            "horas_manana": [("06:00", "07:00"), ("07:00", "08:00"), ("08:00", "09:00"), ("09:00", "10:00"), ("10:00", "11:00"), ("11:00", "12:00")],
+            "horas_tarde": [("12:30", "13:30"), ("13:30", "14:30"), ("14:30", "15:30"), ("15:30", "16:30"), ("16:30", "17:00")],
+        },
+    )
 
 # ============================================================
 # VALIDAR CONFLICTOS
@@ -842,9 +1014,15 @@ def guardar_horario_ajax(request):
         # RECIBIR DATOS
         # ====================================================
 
+        modo_docente = request.POST.get("modo_docente") == "1"
+        modo_edicion = request.POST.get("modo_edicion") == "1"
+        ids_eliminados = json.loads(request.POST.get("horariosEliminados", "[]")) if (modo_docente or modo_edicion) else []
+        if not isinstance(ids_eliminados, list):
+            raise ValueError("La lista de horarios eliminados no es válida.")
+
         datos = request.POST.get("horarios")
 
-        if not datos:
+        if not datos and not ids_eliminados:
 
             return JsonResponse(
                 {
@@ -878,7 +1056,7 @@ def guardar_horario_ajax(request):
                 status=400
             )
 
-        if not horarios_recibidos:
+        if not horarios_recibidos and not ids_eliminados:
 
             return JsonResponse(
                 {
@@ -894,12 +1072,26 @@ def guardar_horario_ajax(request):
 
         creados = 0
         actualizados = 0
+        eliminados = 0
+        periodos_cursos_creados_en_lote = set()
 
         # ====================================================
         # TRANSACCIÓN
         # ====================================================
 
         with transaction.atomic():
+
+            if (modo_docente or modo_edicion) and ids_eliminados:
+                periodo_contexto = request.POST.get("periodo")
+                curso_contexto = request.POST.get("curso")
+                horarios_a_eliminar = Horario.objects.filter(
+                    pk__in=ids_eliminados,
+                    periodo_id=periodo_contexto,
+                    curso_id=curso_contexto,
+                )
+                if modo_docente:
+                    horarios_a_eliminar = horarios_a_eliminar.filter(docente_id=request.POST.get("docente"))
+                eliminados = horarios_a_eliminar.delete()[0]
 
             for item in horarios_recibidos:
 
@@ -974,6 +1166,15 @@ def guardar_horario_ajax(request):
                         "Falta indicar el rango de horas."
                     )
 
+                if modo_docente or modo_edicion:
+                    if str(periodo_id) != str(request.POST.get("periodo")) or str(curso_id) != str(request.POST.get("curso")):
+                        raise ValueError("El horario no corresponde al período y curso seleccionados.")
+                if modo_docente:
+                    if str(periodo_id) != str(request.POST.get("periodo")) or str(docente_id) != str(request.POST.get("docente")) or str(curso_id) != str(request.POST.get("curso")):
+                        raise ValueError("El horario no corresponde al docente y curso seleccionados.")
+                    if not AsignacionDocente.objects.filter(docente_id=docente_id, curso_id=curso_id, clase_id=clase_id).exists():
+                        raise ValueError("La materia no está asignada a este docente en el curso seleccionado.")
+
                 # ====================================================
                 # DATOS PARA EL FORMULARIO
                 # ====================================================
@@ -999,10 +1200,12 @@ def guardar_horario_ajax(request):
                     # EDITAR
                     # =================================================
 
-                    horario = get_object_or_404(
-                        Horario,
-                        pk=horario_id
-                    )
+                    horario_filtro = {"pk": horario_id}
+                    if modo_docente:
+                        horario_filtro.update(periodo_id=periodo_id, docente_id=docente_id, curso_id=curso_id)
+                    elif modo_edicion:
+                        horario_filtro.update(periodo_id=periodo_id, curso_id=curso_id)
+                    horario = get_object_or_404(Horario, **horario_filtro)
 
                     form = HorarioForm(
                         data=datos_form,
@@ -1019,30 +1222,31 @@ def guardar_horario_ajax(request):
 
                     # IMPORTANTE:
                     #
-                    # Un curso solamente puede tener UN registro
-                    # de horario dentro del mismo período.
+                    # Un curso puede tener muchas celdas de horario por período;
+                    # solo se rechaza crear otro horario cuando ya existía antes
+                    # de iniciar este lote de guardado.
                     #
                     # Ejemplo:
                     #
                     # Período 1 + Curso 5B -> ya existe
                     #
-                    # No se permite:
-                    #
-                    # Período 1 + Curso 5B -> segundo registro
-                    #
-                    # Aunque cambien docente, clase, día u hora.
+                    # Las celdas del mismo lote comparten el curso y el período.
 
-                    horario_existente = Horario.objects.filter(
-                        periodo_id=periodo_id,
-                        curso_id=curso_id
-                    ).exists()
+                    clave_periodo_curso = (str(periodo_id), str(curso_id))
 
-                    if horario_existente:
+                    if not modo_docente and not modo_edicion and clave_periodo_curso not in periodos_cursos_creados_en_lote:
+                        horario_existente = Horario.objects.filter(
+                            periodo_id=periodo_id,
+                            curso_id=curso_id
+                        ).exists()
 
-                        raise ValueError(
-                            "El curso seleccionado ya tiene un "
-                            "horario registrado para este período."
-                        )
+                        if horario_existente:
+                            raise ValueError(
+                                "El curso seleccionado ya tiene un "
+                                "horario registrado para este período."
+                            )
+
+                        periodos_cursos_creados_en_lote.add(clave_periodo_curso)
 
                     horario = Horario()
 
@@ -1160,6 +1364,10 @@ def guardar_horario_ajax(request):
             mensaje = (
                 f"{actualizados} horario(s) actualizado(s) correctamente."
             )
+
+        elif eliminados:
+
+            mensaje = f"{eliminados} horario(s) eliminado(s) correctamente."
 
         else:
 

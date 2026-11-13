@@ -253,34 +253,109 @@ Crear horario
 
     }
 
+    .crear-horario {
+        width: min(100%, 1040px); margin: 0 auto; padding: clamp(22px,4vw,48px);
+        color: #172033;
+    }
+    .crear-header {
+        position: relative; display: flex; align-items: center; gap: 20px;
+        margin: 0 0 26px; padding: clamp(22px,4vw,34px);
+        overflow: hidden; border: 1px solid rgba(255,255,255,.65); border-radius: 22px;
+        background: radial-gradient(ellipse at 92% 0%,rgba(255,255,255,.27),transparent 42%), linear-gradient(125deg,#244a9b,#426bd1 58%,#7190ec);
+        box-shadow: 0 16px 38px rgba(47,82,164,.18);
+    }
+    .crear-header::after { content:""; position:absolute; right:-45px; bottom:-118px; width:270px; height:270px; border:1px solid #ffffff20; border-radius:50%; box-shadow:0 0 0 28px #ffffff0d,0 0 0 58px #ffffff08; }
+    .crear-header-icono { position:relative; z-index:1; display:grid; flex:0 0 62px; width:62px; height:62px; place-items:center; border:1px solid #ffffff55; border-radius:19px; background:#ffffff20; color:#fff; font-size:25px; box-shadow:inset 0 1px #ffffff40; }
+    .crear-header-texto { position:relative; z-index:1; }
+    .crear-header .crear-eyebrow { margin:0 0 6px; color:#dce7ff; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; }
+    .crear-header h2 { color:#fff; font-size:clamp(24px,3vw,32px); font-weight:800; letter-spacing:-.7px; }
+    .crear-header p { margin:7px 0 0; color:#e5edff; font-size:14px; }
+    .crear-card { max-width:unset; padding:clamp(22px,4vw,34px); border:1px solid #e7ebf3; border-radius:20px; background:linear-gradient(145deg,#fff,#fbfcff); box-shadow:0 14px 38px rgba(31,46,79,.08); }
+    .crear-card-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:25px; }
+    .crear-card-heading h3 { margin:0; color:#1e293b; font-size:18px; font-weight:800; }
+    .crear-card-heading p { margin:6px 0 0; color:#788397; font-size:13px; line-height:1.55; }
+    .crear-paso { display:inline-flex; align-items:center; gap:7px; flex:none; padding:8px 11px; border:1px solid #dce5ff; border-radius:999px; color:#3d5fc1; background:#f1f5ff; font-size:11px; font-weight:800; }
+    .crear-paso i { color:#5978d5; }
+    .form-grid { gap:18px; }
+    .campo { gap:10px; padding:18px; border:1px solid #e6eaf1; border-radius:15px; background:#fff; transition:border-color .2s,box-shadow .2s,transform .2s; }
+    .campo:focus-within,.campo.seleccionado { border-color:#9db3f3; box-shadow:0 8px 22px rgba(66,101,216,.09); }
+    .campo label { display:flex; align-items:center; gap:9px; color:#344054; font-size:13px; }
+    .campo-label-icono { display:grid; width:30px; height:30px; place-items:center; border-radius:9px; color:#4565c7; background:#eef2ff; }
+    .campo select { min-height:48px; padding:12px 40px 12px 13px; border:1px solid #d9dfeb; border-radius:10px; color:#25324a; background-color:#fbfcff; transition:border-color .18s,box-shadow .18s,background .18s; }
+    .campo select:hover { border-color:#aebbe0; background-color:#fff; }
+    .campo select:focus { border-color:#5274dc; box-shadow:0 0 0 4px rgba(82,116,220,.13); }
+    .acciones { align-items:center; margin-top:25px; padding-top:21px; border-top:1px solid #edf0f5; }
+    .btn { min-height:46px; justify-content:center; padding:0 19px; border-radius:11px; transition:transform .18s,box-shadow .18s,background .18s; }
+    .btn-cancelar { border:1px solid #e2e6ee; background:#fff; color:#596579; }
+    .btn-cancelar:hover { transform:translateY(-1px); border-color:#d5dbe7; background:#f8f9fc; color:#27344a; }
+    .btn-crear { color:#fff; background:linear-gradient(135deg,#ef9b20,#e8830d); box-shadow:0 7px 16px rgba(232,131,13,.22); }
+    .btn-crear:hover { transform:translateY(-2px); background:linear-gradient(135deg,#e88d12,#d87308); box-shadow:0 10px 21px rgba(232,131,13,.29); }
+    .btn-crear:active { transform:translateY(0) scale(.98); }
+    .info { display:flex; align-items:flex-start; gap:13px; max-width:unset; margin-top:18px; padding:17px 19px; border:1px solid #dfe7fb; border-radius:14px; color:#52627e; background:linear-gradient(110deg,#f3f6ff,#fbfcff); font-size:13px; line-height:1.55; }
+    .info > i { display:grid; flex:0 0 34px; width:34px; height:34px; place-items:center; border-radius:10px; color:#496bd0; background:#e7edff; }
+    .info strong { display:block; margin-bottom:2px; color:#293c6a; font-size:13px; }
+    @media (max-width:700px) {
+        .crear-horario { padding:18px 14px 28px; }
+        .crear-header { gap:14px; margin-bottom:18px; padding:21px 18px; border-radius:17px; }
+        .crear-header-icono { flex-basis:50px; width:50px; height:50px; border-radius:15px; font-size:21px; }
+        .crear-header p { font-size:13px; }
+        .crear-card { padding:21px 17px; border-radius:16px; }
+        .crear-card-heading { margin-bottom:18px; }
+        .crear-paso { padding:7px 9px; font-size:10px; }
+        .campo { padding:15px; }
+        .acciones { flex-direction:column-reverse; align-items:stretch; }
+        .btn { width:100%; }
+    }
+    @media (max-width:390px) { .crear-card-heading { flex-direction:column; } }
+    .modo-selector { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:0 0 23px; padding:6px; border:1px solid #e3e8f2; border-radius:14px; background:#f5f7fb; }
+    .modo-opcion { display:flex; align-items:center; gap:12px; min-height:66px; padding:11px 14px; border:1px solid transparent; border-radius:10px; color:#667085; background:transparent; text-align:left; cursor:pointer; transition:background .18s,border-color .18s,box-shadow .18s,color .18s,transform .18s; }
+    .modo-opcion:hover { color:#344054; background:#fff; }
+    .modo-opcion.activo { color:#3154b8; border-color:#dce5ff; background:#fff; box-shadow:0 3px 10px rgba(40,58,105,.08); }
+    .modo-opcion-icono { display:grid; flex:0 0 39px; width:39px; height:39px; place-items:center; border-radius:11px; color:#5f6f91; background:#e9edf5; font-size:16px; }
+    .modo-opcion.activo .modo-opcion-icono { color:#4565c7; background:#eaf0ff; }
+    .modo-opcion-texto strong { display:block; color:#24324a; font-size:13px; font-weight:800; }
+    .modo-opcion-texto small { display:block; margin-top:3px; color:#818da2; font-size:11px; line-height:1.35; }
+    .campo-docente[hidden] { display:none !important; }
+    .crear-horario[data-modo="docente"] .crear-paso { color:#007e74; border-color:#bde9df; background:#edfaf7; }
+    .crear-horario[data-modo="docente"] .crear-paso i { color:#008b7e; }
+    @media (max-width:600px) { .modo-selector { grid-template-columns:1fr; } .modo-opcion { min-height:58px; } }
 </style>
 
 
-<div class="crear-horario">
+<div class="crear-horario" data-modo="curso">
 
     <div class="crear-header">
-
-        <h2>
-            <i class="fas fa-calendar-plus"></i>
-            Crear horario
-        </h2>
-
-        <p>
-            Selecciona el período y el curso para comenzar.
-        </p>
-
+        <span class="crear-header-icono"><i class="fas fa-calendar-check" aria-hidden="true"></i></span>
+        <div class="crear-header-texto">
+            <p class="crear-eyebrow">Planeación académica</p>
+            <h2>Crear horario</h2>
+            <p>Organiza las clases del curso para el período académico.</p>
+        </div>
     </div>
-
 
     <div class="crear-card">
 
+        <div class="crear-card-heading">
+            <div><h3 id="tituloConfiguracion">Configura el horario</h3><p id="ayudaConfiguracion">Elige el período y el curso al que vas a asignar clases.</p></div>
+            <span class="crear-paso"><i class="fas fa-list-check" aria-hidden="true"></i> Paso 1 de 2</span>
+        </div>
+        <div class="modo-selector" role="group" aria-label="Forma de crear el horario">
+            <button type="button" class="modo-opcion activo" data-modo-opcion="curso" aria-pressed="true">
+                <span class="modo-opcion-icono"><i class="fas fa-users" aria-hidden="true"></i></span>
+                <span class="modo-opcion-texto"><strong>Por curso</strong><small>Organiza el horario de un grupo</small></span>
+            </button>
+            <button type="button" class="modo-opcion" data-modo-opcion="docente" aria-pressed="false">
+                <span class="modo-opcion-icono"><i class="fas fa-chalkboard-teacher" aria-hidden="true"></i></span>
+                <span class="modo-opcion-texto"><strong>Por docente</strong><small>Elige un docente y uno de sus cursos</small></span>
+            </button>
+        </div>
         <div class="form-grid">
 
             <!-- PERÍODO -->
 
             <div class="campo">
 
-                <label for="periodo">
+                <label for="periodo"><span class="campo-label-icono"><i class="fas fa-calendar-alt" aria-hidden="true"></i></span>
                     Período
                 </label>
 
@@ -309,11 +384,22 @@ Crear horario
             </div>
 
 
+            <div class="campo campo-docente" id="campoDocente" hidden>
+                <label for="docente"><span class="campo-label-icono"><i class="fas fa-chalkboard-teacher" aria-hidden="true"></i></span>Docente</label>
+                <select id="docente">
+                    <option value="">Seleccionar docente</option>
+                    {% for docente in docentes %}
+                        <option value="{{ docente.id }}">{{ docente }}</option>
+                    {% empty %}
+                        <option value="" disabled>No hay docentes asignados a cursos</option>
+                    {% endfor %}
+                </select>
+            </div>
             <!-- CURSO -->
 
             <div class="campo">
 
-                <label for="curso">
+                <label for="curso"><span class="campo-label-icono"><i class="fas fa-users" aria-hidden="true"></i></span>
                     Curso
                 </label>
 
@@ -372,8 +458,7 @@ Crear horario
 
         <i class="fas fa-info-circle"></i>
 
-        Selecciona un período y un curso.
-        Luego podrás crear el horario semanal del curso.
+<div id="infoSiguiente"><strong>¿Qué sigue?</strong>Selecciona un período y un curso. En el siguiente paso podrás organizar las clases de la semana.</div>
 
     </div>
 
@@ -439,12 +524,83 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const curso =
         document.getElementById("curso");
+    const docente = document.getElementById("docente");
+    const campoDocente = document.getElementById("campoDocente");
+    const selectorModo = document.querySelectorAll("[data-modo-opcion]");
+    const tituloConfiguracion = document.getElementById("tituloConfiguracion");
+    const ayudaConfiguracion = document.getElementById("ayudaConfiguracion");
+    const infoSiguiente = document.getElementById("infoSiguiente");
+    const contenedorCreacion = document.querySelector(".crear-horario");
+    const cursosOriginales = Array.from(curso.options).slice(1).map(function (opcion) { return opcion.cloneNode(true); });
+    const cursosPorDocente = {{ cursos_por_docente_json|safe }};
+    let modoCreacion = "curso";
 
     const boton =
         document.getElementById("btnCrearHorario");
 
     const parejasConHorario =
         {{ parejas_periodo_curso_json|safe }};
+
+    const camposSeleccion = document.querySelectorAll(".campo");
+    function actualizarCamposSeleccion() {
+        camposSeleccion.forEach(function (campo) {
+            const select = campo.querySelector("select");
+            campo.classList.toggle("seleccionado", Boolean(select && select.value));
+        });
+    }
+    periodo.addEventListener("change", actualizarCamposSeleccion);
+    docente.addEventListener("change", actualizarCursosDelDocente);
+    selectorModo.forEach(function (opcion) {
+        opcion.addEventListener("click", function () { cambiarModoCreacion(opcion.dataset.modoOpcion); });
+    });
+    curso.addEventListener("change", actualizarCamposSeleccion);
+    actualizarCamposSeleccion();
+    function cambiarModoCreacion(modo) {
+        modoCreacion = modo;
+        contenedorCreacion.dataset.modo = modo;
+        selectorModo.forEach(function (opcion) {
+            const activo = opcion.dataset.modoOpcion === modo;
+            opcion.classList.toggle("activo", activo);
+            opcion.setAttribute("aria-pressed", activo ? "true" : "false");
+        });
+        campoDocente.hidden = modo !== "docente";
+        if (modo === "docente") {
+            tituloConfiguracion.textContent = "Busca el horario por docente";
+            ayudaConfiguracion.textContent = "Selecciona un docente para ver los cursos que tiene asignados.";
+            infoSiguiente.innerHTML = "<strong>¿Qué sigue?</strong>Elige un período, un docente y uno de sus cursos. El docente quedará seleccionado en el planificador.";
+            actualizarCursosDelDocente();
+        } else {
+            tituloConfiguracion.textContent = "Configura el horario por curso";
+            ayudaConfiguracion.textContent = "Elige el período y el curso al que vas a asignar clases.";
+            infoSiguiente.innerHTML = "<strong>¿Qué sigue?</strong>Selecciona un período y un curso. En el siguiente paso podrás organizar las clases de la semana.";
+            docente.value = "";
+            restaurarCursos();
+        }
+        actualizarCamposSeleccion();
+    }
+
+    function ponerOpcionInicial(texto) {
+        curso.innerHTML = "";
+        const opcion = document.createElement("option");
+        opcion.value = "";
+        opcion.textContent = texto;
+        curso.appendChild(opcion);
+    }
+
+    function restaurarCursos() {
+        ponerOpcionInicial("Seleccionar curso");
+        cursosOriginales.forEach(function (opcion) { curso.appendChild(opcion.cloneNode(true)); });
+    }
+
+    function actualizarCursosDelDocente() {
+        if (modoCreacion !== "docente") return;
+        ponerOpcionInicial(docente.value ? "Seleccionar curso asignado" : "Primero selecciona un docente");
+        const permitidos = new Set((cursosPorDocente[String(docente.value)] || []).map(String));
+        cursosOriginales.forEach(function (opcion) {
+            if (permitidos.has(String(opcion.value))) curso.appendChild(opcion.cloneNode(true));
+        });
+        actualizarCamposSeleccion();
+    }
 
     const parejasSet = new Set(
         parejasConHorario.map(function (p) {
@@ -556,6 +712,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        if (modoCreacion === "docente" && !docente.value) {
+            mostrarNotificacion("error", "Falta docente", "Selecciona un docente para ver sus cursos asignados.");
+            docente.focus();
+            return;
+        }
+
         if (!cursoId) {
 
             mostrarNotificacion(
@@ -573,7 +735,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const clave = periodoId + "-" + cursoId;
 
 
-        if (parejasSet.has(clave)) {
+        if (parejasSet.has(clave) && modoCreacion !== "docente") {
 
             mostrarNotificacion(
                 "advertencia",
@@ -585,18 +747,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const urlBase =
-            "{% url 'crear_horario_curso' 0 0 %}";
+        if (modoCreacion === "docente") {
+            const rutaDocente = "{% url 'crear_horario_docente' 0 0 0 %}";
+            window.location.href = rutaDocente.replace("0/0/0/", periodoId + "/" + docente.value + "/" + cursoId + "/");
+            return;
+        }
 
-
-        const url =
-            urlBase.replace(
-                "0/0/",
-                periodoId + "/" + cursoId + "/"
-            );
-
-
-        window.location.href = url;
+        const rutaCurso = "{% url 'crear_horario_curso' 0 0 %}";
+        window.location.href = rutaCurso.replace("0/0/", periodoId + "/" + cursoId + "/");
 
     });
 
