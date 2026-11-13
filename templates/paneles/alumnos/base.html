@@ -328,11 +328,12 @@
 
 {% include "partials/page_transition_assets.html" %}
 <style>
-.nav-toggle-button { display:none; }
+.student-nav-toolbar { display:flex; align-items:center; margin:0 0 14px; }
+.student-nav-toolbar .nav-toggle-button { display:grid; place-items:center; width:44px; height:44px; border:1px solid #334155; border-radius:12px; background:#081b3a; color:#fff; font-size:19px; box-shadow:0 6px 18px rgba(15,23,42,.16); cursor:pointer; }
+.student-nav-toolbar .nav-toggle-button:hover { background:#1e40af; }
 .nav-menu-overlay { display:none; }
 @media (max-width:768px) {
-  .nav-toggle-button { position:fixed; top:14px; left:14px; z-index:1200; display:grid; place-items:center; width:44px; height:44px; border:1px solid #334155; border-radius:12px; background:#081b3a; color:#fff; font-size:19px; box-shadow:0 6px 18px rgba(15,23,42,.22); cursor:pointer; }
-  .nav-toggle-button:hover { background:#006eff; }
+  .student-nav-toolbar .nav-toggle-button { width:44px; height:44px; }
   .nav-menu-overlay { position:fixed; inset:0; z-index:1090; background:rgba(15,23,42,.48); }
   body.nav-open .nav-menu-overlay { display:block; }
   .sidebar { display:flex !important; position:fixed; inset:0 auto 0 0; z-index:1100; width:min(280px,85vw); height:100dvh; min-height:100vh; overflow-y:auto; transform:translateX(-100%); transition:transform .25s ease; }
@@ -340,11 +341,12 @@
 }
 </style>
     <link rel="stylesheet" href="{% static 'css/paneles/educatec_paneles.css' %}?v=panel-design-a13730d">
+    <link rel="stylesheet" href="{% static 'css/paneles/nav_alumno.css' %}?v=20261113-1">
 </head>
 
 
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
-<button type="button" class="nav-toggle-button" aria-label="Abrir menú de navegación" aria-controls="panel-navigation" aria-expanded="false"><i class="fas fa-bars-staggered" aria-hidden="true"></i></button><div class="nav-menu-overlay" aria-hidden="true"></div>
+<div class="nav-menu-overlay" aria-hidden="true"></div>
 
 <div class="wrapper">
 
@@ -354,231 +356,65 @@
     ====================================================== -->
 
     <aside id="panel-navigation" class="sidebar">
+    <div class="sidebar-brand">
+        <h4><img class="student-brand-logo" src="{% static 'images/educatec-logo-transparent.png' %}" alt="">Educatec</h4>
+        <span>Panel Alumno</span>
+    </div>
 
+    <nav class="sidebar-nav" aria-label="Navegacion principal">
+        <div class="nav-section">Principal</div>
+        <a href="{% url 'dashboard_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'dashboard_alumnos' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i><span>Inicio</span>
+        </a>
 
-        <!-- =================================================
-             LOGO
-        ================================================== -->
+        <div class="nav-section mt-3">Aprendizaje</div>
+        <a href="{% url 'materias_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'materias_alumnos' %}active{% endif %}">
+            <i class="fa-solid fa-book-open"></i><span>Materias</span>
+        </a>
+        <a href="{% url 'listar_tareas_alumno' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_tareas_alumno' or request.resolver_match.url_name == 'responder_tarea_alumno' %}active{% endif %}">
+            <i class="fa-solid fa-clipboard-list"></i><span>Tareas</span>
+        </a>
+        <a href="{% url 'calificaciones_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'calificaciones_alumnos' %}active{% endif %}">
+            <i class="fa-solid fa-chart-column"></i><span>Calificaciones</span>
+        </a>
+        <a href="{% url 'mis_boletines' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'mis_boletines' %}active{% endif %}">
+            <i class="fa-solid fa-file-lines"></i><span>Mis boletines</span>
+        </a>
 
-        <div class="logo">
+        <div class="nav-section mt-3">Seguimiento</div>
+        <a href="{% url 'asistencia_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'asistencia_alumnos' %}active{% endif %}">
+            <i class="fa-solid fa-calendar-check"></i><span>Asistencia</span>
+        </a>
+        <a href="{% url 'listar_eventos_alumno' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_eventos_alumno' %}active{% endif %}">
+            <i class="fa-solid fa-calendar-days"></i><span>Eventos</span>
+        </a>
+        <a href="{% url 'horarios_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'horarios_alumnos' %}active{% endif %}">
+            <i class="fa-solid fa-clock"></i><span>Horarios</span>
+        </a>
+        <a href="{% url 'logros_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'logros_alumnos' %}active{% endif %}">
+            <i class="fa-solid fa-trophy"></i><span>Logros</span>
+        </a>
 
-            <img src="{% static 'images/educatec-logo-transparent.png' %}" alt="" width="42" height="42" style="object-fit:cover;border-radius:9px">
+        <div class="nav-section mt-3">Sistema</div>
+        <a href="{% url 'configuracion_alumnos' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'configuracion_alumnos' or request.resolver_match.url_name == 'configuracion_cuenta' %}active{% endif %}">
+            <i class="fa-solid fa-gear"></i><span>Configuracion</span>
+        </a>
 
-            <span>
-                Educatec
-            </span>
-
+        <div class="sidebar-footer">
+            <a href="{% url 'cerrar_sesion' %}" id="logoutBtn" class="logout-confirm-link">
+                <i class="fas fa-sign-out-alt"></i><span>Cerrar Sesion</span>
+            </a>
         </div>
-
-
-        <!-- =================================================
-             MENÚ
-        ================================================== -->
-
-        <ul class="menu">
-
-
-            <!-- =================================================
-                 INICIO
-            ================================================== -->
-
-            <li
-                class="{% block active_inicio %}{% endblock %}"
-                onclick="window.location='{% url 'dashboard_alumnos' %}'"
-            >
-
-                <i class="fa-solid fa-house"></i>
-
-                <span>
-                    Inicio
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 MATERIAS
-            ================================================== -->
-
-            <!--
-
-            <li
-                class="{% block active_materias %}{% endblock %}"
-                onclick="window.location='{% url 'materias_alumnos' %}'"
-            >
-
-                <i class="fa-solid fa-book-open"></i>
-
-                <span>
-                    Materias
-                </span>
-
-            </li>
-
-            -->
-
-
-            <!-- =================================================
-                 TAREAS
-            ================================================== -->
-
-            <li
-                onclick="window.location.href='{% url "listar_tareas_alumno" %}'"
-            >
-
-                <i class="fa-solid fa-book-open"></i>
-
-                <span>
-                    Tareas
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 CALIFICACIONES
-            ================================================== -->
-
-            <li
-                class="{% block active_calificaciones %}{% endblock %}"
-                onclick="window.location='{% url 'calificaciones_alumnos' %}'"
-            >
-
-                <i class="fa-solid fa-chart-column"></i>
-
-                <span>
-                    Calificaciones
-                </span>
-
-            </li>
-
-            <li
-                class="{% block active_boletines %}{% endblock %}"
-                onclick="window.location='{% url 'mis_boletines' %}'"
-            >
-                <i class="fa-solid fa-file-lines"></i>
-                <span>Mis boletines</span>
-            </li>
-
-
-            <!-- =================================================
-                 ASISTENCIA
-            ================================================== 
-
-            <li
-                class="{% block active_asistencia %}{% endblock %}"
-                onclick="window.location='{% url 'asistencia_alumnos' %}'"
-            >
-
-                <i class="fa-solid fa-calendar-check"></i>
-
-                <span>
-                    Asistencia
-                </span>
-
-            </li>-->
-
-
-            <!-- =================================================
-                 EVENTOS
-            ================================================== -->
-
-            <li
-                class="{% block active_eventos %}{% endblock %}"
-                onclick="window.location='{% url 'listar_eventos_alumno' %}'"
-            >
-
-                <i class="fa-solid fa-calendar-days"></i>
-
-                <span>
-                    Eventos
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 HORARIOS
-            ================================================== -->
-
-            <li
-                class="{% block active_horarios %}{% endblock %}"
-                onclick="window.location='{% url 'horarios_alumnos' %}'"
-            >
-
-                <i class="fa-solid fa-calendar-check"></i>
-
-                <span>
-                    Horarios
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 LOGROS
-            ================================================== -->
-
-            <!--
-
-            <li
-                class="{% block active_logros %}{% endblock %}"
-                onclick="window.location='{% url 'logros_alumnos' %}'"
-            >
-
-                <i class="fa-solid fa-trophy"></i>
-
-                <span>
-                    Logros
-                </span>
-
-            </li>
-
-            -->
-
-
-            <!-- =================================================
-                 CONFIGURACIÓN
-            ================================================== -->
-
-            <li
-                class="{% block active_configuracion %}{% endblock %}"
-                onclick="window.location='{% url 'configuracion_alumnos' %}'"
-            >
-
-                <i class="fa-solid fa-gear"></i>
-
-                <span>
-                    Configuración
-                </span>
-
-            </li>
-
-
-            <!-- =================================================
-                 CERRAR SESIÓN
-            ================================================== -->
-
-            <li class="logout-item">
-
-            <li id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Cerrar Sesión
-            </li>
-
-        </li>
-
-        </ul>
-
-        <div class="sidebar-account" aria-label="Cuenta de {{ request.user.get_full_name|default:request.user.documento }}">
-            <div class="sidebar-account-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
-            <div class="sidebar-account-details">
-                <span class="sidebar-account-name">{{ request.user.get_full_name|default:request.user.documento }}</span>
-                <span class="sidebar-account-role">{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
-            </div>
+    </nav>
+
+    <div class="sidebar-account" aria-label="Cuenta de {{ request.user.get_full_name|default:request.user.documento }}">
+        <div class="sidebar-account-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
+        <div class="sidebar-account-details">
+            <span class="sidebar-account-name">{{ request.user.get_full_name|default:request.user.documento }}</span>
+            <span class="sidebar-account-role">{{ request.user.rol.nombre|default:"Usuario"|title }}</span>
         </div>
-
-    </aside>
+    </div>
+</aside>
 
 
     <!-- =====================================================
@@ -586,6 +422,12 @@
     ====================================================== -->
 
     <main class="content">
+
+        <div class="student-nav-toolbar">
+            <button type="button" class="nav-toggle-button" aria-label="Expandir o contraer menu de navegacion" aria-controls="panel-navigation" aria-expanded="true" title="Expandir o contraer menu">
+                <i class="fas fa-bars-staggered" aria-hidden="true"></i>
+            </button>
+        </div>
 
         {% block content %}
         {% endblock %}
@@ -614,7 +456,7 @@
 {% endblock %}
 
 
-<script src="{% static 'js/paneles/nav_toggle.js' %}?v=panel-design-a13730d"></script>
+<script src="{% static 'js/paneles/nav_toggle_alumno.js' %}?v=20261113-nav-aligned"></script>
 {% include 'soporte/partials/soporte_flotante.html' %}
 </body>
 

@@ -12,7 +12,7 @@
     href="{% static 'css/tareas/listar_tareas.css' %}"
 >
 
-<div class="student-tasks-page">
+<div class="student-tasks-page student-admin-design">
 
     <!-- =====================================================
          HEADER
@@ -186,6 +186,18 @@
     <!-- =====================================================
          FILTROS
     ====================================================== -->
+
+    <section class="student-tasks-workspace" aria-label="Listado de mis tareas">
+        <div class="student-tasks-toolbar">
+            <div class="student-tasks-toolbar-copy">
+                <h2>Actividades asignadas</h2>
+                <span id="taskResultCount">{{ total_tareas }} tareas</span>
+            </div>
+            <label class="student-task-search">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input type="search" id="taskSearch" placeholder="Buscar tarea..." autocomplete="off" aria-label="Buscar en mis tareas">
+            </label>
+        </div>
 
     <section class="tasks-controls">
 
@@ -683,6 +695,7 @@
         </div>
 
     </main>
+    </section>
 
 </div>
 
@@ -692,91 +705,42 @@
 ========================================================= -->
 
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
-
     const buttons = document.querySelectorAll(".filter-button");
+    const tasks = Array.from(document.querySelectorAll("[data-task]"));
+    const noResults = document.getElementById("no-filter-results");
+    const search = document.getElementById("taskSearch");
+    const resultCount = document.getElementById("taskResultCount");
 
-    const tasks = document.querySelectorAll("[data-task]");
+    function updateTasks() {
+        const activeButton = document.querySelector(".filter-button.active");
+        const filter = activeButton ? activeButton.dataset.filter : "all";
+        const query = search ? search.value.trim().toLocaleLowerCase() : "";
+        let visibleTasks = 0;
 
-    const noResults = document.getElementById(
-        "no-filter-results"
-    );
-
-
-    buttons.forEach(function (button) {
-
-        button.addEventListener("click", function () {
-
-            /* -----------------------------------------------
-               ACTIVAR BOTÓN
-            ------------------------------------------------ */
-
-            buttons.forEach(function (btn) {
-
-                btn.classList.remove("active");
-
-            });
-
-            button.classList.add("active");
-
-
-            /* -----------------------------------------------
-               OBTENER FILTRO
-            ------------------------------------------------ */
-
-            const filter = button.dataset.filter;
-
-            let visibleTasks = 0;
-
-
-            /* -----------------------------------------------
-               FILTRAR TAREAS
-            ------------------------------------------------ */
-
-            tasks.forEach(function (task) {
-
-                const status = task.dataset.status;
-
-
-                if (
-                    filter === "all" ||
-                    status === filter
-                ) {
-
-                    task.style.display = "";
-
-                    visibleTasks++;
-
-                } else {
-
-                    task.style.display = "none";
-
-                }
-
-            });
-
-
-            /* -----------------------------------------------
-               SIN RESULTADOS
-            ------------------------------------------------ */
-
-            if (visibleTasks === 0) {
-
-                noResults.classList.add("visible");
-
-            } else {
-
-                noResults.classList.remove("visible");
-
-            }
-
+        tasks.forEach(function (task) {
+            const matchesStatus = filter === "all" || task.dataset.status === filter;
+            const matchesSearch = !query || task.textContent.toLocaleLowerCase().includes(query);
+            const visible = matchesStatus && matchesSearch;
+            task.hidden = !visible;
+            if (visible) visibleTasks++;
         });
 
+        if (noResults) noResults.classList.toggle("visible", tasks.length > 0 && visibleTasks === 0);
+        if (resultCount) resultCount.textContent = visibleTasks + (visibleTasks === 1 ? " tarea" : " tareas");
+    }
+
+    buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            buttons.forEach((item) => item.classList.remove("active"));
+            button.classList.add("active");
+            updateTasks();
+        });
     });
 
+    if (search) search.addEventListener("input", updateTasks);
+    updateTasks();
 });
-
 </script>
 
 {% endblock %}

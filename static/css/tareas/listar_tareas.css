@@ -961,3 +961,92 @@
     }
 
 }
+/* Student task listing aligned with the administrator workspace. */
+.student-admin-design { max-width:1540px; padding:22px 14px 48px; color:#172033; }
+.student-admin-design .tasks-header {
+    position:relative; overflow:hidden; align-items:center; min-height:174px;
+    padding:30px 34px; margin-bottom:20px; border:1px solid #263d70; border-radius:25px;
+    background:radial-gradient(circle at 85% 12%,rgba(117,145,238,.36),transparent 29%),linear-gradient(120deg,#111d3a,#203765 65%,#294780);
+    box-shadow:0 18px 42px rgba(22,40,80,.17);
+}
+.student-admin-design .tasks-header::after { content:""; position:absolute; right:115px; bottom:-115px; width:245px; height:245px; border:1px solid rgba(255,255,255,.13); border-radius:50%; box-shadow:0 0 0 25px rgba(255,255,255,.035),0 0 0 50px rgba(255,255,255,.025); pointer-events:none; }
+.student-admin-design .header-main,.student-admin-design .course-card { position:relative; z-index:1; }
+.student-admin-design .header-label { color:#b9c8ff; }
+.student-admin-design .header-label::before { background:#7dd3fc; }
+.student-admin-design .header-main h1 { color:#fff; font-size:clamp(28px,3vw,36px); letter-spacing:-.04em; }
+.student-admin-design .header-main p { color:#c2cce1; }
+.student-admin-design .course-card { min-width:220px; border-color:rgba(255,255,255,.16); background:rgba(255,255,255,.1); box-shadow:none; backdrop-filter:blur(10px); }
+.student-admin-design .course-card-icon { background:rgba(255,255,255,.14); color:#c7d2fe; }
+.student-admin-design .course-card span { color:#b9c8e5; }
+.student-admin-design .course-card strong { color:#fff; }
+.student-admin-design .tasks-summary { gap:15px; margin-bottom:20px; }
+.student-admin-design .summary-card { position:relative; overflow:hidden; min-height:96px; padding:19px 21px; border-color:#e8edf4; border-radius:19px; box-shadow:0 8px 22px rgba(30,46,76,.045); transition:transform .2s ease,box-shadow .2s ease; }
+.student-admin-design .summary-card:hover { transform:translateY(-2px); box-shadow:0 13px 27px rgba(30,46,76,.08); }
+.student-admin-design .summary-icon { width:46px; height:46px; border-radius:15px; }
+.student-admin-design .total-icon { background:#eef2ff; color:#526fe0; }
+.student-admin-design .pending-icon { background:#fff5e7; }
+.student-admin-design .delivered-icon { background:#e9f8f1; color:#21815a; }
+.student-admin-design .summary-card strong { color:#172033; font-size:23px; }
+.student-admin-design .summary-card span { color:#697586; font-size:11px; font-weight:650; }
+.student-tasks-workspace { overflow:hidden; border:1px solid #e6ebf2; border-radius:21px; background:#fff; box-shadow:0 14px 40px rgba(30,46,76,.06); }
+.student-tasks-toolbar { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:19px 21px 15px; }
+.student-tasks-toolbar-copy h2 { margin:0; color:#263247; font-size:15px; font-weight:750; }
+.student-tasks-toolbar-copy span { display:block; margin-top:4px; color:#8a95a7; font-size:11px; }
+.student-task-search { position:relative; display:block; width:min(390px,100%); }
+.student-task-search i { position:absolute; top:50%; left:16px; transform:translateY(-50%); color:#9aa4b6; font-size:13px; }
+.student-task-search input { width:100%; height:47px; padding:0 14px 0 43px; border:1px solid #e1e7f0; border-radius:13px; outline:0; background:#f8fafe; color:#283750; font-size:13px; }
+.student-task-search input:focus { border-color:#81b3f8; background:#fff; box-shadow:0 0 0 3px rgba(99,158,241,.12); }
+.student-admin-design .tasks-controls { margin:0; padding:0 21px 15px; border-bottom:1px solid #edf0f5; }
+.student-admin-design .tasks-toolbar { gap:5px; padding:0; border:0; border-radius:0; background:transparent; }
+.student-admin-design .filter-button { padding:9px 13px; border:1px solid transparent; border-radius:10px; color:#64748b; font-size:12px; }
+.student-admin-design .filter-button:hover { color:#3875ca; background:#f5f3ff; }
+.student-admin-design .filter-button.active { border-color:#e0e7ff; background:#eef2ff; color:#3875ca; box-shadow:none; }
+.student-admin-design .filter-button span { background:rgba(100,116,139,.09); }
+.student-admin-design .filter-button.active span { background:#fff; color:#3875ca; }
+.student-admin-design .tasks-list { gap:11px; padding:15px; }
+.student-admin-design .task-card { overflow:hidden; border:1px solid #e9edf4; border-radius:16px; background:linear-gradient(110deg,#fff,#fcfdff); box-shadow:0 3px 10px rgba(31,48,78,.025); transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
+.student-admin-design .task-card:hover { transform:translateY(-1px); border-color:#d9e1f2; box-shadow:0 9px 20px rgba(31,48,78,.07); }
+.student-admin-design .task-card::before { right:auto; width:3px; height:auto; bottom:0; background:#f59e0b; }
+.student-admin-design .task-card[data-status="delivered"]::before { background:#10b981; }
+.student-admin-design .task-card-header { padding:17px 20px 0; }
+.student-admin-design .task-class { color:#64748b; }
+.student-admin-design .task-class-icon { background:#eff2ff; color:#5c73dc; }
+.student-admin-design .task-card-content { padding:13px 20px 15px; }
+.student-admin-design .task-card-content h2 { color:#26344d; font-size:17px; font-weight:760; }
+.student-admin-design .task-meta { gap:22px; padding:13px 20px; border-color:#f0f2f6; }
+.student-admin-design .meta-icon { background:#f1f4fb; color:#6473b8; }
+.student-admin-design .meta-item > div:last-child span { color:#8994a5; }
+.student-admin-design .meta-item strong { color:#334155; }
+.student-admin-design .task-card-footer { padding:13px 20px; }
+.student-admin-design .task-button { border-color:#526fe0; border-radius:11px; background:linear-gradient(135deg,#536fe0,#6e85eb); box-shadow:0 7px 16px rgba(83,111,224,.19); }
+.student-admin-design .task-button:hover { background:#435fcf; color:#fff; box-shadow:0 11px 21px rgba(83,111,224,.25); }
+.student-admin-design .task-button.delivered-button { border-color:#a7f3d0; background:#eaf8f1; color:#21815a; box-shadow:none; }
+.student-admin-design .task-button.delivered-button:hover { background:#d1fae5; color:#065f46; }
+.student-admin-design .empty-tasks,.student-admin-design .no-filter-results { margin:0; border-color:#cbd5e1; border-radius:16px; background:#fff; }
+.student-admin-design .empty-icon,.student-admin-design .no-filter-icon { background:#f0f3ff; color:#7187ed; }
+.student-admin-design .empty-tasks h2,.student-admin-design .no-filter-results h3 { color:#26344d; }
+.student-admin-design .empty-tasks p,.student-admin-design .no-filter-results p { color:#748198; }
+.student-admin-design [hidden] { display:none !important; }
+@media(max-width:850px) { .student-admin-design { padding:18px 14px 36px; } .student-admin-design .tasks-header { padding:24px 22px; } .student-admin-design .course-card { width:auto; } }
+@media(max-width:680px) {
+    .student-admin-design { padding:14px 10px 28px; }
+    .student-admin-design .tasks-header { min-height:0; padding:22px 20px; border-radius:20px; }
+    .student-admin-design .tasks-header::after { right:-110px; }
+    .student-admin-design .tasks-summary { gap:9px; }
+    .student-admin-design .summary-card { min-height:76px; padding:12px; gap:9px; }
+    .student-admin-design .summary-icon { flex-basis:36px; width:36px; height:36px; }
+    .student-tasks-toolbar { align-items:stretch; flex-direction:column; padding:15px; }
+    .student-task-search { width:100%; }
+    .student-admin-design .tasks-controls { padding:0 15px 13px; }
+    .student-admin-design .tasks-toolbar { width:100%; overflow-x:auto; }
+    .student-admin-design .filter-button { flex:1; white-space:nowrap; }
+    .student-admin-design .tasks-list { gap:10px; padding:11px; }
+    .student-admin-design .task-card-header { align-items:flex-start; flex-direction:row; gap:10px; padding:15px 15px 0; }
+    .student-admin-design .task-card-content { padding:12px 15px; }
+    .student-admin-design .task-meta { gap:12px; padding:12px 15px; }
+    .student-admin-design .task-card-footer { align-items:stretch; padding:12px 15px; }
+    .student-admin-design .task-button { width:100%; }
+}
+@media(prefers-reduced-motion:reduce) { .student-admin-design .summary-card,.student-admin-design .task-card,.student-admin-design .task-button { transition:none; } }
+
+@media(max-width:850px){.student-admin-design .tasks-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.student-admin-design .tasks-summary .summary-card:last-child{grid-column:1/-1}}

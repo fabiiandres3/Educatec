@@ -649,12 +649,19 @@
              ASISTENCIA
         ================================================== -->
 
-        <div class="section-card">
-
-
-            <h4>
-                Mi Asistencia
-            </h4>
+        <div class="section-card attendance-overview">
+            <div class="attendance-card-heading">
+                <div class="attendance-card-title">
+                    <span class="attendance-card-icon"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></span>
+                    <div>
+                        <h4>Mi Asistencia</h4>
+                        <p>Resumen de tus registros</p>
+                    </div>
+                </div>
+                <a class="attendance-view-link" href="{% url 'asistencia_alumnos' %}">
+                    Ver historial <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
 
 
             <ul class="event-list">

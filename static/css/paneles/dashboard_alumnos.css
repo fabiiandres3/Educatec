@@ -460,3 +460,354 @@ body {
         align-items: stretch;
     }
 }
+/* Alineación visual del panel estudiantil con la identidad de los paneles Educatec. */
+.wrapper {
+    --student-ink: #172033;
+    --student-muted: #768198;
+    --student-line: #e8edf5;
+    --student-blue: #1e40af;
+    --student-cyan: #0ea5e9;
+    min-height: 100vh;
+    color: var(--student-ink);
+    background: #f3f6fb;
+}
+
+.wrapper .sidebar {
+    z-index: 20;
+    width: 252px;
+    padding: 22px 15px 16px;
+    background: #020617;
+    box-shadow: 8px 0 28px rgba(2, 6, 23, .13);
+}
+
+.wrapper .logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 11px;
+    margin: 0 0 27px;
+    padding: 4px 9px;
+    color: #f8fafc;
+    font-size: 20px;
+    letter-spacing: -.03em;
+}
+
+.wrapper .menu li {
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+    padding: 11px 13px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+
+.wrapper .menu li i { width: 19px; margin: 0; color: #94a3b8; text-align: center; }
+.wrapper .menu li:hover { background: #172033; color: #fff; }
+.wrapper .menu li:hover i { color: #7dd3fc; }
+.wrapper .menu li.active { border-color: rgba(56, 189, 248, .16); background: #1e40af; color: #fff; }
+.wrapper .menu li.active i { color: #bae6fd; }
+.wrapper .menu .logout-item { display: block; margin-top: 18px; padding: 0; }
+.wrapper .menu .logout-item #logoutBtn { color: #cbd5e1; }
+.wrapper .menu .logout-item #logoutBtn:hover { background: rgba(239, 68, 68, .12); color: #fecaca; }
+.wrapper .menu .logout-item #logoutBtn:hover i { color: #fca5a5; }
+
+.wrapper .sidebar-account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 14px 8px 2px;
+    border-top: 1px solid rgba(226, 232, 240, .12);
+    color: #e2e8f0;
+}
+.wrapper .sidebar-account-avatar {
+    display: grid;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 1px solid rgba(125, 211, 252, .25);
+    border-radius: 13px;
+    background: #1e40af;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+}
+.wrapper .sidebar-account-details { min-width: 0; }
+.wrapper .sidebar-account-name, .wrapper .sidebar-account-role {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.wrapper .sidebar-account-name { color: #f8fafc; font-size: 12px; font-weight: 700; }
+.wrapper .sidebar-account-role { margin-top: 3px; color: #94a3b8; font-size: 10px; }
+
+.wrapper .content {
+    min-width: 0;
+    min-height: 100vh;
+    margin-left: 252px;
+    padding: clamp(20px, 3vw, 38px);
+    background: #f3f6fb;
+}
+.wrapper .topbar {
+    min-height: 112px;
+    padding: 24px 28px;
+    border: 1px solid var(--student-line);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(31, 50, 89, .05);
+}
+.wrapper .welcome h2 { color: #18243b; font-size: clamp(22px, 2.2vw, 29px); font-weight: 800; letter-spacing: -.04em; }
+.wrapper .welcome p { margin: 5px 0 0; color: var(--student-muted); font-size: 13px; }
+.wrapper .notification { color: var(--student-blue); }
+.wrapper .notification-count { border: 2px solid #fff; background: #0ea5e9; }
+
+.wrapper .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin: 20px 0 24px;
+}
+.wrapper .stat-card {
+    min-width: 0;
+    min-height: 112px;
+    padding: 20px;
+    border: 1px solid var(--student-line);
+    border-radius: 19px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(31, 50, 89, .045);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.wrapper .stat-card:hover { transform: translateY(-3px); border-color: #cbdcf5; box-shadow: 0 14px 30px rgba(31, 50, 89, .09); }
+.wrapper .stat-card h3 { color: #202c43; font-size: 27px; font-weight: 800; letter-spacing: -.04em; }
+.wrapper .stat-card p { margin-top: 5px; color: #7c879c; font-size: 12px; font-weight: 600; }
+.wrapper .stat-icon { flex: 0 0 42px; width: 42px; height: 42px; border-radius: 13px; }
+.wrapper .stat-icon.blue { background: #edf2ff; color: #526fe0; }
+.wrapper .stat-icon.green { background: #e9f8f1; color: #26a879; }
+.wrapper .stat-icon.orange { background: #fff5e7; color: #d88c27; }
+.wrapper .stat-icon.purple { background: #f0edff; color: #7661cf; }
+
+.wrapper .section-card {
+    margin-bottom: 20px;
+    padding: 23px;
+    border: 1px solid var(--student-line);
+    border-radius: 21px;
+    background: #fff;
+    box-shadow: 0 9px 30px rgba(31, 50, 89, .05);
+}
+.wrapper .section-card h4 { color: #202b41; font-size: 16px; font-weight: 800; }
+.wrapper .section-card a:not([class]) { color: var(--student-blue); font-weight: 700; }
+.wrapper .task-card, .wrapper .event-list li, .wrapper .achievement, .wrapper .subject-card {
+    border: 1px solid #edf0f6;
+    border-radius: 15px;
+    background: #f9fbfe;
+}
+.wrapper .task-card, .wrapper .event-list li, .wrapper .achievement { color: #34415a; }
+.wrapper .task-card p, .wrapper .achievement p { color: #768198; }
+.wrapper .subject-card:hover { border-color: #dce4ff; box-shadow: 0 9px 22px rgba(40, 60, 110, .07); }
+.wrapper .schedule-table th { color: #8490a4; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+.wrapper .schedule-table td { border-color: #edf0f6; color: #536078; }
+.wrapper .btn-primary { border: 0; border-radius: 11px; background: linear-gradient(110deg, #1e40af, #0ea5e9); font-weight: 700; box-shadow: 0 8px 18px rgba(30, 64, 175, .18); }
+.wrapper :is(a, button, input, select):focus-visible { outline: 3px solid rgba(14, 165, 233, .55); outline-offset: 3px; }
+
+html[data-theme="dark"] .wrapper, html[data-theme="dark"] .wrapper .content { background: #0e1522; color: #e6edf7; }
+html[data-theme="dark"] .wrapper .topbar, html[data-theme="dark"] .wrapper .stat-card, html[data-theme="dark"] .wrapper .section-card { border-color: #34445d; background: #172235; }
+html[data-theme="dark"] .wrapper .welcome h2, html[data-theme="dark"] .wrapper .stat-card h3, html[data-theme="dark"] .wrapper .section-card h4 { color: #e6edf7; }
+html[data-theme="dark"] .wrapper .welcome p, html[data-theme="dark"] .wrapper .stat-card p, html[data-theme="dark"] .wrapper .task-card p, html[data-theme="dark"] .wrapper .achievement p { color: #aab8cc; }
+html[data-theme="dark"] .wrapper .task-card, html[data-theme="dark"] .wrapper .event-list li, html[data-theme="dark"] .wrapper .achievement, html[data-theme="dark"] .wrapper .subject-card { border-color: #34445d; background: #202d42; color: #d5deea; }
+html[data-theme="dark"] .wrapper .schedule-table td { border-color: #34445d; color: #cbd5e1; }
+
+@media (max-width: 1100px) {
+    .wrapper .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+    .wrapper .sidebar { width: min(280px, 85vw); }
+    .wrapper .content { margin-left: 0; padding: 16px 16px 22px; }
+    .wrapper .topbar { align-items: flex-start; padding: 20px; }
+    .wrapper .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+    .wrapper .stat-card { min-height: 96px; padding: 15px; gap: 11px; }
+    .wrapper .section-card { padding: 18px; }
+}
+@media (max-width: 440px) {
+    .wrapper .content { padding: 11px 11px 18px; }
+    .wrapper .stats { grid-template-columns: 1fr 1fr; gap: 9px; }
+    .wrapper .stat-card { align-items: flex-start; flex-direction: column; min-height: 130px; padding: 14px; }
+    .wrapper .stat-card h3 { font-size: 23px; }
+    .wrapper .topbar { padding: 17px; }
+    .wrapper .section-card { padding: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .wrapper *, .wrapper *::before, .wrapper *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+
+/* Sidebar collapse behavior scoped to the student panel. */
+body.alumno-sidebar-collapsed .wrapper .sidebar { width:78px; padding-right:8px; padding-left:8px; }
+body.alumno-sidebar-collapsed .wrapper .content { margin-left:78px; }
+body.alumno-sidebar-collapsed .wrapper .sidebar .logo { justify-content:center; gap:0; padding-right:4px; padding-left:4px; font-size:0; }
+body.alumno-sidebar-collapsed .wrapper .sidebar .logo span,
+body.alumno-sidebar-collapsed .wrapper .sidebar-account-details { display:none; }
+body.alumno-sidebar-collapsed .wrapper .sidebar .menu li { justify-content:center; gap:0; width:48px; margin-right:auto; margin-left:auto; padding-right:0; padding-left:0; font-size:0; }
+body.alumno-sidebar-collapsed .wrapper .sidebar .menu li i { flex:0 0 auto; width:auto; font-size:17px; }
+body.alumno-sidebar-collapsed .wrapper .sidebar-account { justify-content:center; padding-right:0; padding-left:0; }
+@media (max-width:768px) {
+    body.alumno-sidebar-collapsed .wrapper .sidebar { width:min(280px,85vw); }
+    body.alumno-sidebar-collapsed .wrapper .content { margin-left:0; }
+}
+
+@media (max-width:768px) { .wrapper .sidebar { width:min(280px,85vw); } }
+
+
+/* Student module visual system: keep every page consistent with the student dashboard. */
+.wrapper .content { min-width: 0; }
+.wrapper .content > .container-fluid { max-width: 1500px; margin-inline: auto; }
+.wrapper .content :is(.attendance-hero, .calificaciones-header, .horarios-header) { margin-bottom: 22px; }
+.wrapper .attendance-hero {
+    padding: 28px 30px !important; border: 1px solid rgba(255,255,255,.16);
+    border-radius: 22px !important; background: linear-gradient(115deg,#172554,#1d4ed8 68%,#0ea5e9) !important;
+    box-shadow: 0 16px 34px rgba(30,64,175,.16);
+}
+.wrapper .attendance-hero h1 { color: #fff !important; font-size: clamp(24px,3vw,32px) !important; }
+.wrapper .attendance-hero p { color: #dbeafe !important; }
+.wrapper .attendance-stat, .wrapper .attendance-table-card {
+    border: 1px solid var(--student-line) !important; border-radius: 18px !important;
+    background: #fff !important; box-shadow: 0 9px 30px rgba(31,50,89,.05);
+}
+.wrapper .attendance-stat { padding: 20px !important; }
+.wrapper .attendance-stat span { color: #77839a !important; }
+.wrapper .attendance-stat strong { color: #202c43 !important; }
+.wrapper .attendance-table-card { padding: 22px !important; }
+.wrapper .attendance-table-card h2 { color: #202b41 !important; }
+
+.wrapper .calificaciones-page {
+    padding: 0 0 24px !important; min-height: 0 !important; background: transparent !important;
+}
+.wrapper .calificaciones-header h1 { color: #202b41 !important; font-size: clamp(25px,3vw,32px) !important; }
+.wrapper .calificaciones-header p { color: #7c879c !important; }
+.wrapper .alumno-info, .wrapper .estadistica-card, .wrapper .tabla-card {
+    border: 1px solid var(--student-line) !important; border-radius: 19px !important;
+    background: #fff !important; box-shadow: 0 9px 30px rgba(31,50,89,.05) !important;
+}
+.wrapper .alumno-info, .wrapper .estadistica-card { padding: 22px !important; }
+.wrapper .info-label, .wrapper .estadistica-titulo { color: #7c879c !important; }
+.wrapper .info-value, .wrapper .estadistica-numero { color: #202c43 !important; }
+.wrapper .tabla-header { border-bottom: 1px solid #edf0f6; }
+.wrapper .tabla-calificaciones thead th { background: #f5f7fb !important; color: #77839a !important; }
+.wrapper .tabla-calificaciones td { border-color: #edf0f6 !important; }
+.wrapper .numero-fila { border-radius: 9px; }
+
+.wrapper .horarios-wrapper { padding: 0 0 24px !important; }
+.wrapper .horarios-title { color: #202b41 !important; font-size: clamp(24px,3vw,30px) !important; }
+.wrapper .horarios-title-icon { border-radius: 15px !important; background: #edf2ff !important; color: #526fe0 !important; }
+.wrapper .filters-bar, .wrapper .schedule-card {
+    border: 1px solid var(--student-line) !important; border-radius: 19px !important;
+    box-shadow: 0 9px 30px rgba(31,50,89,.05) !important;
+}
+.wrapper .filters-bar { padding: 20px !important; }
+.wrapper .schedule-card-header { background: linear-gradient(110deg,#f3f6ff,#fff 72%) !important; }
+.wrapper .filter-group select { border-radius: 11px !important; border-color: #dce3ee !important; }
+.wrapper .filter-group select:focus { border-color: #526fe0 !important; box-shadow: 0 0 0 3px rgba(82,111,224,.13) !important; }
+
+.wrapper .logro-card {
+    padding: 21px !important; border: 1px solid var(--student-line); border-radius: 18px !important;
+    background: #fff !important; box-shadow: 0 9px 26px rgba(31,50,89,.05) !important;
+}
+.wrapper .logro-card > div[style*="flex:1"] { min-width: 0; }
+.wrapper .logro-card strong { color: #202c43; font-size: 16px; }
+.wrapper .logro-card p { color: #7c879c !important; }
+.wrapper .logro-icon { border-radius: 16px !important; background: #edf2ff !important; color: #526fe0 !important; }
+.wrapper .logro-card.bloqueado { opacity: .72; background: #f8faff !important; }
+.wrapper .progreso-bar { overflow: hidden; background: #edf0f6 !important; }
+.wrapper .progreso-fill { background: linear-gradient(90deg,#526fe0,#0ea5e9) !important; }
+
+.wrapper .subjects-grid { gap: 16px; }
+.wrapper .subject-card { min-width: 0; padding: 20px; border-radius: 17px; }
+.wrapper .subject-card h6 { color: #202c43; font-weight: 800; }
+.wrapper .subject-card span, .wrapper .subject-card small { color: #77839a !important; }
+.wrapper .subject-card > span:nth-of-type(2) { display: inline-block; margin-top: 8px; color: #526fe0 !important; font-weight: 800; }
+
+.wrapper .content > div[style*="grid-template-columns"] { gap: 20px !important; }
+.wrapper .content input[readonly] { border-color: #e2e8f0 !important; border-radius: 11px !important; color: #34415a; }
+.wrapper .content table:not(.tabla-calificaciones) { width: 100%; border-collapse: separate !important; border-spacing: 0; }
+.wrapper .content table:not(.tabla-calificaciones) thead th { background: #f5f7fb !important; color: #77839a !important; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.wrapper .content table:not(.tabla-calificaciones) tbody td,
+.wrapper .content table:not(.tabla-calificaciones) tbody th { color: #536078 !important; }
+.wrapper .content table:not(.tabla-calificaciones) tbody tr:last-child > * { border-bottom: 0; }
+
+.wrapper .boletin-page { max-width: 1500px; margin: 0 auto; padding: 0 0 24px; }
+.wrapper .boletin-page > h1 { margin: 0 0 6px; color: #202b41; font-size: 30px; font-weight: 800; }
+.wrapper .boletin-page > p { color: #7c879c; }
+.wrapper .boletin-page form { margin: 20px 0 24px; padding: 20px; border: 1px solid var(--student-line); border-radius: 18px; background: #fff; box-shadow: 0 9px 30px rgba(31,50,89,.05); }
+.wrapper .boletin-page .form-select { min-height: 44px; border-color: #dce3ee; border-radius: 11px; }
+.wrapper .boletin-page .btn-outline-danger { margin: 16px 0; border-radius: 11px; font-weight: 700; }
+
+html[data-theme="dark"] .wrapper .attendance-stat,
+html[data-theme="dark"] .wrapper .attendance-table-card,
+html[data-theme="dark"] .wrapper .alumno-info,
+html[data-theme="dark"] .wrapper .estadistica-card,
+html[data-theme="dark"] .wrapper .tabla-card,
+html[data-theme="dark"] .wrapper .filters-bar,
+html[data-theme="dark"] .wrapper .schedule-card,
+html[data-theme="dark"] .wrapper .logro-card,
+html[data-theme="dark"] .wrapper .subject-card,
+html[data-theme="dark"] .wrapper .boletin-page form { border-color: #34445d !important; background: #172235 !important; color: #d5deea; }
+html[data-theme="dark"] .wrapper .attendance-stat strong,
+html[data-theme="dark"] .wrapper .attendance-table-card h2,
+html[data-theme="dark"] .wrapper .calificaciones-header h1,
+html[data-theme="dark"] .wrapper .info-value,
+html[data-theme="dark"] .wrapper .estadistica-numero,
+html[data-theme="dark"] .wrapper .logro-card strong,
+html[data-theme="dark"] .wrapper .subject-card h6,
+html[data-theme="dark"] .wrapper .boletin-page > h1 { color: #e6edf7 !important; }
+html[data-theme="dark"] .wrapper .tabla-calificaciones thead th,
+html[data-theme="dark"] .wrapper .content table:not(.tabla-calificaciones) thead th { background: #202d42 !important; color: #aab8cc !important; }
+html[data-theme="dark"] .wrapper .tabla-calificaciones td,
+html[data-theme="dark"] .wrapper .content table:not(.tabla-calificaciones) tbody td,
+html[data-theme="dark"] .wrapper .content table:not(.tabla-calificaciones) tbody th { border-color: #34445d !important; color: #cbd5e1 !important; }
+html[data-theme="dark"] .wrapper .schedule-card-header { background: linear-gradient(110deg,#202d42,#172235) !important; }
+html[data-theme="dark"] .wrapper .filter-group label { color: #cbd5e1 !important; }
+html[data-theme="dark"] .wrapper .filter-group select,
+html[data-theme="dark"] .wrapper .boletin-page .form-select { border-color: #46566f !important; background-color: #202d42 !important; color: #e6edf7 !important; }
+html[data-theme="dark"] .wrapper .logro-card p,
+html[data-theme="dark"] .wrapper .subject-card span,
+html[data-theme="dark"] .wrapper .subject-card small { color: #aab8cc !important; }
+
+@media (max-width: 760px) {
+    .wrapper .content > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+    .wrapper .estadisticas { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 12px !important; }
+    .wrapper .calificaciones-page { overflow-x: hidden; }
+    .wrapper .calificaciones-page .tabla-contenedor { overflow-x: auto; }
+    .wrapper .horarios-header { align-items: flex-start; }
+    .wrapper .logro-card { align-items: flex-start; gap: 13px; }
+    .wrapper .boletin-page form > div { width: 100%; }
+}
+@media (max-width: 460px) {
+    .wrapper .attendance-hero { padding: 22px !important; }
+    .wrapper .attendance-stat { padding: 14px !important; }
+    .wrapper .attendance-stat strong { font-size: 21px !important; }
+    .wrapper .alumno-info, .wrapper .estadistica-card { padding: 16px !important; }
+    .wrapper .estadisticas { grid-template-columns: 1fr !important; }
+    .wrapper .logro-card { padding: 16px !important; }
+}
+
+/* Attendance module shortcut on the student dashboard. */
+.wrapper .attendance-overview .attendance-card-heading { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:16px; }
+.wrapper .attendance-overview .attendance-card-title { display:flex; align-items:center; gap:12px; min-width:0; }
+.wrapper .attendance-overview .attendance-card-title h4 { margin:0; }
+.wrapper .attendance-overview .attendance-card-title p { margin:4px 0 0; color:#7c879c; font-size:12px; }
+.wrapper .attendance-overview .attendance-card-icon { display:grid; flex:0 0 40px; width:40px; height:40px; place-items:center; border-radius:13px; background:#edf2ff; color:#526fe0; }
+.wrapper .attendance-overview .attendance-view-link { display:inline-flex; align-items:center; gap:8px; flex:0 0 auto; color:#1e40af; font-size:12px; font-weight:800; text-decoration:none; }
+.wrapper .attendance-overview .attendance-view-link:hover { color:#0ea5e9; }
+.wrapper .attendance-overview .attendance-view-link i { transition:transform .18s ease; }
+.wrapper .attendance-overview .attendance-view-link:hover i { transform:translateX(3px); }
+html[data-theme="dark"] .wrapper .attendance-overview .attendance-card-title p { color:#aab8cc; }
+html[data-theme="dark"] .wrapper .attendance-overview .attendance-view-link { color:#93c5fd; }
+@media (max-width:520px) {
+    .wrapper .attendance-overview .attendance-card-heading { align-items:flex-start; flex-direction:column; }
+}
