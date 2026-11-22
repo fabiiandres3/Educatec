@@ -1,4 +1,115 @@
 {% extends 'paneles/alumnos/base.html' %}
 {% block title %}Mis boletines{% endblock %}
 {% block active_boletines %}active{% endblock %}
-{% block content %}<div class="container-fluid py-3"><h2>Mis boletines</h2><form method="get" class="row g-2 mb-4"><div class="col-md-4"><select class="form-select" name="periodo"><option value="">Seleccione un periodo</option>{% for p in periodos %}<option value="{{ p.id }}" {% if periodo.id == p.id %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></div><div class="col-md-2"><button class="btn btn-primary">Consultar</button></div></form>{% if periodo %}{% include 'boletin/partials/detalle.html' %}<a class="btn btn-outline-danger" href="{% url 'descargar_boletin_pdf' alumno.id periodo.id %}">Descargar PDF</a>{% endif %}</div>{% endblock %}
+{% block content %}
+<div class="student-bulletins-page">
+    <header class="bulletins-hero">
+        <div class="bulletins-hero-icon" aria-hidden="true"><i class="fa-solid fa-file-lines"></i></div>
+        <div>
+            <span class="bulletins-eyebrow">INFORMES ACADÉMICOS</span>
+            <h1>Mis boletines</h1>
+            <p>Consulta tu desempeño y las observaciones de tus docentes por período.</p>
+        </div>
+    </header>
+
+    <section class="bulletins-filter-card" aria-labelledby="bulletinsFilterTitle">
+        <div class="bulletins-section-heading">
+            <span class="bulletins-section-icon"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></span>
+            <div>
+                <h2 id="bulletinsFilterTitle">Selecciona un período</h2>
+                <p>Elige el período académico que quieres consultar.</p>
+            </div>
+        </div>
+        <form method="get" class="bulletins-filter-form">
+            <label for="bulletinsPeriod">Período académico</label>
+            <div class="bulletins-filter-controls">
+                <select class="form-select" name="periodo" id="bulletinsPeriod">
+                    <option value="">Seleccione un período</option>
+                    {% for p in periodos %}
+                        <option value="{{ p.id }}" {% if periodo.id == p.id %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="bulletins-submit"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Consultar</button>
+            </div>
+        </form>
+    </section>
+
+    {% if periodo %}
+        <div class="bulletins-report-wrap">
+            {% include 'boletin/partials/detalle.html' %}
+        </div>
+        <div class="bulletins-actions">
+            <a class="bulletins-download" href="{% url 'descargar_boletin_pdf' alumno.id periodo.id %}">
+                <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Descargar boletín en PDF
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .student-bulletins-page { --bulletin-ink:#202c43; --bulletin-muted:#78849a; --bulletin-line:#e8edf5; width:100%; max-width:1480px; margin:0 auto; padding:22px 14px 48px; color:var(--bulletin-ink); }
+    .student-bulletins-page, .student-bulletins-page * { box-sizing:border-box; }
+    .bulletins-hero { position:relative; overflow:hidden; display:flex; align-items:center; gap:17px; margin-bottom:19px; padding:25px 29px; border:1px solid #e3e9f4; border-radius:23px; background:radial-gradient(circle at 92% 8%,rgba(129,164,255,.18),transparent 30%),linear-gradient(120deg,#fff 0%,#f5f8ff 100%); box-shadow:0 14px 40px rgba(31,50,89,.06); }
+    .bulletins-hero-icon { display:grid; flex:0 0 52px; place-items:center; width:52px; height:52px; border-radius:16px; background:#eef1ff; color:#526fe0; font-size:20px; }
+    .bulletins-eyebrow { color:#526fe0; font-size:10px; font-weight:800; letter-spacing:.12em; }
+    .bulletins-hero h1 { margin:5px 0 0; color:#18243b; font-size:clamp(26px,3vw,34px); font-weight:800; letter-spacing:-.04em; }
+    .bulletins-hero p { margin:6px 0 0; color:var(--bulletin-muted); font-size:13px; line-height:1.55; }
+    .bulletins-filter-card { display:grid; grid-template-columns:minmax(220px,.8fr) minmax(300px,1.2fr); align-items:center; gap:24px; margin-bottom:22px; padding:21px 24px; border:1px solid var(--bulletin-line); border-radius:19px; background:#fff; box-shadow:0 8px 24px rgba(31,50,89,.05); }
+    .bulletins-section-heading { display:flex; align-items:center; gap:12px; min-width:0; }
+    .bulletins-section-icon { display:grid; flex:0 0 40px; place-items:center; width:40px; height:40px; border-radius:13px; background:#eef1ff; color:#526fe0; }
+    .bulletins-section-heading h2 { margin:0; color:#26344d; font-size:14px; font-weight:800; }
+    .bulletins-section-heading p { margin:4px 0 0; color:#8792a5; font-size:11px; line-height:1.5; }
+    .bulletins-filter-form { min-width:0; }
+    .bulletins-filter-form label { display:block; margin-bottom:7px; color:#64718a; font-size:11px; font-weight:750; }
+    .bulletins-filter-controls { display:flex; gap:9px; }
+    .bulletins-filter-controls .form-select { min-width:0; min-height:43px; border-color:#e1e7f0; border-radius:11px; background-color:#fbfcfe; color:#34415a; font-size:12px; }
+    .bulletins-filter-controls .form-select:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89,145,224,.11); }
+    .bulletins-submit,.bulletins-download { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:43px; padding:0 16px; border:0; border-radius:11px; background:linear-gradient(135deg,#526fe0,#7187ed); color:#fff; font-size:12px; font-weight:750; text-decoration:none; white-space:nowrap; box-shadow:0 7px 16px rgba(83,111,224,.18); transition:transform .18s ease,box-shadow .18s ease,background .18s ease; }
+    .bulletins-submit:hover,.bulletins-download:hover { transform:translateY(-1px); background:#435fcf; color:#fff; box-shadow:0 10px 20px rgba(83,111,224,.23); }
+    .bulletins-report-wrap { overflow:hidden; border:1px solid var(--bulletin-line); border-radius:20px; background:#fff; box-shadow:0 10px 30px rgba(31,50,89,.055); }
+    .student-bulletins-page .educatec-report { max-width:none; padding:26px; border:0; border-radius:0; }
+    .student-bulletins-page .report-header { flex-wrap:wrap; gap:14px; border-bottom:2px solid #e6ebf3; }
+    .student-bulletins-page .report-mark { flex:0 0 58px; width:58px; height:58px; border:0; border-radius:17px; background:linear-gradient(145deg,#526fe0,#82afef); color:#fff; }
+    .student-bulletins-page .report-school { color:#26344d; font-size:17px; }
+    .student-bulletins-page .report-school-subtitle { color:#8792a5; }
+    .student-bulletins-page .report-title { min-width:180px; }
+    .student-bulletins-page .report-title h1 { color:#202c43; font-size:clamp(20px,2.5vw,26px); letter-spacing:-.03em; }
+    .student-bulletins-page .report-title p { color:#78849a; font-size:12px; }
+    .student-bulletins-page .student-data { overflow:hidden; gap:0; border:1px solid var(--bulletin-line); border-radius:14px; background:#fafbfe; }
+    .student-bulletins-page .student-data div { min-width:0; border-color:#edf0f6; color:#47556d; font-size:12px; overflow-wrap:anywhere; }
+    .student-bulletins-page .student-data b { color:#738097; }
+    .student-bulletins-page .table-responsive { border:1px solid #e8edf4; border-radius:14px; -webkit-overflow-scrolling:touch; }
+    .student-bulletins-page .report-table { min-width:680px; }
+    .student-bulletins-page .report-table th { background:#f5f7fc; color:#7b8798; font-size:10px; letter-spacing:.06em; }
+    .student-bulletins-page .report-table td { border-color:#edf0f6; color:#536078; font-size:12px; line-height:1.55; }
+    .student-bulletins-page .report-table tbody tr:not(.report-observation):hover { background:#fafbff; }
+    .student-bulletins-page .report-table td strong { color:#354158; }
+    .student-bulletins-page .report-observation td { background:#fafbfe; color:#69758b; font-size:11px; }
+    .student-bulletins-page .report-summary { grid-template-columns:repeat(2,minmax(0,1fr)) minmax(220px,1.5fr); gap:12px; }
+    .student-bulletins-page .report-summary > div { border:1px solid var(--bulletin-line); border-radius:14px; background:#fbfcfe; color:#69758b; }
+    .student-bulletins-page .report-summary span { color:#7b8798; }
+    .student-bulletins-page .report-summary strong { color:#526fe0; }
+    .student-bulletins-page .report-scale { font-size:11px; }
+    .bulletins-actions { display:flex; justify-content:flex-end; margin-top:15px; }
+    @media(max-width:800px) { .bulletins-filter-card { grid-template-columns:1fr; gap:17px; } .student-bulletins-page .report-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .student-bulletins-page .report-scale { grid-column:1/-1; } }
+    @media(max-width:600px) {
+        .student-bulletins-page { padding:16px 10px 30px; }
+        .bulletins-hero { align-items:flex-start; padding:20px 17px; border-radius:20px; }
+        .bulletins-hero-icon { flex-basis:42px; width:42px; height:42px; border-radius:13px; font-size:17px; }
+        .bulletins-hero p { font-size:12px; }
+        .bulletins-filter-card { padding:17px; border-radius:17px; }
+        .bulletins-filter-controls { flex-direction:column; }
+        .bulletins-filter-controls .form-select,.bulletins-submit { width:100%; }
+        .bulletins-report-wrap { border-radius:16px; }
+        .student-bulletins-page .educatec-report { padding:16px 13px; }
+        .student-bulletins-page .report-header { align-items:flex-start; }
+        .student-bulletins-page .report-title { width:100%; margin:0; text-align:left; }
+        .student-bulletins-page .student-data,.student-bulletins-page .report-summary { grid-template-columns:1fr; }
+        .student-bulletins-page .report-scale { grid-column:auto; }
+        .student-bulletins-page .report-summary { gap:9px; }
+        .bulletins-actions { display:block; }
+        .bulletins-download { width:100%; }
+    }
+    @media(prefers-reduced-motion:reduce) { .bulletins-submit,.bulletins-download { transition:none; } }
+</style>
+{% endblock %}

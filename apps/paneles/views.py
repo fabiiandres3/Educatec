@@ -26,6 +26,11 @@ from apps.tareas.models import (
     Calificacion,
     ActividadCalificacion,
     CalificacionActividad,
+    RespuestaAlumno,
+)
+from apps.calificaciones.services import (
+    obtener_promedio_alumno_asignacion,
+    obtener_promedio_general_alumno,
 )
 from apps.alumnos.models import (
     Acudiente,
@@ -1289,6 +1294,56 @@ def dashboard_alumnos(request):
         if total_asistencias else None
     )
 
+    promedio_general = obtener_promedio_general_alumno(alumno)
+    asignaciones = (
+        AsignacionDocente.objects.filter(curso_id=alumno.curso_id)
+        .select_related("clase", "docente", "curso")
+        .order_by("clase__titulo", "docente__usuario__last_name")
+        if alumno.curso_id else []
+    )
+    calificaciones = []
+    for asignacion in asignaciones:
+        promedio = obtener_promedio_alumno_asignacion(alumno, asignacion)
+        if promedio is not None:
+            calificaciones.append({
+                "materia": asignacion.clase or "Asignatura",
+                "promedio": promedio,
+            })
+
+    tareas = []
+    if alumno.curso_id:
+        tareas = list(
+            Tareas.objects.filter(curso_id=alumno.curso_id, activa=True)
+            .annotate(total_preguntas=Count("preguntas"))
+            .select_related("clase")
+            .order_by(F("fecha_entrega").asc(nulls_last=True), "-fecha_creacion")
+        )
+    respuestas_por_tarea = {
+        fila["pregunta__tarea_id"]: fila["total"]
+        for fila in RespuestaAlumno.objects.filter(
+            alumno=request.user,
+            pregunta__tarea__in=tareas,
+        ).values("pregunta__tarea_id").annotate(
+            total=Count("pregunta_id", distinct=True)
+        )
+    } if tareas else {}
+
+    for tarea in tareas:
+        tarea.respuestas_count = respuestas_por_tarea.get(tarea.id, 0)
+        tarea.entregada = (
+            tarea.total_preguntas > 0
+            and tarea.respuestas_count >= tarea.total_preguntas
+        )
+    tareas_pendientes_lista = [tarea for tarea in tareas if not tarea.entregada]
+    tareas_pendientes = len(tareas_pendientes_lista)
+
+    porcentaje = porcentaje_asistencia
+    total_logros = sum((
+        porcentaje is not None and porcentaje >= 90,
+        promedio_general is not None and promedio_general >= 4.5,
+        promedio_general is not None and promedio_general >= 3.0,
+    ))
+
     eventos = Evento.objects.filter(
         publicado=True,
         publico__in=["todos", "alumnos"],
@@ -1302,6 +1357,11 @@ def dashboard_alumnos(request):
             "eventos": eventos,
             "alumno": alumno,
             "porcentaje_asistencia": porcentaje_asistencia,
+            "promedio_general": promedio_general,
+            "calificaciones": calificaciones,
+            "tareas_pendientes": tareas_pendientes,
+            "tareas_pendientes_lista": tareas_pendientes_lista[:5],
+            "total_logros": total_logros,
             "presentes": presentes,
             "tardanzas": tardanzas,
             "ausentes": ausentes,

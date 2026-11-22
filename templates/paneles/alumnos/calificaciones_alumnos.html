@@ -344,6 +344,87 @@ active
 
     }
 
+    /* Acabado alineado con las superficies y tarjetas del panel administrador. */
+    .calificaciones-page {
+        max-width: 1480px;
+        margin: 0 auto;
+        padding: 22px 14px 48px;
+        background: transparent;
+        color: #202c43;
+    }
+
+    .calificaciones-header {
+        position: relative;
+        overflow: hidden;
+        padding: 25px 29px;
+        border: 1px solid #e3e9f4;
+        border-radius: 23px;
+        background: radial-gradient(circle at 92% 8%,rgba(129,164,255,.18),transparent 30%),linear-gradient(120deg,#fff 0%,#f5f8ff 100%);
+        box-shadow: 0 14px 40px rgba(31,50,89,.06);
+    }
+
+    .calificaciones-header h1 { color: #18243b; font-size: clamp(26px,3vw,34px); letter-spacing: -.04em; }
+    .calificaciones-header p { color: #78849a; font-size: 13px; }
+
+    .alumno-info,
+    .estadistica-card,
+    .tabla-card {
+        border: 1px solid #e8edf5;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(31,50,89,.05);
+    }
+
+    .alumno-info { padding: 22px 24px; }
+    .info-label { color: #8792a5; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .info-value { color: #29354c; font-size: 15px; overflow-wrap: anywhere; }
+    .estadisticas { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; }
+    .estadistica-card { min-width: 0; padding: 19px 20px; transition: transform .2s ease,box-shadow .2s ease; }
+    .estadistica-card:hover { transform: translateY(-2px); box-shadow: 0 13px 27px rgba(31,50,89,.08); }
+    .estadistica-icono { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 14px; background: #eef1ff; color: #526fe0; }
+    .estadistica-titulo { color: #7c879c; font-size: 12px; }
+    .estadistica-numero { color: #202c43; font-size: 26px; }
+
+    .tabla-card { overflow: hidden; }
+    .tabla-header { flex-wrap: wrap; gap: 12px; padding: 20px 23px; border-bottom-color: #edf0f6; }
+    .tabla-header h2 { color: #202b41; font-size: 16px; }
+    .tabla-header p { color: #8792a5; font-size: 12px; }
+    .contador-notas { border-radius: 999px; background: #eef1ff; color: #526fe0; font-size: 11px; }
+    .tabla-calificaciones { min-width: 760px; }
+    .tabla-calificaciones thead { background: #fafbfe; }
+    .tabla-calificaciones th { padding: 13px 15px; color: #8792a5; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border-bottom-color: #edf0f6; }
+    .tabla-calificaciones td { padding: 14px 15px; color: #667187; font-size: 12px; border-bottom-color: #f0f2f6; }
+    .tabla-calificaciones tbody tr { transition: background .15s ease; }
+    .tabla-calificaciones tbody tr:hover { background: #fafbff; }
+    .actividad-nombre { color: #354158; }
+    .tipo-badge { border-radius: 999px; background: #f0f3fa; color: #64718a; font-size: 10px; }
+    .nota-badge { border-radius: 10px; background: #eef1ff; color: #526fe0; }
+    .estado-badge { border-radius: 999px; font-size: 10px; }
+
+    @media (max-width: 900px) {
+        .estadisticas { grid-template-columns: repeat(2,minmax(0,1fr)); }
+        .estadistica-card:last-child { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 600px) {
+        .calificaciones-page { padding: 16px 10px 30px; }
+        .calificaciones-header { padding: 20px 18px; border-radius: 20px; }
+        .alumno-info { padding: 18px; }
+        .estadisticas { gap: 9px; }
+        .estadistica-card { padding: 14px 12px; border-radius: 15px; }
+        .estadistica-contenido { gap: 10px; }
+        .estadistica-icono { flex-basis: 36px; width: 36px; height: 36px; margin-right: 0; font-size: 18px; }
+        .estadistica-numero { font-size: 22px; }
+        .estadistica-titulo { font-size: 10px; }
+        .tabla-header { align-items: flex-start; padding: 17px; }
+        .tabla-contenedor { -webkit-overflow-scrolling: touch; }
+        .tabla-calificaciones th,.tabla-calificaciones td { padding: 12px 11px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .estadistica-card { transition: none; }
+    }
+
 </style>
 
 

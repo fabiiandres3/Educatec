@@ -310,6 +310,64 @@
         .horarios-title { font-size: 20px; }
         .schedule-card-header { align-items: flex-start; flex-direction: column; }
     }
+
+    /* Acabado visual alineado con las tarjetas del panel administrador. */
+    .horarios-wrapper { max-width:1480px; margin:0 auto; padding:22px 14px 42px; color:#202c43; }
+    .horarios-header { position:relative; overflow:hidden; justify-content:flex-start; padding:25px 29px; border:1px solid #e3e9f4; border-radius:23px; background:radial-gradient(circle at 92% 8%,rgba(129,164,255,.18),transparent 30%),linear-gradient(120deg,#fff 0%,#f5f8ff 100%); box-shadow:0 14px 40px rgba(31,50,89,.06); }
+    .horarios-title-icon { width:50px; height:50px; border-radius:15px; background:linear-gradient(145deg,#526fe0,#82afef); color:#fff; box-shadow:0 8px 20px rgba(82,111,224,.2); }
+    .horarios-title { color:#18243b; font-size:clamp(25px,3vw,33px); font-weight:800; letter-spacing:-.04em; }
+    .horarios-subtitle { margin-top:8px; }
+    .chip { padding:5px 10px; border:1px solid #e7ebf3; background:#f5f7fc; color:#64718a; font-size:10px; }
+    .filters-bar { gap:14px; padding:18px 20px; border-color:#e8edf5; border-radius:17px; box-shadow:0 7px 22px rgba(31,50,89,.045); }
+    .filter-group label { color:#64718a; font-size:11px; font-weight:750; }
+    .filter-group select { border-color:#e1e7f0; border-radius:11px; background:#fbfcfe; color:#34415a; }
+    .filter-group select:focus { border-color:#8295ec; box-shadow:0 0 0 4px rgba(89,145,224,.11); }
+    .schedule-grid { gap:17px; }
+    .schedule-card { border-color:#e8edf5; border-radius:19px; box-shadow:0 9px 28px rgba(31,50,89,.055); }
+    .schedule-card-header { min-height:76px; padding:17px 21px; border-bottom-color:#edf0f6; background:linear-gradient(110deg,#fff,#f8f9ff); }
+    .schedule-card-icon { width:42px; height:42px; border:0; border-radius:14px; background:#eef1ff; color:#526fe0; }
+    .schedule-card-title-wrap h2 { color:#26344d; font-size:16px; font-weight:800; }
+    .schedule-card-meta { color:#8792a5; font-size:11px; }
+    .schedule-table-wrapper { -webkit-overflow-scrolling:touch; }
+    .schedule-table { min-width:850px; }
+    .schedule-table th,.schedule-table td { border-color:#edf0f6; }
+    .schedule-table thead th { background:#f7f8fc; color:#7b8798; font-size:10px; letter-spacing:.04em; }
+    .schedule-table tbody td { background:#fff; }
+    .schedule-table .time-cell { background:#fafbfe; }
+    .time-main { color:#354158; font-size:11px; }
+    .time-end { color:#929daf; font-size:10px; }
+    .schedule-item { border-left-color:#526fe0; border-radius:10px; background:linear-gradient(145deg,#f0f3ff,#f7f8ff); }
+    .schedule-item-title { color:#344fc1; font-size:11px; }
+    .schedule-item-teacher { color:#58667e; }
+    .schedule-item-time { color:#7c879c; }
+    .empty-cell { opacity:.45; }
+    .no-schedules { border-color:#dce3ee; border-radius:17px; background:#fafbfe; color:#78849a; }
+    .no-schedules i { color:#8194e8; }
+    .no-schedules strong { color:#29354c; }
+
+    @media(max-width:700px) {
+        .horarios-wrapper { padding:16px 10px 32px; }
+        .horarios-header { padding:21px 18px; border-radius:20px; }
+        .filters-bar { padding:16px; border-radius:16px; }
+        .filter-group { min-width:100%; }
+        .schedule-card { border-radius:16px; }
+        .schedule-card-header { flex-direction:row; align-items:center; padding:15px; }
+        .schedule-card-title-wrap { align-items:flex-start; gap:11px; }
+        .schedule-card-title-wrap h2 { font-size:14px; }
+        .schedule-table-wrapper { position:relative; }
+        .schedule-table th:first-child,.schedule-table .time-cell { position:sticky; left:0; z-index:2; box-shadow:2px 0 5px rgba(31,50,89,.06); }
+        .schedule-table thead th:first-child { z-index:3; }
+    }
+
+    @media(max-width:420px) {
+        .horarios-title-wrap { align-items:flex-start; gap:11px; }
+        .horarios-title-icon { width:43px; height:43px; }
+        .horarios-title { font-size:23px; }
+        .chip { max-width:100%; overflow-wrap:anywhere; }
+        .schedule-card-header { align-items:flex-start; }
+        .schedule-card-meta { flex-direction:column; gap:4px; }
+    }
+
 </style>
 {% endblock %}
 

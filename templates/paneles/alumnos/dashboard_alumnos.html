@@ -13,6 +13,87 @@
 
 {% block content %}
 
+<style>
+    /* Inicio del alumno: comparte el lenguaje visual del panel administrador. */
+    .alumno-dashboard { --alumno-ink:#202c43; --alumno-muted:#78849a; --alumno-line:#e8edf5; color:var(--alumno-ink); min-width:0; }
+    .alumno-dashboard, .alumno-dashboard * { box-sizing:border-box; }
+    .alumno-dashboard .topbar { position:relative; overflow:hidden; align-items:center; gap:20px; padding:28px 30px; border:1px solid #e7edfb; border-radius:24px; background:radial-gradient(circle at 92% 8%,rgba(129,164,255,.18),transparent 30%),linear-gradient(120deg,#fff 0%,#f5f8ff 100%); box-shadow:0 14px 40px rgba(31,50,89,.06); }
+    .alumno-dashboard .welcome { min-width:0; }
+    .alumno-dashboard .profile { display:flex !important; min-width:0; gap:11px; }
+    .alumno-dashboard .user-area::after { display:none; }
+    .alumno-dashboard .profile-avatar { display:grid; place-items:center; flex:0 0 42px; width:42px; height:42px; border-radius:14px; background:linear-gradient(145deg,#526fe0,#82afef); color:#fff; font-size:12px; font-weight:800; }
+    .alumno-dashboard .profile strong { display:block; max-width:230px; overflow:hidden; color:#354158; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+    .alumno-dashboard .profile small { display:block; margin-top:3px; color:#8792a5; font-size:11px; }
+    .alumno-dashboard .welcome h2 { color:#18243b; font-size:clamp(23px,3vw,32px); font-weight:800; letter-spacing:-.04em; overflow-wrap:anywhere; }
+    .alumno-dashboard .welcome p { margin:8px 0 0; color:#758198; font-size:14px; }
+    .alumno-dashboard .stats { margin:18px 0 22px; gap:14px; }
+    .alumno-dashboard .stat-card { min-width:0; padding:19px; border:1px solid var(--alumno-line); border-radius:19px; background:#fff; box-shadow:0 8px 24px rgba(31,50,89,.045); transition:transform .2s,box-shadow .2s; }
+    .alumno-dashboard .stat-card:hover { transform:translateY(-3px); box-shadow:0 14px 30px rgba(31,50,89,.09); }
+    .alumno-dashboard .stat-card h3 { color:#202c43; font-size:28px; font-weight:800; letter-spacing:-.04em; }
+    .alumno-dashboard .stat-card p { margin-top:5px; color:#7c879c; font-size:12px; }
+    .alumno-dashboard .stat-icon { flex:0 0 44px; width:44px; height:44px; border-radius:14px; }
+    .alumno-dashboard .section-card { min-width:0; padding:21px; border:1px solid var(--alumno-line); border-radius:21px; background:#fff; box-shadow:0 9px 30px rgba(31,50,89,.05); }
+    .alumno-dashboard > .section-card { margin:0 0 22px; }
+    .alumno-dashboard .section-card h4 { color:#202b41; font-size:15px; font-weight:800; }
+    .alumno-dashboard .section-header { margin-bottom:13px; }
+    .alumno-dashboard .dashboard-grid { grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr); gap:18px; margin-top:0; }
+    .alumno-dashboard .main-column, .alumno-dashboard .side-column { min-width:0; }
+    .alumno-dashboard .task-card, .alumno-dashboard .subject-card, .alumno-dashboard .event-list li, .alumno-dashboard .achievement { border:1px solid #edf0f6; background:linear-gradient(145deg,#fff,#fbfcff); }
+    .alumno-dashboard .task-card { gap:12px; border-radius:14px; }
+    .alumno-dashboard .task-card h6 { color:#29354c; font-weight:750; }
+    .alumno-dashboard .pending-task-copy { min-width:0; }
+    .alumno-dashboard .pending-task-copy h6 { overflow-wrap:anywhere; }
+    .alumno-dashboard .pending-task-copy small { color:#8792a5; font-size:10px; }
+    .alumno-dashboard .pending-task-link { display:grid; flex:0 0 34px; place-items:center; width:34px; height:34px; border-radius:10px; background:#eef1ff; color:#526fe0; text-decoration:none; }
+    .alumno-dashboard .pending-task-link:hover { background:#526fe0; color:#fff; }
+    .alumno-dashboard .dashboard-empty-state { display:flex; align-items:center; gap:10px; margin-top:10px; padding:14px; border:1px solid #e7f3ec; border-radius:13px; background:#f5fbf7; color:#397154; font-size:12px; }
+    .alumno-dashboard .dashboard-empty-copy { color:#78849a; font-size:12px; }
+    .alumno-dashboard .subjects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .alumno-dashboard .subject-card { min-width:0; border-radius:16px; }
+    .alumno-dashboard .subject-card h6 { overflow-wrap:anywhere; color:#29354c; font-weight:700; }
+    .alumno-dashboard .event-list li { gap:10px; border-radius:12px; color:#536078; overflow-wrap:anywhere; }
+    .alumno-dashboard .event-list li span { flex:0 0 auto; color:#354158; font-weight:700; }
+    .alumno-dashboard .achievement { border-radius:14px; }
+    .alumno-dashboard .section-card > div[style*="grid-template-columns"] { grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr)) !important; gap:14px !important; }
+    .alumno-dashboard .section-card > div[style*="grid-template-columns"] > div { min-width:0; border-radius:16px !important; }
+    .alumno-dashboard .section-card a[style*="background:#006eff"] { background:#526fe0 !important; border-radius:12px !important; }
+    @media(max-width:1000px) { .alumno-dashboard .dashboard-grid { grid-template-columns:minmax(0,1fr); } .alumno-dashboard .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:640px) {
+        .alumno-dashboard .topbar { align-items:flex-start; flex-direction:column; gap:14px; padding:21px 18px; border-radius:20px; }
+        .alumno-dashboard .user-area { align-self:flex-start; justify-content:flex-start; }
+        .alumno-dashboard .stats { margin:0 0 18px; gap:10px; }
+        .alumno-dashboard .profile strong { max-width:min(55vw,230px); }
+        .alumno-dashboard .stat-card { gap:10px; padding:14px 12px; border-radius:16px; }
+        .alumno-dashboard .stat-icon { flex-basis:36px; width:36px; height:36px; font-size:14px; }
+        .alumno-dashboard .stat-card h3 { font-size:23px; }
+        .alumno-dashboard .stat-card p { font-size:11px; }
+        .alumno-dashboard .section-card { padding:17px; border-radius:18px; }
+        .alumno-dashboard > .section-card { margin-bottom:18px; }
+        .alumno-dashboard .dashboard-grid { gap:14px; }
+        .alumno-dashboard .main-column .section-card { margin-bottom:14px; }
+        .alumno-dashboard .side-column .section-card { margin-bottom:14px; }
+        .alumno-dashboard .side-column .section-card:last-child { margin-bottom:0; }
+        .alumno-dashboard .section-card h4 { line-height:1.35; }
+        .alumno-dashboard .section-card > div[style*="justify-content:space-between"] { align-items:flex-start !important; flex-direction:column; }
+        .alumno-dashboard .section-card a[style*="background:#006eff"] { white-space:normal !important; }
+        .alumno-dashboard .section-card > div[style*="grid-template-columns"] { gap:12px !important; }
+        .alumno-dashboard .section-card > div[style*="grid-template-columns"] img { height:145px !important; }
+        .alumno-dashboard .section-card a[style*="background:#006eff"] { width:100%; justify-content:center; }
+        .alumno-dashboard .subjects-grid { grid-template-columns:minmax(0,1fr); }
+    }
+    @media(max-width:390px) {
+        .alumno-dashboard .stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+        .alumno-dashboard .stat-card { padding:12px 10px; }
+        .alumno-dashboard .stat-icon { flex-basis:32px; width:32px; height:32px; }
+        .alumno-dashboard .stat-card p { font-size:10px; line-height:1.3; }
+        .alumno-dashboard .section-card { padding:14px; }
+        .alumno-dashboard .profile strong { max-width:65vw; }
+    }
+    @media(prefers-reduced-motion:reduce) { .alumno-dashboard .stat-card { transition:none; } }
+</style>
+
+<div class="alumno-dashboard">
+
 
 <!-- =====================================================
      TOPBAR
@@ -35,24 +116,8 @@
 
 
     <div class="user-area">
-
-        <div class="notification">
-
-            <i class="fa-solid fa-bell"></i>
-
-            <span class="notification-count">
-                {{ mensajes_sin_leer|default:"0" }}
-            </span>
-
-        </div>
-
-
         <div class="profile">
-
-            <img
-                src="https://i.pravatar.cc/120?img=12"
-                alt="Alumno"
-            >
+            <div class="profile-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
 
             <div>
 
@@ -119,7 +184,7 @@
         <div>
 
             <h3>
-                {{ porcentaje_asistencia|default:"—" }}%
+                {% if porcentaje_asistencia is not None %}{{ porcentaje_asistencia }}%{% else %}—{% endif %}
             </h3>
 
             <p>
@@ -508,65 +573,30 @@
                     Tareas Pendientes
                 </h4>
 
+                <a href="{% url 'listar_tareas_alumno' %}">Ver todas</a>
+
             </div>
 
 
-            {% for cal in calificaciones %}
-
-
+            {% for tarea in tareas_pendientes_lista %}
                 <div class="task-card">
-
-
-                    <div>
-
-                        <h6>
-                            {{ cal.materia }}
-                        </h6>
-
+                    <div class="pending-task-copy">
+                        <h6>{{ tarea.titulo }}</h6>
                         <p>
-                            Promedio: {{ cal.promedio }}
+                            {{ tarea.clase|default:"Actividad académica" }}
+                            {% if tarea.fecha_entrega %}· Entrega {{ tarea.fecha_entrega|date:"d/m/Y" }}{% else %}· Sin fecha de entrega{% endif %}
                         </p>
-
+                        <small>{{ tarea.respuestas_count }}/{{ tarea.total_preguntas }} preguntas respondidas</small>
                     </div>
-
-
-                    <span
-                        class="
-                            badge
-                            {% if cal.promedio >= 4.0 %}
-                                success
-                            {% elif cal.promedio >= 3.0 %}
-                                warning
-                            {% else %}
-                                danger
-                            {% endif %}
-                        "
-                    >
-
-                        {{ cal.promedio }}
-
-                    </span>
-
-
+                    <a class="pending-task-link" href="{% url 'responder_tarea_alumno' tarea.id %}" aria-label="Abrir tarea {{ tarea.titulo }}">
+                        <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                    </a>
                 </div>
-
-
             {% empty %}
-
-
-                <div class="task-card">
-
-                    <div>
-
-                        <p>
-                            No hay calificaciones registradas.
-                        </p>
-
-                    </div>
-
+                <div class="dashboard-empty-state">
+                    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                    <span>¡Vas al día! No tienes tareas pendientes.</span>
                 </div>
-
-
             {% endfor %}
 
 
@@ -618,11 +648,7 @@
                 {% empty %}
 
 
-                    <p style="color:#64748b;">
-
-                        No hay materias registradas.
-
-                    </p>
+                    <p class="dashboard-empty-copy">Aún no hay calificaciones por materia.</p>
 
 
                 {% endfor %}
@@ -701,58 +727,6 @@
 
 
         <!-- =================================================
-             MENSAJES RECIENTES
-        ================================================== -->
-
-        <div class="section-card">
-
-
-            <h4>
-                Mensajes Recientes
-            </h4>
-
-
-            <ul class="event-list">
-
-
-                {% for msg in mensajes_recientes %}
-
-
-                    <li>
-
-                        💬
-
-                        {{ msg.contenido|truncatechars:30 }}
-
-
-                        <span>
-
-                            {{ msg.fecha|date:"d/m" }}
-
-                        </span>
-
-                    </li>
-
-
-                {% empty %}
-
-
-                    <li>
-                        No hay mensajes.
-                    </li>
-
-
-                {% endfor %}
-
-
-            </ul>
-
-
-        </div>
-
-
-
-        <!-- =================================================
              LOGROS
         ================================================== -->
 
@@ -821,9 +795,19 @@
 
             {% endif %}
 
+            {% if promedio_general >= 3.0 %}
+                <div class="achievement">
+                    <i class="fa-solid fa-book-open"></i>
+                    <div>
+                        <strong>Materias aprobadas</strong>
+                        <p>Promedio general {{ promedio_general }}</p>
+                    </div>
+                </div>
+            {% endif %}
 
 
-            {% if not porcentaje_asistencia >= 90 and not promedio_general >= 4.5 %}
+
+            {% if not porcentaje_asistencia >= 90 and not promedio_general >= 4.5 and not promedio_general >= 3.0 %}
 
 
                 <p
@@ -849,5 +833,5 @@
 
 </div>
 
-
+</div>
 {% endblock %}

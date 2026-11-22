@@ -7,7 +7,7 @@
     const icon = button.querySelector("i");
     const mobileQuery = window.matchMedia("(max-width: 768px)");
     const supportsDesktopCollapse = Boolean(document.querySelector(".main-content"));
-    const storageKey = "educatec-admin-sidebar-collapsed";
+    const storageKey = button.dataset.storageKey || "educatec-admin-sidebar-collapsed";
 
     function setMenuOpen(open) {
         sidebar.classList.toggle("is-open", open);
