@@ -368,6 +368,58 @@
         .schedule-card-meta { flex-direction:column; gap:4px; }
     }
 
+    /* Modo oscuro del horario del alumno. */
+    html[data-theme="dark"] .horarios-wrapper { color:#e8efff; }
+    html[data-theme="dark"] .horarios-header {
+        border-color:rgba(167,190,238,.18);
+        background:radial-gradient(ellipse at 86% 0%,rgba(103,137,231,.24),transparent 36%),linear-gradient(118deg,#101d36,#172b4f 64%,#1c3a66);
+        box-shadow:0 14px 36px rgba(0,0,0,.22);
+    }
+    html[data-theme="dark"] .horarios-title { color:#edf3ff; }
+    html[data-theme="dark"] .horarios-subtitle { color:#b8c6dd; }
+    html[data-theme="dark"] .chip { border-color:rgba(167,190,238,.2); background:#1a2b49; color:#d2def3; }
+    html[data-theme="dark"] .filters-bar,
+    html[data-theme="dark"] .schedule-card,
+    html[data-theme="dark"] .no-schedules {
+        border-color:rgba(167,190,238,.16) !important;
+        background:#111d30 !important;
+        color:#e5edf9 !important;
+        box-shadow:0 10px 28px rgba(0,0,0,.2);
+    }
+    html[data-theme="dark"] .filter-group label { color:#bdc9dc; }
+    html[data-theme="dark"] .filter-group select {
+        border-color:#40516c;
+        background:#0c1728;
+        color:#e5edf9;
+        color-scheme:dark;
+    }
+    html[data-theme="dark"] .filter-group select:focus { border-color:#8095eb; box-shadow:0 0 0 4px rgba(89,145,224,.18); }
+    html[data-theme="dark"] .filter-group select:disabled { border-color:#34445d; background:#18243a; color:#9eacc1; }
+    html[data-theme="dark"] .schedule-card-header { border-bottom-color:rgba(167,190,238,.15); background:linear-gradient(110deg,#172743,#142239); }
+    html[data-theme="dark"] .schedule-card-icon { border-color:rgba(167,190,238,.14); background:#25385f; color:#d1dcff; }
+    html[data-theme="dark"] .schedule-card-title-wrap h2 { color:#e8efff; }
+    html[data-theme="dark"] .schedule-card-meta { color:#adbbd2; }
+    html[data-theme="dark"] .schedule-table th,
+    html[data-theme="dark"] .schedule-table td { border-color:rgba(167,190,238,.13); }
+    html[data-theme="dark"] .schedule-table thead th { background:#1b3154; color:#d3def3; }
+    html[data-theme="dark"] .schedule-table tbody td { background:#101b2d; }
+    html[data-theme="dark"] .schedule-table .time-cell,
+    html[data-theme="dark"] .schedule-table thead th:first-child { position:sticky; left:0; z-index:2; background:#17243a; box-shadow:2px 0 7px rgba(0,0,0,.2); }
+    html[data-theme="dark"] .schedule-table thead th:first-child { z-index:3; background:#22385e; }
+    html[data-theme="dark"] .time-main { color:#dbe6f5; }
+    html[data-theme="dark"] .time-end { color:#96a7c0; }
+    html[data-theme="dark"] .schedule-item { border-left-color:#8197ff; background:linear-gradient(145deg,#233963,#1a2b49); }
+    html[data-theme="dark"] .schedule-item-title { color:#d6deff; }
+    html[data-theme="dark"] .schedule-item-teacher { color:#c4d0e3; }
+    html[data-theme="dark"] .schedule-item-time { color:#aab9cf; }
+    html[data-theme="dark"] .empty-cell {
+        background:linear-gradient(45deg,transparent 48%,rgba(135,157,194,.12) 48%,rgba(135,157,194,.12) 52%,transparent 52%),linear-gradient(-45deg,transparent 48%,rgba(135,157,194,.12) 48%,rgba(135,157,194,.12) 52%,transparent 52%);
+        opacity:.8;
+    }
+    html[data-theme="dark"] .no-schedules { border-style:dashed !important; }
+    html[data-theme="dark"] .no-schedules i { color:#9aafff; }
+    html[data-theme="dark"] .no-schedules strong { color:#e5edf9; }
+
 </style>
 {% endblock %}
 

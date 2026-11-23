@@ -1111,3 +1111,65 @@
     .student-tasks-page .summary-card,
     .student-tasks-page .task-card { transition: none; }
 }
+
+/* Modo oscuro: capas azul noche para separar cada grupo de información. */
+html[data-theme="dark"] .student-tasks-page { color:#e8efff; }
+html[data-theme="dark"] .student-tasks-page .tasks-header,
+html[data-theme="dark"] .student-tasks-page .course-card,
+html[data-theme="dark"] .student-tasks-page .summary-card,
+html[data-theme="dark"] .student-tasks-page .tasks-controls,
+html[data-theme="dark"] .student-tasks-page .task-card,
+html[data-theme="dark"] .student-tasks-page .empty-tasks,
+html[data-theme="dark"] .student-tasks-page .no-filter-results {
+    border-color:rgba(167,190,238,.17) !important;
+    color:#e8efff !important;
+    box-shadow:0 12px 30px rgba(0,0,0,.2);
+}
+html[data-theme="dark"] .student-tasks-page .tasks-header {
+    background:radial-gradient(ellipse at 85% 0%,rgba(103,137,231,.25),transparent 35%),linear-gradient(118deg,#101d36 0%,#172b4f 62%,#1c3a66 100%) !important;
+}
+html[data-theme="dark"] .student-tasks-page .course-card { background:rgba(8,18,36,.48) !important; box-shadow:none; }
+html[data-theme="dark"] .student-tasks-page .course-card-icon,
+html[data-theme="dark"] .student-tasks-page .total-icon,
+html[data-theme="dark"] .student-tasks-page .task-class-icon,
+html[data-theme="dark"] .student-tasks-page .meta-icon,
+html[data-theme="dark"] .student-tasks-page .empty-icon,
+html[data-theme="dark"] .student-tasks-page .no-filter-icon { background:#25385f; color:#d1dcff; }
+html[data-theme="dark"] .student-tasks-page .header-main h1,
+html[data-theme="dark"] .student-tasks-page .course-card strong,
+html[data-theme="dark"] .student-tasks-page .summary-card strong,
+html[data-theme="dark"] .student-tasks-page .task-card-content h2,
+html[data-theme="dark"] .student-tasks-page .meta-item strong,
+html[data-theme="dark"] .student-tasks-page .empty-tasks h2,
+html[data-theme="dark"] .student-tasks-page .no-filter-results h3 { color:#edf3ff !important; }
+html[data-theme="dark"] .student-tasks-page .header-main p,
+html[data-theme="dark"] .student-tasks-page .course-card span,
+html[data-theme="dark"] .student-tasks-page .summary-card span,
+html[data-theme="dark"] .student-tasks-page .task-card-content p,
+html[data-theme="dark"] .student-tasks-page .meta-item > div:last-child span,
+html[data-theme="dark"] .student-tasks-page .pending-message,
+html[data-theme="dark"] .student-tasks-page .empty-tasks p,
+html[data-theme="dark"] .student-tasks-page .no-filter-results p { color:#adbbd2 !important; }
+html[data-theme="dark"] .student-tasks-page .header-label { color:#c4d1ff; }
+html[data-theme="dark"] .student-tasks-page .summary-card,
+html[data-theme="dark"] .student-tasks-page .tasks-controls { background:linear-gradient(145deg,#121f35,#101b2e) !important; }
+html[data-theme="dark"] .student-tasks-page .summary-card { position:relative; overflow:hidden; }
+html[data-theme="dark"] .student-tasks-page .summary-card::after { position:absolute; right:-24px; bottom:-38px; width:100px; height:100px; border-radius:50%; background:rgba(101,128,210,.07); content:""; }
+html[data-theme="dark"] .student-tasks-page .pending-icon { background:#392b1b; color:#ffd08f; }
+html[data-theme="dark"] .student-tasks-page .delivered-icon { background:#173a2c; color:#9ce5bb; }
+html[data-theme="dark"] .student-tasks-page .filter-button { border:1px solid transparent; border-radius:10px; color:#bdc9dc; transition:background .18s,border-color .18s,color .18s; }
+html[data-theme="dark"] .student-tasks-page .filter-button:hover { background:#1a2944; color:#f1f5ff; }
+html[data-theme="dark"] .student-tasks-page .filter-button span { background:#202d44; color:#bdc9dc; }
+html[data-theme="dark"] .student-tasks-page .filter-button.active { border-color:rgba(143,163,255,.24); background:#263861; color:#e6ebff; }
+html[data-theme="dark"] .student-tasks-page .filter-button.active span { background:#405995; color:#fff; }
+html[data-theme="dark"] .student-tasks-page .task-card { background:linear-gradient(145deg,#141f32,#101a2b) !important; }
+html[data-theme="dark"] .student-tasks-page .task-card:hover { transform:translateY(-3px); border-color:#526da9 !important; box-shadow:0 18px 36px rgba(0,0,0,.3); }
+html[data-theme="dark"] .student-tasks-page .task-meta { border-color:rgba(167,190,238,.13); }
+html[data-theme="dark"] .student-tasks-page .pending-status { border-color:#76532a; background:#382b1c; color:#ffd08f; }
+html[data-theme="dark"] .student-tasks-page .delivered-status { border-color:#286148; background:#153426; color:#a8ebc1; }
+html[data-theme="dark"] .student-tasks-page .completed-message { color:#a8ebc1; }
+html[data-theme="dark"] .student-tasks-page .completed-check { background:#173a2c; color:#a8ebc1; }
+html[data-theme="dark"] .student-tasks-page .task-button { border-color:transparent; background:linear-gradient(135deg,#607ce8,#4663ce); color:#fff; box-shadow:0 7px 16px rgba(34,57,133,.32); }
+html[data-theme="dark"] .student-tasks-page .task-button:hover { background:linear-gradient(135deg,#708af0,#526fe0); }
+html[data-theme="dark"] .student-tasks-page .delivered-button { border-color:#286148; background:#153426; color:#a8ebc1; box-shadow:none; }
+html[data-theme="dark"] .student-tasks-page .delivered-button:hover { background:#1b4934; color:#d2f9df; }

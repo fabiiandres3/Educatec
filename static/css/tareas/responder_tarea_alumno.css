@@ -918,3 +918,71 @@
     .answer-page .question-top { align-items: flex-start; flex-direction: column; }
     .answer-page .question-points { align-self: flex-start; }
 }
+
+/* Colores específicos del tema oscuro del portal. */
+html[data-theme="dark"] .answer-page { color: #e5edf9; }
+html[data-theme="dark"] .answer-page .task-header,
+html[data-theme="dark"] .answer-page .materials-section,
+html[data-theme="dark"] .answer-page .questions-section,
+html[data-theme="dark"] .answer-page .question-card {
+    border-color: rgba(203, 213, 225, .16) !important;
+    background: #0b1424 !important;
+    color: #e5edf9 !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
+}
+html[data-theme="dark"] .answer-page .task-header-content {
+    border: 1px solid rgba(203, 213, 225, .12);
+    background: radial-gradient(circle at 90% 0%, rgba(91, 119, 212, .24), transparent 30%), linear-gradient(120deg, #111d33, #192f55 68%, #203c68);
+}
+html[data-theme="dark"] .answer-page .back-button,
+html[data-theme="dark"] .answer-page .meta-item,
+html[data-theme="dark"] .answer-page .question-top,
+html[data-theme="dark"] .answer-page .file-item,
+html[data-theme="dark"] .answer-page .no-options,
+html[data-theme="dark"] .answer-page .no-questions {
+    border-color: rgba(203, 213, 225, .16);
+    background: #111d30;
+    color: #e5edf9;
+}
+html[data-theme="dark"] .answer-page .back-button:hover,
+html[data-theme="dark"] .answer-page .file-item:hover { border-color: #657bd4; background: #192849; color: #fff; }
+html[data-theme="dark"] .answer-page .task-description,
+html[data-theme="dark"] .answer-page .questions-header p,
+html[data-theme="dark"] .answer-page .meta-item small,
+html[data-theme="dark"] .answer-page .field-help,
+html[data-theme="dark"] .answer-page .no-questions p { color: #bac7da; }
+html[data-theme="dark"] .answer-page .meta-item strong,
+html[data-theme="dark"] .answer-page .section-title h2,
+html[data-theme="dark"] .answer-page .material-group h3,
+html[data-theme="dark"] .answer-page .questions-header h2,
+html[data-theme="dark"] .answer-page .question-number,
+html[data-theme="dark"] .answer-page .question-content h3,
+html[data-theme="dark"] .answer-page .answer-field label,
+html[data-theme="dark"] .answer-page .options-label,
+html[data-theme="dark"] .answer-page .no-questions h3 { color: #e5edf9; }
+html[data-theme="dark"] .answer-page .question-top { border-bottom-color: rgba(203, 213, 225, .13); }
+html[data-theme="dark"] .answer-page .question-points { border-color: rgba(151, 168, 255, .25); background: #222f59; color: #dbe3ff; }
+html[data-theme="dark"] .answer-page .meta-icon,
+html[data-theme="dark"] .answer-page .section-title-icon { background: #202d50; color: #cbd5ff; }
+html[data-theme="dark"] .answer-page .answer-field textarea {
+    border-color: #506078;
+    background: #080f1c;
+    color: #f1f5fb;
+}
+html[data-theme="dark"] .answer-page .answer-field textarea::placeholder { color: #9baac0; }
+html[data-theme="dark"] .answer-page .option-card { border-color: #46566f; background: #101b2d; color: #dce6f5; }
+html[data-theme="dark"] .answer-page .option-card:hover { border-color: #8395eb; background: #172542; }
+html[data-theme="dark"] .answer-page .option-card:has(input:checked) { border-color: #98a8ff; background: #202e58; color: #fff; }
+html[data-theme="dark"] .answer-page .option-radio { border-color: #9aa9bd; }
+html[data-theme="dark"] .answer-page .option-card input:checked + .option-radio { border-color: #bac5ff; background: #344fc1; }
+html[data-theme="dark"] .answer-page .answered-container { border-color: #276446; background: #10291f; color: #d1fae5; }
+html[data-theme="dark"] .answer-page .answered-header strong,
+html[data-theme="dark"] .answer-page .answered-header small { color: #d1fae5; }
+html[data-theme="dark"] .answer-page .student-answer,
+html[data-theme="dark"] .answer-page .student-option { border-color: #315b47; background: #0b1d17; color: #e2f4e9; }
+html[data-theme="dark"] .answer-page .student-option span,
+html[data-theme="dark"] .answer-page .answer-preview-label { color: #c7ddcf; }
+html[data-theme="dark"] .answer-page .answer-result.correct-result { border-color: #276446; background: #123523; color: #d1fae5; }
+html[data-theme="dark"] .answer-page .answer-result.incorrect-result { border-color: #7f343a; background: #391b21; color: #ffe4e6; }
+html[data-theme="dark"] .answer-page .waiting-result { border: 1px solid #715a26; background: #342b14; color: #fde68a; }
+html[data-theme="dark"] .answer-page .message { border-color: rgba(203, 213, 225, .16); background: #111d30; color: #dbe6f5; }

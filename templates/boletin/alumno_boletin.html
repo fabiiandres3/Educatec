@@ -111,5 +111,55 @@
         .bulletins-download { width:100%; }
     }
     @media(prefers-reduced-motion:reduce) { .bulletins-submit,.bulletins-download { transition:none; } }
+
+    /* Modo oscuro de los boletines del alumno. */
+    html[data-theme="dark"] .student-bulletins-page { --bulletin-ink:#e8efff; --bulletin-muted:#adbbd2; --bulletin-line:rgba(167,190,238,.16); color:#e8efff; }
+    html[data-theme="dark"] .bulletins-hero {
+        border-color:rgba(167,190,238,.18);
+        background:radial-gradient(ellipse at 86% 0%,rgba(103,137,231,.24),transparent 36%),linear-gradient(118deg,#101d36,#172b4f 64%,#1c3a66);
+        box-shadow:0 14px 36px rgba(0,0,0,.22);
+    }
+    html[data-theme="dark"] .bulletins-hero-icon,
+    html[data-theme="dark"] .bulletins-section-icon { background:#25385f; color:#d1dcff; }
+    html[data-theme="dark"] .bulletins-eyebrow { color:#c4d1ff; }
+    html[data-theme="dark"] .bulletins-hero h1 { color:#edf3ff; }
+    html[data-theme="dark"] .bulletins-hero p,
+    html[data-theme="dark"] .bulletins-section-heading p { color:#b5c3d9; }
+    html[data-theme="dark"] .bulletins-filter-card,
+    html[data-theme="dark"] .bulletins-report-wrap {
+        border-color:rgba(167,190,238,.16);
+        background:#111d30;
+        color:#e5edf9;
+        box-shadow:0 10px 28px rgba(0,0,0,.2);
+    }
+    html[data-theme="dark"] .bulletins-section-heading h2 { color:#e8efff; }
+    html[data-theme="dark"] .bulletins-filter-form label { color:#bdc9dc; }
+    html[data-theme="dark"] .bulletins-filter-controls .form-select {
+        border-color:#40516c;
+        background-color:#0c1728;
+        color:#e5edf9;
+        color-scheme:dark;
+    }
+    html[data-theme="dark"] .bulletins-filter-controls .form-select:focus { border-color:#8095eb; box-shadow:0 0 0 4px rgba(89,145,224,.18); }
+    html[data-theme="dark"] .student-bulletins-page .educatec-report { border-color:rgba(167,190,238,.15); background:#101b2d !important; color:#dbe6f5; }
+    html[data-theme="dark"] .student-bulletins-page .report-header { border-bottom-color:#34445d; }
+    html[data-theme="dark"] .student-bulletins-page .report-mark { border-color:#7287d9; background:#24365d; color:#e5ebff; }
+    html[data-theme="dark"] .student-bulletins-page .report-school,
+    html[data-theme="dark"] .student-bulletins-page .report-title h1 { color:#e8efff; }
+    html[data-theme="dark"] .student-bulletins-page .report-school-subtitle,
+    html[data-theme="dark"] .student-bulletins-page .report-title p { color:#aebdd3; }
+    html[data-theme="dark"] .student-bulletins-page .student-data { border-color:#34445d; background:#121f33; }
+    html[data-theme="dark"] .student-bulletins-page .student-data div { border-color:#2c3b52; color:#d1dced; }
+    html[data-theme="dark"] .student-bulletins-page .student-data b { color:#aebdd3; }
+    html[data-theme="dark"] .student-bulletins-page .table-responsive { border-color:#34445d; }
+    html[data-theme="dark"] .student-bulletins-page .report-table th { border-color:#40516c; background:#1b3154; color:#dbe6ff; }
+    html[data-theme="dark"] .student-bulletins-page .report-table td { border-color:#2c3b52; background:#101b2d; color:#cbd7e8; }
+    html[data-theme="dark"] .student-bulletins-page .report-table tbody tr:not(.report-observation):hover td { background:#192944; }
+    html[data-theme="dark"] .student-bulletins-page .report-table td strong { color:#edf3ff; }
+    html[data-theme="dark"] .student-bulletins-page .report-observation td { background:#142239; color:#b9c7dc; }
+    html[data-theme="dark"] .student-bulletins-page .report-summary > div { border-color:#34445d; background:#142239; color:#c3d0e2; }
+    html[data-theme="dark"] .student-bulletins-page .report-summary span,
+    html[data-theme="dark"] .student-bulletins-page .report-scale { color:#b9c7dc; }
+    html[data-theme="dark"] .student-bulletins-page .report-summary strong { color:#cbd5ff; }
 </style>
 {% endblock %}

@@ -776,6 +776,47 @@ active
     .evento-card,.evento-imagen { transition:none; }
 }
 
+/* Modo oscuro del módulo de eventos del alumno. */
+html[data-theme="dark"] .eventos-page { color:#e8efff; }
+html[data-theme="dark"] .eventos-hero {
+    border-color:rgba(167,190,238,.18);
+    background:radial-gradient(ellipse at 86% 0%,rgba(103,137,231,.24),transparent 36%),linear-gradient(118deg,#101d36,#172b4f 64%,#1c3a66);
+    box-shadow:0 14px 36px rgba(0,0,0,.22);
+}
+html[data-theme="dark"] .eventos-hero h1 { color:#edf3ff; }
+html[data-theme="dark"] .eventos-hero p { color:#b8c6dd; }
+html[data-theme="dark"] .eventos-container,
+html[data-theme="dark"] .evento-card {
+    border-color:rgba(167,190,238,.16);
+    color:#e5edf9;
+    box-shadow:0 10px 28px rgba(0,0,0,.2);
+}
+html[data-theme="dark"] .eventos-container { background:#0c1729; }
+html[data-theme="dark"] .evento-card { background:linear-gradient(145deg,#17263d,#121f33); }
+html[data-theme="dark"] .eventos-section-title h2,
+html[data-theme="dark"] .evento-titulo { color:#e8efff; }
+html[data-theme="dark"] .eventos-section-description,
+html[data-theme="dark"] .evento-info,
+html[data-theme="dark"] .evento-descripcion { color:#adbbd2; }
+html[data-theme="dark"] .eventos-section-title-icon,
+html[data-theme="dark"] .evento-placeholder { background:#25385f; color:#d1dcff; }
+html[data-theme="dark"] .evento-card:hover { transform:translateY(-4px); border-color:#667fc0; background:linear-gradient(145deg,#1b2d49,#15243b); box-shadow:0 18px 36px rgba(0,0,0,.32); }
+html[data-theme="dark"] .evento-imagen-wrapper { background:#17243a; }
+html[data-theme="dark"] .evento-imagen-wrapper::after { background:linear-gradient(to top,rgba(3,8,18,.52),transparent 60%); }
+html[data-theme="dark"] .evento-fecha-badge { border-color:rgba(167,190,238,.2); background:rgba(12,23,40,.94); }
+html[data-theme="dark"] .evento-fecha-dia { color:#cbd5ff; }
+html[data-theme="dark"] .evento-fecha-mes { color:#b5c3d9; }
+html[data-theme="dark"] .evento-tipo { background:#253761; color:#d1dcff; }
+html[data-theme="dark"] .evento-publico { background:#263246; color:#c5d1e1; }
+html[data-theme="dark"] .evento-info-icon { color:#9aafff; }
+html[data-theme="dark"] .evento-divider { background:rgba(167,190,238,.15); }
+html[data-theme="dark"] .evento-video a { border-color:#344866; background:#182740; color:#cbd5ff; }
+html[data-theme="dark"] .evento-video a:hover { border-color:#627bd0; background:#22365c; color:#fff; }
+html[data-theme="dark"] .sin-eventos { border-color:rgba(167,190,238,.22); background:#101b2d; }
+html[data-theme="dark"] .sin-eventos-icon { background:#25385f; color:#d1dcff; }
+html[data-theme="dark"] .sin-eventos h4 { color:#e5edf9; }
+html[data-theme="dark"] .sin-eventos p { color:#adbbd2; }
+
 </style>
 
 {% endblock %}

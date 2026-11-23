@@ -90,6 +90,44 @@
         .alumno-dashboard .profile strong { max-width:65vw; }
     }
     @media(prefers-reduced-motion:reduce) { .alumno-dashboard .stat-card { transition:none; } }
+
+    /* Modo oscuro del dashboard del alumno. */
+    html[data-theme="dark"] .alumno-dashboard { --alumno-ink:#e5edf9; --alumno-muted:#a8b5c9; --alumno-line:rgba(203,213,225,.15); color:#e5edf9; }
+    html[data-theme="dark"] .alumno-dashboard .topbar,
+    html[data-theme="dark"] .alumno-dashboard .stat-card,
+    html[data-theme="dark"] .alumno-dashboard .section-card {
+        border-color:rgba(203,213,225,.15) !important;
+        background:#0b1424 !important;
+        color:#e5edf9 !important;
+        box-shadow:0 12px 30px rgba(0,0,0,.2);
+    }
+    html[data-theme="dark"] .alumno-dashboard .topbar { background:radial-gradient(circle at 92% 8%,rgba(67,97,184,.2),transparent 30%),linear-gradient(120deg,#0b1424,#111e33) !important; }
+    html[data-theme="dark"] .alumno-dashboard .welcome h2,
+    html[data-theme="dark"] .alumno-dashboard .section-card h4,
+    html[data-theme="dark"] .alumno-dashboard .stat-card h3,
+    html[data-theme="dark"] .alumno-dashboard .task-card h6,
+    html[data-theme="dark"] .alumno-dashboard .subject-card h6,
+    html[data-theme="dark"] .alumno-dashboard .event-list li span,
+    html[data-theme="dark"] .alumno-dashboard .profile strong { color:#e5edf9 !important; }
+    html[data-theme="dark"] .alumno-dashboard .welcome p,
+    html[data-theme="dark"] .alumno-dashboard .stat-card p,
+    html[data-theme="dark"] .alumno-dashboard .pending-task-copy small,
+    html[data-theme="dark"] .alumno-dashboard .dashboard-empty-copy,
+    html[data-theme="dark"] .alumno-dashboard .profile small,
+    html[data-theme="dark"] .alumno-dashboard .event-list li { color:#a8b5c9 !important; }
+    html[data-theme="dark"] .alumno-dashboard .task-card,
+    html[data-theme="dark"] .alumno-dashboard .subject-card,
+    html[data-theme="dark"] .alumno-dashboard .event-list li,
+    html[data-theme="dark"] .alumno-dashboard .achievement {
+        border-color:rgba(203,213,225,.13) !important;
+        background:linear-gradient(145deg,#111d30,#0d1728) !important;
+        color:#dbe6f5 !important;
+    }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-empty-state { border-color:#28553f; background:#10291f; color:#b8e8ca; }
+    html[data-theme="dark"] .alumno-dashboard .pending-task-link { background:#202d50; color:#cbd5ff; }
+    html[data-theme="dark"] .alumno-dashboard .pending-task-link:hover { background:#526fe0; color:#fff; }
+    html[data-theme="dark"] .alumno-dashboard .section-card > div[style*="grid-template-columns"] > div { border-color:rgba(203,213,225,.15) !important; background:#111d30 !important; color:#e5edf9 !important; }
+    html[data-theme="dark"] .alumno-dashboard .section-card a[style*="background:#006eff"] { background:#526fe0 !important; color:#fff !important; }
 </style>
 
 <div class="alumno-dashboard">
