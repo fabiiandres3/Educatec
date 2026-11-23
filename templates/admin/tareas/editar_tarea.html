@@ -901,6 +901,86 @@ Editar tarea
     }
 }
 
+/* Editor alegre con controles vivos y vistas previas locales */
+.tarea-editor-page { max-width:1320px; }
+.tarea-editor-page .editar-header { align-items:center; padding:22px 25px; border:1px solid #e4e9fb; border-radius:22px; background:linear-gradient(120deg,#fff8dc,#f1f4ff 58%,#edfbff); box-shadow:0 10px 28px rgba(75,90,150,.08); }
+.tarea-editor-page .editar-title-icon { width:58px;height:58px;border-radius:19px;background:linear-gradient(145deg,#ffcf5a,#ff9c66);color:#fff;font-size:25px;box-shadow:0 8px 17px rgba(255,164,83,.25);transform:rotate(-5deg); }
+.tarea-editor-page .editar-title { color:#263254;font-size:30px; }
+.tarea-editor-page .editar-subtitle { color:#697895;font-size:15px; }
+.tarea-editor-page .editar-card { border-color:#e6eafa;border-radius:21px;box-shadow:0 9px 24px rgba(52,68,120,.06);transition:transform .2s ease,box-shadow .2s ease; }
+.tarea-editor-page .editar-card:hover { box-shadow:0 13px 30px rgba(52,68,120,.1); }
+.tarea-editor-page .editar-card-header { padding:20px 24px;background:linear-gradient(100deg,#fbfaff,#f5f8ff); }
+.tarea-editor-page .editar-card-icon { width:46px;height:46px;border-radius:16px;background:linear-gradient(145deg,#e7e8ff,#dff7ff);color:#6676d8;font-size:20px;box-shadow:inset 0 -3px 0 rgba(86,106,199,.08); }
+.tarea-editor-page .editar-card-header h3 { color:#293658;font-size:17px; }
+.tarea-editor-page .editar-card-header p { color:#7d89a2;font-size:13px; }
+.tarea-editor-page .section-title { color:#39466b;font-size:15px; }
+.tarea-editor-page .section-title i { display:grid;width:34px;height:34px;place-items:center;border-radius:12px;background:#f0f2ff;color:#6b78d0; }
+.tarea-editor-page .django-form label,.tarea-editor-page .video-url-label { color:#3e4b6d;font-size:14px;font-weight:700; }
+.tarea-editor-page .django-form input,.tarea-editor-page .django-form select,.tarea-editor-page .django-form textarea { border-color:#dfe5f3;border-radius:12px;background:#fcfdff; }
+.tarea-editor-page .django-form input:focus,.tarea-editor-page .django-form select:focus,.tarea-editor-page .django-form textarea:focus { border-color:#91a5f5;box-shadow:0 0 0 4px rgba(107,120,208,.12); }
+.tarea-editor-page .upload-box { display:grid;grid-template-columns:46px minmax(0,1fr);align-items:center;gap:12px;padding:16px;border:2px dashed #cbd7fa;border-radius:17px;background:linear-gradient(120deg,#fafaff,#f4fbff);transition:border-color .18s,background .18s; }
+.tarea-editor-page .upload-box:focus-within,.tarea-editor-page .upload-box:hover { border-color:#8296ed;background:#f2f5ff; }
+.tarea-editor-page .upload-icon { width:46px;height:46px;border-radius:16px;background:linear-gradient(145deg,#dff7ff,#e8e8ff);color:#5f78ce;font-size:20px; }
+.tarea-editor-page .upload-box input[type=file] { min-width:0;font-size:13px; }
+.tarea-editor-page .imagen-item { position:relative;width:210px;padding:9px;border-color:#e5e9f5;border-radius:16px;transition:transform .18s,opacity .18s,border-color .18s; }
+.tarea-editor-page .imagen-item:hover { transform:translateY(-3px); }
+.tarea-editor-page .imagen-item img { height:145px;border-radius:11px; }
+.tarea-editor-page [data-resource-item].is-marked-delete { opacity:.42;border-color:#f39aa0;background:#fff5f5; }
+.tarea-editor-page .imagen-item.is-marked-delete { display:none; }
+.pending-image-deletes { display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:0 0 14px;padding:12px;border:1px solid #ffcdd0;border-radius:13px;background:#fff5f5;color:#a74751;font-size:13px; }
+.pending-image-delete { display:inline-flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid #f5d5d7;border-radius:10px;background:#fff;color:#89505a; }
+.pending-image-delete button { padding:4px 8px;border:0;border-radius:7px;background:#fff0d9;color:#9a681e;font-size:11px;font-weight:750; }
+.tarea-editor-page .eliminar-label { padding:7px 10px;border-radius:10px;background:#fff1f1;font-size:13px;font-weight:700; }
+.tarea-editor-page .elemento-actual { border-color:#e6eaf4;border-radius:14px;background:#fbfcff;transition:opacity .18s,transform .18s,border-color .18s; }
+.tarea-editor-page .elemento-actual:hover { transform:translateX(3px); }
+.tarea-editor-page .elemento-icon { border-radius:13px;background:linear-gradient(145deg,#e5f7ff,#eeedff);color:#6378ca; }
+.tarea-editor-page .video-add-panel { border-color:#dfe6fa;border-radius:18px;background:linear-gradient(130deg,#fbfaff,#f2fbff); }
+.tarea-editor-page .video-add-icon { background:linear-gradient(145deg,#e8e9ff,#dcf6ff);color:#6077cf; }
+.tarea-editor-page .video-url-row { display:flex;gap:8px; }
+.tarea-editor-page .video-url-row .video-url-input { flex:1;min-width:0; }
+.tarea-editor-page .remove-video-url,.tarea-editor-page .add-video-url { display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:11px;font-weight:700;transition:transform .16s,background .16s; }
+.tarea-editor-page .remove-video-url { flex:0 0 42px;height:42px;background:#fff0f0;color:#d85c68; }
+.tarea-editor-page .add-video-url { margin-top:10px;padding:9px 13px;background:#ecefff;color:#596fc8;font-size:13px; }
+.tarea-editor-page .add-video-url:hover,.tarea-editor-page .remove-video-url:hover { transform:translateY(-1px); }
+.tarea-editor-page .add-video-url:hover { background:#e1e7ff; }
+.tarea-editor-page .video-url-entry { margin-bottom:12px;padding:10px;border:1px solid #e5eafa;border-radius:14px;background:#fff; }
+.tarea-editor-page .video-preview-new { margin-top:10px; }
+.upload-preview-grid { display:flex;grid-column:1/-1;flex-wrap:wrap;gap:10px; }
+.upload-preview-item { position:relative;width:125px;height:100px;overflow:hidden;border:1px solid #e0e7f3;border-radius:13px;background:#fff; }
+.upload-preview-item img { width:100%;height:100%;object-fit:cover; }
+.upload-preview-remove { position:absolute;top:6px;right:6px;display:grid;width:27px;height:27px;place-items:center;border:0;border-radius:50%;background:rgba(35,48,77,.8);color:white; }
+.upload-file-chip { display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #e2e9f5;border-radius:12px;background:#fff;color:#43516e;font-size:12px; }
+.upload-file-chip i { color:#7184d3;font-size:17px; }
+.upload-file-chip button { margin-left:auto;border:0;background:none;color:#d85c68; }
+.tarea-save-feedback { display:none;margin:0 0 15px;padding:12px 15px;border-radius:12px;font-size:14px;font-weight:700; }
+.tarea-save-feedback.is-visible { display:block;animation:feedbackPop .22s ease; }
+.tarea-save-feedback.is-success { border:1px solid #bdebd5;background:#edfff6;color:#24815d; }
+.tarea-save-feedback.is-error { border:1px solid #ffd0d2;background:#fff2f2;color:#bd4954; }
+.tarea-editor-page .btn-guardar { border-radius:13px;background:linear-gradient(135deg,#5f7be0,#7a8bec);box-shadow:0 8px 17px rgba(95,123,224,.22); }
+.tarea-editor-page .btn-guardar:hover { transform:translateY(-2px);box-shadow:0 12px 22px rgba(95,123,224,.3); }
+.tarea-editor-page .btn-guardar:disabled { opacity:.72;cursor:wait; }
+@keyframes feedbackPop { from { opacity:0;transform:translateY(5px); } to { opacity:1;transform:translateY(0); } }
+@media(max-width:600px) { .tarea-editor-page .editar-header { padding:17px; }.tarea-editor-page .editar-card-body { padding:18px; }.tarea-editor-page .imagen-item { width:calc(50% - 6px); }.upload-preview-item { width:calc(50% - 5px); } }
+.new-question-zone { margin-top:24px;padding:18px;border:1px solid #e4e9fb;border-radius:18px;background:linear-gradient(135deg,#fbfaff,#f1fbff); }
+.new-question-heading { display:flex;align-items:center;gap:12px;margin-bottom:14px; }
+.new-question-sticker { display:grid;flex:0 0 42px;width:42px;height:42px;place-items:center;border-radius:15px;background:linear-gradient(145deg,#ffe9a9,#ffd6ed);color:#8062c5;font-size:19px; }
+.new-question-heading>div { display:grid;gap:3px;flex:1; }.new-question-heading strong { color:#344164;font-size:15px; }.new-question-heading span { color:#7886a0;font-size:12px; }
+.new-question-total { padding:6px 10px;border-radius:999px;background:#e9edff;color:#6173c6;font-size:11px;font-weight:750;white-space:nowrap; }
+.new-question-card { margin-top:12px;padding:17px;border:1px solid #e2e8f5;border-radius:16px;background:#fff;box-shadow:0 5px 14px rgba(49,69,120,.045);animation:feedbackPop .2s ease; }
+.new-question-card-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:13px; }
+.new-question-card-header strong { display:flex;align-items:center;gap:8px;color:#354264;font-size:14px; }
+.new-question-card-header i { color:#e4a13d; }
+.remove-new-question { display:grid;width:32px;height:32px;place-items:center;border:0;border-radius:10px;background:#fff0f0;color:#d55e69; }
+.new-question-card label { display:block;margin:10px 0 6px;color:#596783;font-size:12px;font-weight:750; }
+.new-question-card textarea,.new-question-card input,.new-question-card select { width:100%;min-height:40px;padding:9px 11px;border:1px solid #dfe5f1;border-radius:10px;background:#fcfdff;color:#34415d;font-size:13px; }
+.new-question-fields { display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px;margin-top:9px; }
+.new-question-answers { margin-top:10px;padding:12px;border-radius:13px;background:#f8f9ff; }
+.new-question-answers .option-answer-row { display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:8px;margin-top:8px; }
+.new-question-answers .option-answer-row span { display:grid;width:28px;height:28px;place-items:center;border-radius:9px;background:#e8edff;color:#6878c9;font-size:11px;font-weight:800; }
+.add-new-question { display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:10px 14px;border:0;border-radius:12px;background:linear-gradient(135deg,#637de0,#8297ea);box-shadow:0 6px 13px rgba(99,125,224,.18);color:#fff;font-size:13px;font-weight:750;transition:transform .16s,box-shadow .16s; }
+.add-new-question:hover { transform:translateY(-2px);box-shadow:0 9px 18px rgba(99,125,224,.25); }
+@media(max-width:600px) { .new-question-zone { padding:13px; }.new-question-heading { flex-wrap:wrap; }.new-question-total { margin-left:54px; }.new-question-fields { grid-template-columns:1fr;gap:0; } }
+
 
 </style>
 
@@ -922,7 +1002,7 @@ Editar tarea
 
 
             <div class="editar-title-icon">
-                <i class="fas fa-pen-to-square"></i>
+                <i class="fas fa-wand-magic-sparkles"></i>
             </div>
 
 
@@ -983,7 +1063,7 @@ Editar tarea
 
 
                 <div class="editar-card-icon">
-                    <i class="fas fa-book-open"></i>
+                    <i class="fas fa-book-open-reader"></i>
                 </div>
 
 
@@ -1034,7 +1114,7 @@ Editar tarea
 
 
                 <div class="editar-card-icon">
-                    <i class="fas fa-folder-open"></i>
+                    <i class="fas fa-box-open"></i>
                 </div>
 
 
@@ -1080,16 +1160,11 @@ Editar tarea
 
 
 
-                {% if imagenes %}
-
-
-                    <div class="imagenes-grid">
-
-
+                <div class="imagenes-grid" id="imagenesActuales">
                         {% for imagen in imagenes %}
 
 
-                            <div class="imagen-item">
+                            <div class="imagen-item" data-resource-item data-resource-kind="imagen" data-resource-id="{{ imagen.id }}">
 
 
                                 <img src="{{ imagen.imagen.url }}"
@@ -1116,22 +1191,13 @@ Editar tarea
                             </div>
 
 
+                        {% empty %}
+                            <p class="section-description" data-empty-resource><i class="fas fa-image"></i> No hay imágenes actuales.</p>
                         {% endfor %}
 
 
-                    </div>
-
-
-                {% else %}
-
-
-                    <p class="section-description">
-                        <i class="fas fa-image"></i>
-                        No hay imágenes actuales.
-                    </p>
-
-
-                {% endif %}
+                </div>
+                <div class="pending-image-deletes" id="imagenesPendientes" hidden aria-live="polite"></div>
 
 
 
@@ -1145,9 +1211,11 @@ Editar tarea
 
 
                     <input type="file"
+                           id="nuevasImagenes"
                            name="imagenes"
                            multiple
                            accept="image/*">
+                    <div class="upload-preview-grid" id="vistaPreviaImagenes" aria-live="polite"></div>
 
 
                 </div>
@@ -1176,13 +1244,11 @@ Editar tarea
 
 
 
-                {% if archivos %}
-
-
+                <div id="archivosActuales" class="resource-list">
                     {% for archivo in archivos %}
 
 
-                        <div class="elemento-actual">
+                        <div class="elemento-actual" data-resource-item data-resource-kind="archivo" data-resource-id="{{ archivo.id }}">
 
 
                             <div class="elemento-info">
@@ -1221,19 +1287,10 @@ Editar tarea
                         </div>
 
 
+                    {% empty %}
+                        <p class="section-description" data-empty-resource><i class="fas fa-file-circle-xmark"></i> No hay archivos actuales.</p>
                     {% endfor %}
-
-
-                {% else %}
-
-
-                    <p class="section-description">
-                        <i class="fas fa-file-circle-xmark"></i>
-                        No hay archivos actuales.
-                    </p>
-
-
-                {% endif %}
+                </div>
 
 
 
@@ -1247,8 +1304,10 @@ Editar tarea
 
 
                     <input type="file"
+                           id="nuevosArchivos"
                            name="archivos"
                            multiple>
+                    <div class="upload-file-list" id="vistaPreviaArchivos" aria-live="polite"></div>
 
 
                 </div>
@@ -1277,13 +1336,11 @@ Editar tarea
 
 
 
-                {% if videos %}
-
-
+                <div id="videosActuales" class="resource-list">
                     {% for video in videos %}
 
 
-                        <div class="elemento-actual video-actual" data-video-url="{{ video.video }}">
+                        <div class="elemento-actual video-actual" data-resource-item data-resource-kind="video" data-resource-id="{{ video.id }}" data-video-url="{{ video.video }}">
 
                             <div class="video-preview" data-video-preview>
                                 <div class="video-preview-empty"><i class="fas fa-circle-play"></i><span>Cargando vista previa…</span></div>
@@ -1324,19 +1381,10 @@ Editar tarea
                         </div>
 
 
+                    {% empty %}
+                        <p class="section-description" data-empty-resource><i class="fas fa-video-slash"></i> No hay videos actuales.</p>
                     {% endfor %}
-
-
-                {% else %}
-
-
-                    <p class="section-description">
-                        <i class="fas fa-video-slash"></i>
-                        No hay videos actuales.
-                    </p>
-
-
-                {% endif %}
+                </div>
 
                 <div class="video-add-panel">
                     <div class="video-add-copy">
@@ -1347,10 +1395,13 @@ Editar tarea
                         </div>
                     </div>
                     <label class="video-url-label" for="videoNuevaUrl">URL del video</label>
-                    <input class="video-url-input" id="videoNuevaUrl" type="url" name="videos" value="{{ video_url_nuevo }}" placeholder="https://www.youtube.com/watch?v=…" autocomplete="url">
-                    <div class="video-preview video-preview-new" id="videoNuevaPreview" aria-live="polite">
-                        <div class="video-preview-empty"><i class="fas fa-film"></i><span>La vista previa aparecerá al ingresar un enlace válido.</span></div>
+                    <div class="video-url-list" id="videoUrlList">
+                        <div class="video-url-entry">
+                            <div class="video-url-row"><input class="video-url-input" id="videoNuevaUrl" type="url" name="videos" value="{{ video_url_nuevo }}" placeholder="https://www.youtube.com/watch?v=…" autocomplete="url"><button type="button" class="remove-video-url" aria-label="Quitar enlace" hidden><i class="fas fa-xmark"></i></button></div>
+                            <div class="video-preview video-preview-new" id="videoNuevaPreview" aria-live="polite"><div class="video-preview-empty"><i class="fas fa-film"></i><span>La vista previa aparecerá al ingresar un enlace válido.</span></div></div>
+                        </div>
                     </div>
+                    <button type="button" class="add-video-url" id="agregarVideoUrl"><i class="fas fa-circle-plus"></i> Agregar otro enlace</button>
                 </div>
 
 
@@ -1374,7 +1425,7 @@ Editar tarea
 
 
                 <div class="editar-card-icon">
-                    <i class="fas fa-circle-question"></i>
+                    <i class="fas fa-star"></i>
                 </div>
 
 
@@ -1402,7 +1453,7 @@ Editar tarea
             <div class="editar-card-body">
 
 
-                {% for pregunta in tarea.pregunta_set.all %}
+                {% for pregunta in tarea.preguntas.all %}
 
 
                     <div class="pregunta-card">
@@ -1643,7 +1694,7 @@ Editar tarea
 
 
 
-                                {% for opcion in pregunta.opcionesrespuesta_set.all %}
+                                {% for opcion in pregunta.opciones.all %}
 
 
                                     <div class="opcion">
@@ -1768,6 +1819,15 @@ Editar tarea
 
                 {% endfor %}
 
+                <div class="new-question-zone">
+                    <div class="new-question-heading">
+                        <span class="new-question-sticker"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i></span>
+                        <div><strong>¿Creamos otra pregunta?</strong><span>Agrega una pregunta nueva y elige cómo quieres que respondan.</span></div>
+                        <span class="new-question-total" id="newQuestionTotal">0 nuevas</span>
+                    </div>
+                    <div id="preguntasNuevasContainer" class="new-question-list"></div>
+                    <button type="button" class="add-new-question" id="agregarPreguntaEdicion"><i class="fas fa-circle-plus" aria-hidden="true"></i> Agregar pregunta</button>
+                </div>
 
             </div>
 
@@ -1787,6 +1847,8 @@ Editar tarea
 
             <div class="editar-card-body">
 
+
+                <div class="tarea-save-feedback" id="feedbackEdicionTarea" role="status" aria-live="polite"></div>
 
                 <div class="acciones">
 
@@ -1810,7 +1872,7 @@ Editar tarea
                             class="btn-guardar">
 
 
-                        <i class="fas fa-floppy-disk"></i>
+                        <i class="fas fa-cloud-arrow-up"></i>
 
 
                         Guardar cambios
@@ -1879,17 +1941,380 @@ document.addEventListener('DOMContentLoaded', function () {
         container.appendChild(frame);
     }
 
+    function makeRemoveLabel(kind, id) {
+        var label = document.createElement('label');
+        label.className = 'eliminar-label';
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'eliminar_' + (kind === 'imagen' ? 'imagenes' : kind === 'archivo' ? 'archivos' : 'videos');
+        checkbox.value = id;
+        checkbox.addEventListener('change', function () {
+            checkbox.closest('[data-resource-item]')?.classList.toggle('is-marked-delete', checkbox.checked);
+        });
+        var icon = document.createElement('i');
+        icon.className = 'fas fa-trash-can';
+        label.append(checkbox, icon, document.createTextNode(' Eliminar'));
+        return label;
+    }
+
+    function showEmpty(container, iconClass, text) {
+        var empty = document.createElement('p');
+        empty.className = 'section-description';
+        empty.dataset.emptyResource = '';
+        var icon = document.createElement('i');
+        icon.className = iconClass;
+        empty.append(icon, document.createTextNode(' ' + text));
+        container.appendChild(empty);
+    }
+
+    function refreshResources(data) {
+        var imageList = document.getElementById('imagenesActuales');
+        imageList.replaceChildren();
+        data.imagenes.forEach(function (item) {
+            var card = document.createElement('div');
+            card.className = 'imagen-item';
+            card.dataset.resourceItem = '';
+            card.dataset.resourceKind = 'imagen';
+            card.dataset.resourceId = item.id;
+            var image = document.createElement('img');
+            image.src = item.url;
+            image.alt = item.name || 'Imagen de la tarea';
+            image.loading = 'lazy';
+            card.append(image, makeRemoveLabel('imagen', item.id));
+            imageList.appendChild(card);
+        });
+        if (!data.imagenes.length) showEmpty(imageList, 'fas fa-image', 'No hay imágenes actuales.');
+
+        var fileList = document.getElementById('archivosActuales');
+        fileList.replaceChildren();
+        data.archivos.forEach(function (item) {
+            var row = document.createElement('div');
+            row.className = 'elemento-actual';
+            row.dataset.resourceItem = '';
+            row.dataset.resourceKind = 'archivo';
+            row.dataset.resourceId = item.id;
+            var info = document.createElement('div');
+            info.className = 'elemento-info';
+            var iconBox = document.createElement('div');
+            iconBox.className = 'elemento-icon';
+            var icon = document.createElement('i');
+            icon.className = 'fas fa-file-lines';
+            iconBox.appendChild(icon);
+            var name = document.createElement('div');
+            name.className = 'elemento-nombre';
+            name.textContent = item.name;
+            info.append(iconBox, name);
+            row.append(info, makeRemoveLabel('archivo', item.id));
+            fileList.appendChild(row);
+        });
+        if (!data.archivos.length) showEmpty(fileList, 'fas fa-file-circle-xmark', 'No hay archivos actuales.');
+
+        var videoList = document.getElementById('videosActuales');
+        videoList.replaceChildren();
+        data.videos.forEach(function (item) {
+            var row = document.createElement('div');
+            row.className = 'elemento-actual video-actual';
+            row.dataset.resourceItem = '';
+            row.dataset.resourceKind = 'video';
+            row.dataset.resourceId = item.id;
+            row.dataset.videoUrl = item.url;
+            var preview = document.createElement('div');
+            preview.className = 'video-preview';
+            preview.dataset.videoPreview = '';
+            renderPreview(preview, item.url);
+            var info = document.createElement('div');
+            info.className = 'elemento-info';
+            var iconBox = document.createElement('div');
+            iconBox.className = 'elemento-icon';
+            var icon = document.createElement('i');
+            icon.className = 'fas fa-circle-play';
+            iconBox.appendChild(icon);
+            var name = document.createElement('div');
+            name.className = 'elemento-nombre';
+            name.textContent = item.url;
+            info.append(iconBox, name);
+            row.append(preview, info, makeRemoveLabel('video', item.id));
+            videoList.appendChild(row);
+        });
+        if (!data.videos.length) showEmpty(videoList, 'fas fa-video-slash', 'No hay videos actuales.');
+    }
+
     document.querySelectorAll('[data-video-preview]').forEach(function (preview) {
         renderPreview(preview, preview.closest('[data-video-url]')?.dataset.videoUrl || '');
     });
-    var input = document.getElementById('videoNuevaUrl');
-    var newPreview = document.getElementById('videoNuevaPreview');
-    if (input) {
-        renderPreview(newPreview, input.value);
-        input.addEventListener('input', function () { renderPreview(newPreview, input.value); });
+    function updatePendingImageDeletes() {
+        var panel = document.getElementById('imagenesPendientes');
+        var selected = Array.from(document.querySelectorAll('#imagenesActuales .imagen-item'))
+            .filter(function (card) { return card.querySelector('input[name="eliminar_imagenes"]')?.checked; });
+        panel.replaceChildren();
+        panel.hidden = selected.length === 0;
+        if (!selected.length) return;
+        var heading = document.createElement('strong');
+        heading.textContent = selected.length === 1 ? 'Imagen lista para quitar:' : selected.length + ' imágenes listas para quitar:';
+        panel.appendChild(heading);
+        selected.forEach(function (card, index) {
+            var item = document.createElement('span');
+            item.className = 'pending-image-delete';
+            var label = document.createElement('span');
+            label.textContent = 'Imagen ' + (index + 1);
+            var undo = document.createElement('button');
+            undo.type = 'button';
+            undo.textContent = 'Restaurar';
+            undo.addEventListener('click', function () {
+                var checkbox = card.querySelector('input[name="eliminar_imagenes"]');
+                checkbox.checked = false;
+                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            item.append(label, undo);
+            panel.appendChild(item);
+        });
     }
+    function bindResourceCheckbox(checkbox) {
+        checkbox.addEventListener('change', function () {
+            var item = checkbox.closest('[data-resource-item]');
+            item?.classList.toggle('is-marked-delete', checkbox.checked);
+            if (item?.dataset.resourceKind === 'imagen') updatePendingImageDeletes();
+        });
+    }
+    document.querySelectorAll('[data-resource-item] input[type="checkbox"]').forEach(function (checkbox) {
+        bindResourceCheckbox(checkbox);
+    });
+
+    var videoList = document.getElementById('videoUrlList');
+    function wireVideoEntry(entry) {
+        var input = entry.querySelector('.video-url-input');
+        var preview = entry.querySelector('.video-preview');
+        var remove = entry.querySelector('.remove-video-url');
+        renderPreview(preview, input.value);
+        input.addEventListener('input', function () { renderPreview(preview, input.value); });
+        remove.addEventListener('click', function () {
+            entry.remove();
+            updateVideoRemoveButtons();
+        });
+    }
+    function updateVideoRemoveButtons() {
+        var entries = Array.from(videoList.querySelectorAll('.video-url-entry'));
+        entries.forEach(function (entry) { entry.querySelector('.remove-video-url').hidden = entries.length < 2; });
+    }
+    videoList.querySelectorAll('.video-url-entry').forEach(wireVideoEntry);
+    document.getElementById('agregarVideoUrl').addEventListener('click', function () {
+        var entry = document.createElement('div');
+        entry.className = 'video-url-entry';
+        var row = document.createElement('div');
+        row.className = 'video-url-row';
+        var input = document.createElement('input');
+        input.className = 'video-url-input';
+        input.type = 'url';
+        input.name = 'videos';
+        input.placeholder = 'https://www.youtube.com/watch?v=…';
+        input.autocomplete = 'url';
+        var remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'remove-video-url';
+        remove.setAttribute('aria-label', 'Quitar enlace');
+        var removeIcon = document.createElement('i');
+        removeIcon.className = 'fas fa-xmark';
+        remove.appendChild(removeIcon);
+        row.append(input, remove);
+        var preview = document.createElement('div');
+        preview.className = 'video-preview video-preview-new';
+        preview.setAttribute('aria-live', 'polite');
+        entry.append(row, preview);
+        videoList.appendChild(entry);
+        wireVideoEntry(entry);
+        updateVideoRemoveButtons();
+        input.focus();
+    });
+    updateVideoRemoveButtons();
+
+    function updateImagePreviews() {
+        var input = document.getElementById('nuevasImagenes');
+        var previewBox = document.getElementById('vistaPreviaImagenes');
+        previewBox.replaceChildren();
+        Array.from(input.files).forEach(function (file, index) {
+            var card = document.createElement('div');
+            card.className = 'upload-preview-item';
+            var image = document.createElement('img');
+            image.src = URL.createObjectURL(file);
+            image.alt = file.name;
+            var remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'upload-preview-remove';
+            remove.setAttribute('aria-label', 'Quitar ' + file.name);
+            remove.innerHTML = '<i class="fas fa-xmark"></i>';
+            remove.addEventListener('click', function () {
+                var transfer = new DataTransfer();
+                Array.from(input.files).forEach(function (selected, selectedIndex) { if (selectedIndex !== index) transfer.items.add(selected); });
+                input.files = transfer.files;
+                updateImagePreviews();
+            });
+            card.append(image, remove);
+            previewBox.appendChild(card);
+        });
+    }
+    document.getElementById('nuevasImagenes').addEventListener('change', updateImagePreviews);
+
+    function updateFilePreviews() {
+        var input = document.getElementById('nuevosArchivos');
+        var previewBox = document.getElementById('vistaPreviaArchivos');
+        previewBox.replaceChildren();
+        Array.from(input.files).forEach(function (file, index) {
+            var chip = document.createElement('div');
+            chip.className = 'upload-file-chip';
+            var icon = document.createElement('i');
+            icon.className = 'fas fa-file-lines';
+            var name = document.createElement('span');
+            name.textContent = file.name;
+            var remove = document.createElement('button');
+            remove.type = 'button';
+            remove.setAttribute('aria-label', 'Quitar ' + file.name);
+            remove.innerHTML = '<i class="fas fa-xmark"></i>';
+            remove.addEventListener('click', function () {
+                var transfer = new DataTransfer();
+                Array.from(input.files).forEach(function (selected, selectedIndex) { if (selectedIndex !== index) transfer.items.add(selected); });
+                input.files = transfer.files;
+                updateFilePreviews();
+            });
+            chip.append(icon, name, remove);
+            previewBox.appendChild(chip);
+        });
+    }
+    document.getElementById('nuevosArchivos').addEventListener('change', updateFilePreviews);
+
+    var form = document.getElementById('form-editar-tarea');
+    var saveButton = form.querySelector('.btn-guardar');
+    var feedback = document.getElementById('feedbackEdicionTarea');
+    function showFeedback(message, type) {
+        feedback.textContent = message;
+        feedback.className = 'tarea-save-feedback is-visible is-' + type;
+    }
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var originalButton = saveButton.innerHTML;
+        var redirecting = false;
+        saveButton.disabled = true;
+        saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando…';
+        feedback.className = 'tarea-save-feedback';
+        try {
+            var response = await fetch(form.action || window.location.href, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            var data = await response.json();
+            if (!response.ok || !data.success) {
+                var errors = data.errors ? Object.entries(data.errors).flatMap(function ([field, items]) {
+                    return items.map(function (item) { return (field === '__all__' ? '' : field + ': ') + item.message; });
+                }).join(' · ') : (data.message || 'Revisa los datos e inténtalo de nuevo.');
+                throw new Error(errors || 'No se pudieron guardar los cambios.');
+            }
+            redirecting = true;
+            saveButton.innerHTML = '<i class="fas fa-check"></i> ¡Guardado! Volviendo a tareas…';
+            window.setTimeout(function () {
+                window.location.assign(data.redirect_url || "{% url 'listar_tareas' %}");
+            }, 250);
+        } catch (error) {
+            showFeedback(error.message || 'Ocurrió un error al guardar.', 'error');
+        } finally {
+            if (!redirecting) {
+                saveButton.disabled = false;
+                saveButton.innerHTML = originalButton;
+            }
+        }
+    });
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var container = document.getElementById('preguntasNuevasContainer');
+    var addButton = document.getElementById('agregarPreguntaEdicion');
+    var total = document.getElementById('newQuestionTotal');
+    if (!container || !addButton) return;
+
+    function updateQuestionNames() {
+        var cards = Array.from(container.querySelectorAll('.new-question-card'));
+        cards.forEach(function (card, index) {
+            card.dataset.index = index;
+            card.querySelector('[data-question-title]').textContent = 'Pregunta nueva ' + (index + 1);
+            card.querySelector('[data-question-description]').name = 'pregunta_' + index;
+            var type = card.querySelector('[data-question-type]');
+            type.name = 'tipo_' + index;
+            type.id = 'tipoNueva_' + index;
+            card.querySelector('[data-question-score]').name = 'puntaje_' + index;
+            var textAnswer = card.querySelector('[data-answer-text]');
+            if (textAnswer) textAnswer.name = 'respuesta_correcta_' + index;
+            card.querySelectorAll('[data-option-index]').forEach(function (option) { option.name = 'opciones_' + index + '[]'; });
+            var correct = card.querySelector('[data-correct-option]');
+            if (correct) correct.name = 'correcta_' + index;
+        });
+        total.textContent = cards.length + (cards.length === 1 ? ' nueva' : ' nuevas');
+    }
+
+    function buildAnswerFields(card, index) {
+        var area = card.querySelector('.new-question-answers');
+        area.replaceChildren();
+        var type = card.querySelector('[data-question-type]').value;
+        if (type === 'texto') {
+            var label = document.createElement('label');
+            label.textContent = 'Respuesta correcta (opcional)';
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.dataset.answerText = '';
+            input.name = 'respuesta_correcta_' + index;
+            input.placeholder = 'Escribe la respuesta esperada';
+            area.append(label, input);
+            return;
+        }
+        var title = document.createElement('label');
+        title.textContent = 'Opciones de respuesta';
+        area.appendChild(title);
+        ['A', 'B', 'C', 'D'].forEach(function (letter, optionIndex) {
+            var row = document.createElement('div');
+            row.className = 'option-answer-row';
+            var badge = document.createElement('span');
+            badge.textContent = letter;
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'opciones_' + index + '[]';
+            input.dataset.optionIndex = optionIndex;
+            input.required = optionIndex < 2;
+            input.placeholder = 'Escribe la opción ' + letter;
+            row.append(badge, input);
+            area.appendChild(row);
+        });
+        var correctLabel = document.createElement('label');
+        correctLabel.textContent = '¿Cuál es la respuesta correcta?';
+        var correct = document.createElement('select');
+        correct.dataset.correctOption = '';
+        correct.name = 'correcta_' + index;
+        ['A', 'B', 'C', 'D'].forEach(function (letter) {
+            var option = document.createElement('option');
+            option.value = letter;
+            option.textContent = 'Opción ' + letter;
+            correct.appendChild(option);
+        });
+        area.append(correctLabel, correct);
+    }
+
+    function addQuestion() {
+        var card = document.createElement('article');
+        card.className = 'new-question-card';
+        card.innerHTML = '<div class="new-question-card-header"><strong><i class="fas fa-sparkles" aria-hidden="true"></i><span data-question-title></span></strong><button class="remove-new-question" type="button" aria-label="Quitar pregunta"><i class="fas fa-trash-can" aria-hidden="true"></i></button></div><label>Escribe el enunciado</label><textarea rows="2" required placeholder="¿Qué quieres preguntar?" data-question-description></textarea><div class="new-question-fields"><div><label>Tipo de respuesta</label><select data-question-type><option value="texto">Respuesta abierta</option><option value="opcion">Opción múltiple</option></select></div><div><label>Puntaje</label><input type="number" value="1" min="0.01" max="9.99" step="0.01" required data-question-score></div></div><div class="new-question-answers"></div>';
+        var type = card.querySelector('[data-question-type]');
+        type.addEventListener('change', function () { buildAnswerFields(card, Number(card.dataset.index)); });
+        card.querySelector('.remove-new-question').addEventListener('click', function () {
+            card.remove();
+            updateQuestionNames();
+        });
+        container.appendChild(card);
+        updateQuestionNames();
+        buildAnswerFields(card, Number(card.dataset.index));
+        card.querySelector('[data-question-description]').focus();
+    }
+
+    addButton.addEventListener('click', addQuestion);
+});
+</script>
 
 {% endblock %}

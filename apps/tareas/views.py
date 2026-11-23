@@ -2,6 +2,13 @@ from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.db import transaction
+from django.contrib import messages
+from django.urls import reverse
+from django.conf import settings
+from django.core.mail import send_mass_mail
+import logging
 
 from .models import (
     Tareas,
@@ -22,6 +29,65 @@ from .services import (
 
 from apps.eventos.models import Evento
 from apps.docentes.models import Docente
+from apps.alumnos.models import Alumnos
+
+
+logger = logging.getLogger(__name__)
+
+
+def notificar_alumnos_nueva_tarea(request, tarea):
+    """Send a private email notice to active students enrolled in the task course."""
+    if not tarea.curso:
+        return 0, "La tarea se creó, pero no se eligió un curso para notificar."
+
+    alumnos = Alumnos.objects.filter(
+        curso=tarea.curso,
+        activo=True,
+        usuario__is_active=True,
+        usuario__rol__nombre__iexact="alumno",
+    ).exclude(
+        usuario__email__isnull=True,
+    ).exclude(
+        usuario__email__exact="",
+    ).select_related("usuario")
+
+    correos_vistos = set()
+    destinatarios = []
+    for alumno in alumnos:
+        correo = (alumno.usuario.email or "").strip().lower()
+        if correo and correo not in correos_vistos:
+            correos_vistos.add(correo)
+            destinatarios.append((alumno.usuario.first_name or alumno.usuario.username, correo))
+
+    if not destinatarios:
+        return 0, f"La tarea se creó, pero no hay alumnos activos con correo en {tarea.curso.nombre}."
+
+    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+        return 0, "La tarea se creó, pero el servicio de correo no está configurado."
+
+    fecha_entrega = tarea.fecha_entrega.strftime("%d/%m/%Y") if tarea.fecha_entrega else "Sin fecha límite"
+    enlace = request.build_absolute_uri(reverse("login"))
+    asunto = f"Nueva tarea: {tarea.titulo}"
+    mensajes = []
+    for nombre, correo in destinatarios:
+        cuerpo = (
+            f"Hola {nombre},\n\n"
+            f"Se asignó una nueva tarea para tu curso {tarea.curso.nombre}.\n\n"
+            f"Tarea: {tarea.titulo}\n"
+            f"Materia: {tarea.clase or 'Sin materia'}\n"
+            f"Fecha de entrega: {fecha_entrega}\n\n"
+            f"{tarea.descripcion or ''}\n\n"
+            f"Ingresa a Educatec para revisar la actividad: {enlace}\n"
+        )
+        mensajes.append((asunto, cuerpo, settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER, [correo]))
+
+    try:
+        enviados = send_mass_mail(tuple(mensajes), fail_silently=False)
+    except Exception:
+        logger.exception("No se pudieron enviar las notificaciones de la tarea %s", tarea.pk)
+        return 0, "La tarea se creó, pero ocurrió un error al enviar los correos."
+
+    return enviados, None
 
 
 # ============================================================
@@ -32,7 +98,11 @@ def Listar_tareas(request):
 
     tareas = Tareas.objects.select_related(
         "clase", "curso", "docente__usuario"
-    ).all()
+    ).prefetch_related("imagenes").all()
+    for tarea in tareas:
+        tarea.imagenes_lista = [
+            imagen for imagen in tarea.imagenes.all() if imagen.imagen
+        ]
 
     return render(
         request,
@@ -122,6 +192,17 @@ def Crear_tarea(request):
                 tarea
             )
 
+            enviados, aviso_correo = notificar_alumnos_nueva_tarea(request, tarea)
+            if enviados:
+                messages.success(
+                    request,
+                    f"Tarea creada. Se envió un aviso por correo a {enviados} alumno(s) de {tarea.curso.nombre}.",
+                )
+            else:
+                messages.success(request, "La tarea se creó correctamente.")
+            if aviso_correo:
+                messages.warning(request, aviso_correo)
+
             return redirect(
                 "listar_tareas"
             )
@@ -164,65 +245,59 @@ def Editar_tarea(request, tarea_id):
         )
 
         if tarea_form.is_valid():
+            with transaction.atomic():
+                tarea = tarea_form.save()
 
-            tarea = tarea_form.save()
+                Imagen.objects.filter(
+                    tarea=tarea,
+                    id__in=request.POST.getlist("eliminar_imagenes"),
+                ).delete()
+                ArchivoTarea.objects.filter(
+                    tarea=tarea,
+                    id__in=request.POST.getlist("eliminar_archivos"),
+                ).delete()
+                tarea.video_set.filter(
+                    id__in=request.POST.getlist("eliminar_videos"),
+                ).delete()
 
-            # ------------------------------------------------
-            # ELIMINAR IMÁGENES
-            # ------------------------------------------------
+                for imagen in request.FILES.getlist("imagenes"):
+                    Imagen.objects.create(tarea=tarea, imagen=imagen)
+                for archivo in request.FILES.getlist("archivos"):
+                    ArchivoTarea.objects.create(tarea=tarea, archivo=archivo)
+                for video in request.POST.getlist("videos"):
+                    if video.strip():
+                        Video.objects.create(tarea=tarea, video=video.strip())
 
-            imagenes_eliminar = request.POST.getlist(
-                "eliminar_imagenes"
-            )
+                Crear_preguntas(request, tarea)
 
-            Imagen.objects.filter(
-                id__in=imagenes_eliminar
-            ).delete()
-
-            # ------------------------------------------------
-            # ELIMINAR ARCHIVOS
-            # ------------------------------------------------
-
-            archivos_eliminar = request.POST.getlist(
-                "eliminar_archivos"
-            )
-
-            ArchivoTarea.objects.filter(
-                id__in=archivos_eliminar
-            ).delete()
-
-            # ------------------------------------------------
-            # ELIMINAR VIDEOS
-            # ------------------------------------------------
-
-            videos_eliminar = request.POST.getlist(
-                "eliminar_videos"
-            )
-
-            Video.objects.filter(
-                id__in=videos_eliminar
-            ).delete()
-
-            # ------------------------------------------------
-            # AGREGAR NUEVOS VIDEOS
-            # ------------------------------------------------
-
-            videos = request.POST.getlist(
-                "videos"
-            )
-
-            for video in videos:
-
-                if video.strip():
-
-                    Video.objects.create(
-                        tarea=tarea,
-                        video=video
-                    )
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                messages.success(request, "¡Listo! Los cambios de la tarea se guardaron correctamente.")
+                return JsonResponse({
+                    "success": True,
+                    "message": "¡Cambios guardados! La tarea ya está actualizada.",
+                    "redirect_url": reverse("listar_tareas"),
+                    "imagenes": [
+                        {"id": item.pk, "url": item.imagen.url, "name": item.imagen.name.rsplit("/", 1)[-1]}
+                        for item in tarea.imagenes.all() if item.imagen
+                    ],
+                    "archivos": [
+                        {"id": item.pk, "name": item.archivo.name.rsplit("/", 1)[-1], "url": item.archivo.url}
+                        for item in tarea.archivos.all() if item.archivo
+                    ],
+                    "videos": [
+                        {"id": item.pk, "url": str(item.video)}
+                        for item in tarea.video_set.all()
+                    ],
+                })
 
             return redirect(
                 "listar_tareas"
             )
+        elif request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({
+                "success": False,
+                "errors": tarea_form.errors.get_json_data(),
+            }, status=400)
 
     else:
 

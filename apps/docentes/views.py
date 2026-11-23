@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
-from apps.user.models import Usuario
+from apps.user.models import Usuario, Roles
 
 from apps.docentes.models import (
     Docente,
@@ -72,6 +72,9 @@ def Listar_docentes(request):
         "admin/docente/docentes.html",
         {
             "docentes": docentes,
+            "usuarios_para_roles": Usuario.objects.filter(rol__nombre__iexact="docente").select_related("rol").order_by("last_name", "first_name", "username"),
+            "roles_para_edicion": Roles.objects.exclude(nombre__iexact="docente").order_by("nombre"),
+            "rol_origen_cambio": "docente",
             "docentes_con_cursos": sum(bool(docente.cursos_asignados) for docente in docentes),
             "docentes_sin_cursos": sum(not docente.cursos_asignados for docente in docentes),
         }

@@ -539,6 +539,43 @@
         .tareas-page .actions { flex-direction:column; padding-right:4px; }
     }
 
+    /* Tarjetas verticales con galería por tarea */
+    .tareas-page .tareas-workspace,.tareas-page .table-card,.tareas-page .table-responsive { overflow:visible; }
+    .tareas-page .tasks-table tbody { grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr)); align-items:stretch; gap:20px; padding:22px; }
+    .tareas-page .tasks-table tbody tr.task-row { position:relative; z-index:0; display:flex; flex-direction:column; align-items:stretch; min-height:720px; overflow:hidden; border:1px solid #e4eaf3; border-radius:20px; background:#fff; box-shadow:0 8px 24px rgba(30,46,76,.055); transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease; }
+    .tareas-page .tasks-table tbody tr.task-row:hover { z-index:2; transform:translateY(-4px) scale(1.035); border-color:#c5d3ee; background:#fff; box-shadow:0 20px 42px rgba(30,46,76,.16); }
+    .tareas-page .tasks-table tbody tr.task-row td { display:block; padding:13px 18px; border-bottom:1px solid #f0f2f7; color:#536178; font-size:14px; }
+    .tareas-page .tasks-table tbody tr.task-row td.task-image-cell { padding:0; border:0; }
+    .task-image-carousel { position:relative; height:285px; overflow:hidden; background:linear-gradient(145deg,#eef2ff,#e8f4ff); }
+    .task-carousel-image { display:none; width:100%; height:100%; object-fit:cover; }
+    .task-carousel-image.is-active { display:block; animation:taskImageIn .2s ease; }
+    .task-image-placeholder { display:flex; height:100%; align-items:center; justify-content:center; flex-direction:column; gap:10px; color:#8c9bb5; font-size:13px; font-weight:650; }
+    .task-image-placeholder i { display:grid; width:54px; height:54px; place-items:center; border-radius:17px; background:rgba(255,255,255,.75); color:#8298c5; font-size:22px; }
+    .task-carousel-arrow { position:absolute; top:50%; display:grid; width:42px; height:42px; transform:translateY(-50%); place-items:center; border:1px solid rgba(255,255,255,.75); border-radius:50%; background:rgba(20,32,57,.68); color:#fff; cursor:pointer; opacity:0; pointer-events:none; backdrop-filter:blur(6px); transition:opacity .18s ease,background .16s ease,transform .16s ease; }
+    .task-image-carousel:hover .task-carousel-arrow,.task-image-carousel:focus-within .task-carousel-arrow { opacity:1; pointer-events:auto; }
+    .task-carousel-arrow:hover { transform:translateY(-50%) scale(1.08); background:rgba(20,32,57,.9); }
+    .task-carousel-prev { left:12px; }.task-carousel-next { right:12px; }
+    .task-carousel-count { position:absolute; right:12px; bottom:12px; padding:6px 10px; border:1px solid rgba(255,255,255,.65); border-radius:999px; background:rgba(20,32,57,.62); color:#fff; font-size:11px; font-weight:700; backdrop-filter:blur(6px); }
+    .tareas-page .tasks-table tbody tr.task-row td.task-card-title { padding:17px 18px 12px; border:0; }
+    .tareas-page .tasks-table tbody tr.task-row td.task-card-title { display:block; }
+    .tareas-page .task-title { align-items:flex-start; gap:12px; }
+    .tareas-page .task-icon { flex:0 0 40px; width:40px; height:40px; }
+    .tareas-page .task-name { display:-webkit-box; overflow:hidden; color:#24324a; font-size:17px; line-height:1.35; white-space:normal; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    .tareas-page .tasks-table tbody tr.task-row td[data-label] { display:grid; grid-template-columns:115px minmax(0,1fr); align-items:center; gap:10px; min-height:48px; }
+    .tareas-page .tasks-table tbody tr.task-row td[data-label]::before { content:attr(data-label); color:#8b96a9; font-size:11px; font-weight:750; letter-spacing:.04em; text-transform:uppercase; }
+    .tareas-page .badge-course,.tareas-page .badge-status { justify-self:start; font-size:12px; }
+    .tareas-page .task-card-actions { margin-top:auto; border-bottom:0 !important; }
+    .tareas-page .task-card-actions .actions { justify-content:flex-start; flex-direction:row; }
+    @keyframes taskImageIn { from { opacity:.45; } to { opacity:1; } }
+    @media(max-width:720px) {
+        .tareas-page .tasks-table tbody { grid-template-columns:1fr; padding:12px; }
+        .tareas-page .tasks-table tbody tr.task-row { min-height:0; }
+        .tareas-page .tasks-table tbody tr.task-row:hover { transform:translateY(-3px) scale(1.015); }
+        .tareas-page .tasks-table tbody tr.task-row td[data-label] { grid-template-columns:100px minmax(0,1fr); }
+        .task-image-carousel { height:250px; }
+    }
+    @media(hover:none) { .task-carousel-arrow { opacity:1; pointer-events:auto; } }
+
 </style>
 
 
@@ -660,7 +697,20 @@
 
                     <tr class="task-row" data-listing-status="{% if tarea.activa %}active{% else %}inactive{% endif %}">
 
-                        <td>
+                        <td class="task-image-cell">
+                            <div class="task-image-carousel" data-task-carousel aria-label="Imágenes de {{ tarea.titulo }}">
+                                {% for imagen in tarea.imagenes_lista %}
+                                    <img class="task-carousel-image{% if forloop.first %} is-active{% endif %}" src="{{ imagen.imagen.url }}" alt="Imagen {{ forloop.counter }} de {{ tarea.titulo }}" loading="lazy" data-carousel-image>
+                                {% empty %}<div class="task-image-placeholder"><i class="fas fa-image" aria-hidden="true"></i><span>Sin imagen</span></div>{% endfor %}
+                                {% if tarea.imagenes_lista|length > 1 %}
+                                    <button class="task-carousel-arrow task-carousel-prev" type="button" aria-label="Imagen anterior" data-carousel-prev><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+                                    <button class="task-carousel-arrow task-carousel-next" type="button" aria-label="Imagen siguiente" data-carousel-next><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                                    <span class="task-carousel-count"><span data-carousel-current>1</span> / {{ tarea.imagenes_lista|length }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+
+                        <td class="task-card-title">
 
                             <div class="task-title">
 
@@ -677,12 +727,12 @@
                         </td>
 
 
-                        <td>
+                        <td data-label="Materia">
                             {{ tarea.clase|default:"Sin materia" }}
                         </td>
 
 
-                        <td>
+                        <td data-label="Curso">
 
                             {% if tarea.curso %}
 
@@ -701,7 +751,7 @@
                         </td>
 
 
-                        <td>
+                        <td data-label="Docente">
 
                             <span class="teacher">
                                 {{ tarea.docente|default:"Sin docente" }}
@@ -710,7 +760,7 @@
                         </td>
 
 
-                        <td>
+                        <td data-label="Fecha límite">
 
                             {% if tarea.fecha_entrega %}
 
@@ -733,7 +783,7 @@
                         </td>
 
 
-                        <td>
+                        <td data-label="Estado">
 
                             {% if tarea.estado %}
 
@@ -756,7 +806,7 @@
                         </td>
 
 
-                        <td>
+                        <td data-label="Entregas">
 
                             <span class="text-muted">
                                 {{ tarea.entregas|default:"0" }}/{{ tarea.total_alumnoss|default:"0" }}
@@ -765,7 +815,7 @@
                         </td>
 
 
-                        <td>
+                        <td class="task-card-actions" data-label="Acciones">
 
                             <div class="actions">
 
@@ -1060,6 +1110,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }));
     if (input) input.addEventListener("input", refreshList);
     refreshList();
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("[data-task-carousel]").forEach(function (carousel) {
+        const images = Array.from(carousel.querySelectorAll("[data-carousel-image]"));
+        if (images.length < 2) return;
+        let activeIndex = 0;
+        const counter = carousel.querySelector("[data-carousel-current]");
+        function showImage(nextIndex) {
+            activeIndex = (nextIndex + images.length) % images.length;
+            images.forEach((image, index) => image.classList.toggle("is-active", index === activeIndex));
+            if (counter) counter.textContent = String(activeIndex + 1);
+        }
+        carousel.querySelector("[data-carousel-prev]")?.addEventListener("click", () => showImage(activeIndex - 1));
+        carousel.querySelector("[data-carousel-next]")?.addEventListener("click", () => showImage(activeIndex + 1));
+    });
 });
 </script>
 {% endblock %}

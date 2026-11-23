@@ -512,6 +512,7 @@
 </style>
 
 
+{% include 'admin/partials/editar_roles_masivo.html' %}
 <div class="container-fluid alumnos-page listing-page">
 
     <!-- ENCABEZADO -->
@@ -599,6 +600,8 @@
                 >
 
             </div>
+
+            <button class="role-edit-trigger" type="button" data-bs-toggle="modal" data-bs-target="#editarRolesModal"><i class="fas fa-user-gear" aria-hidden="true"></i>Editar rol de alumnos</button>
 
         </div>
 

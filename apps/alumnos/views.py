@@ -1,7 +1,7 @@
 ﻿from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
-from apps.user.models import Usuario
+from apps.user.models import Usuario, Roles
 from apps.alumnos.models import Alumnos, AcudienteAlumno
 from apps.user.forms import EditarUsuarioForm
 from apps.alumnos.forms import AlumnoForm, AcudienteAlumnoForm
@@ -48,6 +48,9 @@ def administrar_acudientes(request):
 
     return render(request, "admin/acudientes/acudientes.html", {
         "acudientes": acudientes,
+        "usuarios_para_roles": acudientes,
+        "roles_para_edicion": Roles.objects.exclude(nombre__iexact="acudiente").order_by("nombre"),
+        "rol_origen_cambio": "acudiente",
         "relaciones": relaciones,
         "relacion_form": relacion_form,
         "editar_relacion_form": AcudienteAlumnoForm(prefix="editar"),
@@ -91,6 +94,9 @@ def Listar_alumnos(request):
     )
     return render(request, 'admin/alumnos/alumnos.html', {
         "alumnos": alumnos,
+        "usuarios_para_roles": Usuario.objects.filter(rol__nombre__iexact="alumno").select_related("rol").order_by("last_name", "first_name", "username"),
+        "roles_para_edicion": Roles.objects.exclude(nombre__iexact="alumno").order_by("nombre"),
+        "rol_origen_cambio": "alumno",
         "alumnos_con_curso": alumnos.filter(curso__isnull=False).count(),
         "alumnos_sin_curso": alumnos.filter(curso__isnull=True).count(),
     })

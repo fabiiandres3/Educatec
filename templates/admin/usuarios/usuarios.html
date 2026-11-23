@@ -500,6 +500,7 @@
 </style>
 
 
+{% include 'admin/partials/editar_roles_masivo.html' %}
 <div class="container-fluid usuarios-page listing-page">
 
     <!-- HEADER -->
@@ -567,6 +568,8 @@
             >
 
         </div>
+
+        <button class="role-edit-trigger" type="button" data-bs-toggle="modal" data-bs-target="#editarRolesModal"><i class="fas fa-user-gear" aria-hidden="true"></i>Editar rol de usuarios</button>
 
     </div>
 

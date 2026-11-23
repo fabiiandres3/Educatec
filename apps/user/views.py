@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -652,9 +653,43 @@ def Listar_usuarios(request):
 
     return render(request, "admin/usuarios/usuarios.html", {
         "usuarios": usuarios,
+        "usuarios_para_roles": usuarios,
+        "roles_para_edicion": Roles.objects.exclude(nombre__iexact="usuario").order_by("nombre"),
+        "rol_origen_cambio": "usuario",
         "usuarios_activos": usuarios.filter(is_active=True).count(),
         "usuarios_inactivos": usuarios.filter(is_active=False).count(),
     })
+
+
+@decorators.rol_requerido("administrador")
+def editar_roles_masivo(request):
+    if request.method != "POST":
+        return redirect("dashboard_administrador")
+
+    usuario_ids = list(dict.fromkeys(request.POST.getlist("usuarios")))
+    rol_origen = (request.POST.get("rol_origen") or "").strip().lower()
+    destinos_permitidos = {"usuario", "alumno", "docente", "acudiente"}
+    if rol_origen not in destinos_permitidos:
+        messages.error(request, "No se pudo validar el rol de origen.")
+        return redirect("dashboard_administrador")
+    rol = get_object_or_404(Roles.objects.exclude(nombre__iexact=rol_origen), pk=request.POST.get("rol_id"))
+    usuarios = list(Usuario.objects.filter(pk__in=usuario_ids, rol__nombre__iexact=rol_origen))
+    if not usuarios:
+        messages.error(request, "Selecciona al menos un usuario para cambiar su rol.")
+        return redirect(request.POST.get("volver_a") or "dashboard_administrador")
+    if len(usuarios) != len(usuario_ids):
+        messages.error(request, f"La selección ya no coincide con el listado de cuentas con rol {rol_origen}.")
+        destino = request.POST.get("volver_a") or "dashboard_administrador"
+        return redirect(destino if destino in {"listar_usuarios", "listar_alumnos", "listar_docentes", "administrar_acudientes"} else "dashboard_administrador")
+
+    with transaction.atomic():
+        for usuario in usuarios:
+            usuario.rol = rol
+            usuario.save(update_fields=["rol"])
+
+    messages.success(request, f"Se actualizó el rol de {len(usuarios)} usuario(s) a {rol.nombre}.")
+    destino = request.POST.get("volver_a") or "dashboard_administrador"
+    return redirect(destino if destino in {"listar_usuarios", "listar_alumnos", "listar_docentes", "administrar_acudientes"} else "dashboard_administrador")
 
 
 # =========================================================

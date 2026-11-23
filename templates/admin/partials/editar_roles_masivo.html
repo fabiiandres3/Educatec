@@ -1,0 +1,102 @@
+<div class="modal fade" id="editarRolesModal" tabindex="-1" aria-labelledby="editarRolesTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content role-modal-content">
+            <form method="post" action="{% url 'editar_roles_masivo' %}">
+                {% csrf_token %}
+                <input type="hidden" name="volver_a" value="{{ request.resolver_match.url_name }}">
+                <input type="hidden" name="rol_origen" value="{{ rol_origen_cambio }}">
+                <div class="modal-header role-modal-header">
+                    <span class="role-modal-icon"><i class="fas fa-user-gear" aria-hidden="true"></i></span>
+                    <div><span class="role-modal-kicker">GESTIÓN DE CUENTAS</span><h2 class="modal-title fs-5" id="editarRolesTitulo">Cambiar rol de {{ rol_origen_cambio }}s</h2><p>Selecciona las cuentas y el rol que tendrán.</p></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body role-modal-body">
+                    <div class="role-modal-tools"><label class="role-search"><i class="fas fa-search" aria-hidden="true"></i><input id="buscarUsuariosRoles" type="search" placeholder="Busca por nombre, correo o usuario"></label><span class="role-selection-count"><strong id="contadorUsuariosRoles">0</strong> seleccionados</span></div>
+                    <div class="role-list-heading">
+                        <label class="role-select-all"><input class="form-check-input mt-0" type="checkbox" id="seleccionarTodosRoles"><span>Seleccionar todos los visibles</span></label>
+                        <span>CUENTAS CON ROL {{ rol_origen_cambio|upper }}</span>
+                    </div>
+                    <div class="role-user-list">
+                        {% for cuenta in usuarios_para_roles %}
+                            <label class="role-user-row usuario-rol-opcion" data-busqueda="{{ cuenta.get_full_name|default:cuenta.username|lower }} {{ cuenta.username|lower }} {{ cuenta.email|lower }}">
+                                <input class="form-check-input usuario-rol-check" type="checkbox" name="usuarios" value="{{ cuenta.pk }}">
+                                <span class="role-user-avatar">{{ cuenta.first_name|default:cuenta.username|first|upper }}</span>
+                                <span class="role-user-copy"><strong>{{ cuenta.get_full_name|default:cuenta.username }}</strong><small>{{ cuenta.email|default:cuenta.username }}</small></span>
+                                <span class="role-current-badge">{{ cuenta.rol.nombre|default:"Sin rol" }}</span>
+                            </label>
+                        {% empty %}
+                            <p class="role-empty"><i class="fas fa-circle-info" aria-hidden="true"></i> No hay cuentas con este rol.</p>
+                        {% endfor %}
+                    </div>
+                    <div class="role-destination"><label for="nuevoRolMasivo">Asignar nuevo rol</label><select class="form-select" id="nuevoRolMasivo" name="rol_id" required><option value="">Selecciona el rol de destino</option>{% for rol in roles_para_edicion %}<option value="{{ rol.pk }}">{{ rol.nombre|title }}</option>{% endfor %}</select></div>
+                </div>
+                <div class="modal-footer role-modal-footer">
+                    <span class="role-footer-note"><i class="fas fa-shield-halved" aria-hidden="true"></i> Solo se actualizarán cuentas con rol {{ rol_origen_cambio }}.</span>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary role-save-button" id="guardarRolesMasivo" disabled><i class="fas fa-check me-2" aria-hidden="true"></i>Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<style>
+    .role-edit-trigger{display:inline-flex;align-items:center;gap:9px;padding:10px 15px;border:1px solid #cbd8ff;border-radius:11px;background:#f3f6ff;color:#3454a1;font-size:12px;font-weight:750;white-space:nowrap;transition:.18s ease}
+    .role-edit-trigger:hover{transform:translateY(-1px);border-color:#9db3f5;background:#eaf0ff;color:#263f89}
+    .role-modal-content{overflow:hidden;border:1px solid #e4e9f2;border-radius:20px;box-shadow:0 24px 80px rgba(15,23,42,.22)}
+    .role-modal-header{display:flex;align-items:center;gap:15px;padding:24px 26px;border:0;background:linear-gradient(120deg,#f6f8ff,#edf3ff)}
+    .role-modal-icon{display:grid;flex:0 0 48px;place-items:center;width:48px;height:48px;border-radius:15px;background:#e1eaff;color:#4169cf;font-size:19px}
+    .role-modal-kicker{display:block;margin-bottom:5px;color:#6475a4;font-size:11px;font-weight:800;letter-spacing:.12em}
+    .role-modal-header h2{margin:0;color:#202b43;font-size:23px;font-weight:750}
+    .role-modal-header p{margin:5px 0 0;color:#7a8498;font-size:15px}
+    .role-modal-body{padding:20px 26px 24px}
+    .role-modal-tools{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .role-search{position:relative;display:block;flex:1;margin:0}
+    .role-search i{position:absolute;top:50%;left:14px;transform:translateY(-50%);color:#98a2b3;font-size:13px}
+    .role-search input{width:100%;height:47px;padding:0 14px 0 39px;border:1px solid #e0e5ee;border-radius:11px;outline:0;background:#fbfcfe;color:#29354a;font-size:15px}
+    .role-search input:focus,.role-destination select:focus{border-color:#9ab1f1;box-shadow:0 0 0 3px rgba(74,107,204,.11)}
+    .role-selection-count{padding:9px 12px;border-radius:9px;background:#f1f4fa;color:#68758b;font-size:13px;white-space:nowrap}
+    .role-selection-count strong{color:#3e5db5}
+    .role-list-heading{display:flex;align-items:center;justify-content:space-between;padding:0 11px 10px;color:#8792a5;font-size:11px;font-weight:800;letter-spacing:.07em}
+    .role-select-all{display:flex;align-items:center;gap:9px;margin:0;color:#526078;font-size:14px;font-weight:650;letter-spacing:0}
+    .role-select-all input,.role-user-row input{width:16px;height:16px;margin:0;border-color:#cbd3e0;cursor:pointer}
+    .role-user-list{max-height:260px;overflow:auto;border:1px solid #e9edf3;border-radius:12px;background:#fff}
+    .role-user-row{display:flex;align-items:center;gap:12px;min-height:68px;margin:0;padding:10px 14px;border-bottom:1px solid #eff1f5;cursor:pointer;transition:background .15s}
+    .role-user-row:last-child{border-bottom:0}.role-user-row:hover{background:#f8faff}.role-user-row:has(input:checked){background:#f1f5ff}
+    .role-user-avatar{display:grid;flex:0 0 34px;place-items:center;width:34px;height:34px;border-radius:11px;background:#eef2ff;color:#526dc1;font-size:12px;font-weight:800}
+    .role-user-copy{display:grid;flex:1;min-width:0;gap:4px}.role-user-copy strong{overflow:hidden;color:#2d374b;font-size:15px;text-overflow:ellipsis;white-space:nowrap}.role-user-copy small{overflow:hidden;color:#788397;font-size:13px;text-overflow:ellipsis;white-space:nowrap}
+    .role-current-badge{padding:6px 9px;border:1px solid #e8ecf4;border-radius:7px;background:#f7f8fb;color:#6d7890;font-size:12px;font-weight:700}
+    .role-empty{margin:0;padding:30px 14px;color:#7c879a;font-size:15px;text-align:center}.role-empty i{margin-right:6px;color:#a6b2ca}
+    .role-destination{display:grid;grid-template-columns:150px minmax(0,1fr);align-items:center;gap:12px;margin-top:17px;padding:14px;border:1px solid #e9edf4;border-radius:12px;background:#fafbfe}
+    .role-destination label{margin:0;color:#43506a;font-size:14px;font-weight:750}.role-destination select{min-height:45px;border-color:#dfe4ed;border-radius:9px;color:#344158;font-size:15px}
+    .role-modal-footer{gap:10px;padding:16px 26px;border-color:#edf0f5}.role-footer-note{flex:1;color:#788397;font-size:12px}.role-footer-note i{margin-right:5px;color:#6078c4}.role-modal-footer .btn{font-size:14px}.role-save-button{border:0;border-radius:9px;background:#4669cf;font-weight:700}.role-save-button:hover{background:#3655b7}
+    @media(max-width:575px){.role-modal-header{padding:18px}.role-modal-body{padding:16px}.role-modal-tools{align-items:stretch;flex-direction:column}.role-selection-count{align-self:flex-start}.role-list-heading>span{display:none}.role-destination{grid-template-columns:1fr;gap:8px}.role-modal-footer{padding:13px 16px;flex-wrap:wrap}.role-footer-note{flex-basis:100%}}
+</style>
+<script>
+(() => {
+    const modal = document.getElementById('editarRolesModal');
+    if (!modal) return;
+    const checks = [...modal.querySelectorAll('.usuario-rol-check')];
+    const search = modal.querySelector('#buscarUsuariosRoles');
+    const selectAll = modal.querySelector('#seleccionarTodosRoles');
+    const count = modal.querySelector('#contadorUsuariosRoles');
+    const submit = modal.querySelector('#guardarRolesMasivo');
+    const update = () => {
+        const selected = checks.filter(check => check.checked).length;
+        count.textContent = selected;
+        submit.disabled = selected === 0 || !modal.querySelector('#nuevoRolMasivo').value;
+    };
+    checks.forEach(check => check.addEventListener('change', update));
+    modal.querySelector('#nuevoRolMasivo').addEventListener('change', update);
+    search.addEventListener('input', () => {
+        const query = search.value.trim().toLocaleLowerCase();
+        modal.querySelectorAll('.usuario-rol-opcion').forEach(row => {
+            row.hidden = !row.dataset.busqueda.includes(query);
+        });
+    });
+    selectAll.addEventListener('change', () => {
+        modal.querySelectorAll('.usuario-rol-opcion:not([hidden]) .usuario-rol-check').forEach(check => check.checked = selectAll.checked);
+        update();
+    });
+    update();
+})();
+</script>

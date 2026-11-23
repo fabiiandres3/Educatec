@@ -45,6 +45,12 @@
     .section-body { padding: 25px; }
     
     .cursos-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+    .course-search-wrap { position:relative;width:min(290px,100%); }
+    .course-search-wrap i { position:absolute;top:50%;left:14px;transform:translateY(-50%);color:#8190a8;font-size:14px;pointer-events:none; }
+    .course-search-input { width:100%;min-height:43px;padding:0 13px 0 40px;border:1px solid #dbe2ea;border-radius:11px;background:#fbfcff;color:#26344d;font-size:13px;outline:none;transition:border-color .18s,box-shadow .18s,background .18s; }
+    .course-search-input:focus { border-color:#86a3f2;background:#fff;box-shadow:0 0 0 4px rgba(70,100,205,.1); }
+    .course-search-empty { padding:28px 18px;border:1px dashed #dbe3f1;border-radius:14px;background:#fafbff;color:#71809a;text-align:center; }
+    .course-search-empty i { display:block;margin-bottom:8px;color:#8296dc;font-size:22px; }
     .curso-card { position: relative; z-index:0; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; overflow: visible; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
     .curso-card:hover { z-index:5; transform: translateY(-5px); border-color: #bfdbfe; box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1); }
     .curso-card-header { position: relative; overflow:hidden; border-radius:17px 17px 0 0; padding: 23px; background: linear-gradient(135deg, #eff6ff, #eef2ff); }
@@ -141,6 +147,19 @@
     html[data-theme="dark"] .alumno-direccion { color:#b1bdcf; }
     html[data-theme="dark"] .alumnos-search { border-color:#344258 !important; background:#202e44; color:#e2e8f0; }
 
+    .alumnos-section .section-header h2 { font-size:20px; }
+    .alumnos-section .section-header p { font-size:14px; }
+    .alumnos-section .filtro-label { font-size:15px; }
+    .alumnos-section .alumnos-search { font-size:14px; }
+    .alumnos-section .alumnos-table { font-size:14px; }
+    .alumnos-section .alumnos-table thead th { font-size:12px; }
+    .alumnos-section .alumnos-table tbody td { padding-top:15px; padding-bottom:15px; }
+    .alumnos-section .alumno-nombre strong { font-size:15px; }
+    .alumnos-section .alumno-nombre small,.alumnos-section .alumno-dato-secundario { font-size:12px; }
+    .alumnos-section .alumno-curso,.alumnos-section .alumno-sin-curso,.alumnos-section .alumno-estado { font-size:13px; }
+    .alumnos-section .alumnos-vacio { font-size:15px; }
+    .alumnos-section .alumnos-table-footer { font-size:12px; }
+
     @media (max-width: 900px) {
       .cursos-stats { grid-template-columns: 1fr; }
       .cursos-hero-content { flex-direction: column; align-items: flex-start; }
@@ -153,6 +172,8 @@
       .cursos-hero h1 { font-size: 26px; }
       .section-body { padding: 18px; }
       .section-header { padding: 18px; }
+      .course-section-header { align-items:stretch;flex-direction:column; }
+      .course-search-wrap { width:100%; }
       .cursos-container { grid-template-columns: 1fr; }
       .filtro-actions-wrapper { flex-direction: column; align-items: stretch; }
       .acciones-grupo { flex-direction: column; }
@@ -580,7 +601,7 @@
 
     <!-- CURSOS -->
     <div class="section-card">
-      <div class="section-header">
+      <div class="section-header course-section-header">
         <div class="section-header-left">
           <div class="section-header-icon">
             <i class="fa-solid fa-layer-group"></i>
@@ -590,13 +611,19 @@
             <p>Gestiona los cursos de la institución</p>
           </div>
         </div>
+        {% if cursos %}
+          <label class="course-search-wrap" aria-label="Buscar curso">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input class="course-search-input" id="buscarCursoDisponible" type="search" placeholder="Buscar curso..." autocomplete="off">
+          </label>
+        {% endif %}
       </div>
 
       <div class="section-body">
         {% if cursos %}
           <div class="cursos-container">
             {% for curso in cursos %}
-              <div class="curso-card">
+              <div class="curso-card" data-course-card data-course-name="{{ curso.nombre|lower }}">
                 <div class="curso-card-header">
                   <div class="curso-icon">
                     <i class="fa-solid fa-graduation-cap"></i>
@@ -625,6 +652,10 @@
                 </div>
               </div>
             {% endfor %}
+          </div>
+          <div class="course-search-empty" id="sinCursosCoincidentes" hidden>
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            No encontramos cursos con ese nombre.
           </div>
         {% else %}
           <div class="empty-cursos">
@@ -659,7 +690,7 @@
     </div>
 
     <!-- ALUMNOS -->
-    <div class="section-card">
+    <div class="section-card alumnos-section">
       <div class="section-header">
         <div class="section-header-left">
           <div class="section-header-icon">
@@ -1083,6 +1114,26 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("buscarCursoDisponible");
+  const cards = [...document.querySelectorAll("[data-course-card]")];
+  const empty = document.getElementById("sinCursosCoincidentes");
+  if (!input) return;
+
+  const normalize = (value) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
+  input.addEventListener("input", () => {
+    const query = normalize(input.value.trim());
+    let visible = 0;
+    cards.forEach((card) => {
+      const matches = normalize(card.dataset.courseName || card.textContent).includes(query);
+      card.hidden = !matches;
+      if (matches) visible += 1;
+    });
+    if (empty) empty.hidden = visible > 0;
+  });
+});
+</script>
 
 
 
