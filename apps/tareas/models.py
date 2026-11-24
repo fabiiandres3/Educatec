@@ -361,6 +361,12 @@ class Calificacion(models.Model):
         decimal_places=2
     )
 
+    actualizado_en = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -461,6 +467,12 @@ class CalificacionActividad(models.Model):
         decimal_places=2,
         blank=True,
         null=True
+    )
+
+    actualizado_en = models.DateTimeField(
+        auto_now=True,
+        null=True,
+        blank=True,
     )
 
     class Meta:

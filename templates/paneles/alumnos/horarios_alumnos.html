@@ -112,6 +112,41 @@
         color: #6b7280;
         cursor: not-allowed;
     }
+    .schedule-search input {
+        height:42px; width:100%; border:1px solid #e1e7f0; border-radius:11px;
+        padding:0 12px; background:#fbfcfe; color:#34415a; font:inherit;
+    }
+    .schedule-search input:focus { outline:none; border-color:#8295ec; box-shadow:0 0 0 4px rgba(89,145,224,.11); }
+    .schedule-next-class {
+        display:flex; align-items:center; gap:14px; margin:0 0 18px; padding:15px 18px;
+        border:1px solid #dce5ff; border-radius:16px; color:#26344d;
+        background:linear-gradient(110deg,#f1f4ff,#fff); box-shadow:0 7px 20px rgba(31,50,89,.045);
+    }
+    .schedule-next-icon { display:grid; place-items:center; flex:0 0 40px; width:40px; height:40px; border-radius:13px; background:#e5eaff; color:#526fe0; }
+    .schedule-next-copy { min-width:0; }
+    .schedule-next-copy strong { display:block; font-size:13px; }
+    .schedule-next-copy span { display:block; margin-top:3px; color:#71809a; font-size:12px; overflow-wrap:anywhere; }
+    .schedule-next-when { margin-left:auto; flex:0 0 auto; color:#526fe0; font-size:12px; font-weight:800; text-align:right; }
+    .schedule-table .is-today { background:#eef2ff !important; }
+    .schedule-table thead .is-today { color:#435ac8; }
+    .schedule-download-button {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:8px;
+        min-height:44px;
+        padding:0 16px;
+        border:1px solid transparent;
+        border-radius:11px;
+        background:linear-gradient(135deg,#526fe0,#7187ed);
+        color:#fff;
+        font-size:12px;
+        font-weight:800;
+        text-decoration:none;
+        white-space:nowrap;
+        box-shadow:0 7px 16px rgba(83,111,224,.18);
+    }
+    .schedule-download-button:hover { background:#435fcf; color:#fff; }
 
     /* ---------- TARJETAS ---------- */
     .schedule-grid {
@@ -180,15 +215,16 @@
     }
     .schedule-table {
         width: 100%;
-        min-width: 850px;
+        min-width: 960px;
         border-collapse: collapse;
         table-layout: fixed;
     }
+    .schedule-mobile-view { display:none; }
     .schedule-table col.time-column {
         width: 105px;
     }
     .schedule-table col.day-column {
-        width: calc((100% - 105px) / 5);
+        width: calc((100% - 105px) / 6);
     }
     .schedule-table th,
     .schedule-table td {
@@ -329,7 +365,7 @@
     .schedule-card-title-wrap h2 { color:#26344d; font-size:16px; font-weight:800; }
     .schedule-card-meta { color:#8792a5; font-size:11px; }
     .schedule-table-wrapper { -webkit-overflow-scrolling:touch; }
-    .schedule-table { min-width:850px; }
+    .schedule-table { min-width:960px; }
     .schedule-table th,.schedule-table td { border-color:#edf0f6; }
     .schedule-table thead th { background:#f7f8fc; color:#7b8798; font-size:10px; letter-spacing:.04em; }
     .schedule-table tbody td { background:#fff; }
@@ -346,17 +382,33 @@
     .no-schedules strong { color:#29354c; }
 
     @media(max-width:700px) {
-        .horarios-wrapper { padding:16px 10px 32px; }
+        .horarios-wrapper { padding:16px 10px 105px; }
         .horarios-header { padding:21px 18px; border-radius:20px; }
-        .filters-bar { padding:16px; border-radius:16px; }
-        .filter-group { min-width:100%; }
+        .filters-bar { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; padding:14px; border-radius:16px; }
+        .filter-group { width:100%; min-width:0; }
+        .filter-group select { width:100%; min-height:46px; }
+        .schedule-search input { min-height:46px; }
+        .schedule-next-class { align-items:flex-start; padding:14px; }
+        .schedule-next-when { max-width:90px; }
         .schedule-card { border-radius:16px; }
-        .schedule-card-header { flex-direction:row; align-items:center; padding:15px; }
-        .schedule-card-title-wrap { align-items:flex-start; gap:11px; }
+        .schedule-card-header { flex-direction:row; align-items:flex-start; padding:15px; }
+        .schedule-card-title-wrap { align-items:flex-start; min-width:0; gap:11px; }
         .schedule-card-title-wrap h2 { font-size:14px; }
-        .schedule-table-wrapper { position:relative; }
-        .schedule-table th:first-child,.schedule-table .time-cell { position:sticky; left:0; z-index:2; box-shadow:2px 0 5px rgba(31,50,89,.06); }
-        .schedule-table thead th:first-child { z-index:3; }
+        .schedule-card-meta { min-width:0; }
+        .schedule-table-wrapper { display:none; }
+        .schedule-mobile-view { display:grid; gap:10px; padding:12px; }
+        .schedule-day-card { min-width:0; overflow:hidden; border:1px solid #e8edf5; border-radius:13px; background:#fbfcff; }
+        .schedule-day-card.is-today { border-color:#8295ec; box-shadow:0 0 0 2px rgba(82,111,224,.10); }
+        .schedule-day-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 13px; border-bottom:1px solid #edf0f6; color:#354158; font-size:13px; font-weight:800; }
+        .schedule-day-count { flex:0 0 auto; padding:3px 8px; border-radius:999px; background:#eef1ff; color:#526fe0; font-size:10px; font-weight:750; }
+        .schedule-today-tag { margin-left:auto; color:#526fe0; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+        .schedule-day-items { display:grid; gap:8px; padding:10px; }
+        .schedule-mobile-item { display:grid; grid-template-columns:minmax(72px,auto) minmax(0,1fr); align-items:start; gap:10px; padding:10px; border:1px solid #e6ebf3; border-left:3px solid #526fe0; border-radius:11px; background:#fff; }
+        .schedule-mobile-time { color:#526fe0; font-size:11px; font-weight:800; line-height:1.45; }
+        .schedule-mobile-copy { min-width:0; }
+        .schedule-mobile-copy strong { display:block; color:#29354c; font-size:12px; line-height:1.4; overflow-wrap:anywhere; }
+        .schedule-mobile-copy span { display:block; margin-top:4px; color:#7c879c; font-size:11px; line-height:1.4; overflow-wrap:anywhere; }
+        .schedule-day-empty { margin:0; padding:8px 4px; color:#8792a5; font-size:11px; }
     }
 
     @media(max-width:420px) {
@@ -395,6 +447,13 @@
     }
     html[data-theme="dark"] .filter-group select:focus { border-color:#8095eb; box-shadow:0 0 0 4px rgba(89,145,224,.18); }
     html[data-theme="dark"] .filter-group select:disabled { border-color:#34445d; background:#18243a; color:#9eacc1; }
+    html[data-theme="dark"] .schedule-search input { border-color:#40516c; background:#0c1728; color:#e5edf9; }
+    html[data-theme="dark"] .schedule-next-class { border-color:rgba(129,151,255,.25); background:linear-gradient(110deg,#172743,#142239); color:#e8efff; }
+    html[data-theme="dark"] .schedule-next-icon { background:#25385f; color:#d1dcff; }
+    html[data-theme="dark"] .schedule-next-copy span { color:#adbbd2; }
+    html[data-theme="dark"] .schedule-next-when { color:#bfcaff; }
+    html[data-theme="dark"] .schedule-table .is-today { background:#1c2d4c !important; }
+    html[data-theme="dark"] .schedule-table thead .is-today { color:#d1dcff; }
     html[data-theme="dark"] .schedule-card-header { border-bottom-color:rgba(167,190,238,.15); background:linear-gradient(110deg,#172743,#142239); }
     html[data-theme="dark"] .schedule-card-icon { border-color:rgba(167,190,238,.14); background:#25385f; color:#d1dcff; }
     html[data-theme="dark"] .schedule-card-title-wrap h2 { color:#e8efff; }
@@ -419,6 +478,18 @@
     html[data-theme="dark"] .no-schedules { border-style:dashed !important; }
     html[data-theme="dark"] .no-schedules i { color:#9aafff; }
     html[data-theme="dark"] .no-schedules strong { color:#e5edf9; }
+    html[data-theme="dark"] .schedule-day-card { border-color:rgba(167,190,238,.15); background:#0e1a2b; }
+    html[data-theme="dark"] .schedule-day-heading { border-bottom-color:rgba(167,190,238,.13); color:#e5edf9; }
+    html[data-theme="dark"] .schedule-day-count { background:#25385f; color:#d1dcff; }
+    html[data-theme="dark"] .schedule-day-card.is-today { border-color:#8197ff; }
+    html[data-theme="dark"] .schedule-today-tag { color:#cbd5ff; }
+    html[data-theme="dark"] .schedule-mobile-item { border-color:rgba(167,190,238,.13); border-left-color:#8197ff; background:#142239; }
+    html[data-theme="dark"] .schedule-mobile-time { color:#cbd5ff; }
+    html[data-theme="dark"] .schedule-mobile-copy strong { color:#e5edf9; }
+    html[data-theme="dark"] .schedule-mobile-copy span,
+    html[data-theme="dark"] .schedule-day-empty { color:#aab9cf; }
+    html[data-theme="dark"] .schedule-download-button { background:linear-gradient(135deg,#607ce8,#4663ce); color:#fff; }
+    @media(max-width:700px) { .schedule-download-button { width:100%; min-height:48px; } }
 
 </style>
 {% endblock %}
@@ -464,6 +535,10 @@
                 {% endfor %}
             </select>
         </div>
+        <div class="filter-group schedule-search">
+            <label for="scheduleSearch">Buscar materia o docente</label>
+            <input id="scheduleSearch" type="search" placeholder="Ej. Matemáticas o docente" autocomplete="off">
+        </div>
 
         <div class="filter-group">
             <label for="cursoSelect">Curso</label>
@@ -479,7 +554,20 @@
                 {% endif %}
             </select>
         </div>
+        <a class="schedule-download-button" id="downloadSchedulePdf" href="{% url 'descargar_horario_alumno_pdf' %}" download>
+            <i class="fas fa-file-pdf" aria-hidden="true"></i>
+            Descargar horario PDF
+        </a>
     </div>
+
+    <section class="schedule-next-class" id="nextClassCard" hidden aria-live="polite">
+        <div class="schedule-next-icon"><i class="fas fa-bell" aria-hidden="true"></i></div>
+        <div class="schedule-next-copy">
+            <strong id="nextClassSubject">Tu próxima clase</strong>
+            <span id="nextClassTeacher"></span>
+        </div>
+        <div class="schedule-next-when" id="nextClassWhen"></div>
+    </section>
 
     <!-- RESULTADOS -->
     <div class="schedule-grid" id="scheduleGrid"></div>
@@ -505,6 +593,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const cursoSelect = document.getElementById("cursoSelect");
     const grid = document.getElementById("scheduleGrid");
     const noSchedules = document.getElementById("noSchedules");
+    const downloadPdf = document.getElementById("downloadSchedulePdf");
+    const searchInput = document.getElementById("scheduleSearch");
+    const nextClassCard = document.getElementById("nextClassCard");
+    const nextClassSubject = document.getElementById("nextClassSubject");
+    const nextClassTeacher = document.getElementById("nextClassTeacher");
+    const nextClassWhen = document.getElementById("nextClassWhen");
+    const pdfUrl = "{% url 'descargar_horario_alumno_pdf' %}";
 
     let rawData = [];
     const datosEl = document.getElementById("horarios-data");
@@ -516,7 +611,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    const dias = ["lunes", "martes", "miercoles", "jueves", "viernes"];
+    const dias = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+    const nombresDias = { lunes:"Lunes", martes:"Martes", miercoles:"Miércoles", jueves:"Jueves", viernes:"Viernes", sabado:"Sábado" };
+    const diaActual = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"][new Date().getDay()];
 
     const bloques = [
         { inicio: "06:00", fin: "07:00" },
@@ -585,13 +682,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     <col class="time-column">
                     <col class="day-column"><col class="day-column">
                     <col class="day-column"><col class="day-column">
-                    <col class="day-column">
+                    <col class="day-column"><col class="day-column">
                 </colgroup>
                 <thead>
                     <tr>
                         <th>Hora</th>
-                        <th>Lunes</th><th>Martes</th><th>Miércoles</th>
-                        <th>Jueves</th><th>Viernes</th>
+                        ${dias.map(dia => `<th${dia === diaActual ? ' class="is-today" aria-current="date"' : ""}>${nombresDias[dia]}</th>`).join("")}
                     </tr>
                 </thead>
                 <tbody>
@@ -610,7 +706,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     return normalizarDia(h.dia) === dia
                         && coincide(h, bloque.inicio, bloque.fin);
                 });
-                html += "<td>" + renderCelda(encontrado || null) + "</td>";
+                html += `<td${dia === diaActual ? ' class="is-today"' : ""}>` + renderCelda(encontrado || null) + "</td>";
             });
             html += "</tr>";
         });
@@ -618,6 +714,43 @@ document.addEventListener("DOMContentLoaded", function () {
         html += "</tbody></table>";
 
         return '<div class="schedule-table-wrapper">' + html + '</div>';
+    }
+
+    function renderAgendaMovil(items) {
+        const ordenDias = dias.includes(diaActual) ? [diaActual].concat(dias.filter(d => d !== diaActual)) : dias;
+        return `
+            <div class="schedule-mobile-view" aria-label="Horario organizado por día">
+                ${ordenDias.map(function (dia) {
+                    const clases = items.filter(function (item) {
+                        return normalizarDia(item.dia) === dia;
+                    }).sort(function (a, b) {
+                        return minutos(a.horaInicio) - minutos(b.horaInicio);
+                    });
+                    return `
+                        <section class="schedule-day-card${dia === diaActual ? " is-today" : ""}">
+                            <h3 class="schedule-day-heading">
+                                ${nombresDias[dia]}
+                                ${dia === diaActual ? '<span class="schedule-today-tag">Hoy</span>' : ""}
+                                <span class="schedule-day-count">${clases.length} ${clases.length === 1 ? "clase" : "clases"}</span>
+                            </h3>
+                            <div class="schedule-day-items">
+                                ${clases.length ? clases.map(function (clase) {
+                                    return `
+                                        <article class="schedule-mobile-item">
+                                            <time class="schedule-mobile-time">${escapeHTML(clase.horaInicio)} – ${escapeHTML(clase.horaFin)}</time>
+                                            <div class="schedule-mobile-copy">
+                                                <strong>${escapeHTML(clase.claseNombre || "Clase")}</strong>
+                                                <span><i class="fas fa-user" aria-hidden="true"></i> ${escapeHTML(clase.docenteNombre || "Docente sin asignar")}</span>
+                                            </div>
+                                        </article>
+                                    `;
+                                }).join("") : '<p class="schedule-day-empty">Sin clases programadas</p>'}
+                            </div>
+                        </section>
+                    `;
+                }).join("")}
+            </div>
+        `;
     }
 
     function agruparHorarios(lista) {
@@ -691,12 +824,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                 </div>
                 ${renderTabla(grupo.items)}
+                ${renderAgendaMovil(grupo.items)}
             </section>
         `;
     }
 
     function renderizar() {
         grid.innerHTML = "";
+        nextClassCard.hidden = true;
         const p = periodoSelect.value;
         const c = cursoSelect.value;
 
@@ -716,10 +851,12 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        const query = normalizarDia(searchInput.value).replace(/\s+/g, " ").trim();
         const filtrados = rawData.filter(function (h) {
             const okP = !p || String(h.periodo) === String(p);
             const okC = !c || String(h.curso) === String(c);
-            return okP && okC;
+            const texto = normalizarDia([h.claseNombre, h.docenteNombre].join(" ")).replace(/\s+/g, " ");
+            return okP && okC && (!query || texto.includes(query));
         });
 
         const grupos = agruparHorarios(filtrados);
@@ -731,13 +868,51 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         noSchedules.style.display = "none";
+        renderProximaClase(filtrados);
         grupos.forEach(function (g) {
             grid.insertAdjacentHTML("beforeend", renderTarjeta(g));
         });
     }
 
-    periodoSelect.addEventListener("change", renderizar);
+    function renderProximaClase(items) {
+        const ahora = new Date();
+        const hoyMinutos = ahora.getHours() * 60 + ahora.getMinutes();
+        const indiceHoy = ahora.getDay();
+        const candidatos = items.map(function (item) {
+            const dia = normalizarDia(item.dia);
+            const indiceDia = dias.indexOf(dia) + 1;
+            const inicio = minutos(item.horaInicio);
+            if (indiceDia < 1 || inicio === null) return null;
+            let distancia = (indiceDia - indiceHoy + 7) % 7;
+            const fin = minutos(item.horaFin);
+            const enCurso = distancia === 0 && inicio <= hoyMinutos && fin > hoyMinutos;
+            if (distancia === 0 && inicio < hoyMinutos && !enCurso) distancia = 7;
+            return { item, dia, inicio, distancia, enCurso };
+        }).filter(Boolean).sort((a,b) => a.distancia - b.distancia || a.inicio - b.inicio);
+        if (!candidatos.length) return;
+        const proxima = candidatos[0];
+        nextClassSubject.textContent = proxima.enCurso ? (proxima.item.claseNombre || "Clase") + " · En curso" : (proxima.item.claseNombre || "Próxima clase");
+        nextClassTeacher.textContent = proxima.item.docenteNombre || "Docente sin asignar";
+        const hora = proxima.item.horaInicio || "";
+        const cuando = proxima.distancia === 0 ? "Hoy" : proxima.distancia === 1 ? "Mañana" : nombresDias[proxima.dia];
+        nextClassWhen.textContent = proxima.enCurso ? "Ahora" : `${cuando} · ${hora}`;
+        nextClassCard.hidden = false;
+    }
+
+    function actualizarEnlacePdf() {
+        if (!downloadPdf) return;
+        const params = new URLSearchParams();
+        if (periodoSelect.value) params.set("periodo", periodoSelect.value);
+        downloadPdf.href = pdfUrl + (params.toString() ? "?" + params.toString() : "");
+    }
+
+    periodoSelect.addEventListener("change", function () {
+        renderizar();
+        actualizarEnlacePdf();
+    });
     cursoSelect.addEventListener("change", renderizar);
+    searchInput.addEventListener("input", renderizar);
+    actualizarEnlacePdf();
     renderizar();
 
 });

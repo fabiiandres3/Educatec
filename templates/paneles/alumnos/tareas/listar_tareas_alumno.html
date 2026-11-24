@@ -9,7 +9,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'css/tareas/listar_tareas.css' %}?v=20261123-dark"
+    href="{% static 'css/tareas/listar_tareas.css' %}?v=20261123-task-mobile-fix2"
 >
 
 <div class="student-tasks-page">
@@ -222,6 +222,16 @@
             <button
                 type="button"
                 class="filter-button"
+                data-filter="soon"
+            >
+                Vencen pronto
+                <span>{{ tareas_por_vencer }}</span>
+            </button>
+
+
+            <button
+                type="button"
+                class="filter-button"
                 data-filter="delivered"
             >
                 Entregadas
@@ -233,6 +243,12 @@
             </button>
 
         </div>
+
+        <label class="task-search" for="task-search-input">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input id="task-search-input" type="search" placeholder="Buscar por tarea o materia" autocomplete="off">
+            <span class="visually-hidden">Buscar por nombre de tarea o materia</span>
+        </label>
 
     </section>
 
@@ -249,6 +265,8 @@
                 class="task-card"
                 data-task
                 data-status="{% if tarea.entregada %}delivered{% else %}pending{% endif %}"
+                data-urgency="{% if tarea.vence_pronto %}soon{% elif tarea.esta_vencida %}overdue{% else %}normal{% endif %}"
+                data-search="{{ tarea.titulo }} {{ tarea.clase|default:'' }} {{ tarea.descripcion|default:'' }}"
             >
 
                 <!-- =================================================
@@ -293,6 +311,21 @@
 
                             Entregado
 
+                        </div>
+
+                    {% elif tarea.esta_vencida %}
+
+                        <div class="task-status overdue-status"><span class="status-dot"></span>Vencida</div>
+
+                    {% elif tarea.dias_para_entrega == 0 %}
+
+                        <div class="task-status due-today-status"><span class="status-dot"></span>Vence hoy</div>
+
+                    {% elif tarea.vence_pronto %}
+
+                        <div class="task-status due-soon-status">
+                            <span class="status-dot"></span>
+                            Vence en {{ tarea.dias_para_entrega }} día{% if tarea.dias_para_entrega != 1 %}s{% endif %}
                         </div>
 
                     {% else %}
@@ -495,6 +528,10 @@
 
                             </strong>
 
+                            <div class="task-progress" role="progressbar" aria-label="Progreso de {{ tarea.titulo }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ tarea.progreso_porcentaje }}">
+                                <span style="width:{{ tarea.progreso_porcentaje }}%"></span>
+                            </div>
+
                         </div>
 
                     </div>
@@ -561,12 +598,12 @@
 
                     {% else %}
 
-                        <div class="pending-message">
+                        <div class="pending-message{% if tarea.esta_vencida %} overdue-message{% endif %}">
 
                             <span class="pending-check"></span>
 
                             <span>
-                                Aún no has terminado esta tarea
+                                {% if tarea.esta_vencida %}Fecha vencida · envíala cuanto antes{% elif tarea.dias_para_entrega == 0 %}Entrega hoy · continúa tu respuesta{% elif tarea.vence_pronto %}Entrega próxima · continúa tu respuesta{% else %}Aún no has terminado esta tarea{% endif %}
                             </span>
 
                         </div>
@@ -702,6 +739,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const noResults = document.getElementById(
         "no-filter-results"
     );
+    const searchInput = document.getElementById("task-search-input");
+    const normalize = function (value) {
+        return String(value || "").toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    };
 
 
     buttons.forEach(function (button) {
@@ -726,6 +767,7 @@ document.addEventListener("DOMContentLoaded", function () {
             ------------------------------------------------ */
 
             const filter = button.dataset.filter;
+            const query = normalize(searchInput ? searchInput.value.trim() : "");
 
             let visibleTasks = 0;
 
@@ -737,12 +779,13 @@ document.addEventListener("DOMContentLoaded", function () {
             tasks.forEach(function (task) {
 
                 const status = task.dataset.status;
+                const urgency = task.dataset.urgency;
+                const matchesFilter = filter === "all"
+                    || (filter === "soon" && urgency === "soon")
+                    || status === filter;
+                const matchesSearch = !query || normalize(task.dataset.search).includes(query);
 
-
-                if (
-                    filter === "all" ||
-                    status === filter
-                ) {
+                if (matchesFilter && matchesSearch) {
 
                     task.style.display = "";
 
@@ -774,6 +817,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
     });
+
+    if (searchInput) {
+        searchInput.addEventListener("input", function () {
+            const activeButton = document.querySelector(".filter-button.active");
+            if (activeButton) activeButton.click();
+        });
+    }
 
 });
 

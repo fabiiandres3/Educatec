@@ -1,12 +1,19 @@
-<a class="educatec-support-fab" href="{% url 'solicitud_soporte' %}?next={{ request.get_full_path|urlencode }}" aria-label="Enviar una solicitud de soporte" title="Contactar soporte">
+<a class="educatec-support-fab" href="{% url 'solicitud_soporte' %}?next={{ request.get_full_path|urlencode }}" aria-label="Contactar soporte: enviar una solicitud de ayuda">
     <span class="educatec-support-fab-icon"><i class="fas fa-headset" aria-hidden="true"></i></span>
     <span class="educatec-support-fab-copy"><small>¿Necesitas ayuda?</small><strong>Contactar soporte</strong></span>
     <i class="fas fa-arrow-up-right-from-square educatec-support-fab-arrow" aria-hidden="true"></i>
 </a>
 <style>
-.educatec-support-fab{position:fixed;right:24px;bottom:22px;z-index:1080;display:flex;align-items:center;gap:11px;min-height:64px;padding:10px 15px 10px 10px;border:1px solid rgba(220,228,244,.9);border-radius:19px;background:rgba(255,255,255,.96);color:#26334b;text-decoration:none;box-shadow:0 12px 34px rgba(24,39,74,.17);backdrop-filter:blur(12px);transition:transform .2s,box-shadow .2s,border-color .2s}
-.educatec-support-fab:hover{transform:translateY(-3px);border-color:#cbd6fb;color:#354fbe;box-shadow:0 17px 38px rgba(24,39,74,.2)}
+.educatec-support-fab{position:fixed;right:24px;bottom:22px;z-index:1080;display:flex;align-items:center;justify-content:flex-start;gap:0;width:62px;height:62px;padding:9px;border:1px solid rgba(220,228,244,.9);border-radius:20px;background:rgba(255,255,255,.96);color:#26334b;text-decoration:none;box-shadow:0 12px 34px rgba(24,39,74,.17);backdrop-filter:blur(12px);overflow:hidden;transition:width .24s ease,gap .24s ease,transform .2s,box-shadow .2s,border-color .2s}
+.educatec-support-fab:hover,.educatec-support-fab:focus-visible{width:245px;gap:11px;padding-right:14px;transform:translateY(-3px);border-color:#cbd6fb;color:#354fbe;box-shadow:0 17px 38px rgba(24,39,74,.2)}
 .educatec-support-fab-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#eef2ff,#eff6ff);color:#5a71db;font-size:16px}
-.educatec-support-fab-copy{display:grid;gap:3px}.educatec-support-fab-copy small{color:#8c96a8;font-size:9px}.educatec-support-fab-copy strong{color:#2d3950;font-size:11px;font-weight:800}.educatec-support-fab-arrow{margin-left:8px;color:#9aa5bb;font-size:10px}
-@media(max-width:600px){.educatec-support-fab{right:14px;bottom:14px;min-height:54px;padding:7px 11px 7px 7px;border-radius:16px}.educatec-support-fab-icon{flex-basis:38px;width:38px;height:38px}.educatec-support-fab-copy strong{font-size:10px}}
+.educatec-support-fab-copy{display:grid;gap:3px;flex:0 0 auto;max-width:0;opacity:0;overflow:hidden;white-space:nowrap;transition:max-width .2s ease,opacity .15s ease}.educatec-support-fab:hover .educatec-support-fab-copy,.educatec-support-fab:focus-visible .educatec-support-fab-copy{max-width:140px;opacity:1}.educatec-support-fab-copy small{color:#8c96a8;font-size:9px}.educatec-support-fab-copy strong{color:#2d3950;font-size:11px;font-weight:800}.educatec-support-fab-arrow{flex:0 0 auto;margin-left:0;max-width:0;opacity:0;overflow:hidden;color:#9aa5bb;font-size:10px;transition:max-width .2s ease,opacity .15s ease,margin .2s ease}.educatec-support-fab:hover .educatec-support-fab-arrow,.educatec-support-fab:focus-visible .educatec-support-fab-arrow{max-width:12px;margin-left:5px;opacity:1}
+html[data-theme="dark"] .educatec-support-fab{border-color:rgba(167,190,238,.2);background:rgba(17,29,48,.97);color:#e5edf9;box-shadow:0 12px 34px rgba(0,0,0,.35)}
+html[data-theme="dark"] .educatec-support-fab:hover,html[data-theme="dark"] .educatec-support-fab:focus-visible{border-color:rgba(129,151,255,.55);background:#172743;color:#edf3ff;box-shadow:0 17px 38px rgba(0,0,0,.45)}
+html[data-theme="dark"] .educatec-support-fab-icon{background:linear-gradient(145deg,#25385f,#1d3458);color:#cbd5ff}
+html[data-theme="dark"] .educatec-support-fab-copy small{color:#aab9cf}
+html[data-theme="dark"] .educatec-support-fab-copy strong{color:#edf3ff}
+html[data-theme="dark"] .educatec-support-fab-arrow{color:#b8c6dd}
+@media(max-width:600px){.educatec-support-fab{right:14px;bottom:14px;width:56px;height:56px;padding:7px;border-radius:17px}.educatec-support-fab:hover,.educatec-support-fab:focus-visible{width:230px;padding-right:11px}.educatec-support-fab-icon{flex-basis:40px;width:40px;height:40px}.educatec-support-fab-copy strong{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.educatec-support-fab,.educatec-support-fab-copy,.educatec-support-fab-arrow{transition:none}}
 </style>

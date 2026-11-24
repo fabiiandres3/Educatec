@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,7 @@ from django.db import transaction
 from django.db.models import Avg, Count, F, Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 from apps.user.decorators import rol_requerido
 
@@ -1334,8 +1335,17 @@ def dashboard_alumnos(request):
             tarea.total_preguntas > 0
             and tarea.respuestas_count >= tarea.total_preguntas
         )
+    hoy = timezone.localdate()
     tareas_pendientes_lista = [tarea for tarea in tareas if not tarea.entregada]
+    for tarea in tareas_pendientes_lista:
+        tarea.dias_para_entrega = (
+            (tarea.fecha_entrega - hoy).days if tarea.fecha_entrega else None
+        )
+        tarea.esta_vencida = bool(
+            tarea.fecha_entrega and tarea.fecha_entrega < hoy
+        )
     tareas_pendientes = len(tareas_pendientes_lista)
+    tareas_entregadas = sum(1 for tarea in tareas if tarea.entregada)
 
     porcentaje = porcentaje_asistencia
     total_logros = sum((
@@ -1347,8 +1357,138 @@ def dashboard_alumnos(request):
     eventos = Evento.objects.filter(
         publicado=True,
         publico__in=["todos", "alumnos"],
-        fecha__gte=timezone.localdate(),
+        fecha__gte=hoy,
     ).order_by("fecha", F("hora_inicio").asc(nulls_last=True), "pk")
+
+    semana_inicio = hoy - timedelta(days=hoy.weekday())
+    semana_fin = semana_inicio + timedelta(days=6)
+    nombres_dias = ("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
+    agenda_por_fecha = {}
+    agenda_dias = []
+    for offset, nombre in enumerate(nombres_dias):
+        fecha_dia = semana_inicio + timedelta(days=offset)
+        dia = {
+            "fecha": fecha_dia,
+            "nombre": nombre,
+            "es_hoy": fecha_dia == hoy,
+            "es_pasado": fecha_dia < hoy,
+            "items": [],
+        }
+        agenda_dias.append(dia)
+        agenda_por_fecha[fecha_dia] = dia["items"]
+
+    for tarea in tareas_pendientes_lista:
+        fecha_entrega = tarea.fecha_entrega
+        if fecha_entrega and hoy <= fecha_entrega <= semana_fin:
+            agenda_por_fecha[fecha_entrega].append({
+                "tipo": "tarea",
+                "titulo": tarea.titulo,
+                "detalle": str(tarea.clase or "Actividad académica"),
+                "hora": "Entrega",
+                "url": reverse("responder_tarea_alumno", args=[tarea.id]),
+            })
+
+    for evento in eventos.filter(fecha__lte=semana_fin):
+        hora_evento = (
+            evento.hora_inicio.strftime("%H:%M") if evento.hora_inicio else "Todo el día"
+        )
+        agenda_por_fecha[evento.fecha].append({
+            "tipo": "evento",
+            "titulo": evento.titulo,
+            "detalle": evento.get_tipo_display(),
+            "hora": hora_evento,
+            "url": reverse("listar_eventos_alumno"),
+        })
+
+    dias_semana = {
+        "lunes": 0,
+        "martes": 1,
+        "miercoles": 2,
+        "miércoles": 2,
+        "jueves": 3,
+        "viernes": 4,
+        "sabado": 5,
+        "sábado": 5,
+        "domingo": 6,
+    }
+    horarios_semana = (
+        Horario.objects.filter(curso_id=alumno.curso_id, periodo__activo=True)
+        .select_related("clase", "docente__usuario")
+        .order_by("hora_inicio")
+        if alumno.curso_id else []
+    )
+    for horario in horarios_semana:
+        indice_dia = dias_semana.get((horario.dia or "").strip().lower())
+        if indice_dia is None:
+            continue
+        fecha_clase = semana_inicio + timedelta(days=indice_dia)
+        agenda_por_fecha[fecha_clase].append({
+            "tipo": "horario",
+            "titulo": str(horario.clase or "Clase"),
+            "detalle": str(horario.docente) if horario.docente_id else "Horario de clase",
+            "hora": f"{horario.hora_inicio:%H:%M}–{horario.hora_fin:%H:%M}",
+            "url": reverse("horarios_alumnos"),
+        })
+
+    for items in agenda_por_fecha.values():
+        items.sort(key=lambda item: (item["hora"] == "Entrega", item["hora"]))
+
+    desde_avisos = timezone.now() - timedelta(days=7)
+    calificaciones_recientes = []
+    for nota in Calificacion.objects.filter(
+        alumno=request.user,
+        actualizado_en__gte=desde_avisos,
+    ).select_related("tarea").order_by("-actualizado_en")[:5]:
+        calificaciones_recientes.append({
+            "titulo": nota.tarea.titulo,
+            "detalle": f"Nueva calificación: {nota.nota}",
+            "fecha": nota.actualizado_en,
+            "url": reverse("calificaciones_alumnos"),
+            "tipo": "calificacion",
+        })
+    for nota in CalificacionActividad.objects.filter(
+        alumno=request.user,
+        actualizado_en__gte=desde_avisos,
+    ).select_related("actividad").order_by("-actualizado_en")[:5]:
+        calificaciones_recientes.append({
+            "titulo": nota.actividad.nombre,
+            "detalle": f"Nueva calificación: {nota.nota}",
+            "fecha": nota.actualizado_en,
+            "url": reverse("calificaciones_alumnos"),
+            "tipo": "calificacion",
+        })
+    calificaciones_recientes.sort(key=lambda aviso: aviso["fecha"], reverse=True)
+
+    avisos_dashboard = []
+    for tarea in tareas_pendientes_lista:
+        dias_restantes = tarea.dias_para_entrega
+        if dias_restantes is not None and dias_restantes <= 3:
+            if dias_restantes < 0:
+                mensaje = f"Vencida hace {abs(dias_restantes)} día(s)"
+            elif dias_restantes == 0:
+                mensaje = "Vence hoy"
+            elif dias_restantes == 1:
+                mensaje = "Vence mañana"
+            else:
+                mensaje = f"Vence en {dias_restantes} días"
+            avisos_dashboard.append({
+                "tipo": "urgente" if dias_restantes <= 1 else "tarea",
+                "titulo": tarea.titulo,
+                "detalle": mensaje,
+                "url": reverse("responder_tarea_alumno", args=[tarea.id]),
+            })
+            if len(avisos_dashboard) >= 3:
+                break
+
+    avisos_dashboard.extend(calificaciones_recientes[:3])
+    horario_actualizado = (
+        Horario.objects.filter(
+            curso_id=alumno.curso_id,
+            periodo__activo=True,
+            actualizado_en__gte=desde_avisos,
+        ).exists()
+        if alumno.curso_id else False
+    )
 
     return render(
         request,
@@ -1361,10 +1501,16 @@ def dashboard_alumnos(request):
             "calificaciones": calificaciones,
             "tareas_pendientes": tareas_pendientes,
             "tareas_pendientes_lista": tareas_pendientes_lista[:5],
+            "tareas_entregadas": tareas_entregadas,
             "total_logros": total_logros,
             "presentes": presentes,
             "tardanzas": tardanzas,
             "ausentes": ausentes,
+            "agenda_dias": agenda_dias,
+            "agenda_inicio": semana_inicio,
+            "agenda_fin": semana_fin,
+            "avisos_dashboard": avisos_dashboard[:6],
+            "horario_actualizado": horario_actualizado,
         }
     )
 
@@ -1410,7 +1556,7 @@ def calificaciones_alumnos(request):
     # De esta forma no dependemos de que la tarea tenga
     # exactamente la misma clase o curso para mostrar la nota.
 
-    calificaciones = (
+    calificaciones = list(
         Calificacion.objects
         .filter(
             alumno=request.user
@@ -1419,12 +1565,48 @@ def calificaciones_alumnos(request):
             "tarea",
             "tarea__docente",
             "tarea__curso",
-            "tarea__clase"
+            "tarea__clase",
+            "tarea__periodo",
         )
         .order_by(
             "-id"
         )
     )
+
+    periodo_map = {}
+    fecha_reciente = timezone.now() - timedelta(days=7)
+    tareas_por_revisar_ids = set(
+        RespuestaAlumno.objects.filter(
+            alumno=request.user,
+            pregunta__tipo="texto",
+            calificada=False,
+        ).values_list("pregunta__tarea_id", flat=True).distinct()
+    )
+    for calificacion in calificaciones:
+        periodo = calificacion.tarea.periodo
+        calificacion.periodo_filtro = periodo
+        calificacion.pendiente_revision = calificacion.tarea_id in tareas_por_revisar_ids
+        calificacion.docente_nombre = (
+            calificacion.tarea.docente.usuario.get_full_name()
+            if calificacion.tarea.docente and calificacion.tarea.docente.usuario_id
+            else str(calificacion.tarea.docente or "Sin docente")
+        )
+        calificacion.es_reciente = bool(
+            calificacion.actualizado_en and calificacion.actualizado_en >= fecha_reciente
+        )
+        if periodo:
+            periodo_map[periodo.pk] = periodo
+        if calificacion.tarea.periodo_id is None:
+            periodo_map["sin-periodo"] = None
+
+    periodos_calificaciones = [
+        {"id": periodo_id, "nombre": str(periodo) if periodo else "Sin período"}
+        for periodo_id, periodo in sorted(
+            periodo_map.items(),
+            key=lambda item: (item[1].anio, item[1].numero) if item[1] else (0, 0),
+            reverse=True,
+        )
+    ]
     
 
     # --------------------------------------------------------
@@ -1444,6 +1626,7 @@ def calificaciones_alumnos(request):
             "docente": tarea.docente,
             "fecha": tarea.fecha_entrega,
             "nota": calificacion.nota,
+            "pendiente_revision": calificacion.pendiente_revision,
         })
 
     # --------------------------------------------------------
@@ -1469,7 +1652,7 @@ def calificaciones_alumnos(request):
     notas = [
         float(fila["nota"])
         for fila in filas
-        if fila["nota"] is not None
+        if fila["nota"] is not None and not fila["pendiente_revision"]
     ]
 
     if notas:
@@ -1511,14 +1694,16 @@ def calificaciones_alumnos(request):
     # ESTADÍSTICAS
     # --------------------------------------------------------
 
-    total_calificaciones = len(notas)
+    total_calificaciones = sum(
+        1 for calificacion in calificaciones
+        if calificacion.nota is not None and not calificacion.pendiente_revision
+    )
 
-    total_tareas = calificaciones.count()
+    total_tareas = len(calificaciones)
 
     tareas_calificadas = total_calificaciones
-
-    tareas_pendientes = (
-        total_tareas - tareas_calificadas
+    tareas_pendientes = sum(
+        1 for calificacion in calificaciones if calificacion.pendiente_revision
     )
 
     # --------------------------------------------------------
@@ -1554,6 +1739,8 @@ def calificaciones_alumnos(request):
         "tareas_calificadas": tareas_calificadas,
 
         "tareas_pendientes": tareas_pendientes,
+
+        "periodos_calificaciones": periodos_calificaciones,
 
     }
 
@@ -1814,6 +2001,115 @@ def horarios_alumnos(request):
             "periodos": periodos,
             "horarios_data": horarios_data,
         }
+    )
+
+
+@rol_requerido("alumno")
+def descargar_horario_alumno_pdf(request):
+    from io import BytesIO
+    from xml.sax.saxutils import escape
+
+    from django.http import FileResponse
+    from reportlab.lib import colors
+    from reportlab.lib.enums import TA_CENTER
+    from reportlab.lib.pagesizes import landscape, letter
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import inch
+    from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+
+    alumno = get_object_or_404(
+        Alumnos.objects.select_related("usuario", "curso"),
+        usuario=request.user,
+        activo=True,
+    )
+    horarios = Horario.objects.filter(curso_id=alumno.curso_id).select_related(
+        "periodo", "docente__usuario", "curso", "clase"
+    )
+
+    periodo_id = request.GET.get("periodo")
+    if periodo_id:
+        periodo = get_object_or_404(Periodo, pk=periodo_id)
+        horarios = horarios.filter(periodo=periodo)
+        titulo_periodo = str(periodo)
+        sufijo_periodo = f"_{periodo.anio}_{periodo.numero}"
+    else:
+        titulo_periodo = "Todos los períodos"
+        sufijo_periodo = ""
+
+    orden_dias = {
+        nombre: indice
+        for indice, nombre in enumerate(("lunes", "martes", "miercoles", "jueves", "viernes", "sabado"))
+    }
+    horarios = sorted(
+        horarios,
+        key=lambda horario: (
+            orden_dias.get(horario.dia.lower().replace("é", "e"), 99),
+            horario.hora_inicio,
+        ),
+    )
+
+    buffer = BytesIO()
+    documento = SimpleDocTemplate(
+        buffer,
+        pagesize=landscape(letter),
+        rightMargin=0.45 * inch,
+        leftMargin=0.45 * inch,
+        topMargin=0.5 * inch,
+        bottomMargin=0.5 * inch,
+        title="Horario del alumno",
+    )
+    estilos = getSampleStyleSheet()
+    estilo_titulo = ParagraphStyle(
+        "HorarioTitle", parent=estilos["Title"], textColor=colors.HexColor("#1e3a8a"),
+        alignment=TA_CENTER, spaceAfter=8,
+    )
+    estilo_texto = ParagraphStyle("HorarioBody", parent=estilos["BodyText"], fontSize=9, leading=12)
+    elementos = [
+        Paragraph("EDUCATEC · HORARIO DE CLASES", estilo_titulo),
+        Paragraph(
+            f"Estudiante: {escape(alumno.usuario.get_full_name() or alumno.usuario.documento)}"
+            f"<br/>Curso: {escape(str(alumno.curso or 'Sin curso asignado'))}"
+            f"<br/>Período: {escape(titulo_periodo)}"
+            f"<br/>Generado: {timezone.localdate().strftime('%d/%m/%Y')}",
+            estilo_texto,
+        ),
+        Spacer(1, 16),
+    ]
+
+    if horarios:
+        filas = [["Día", "Horario", "Jornada", "Clase", "Docente"]]
+        for horario in horarios:
+            filas.append([
+                horario.get_dia_display(),
+                f"{horario.hora_inicio.strftime('%H:%M')} – {horario.hora_fin.strftime('%H:%M')}",
+                horario.get_jornada_display(),
+                Paragraph(escape(str(horario.clase or "Clase sin asignar")), estilo_texto),
+                Paragraph(escape(str(horario.docente or "Docente sin asignar")), estilo_texto),
+            ])
+        tabla = Table(filas, colWidths=[0.95 * inch, 1.25 * inch, 1.1 * inch, 3.15 * inch, 3.0 * inch], repeatRows=1)
+        tabla.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e3a8a")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#d7deea")),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f4f7fc")]),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 8),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+            ("TOPPADDING", (0, 0), (-1, -1), 7),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+        ]))
+        elementos.append(tabla)
+    else:
+        elementos.append(Paragraph("No hay horarios registrados para el período seleccionado.", estilo_texto))
+
+    documento.build(elementos)
+    buffer.seek(0)
+    return FileResponse(
+        buffer,
+        as_attachment=True,
+        filename=f"horario_alumno{ sufijo_periodo }.pdf",
+        content_type="application/pdf",
     )
 
 

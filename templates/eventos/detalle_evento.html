@@ -13,7 +13,7 @@
 {% block content %}
 <main class="event-detail-page">
   <div class="event-detail-shell">
-    <a class="event-detail-back" href="{% url 'index' %}#eventos">
+    <a class="event-detail-back" href="{% if request.GET.origen == 'alumno' %}{% url 'listar_eventos_alumno' %}{% else %}{% url 'index' %}#eventos{% endif %}">
       <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
       Volver a eventos
     </a>

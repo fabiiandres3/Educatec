@@ -1,11 +1,13 @@
 import imaplib
 import logging
+import re
+import secrets
+from urllib.parse import urlencode
 from email import message_from_bytes
 from email.header import decode_header, make_header
 from email.utils import parseaddr
 
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
@@ -13,6 +15,7 @@ from django.core.mail import EmailMessage
 from django.core.validators import validate_email
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_GET
 
@@ -30,25 +33,31 @@ def solicitud_soporte(request):
     ) else ""
     asunto = ""
     mensaje = ""
-    errores = []
+    errores = {"correo": "", "asunto": "", "mensaje": "", "general": []}
+    referencia_enviada = ""
+
+    if request.method == "GET" and request.GET.get("enviado") == "1":
+        referencia = request.GET.get("referencia", "")
+        if re.fullmatch(r"[A-F0-9]{8}", referencia):
+            referencia_enviada = referencia
 
     if request.method == "POST":
         asunto = request.POST.get("asunto", "").strip().replace("\r", " ").replace("\n", " ")
         mensaje = request.POST.get("mensaje", "").strip()
         correo_solicitante = (request.user.email or "").strip()
         if not correo_solicitante:
-            errores.append("Completa un correo electrónico en tu perfil antes de solicitar soporte.")
+            errores["correo"] = "Completa un correo electrónico en tu perfil antes de solicitar soporte."
         else:
             try:
                 validate_email(correo_solicitante)
             except ValidationError:
-                errores.append("El correo de tu perfil no tiene un formato válido. Actualízalo antes de solicitar soporte.")
+                errores["correo"] = "El correo de tu perfil no tiene un formato válido. Actualízalo antes de solicitar soporte."
         if len(asunto) < 4 or len(asunto) > 120:
-            errores.append("El asunto debe tener entre 4 y 120 caracteres.")
+            errores["asunto"] = "Escribe un asunto de entre 4 y 120 caracteres."
         if len(mensaje) < 10 or len(mensaje) > 5000:
-            errores.append("Describe la solicitud con entre 10 y 5000 caracteres.")
+            errores["mensaje"] = "Describe el problema con entre 10 y 5000 caracteres."
 
-        if not errores:
+        if not any((errores["correo"], errores["asunto"], errores["mensaje"])):
             administradores = Usuario.objects.filter(
                 rol__nombre__iexact="administrador",
                 is_active=True,
@@ -59,13 +68,15 @@ def solicitud_soporte(request):
             destinatarios.add(correo_solicitante)
 
             if not correos_administradores:
-                errores.append("No hay administradores con un correo válido para recibir solicitudes.")
+                errores["general"].append("No hay administradores con un correo válido para recibir solicitudes.")
             else:
+                referencia = secrets.token_hex(4).upper()
                 nombre = request.user.get_full_name() or request.user.username
                 rol = request.user.rol.nombre if request.user.rol else "Sin rol"
-                asunto_correo = f"[Soporte Educatec] {asunto}"
+                asunto_correo = f"[Soporte Educatec #{referencia}] {asunto}"
                 cuerpo = (
                     f"Solicitud de soporte recibida desde Educatec.\n\n"
+                    f"Referencia: {referencia}\n"
                     f"Asunto: {asunto}\n"
                     f"Solicitante: {nombre}\n"
                     f"Correo: {correo_solicitante}\n"
@@ -85,21 +96,29 @@ def solicitud_soporte(request):
                 )
                 try:
                     correo.send(fail_silently=False)
-                    messages.success(request, "Tu solicitud fue enviada a todos los administradores.")
+                    query = {"enviado": "1", "referencia": referencia}
                     if next_url:
-                        return redirect(next_url)
-                    from apps.user.views import obtener_panel_por_rol
-                    return redirect(obtener_panel_por_rol(request.user.rol.nombre) if request.user.rol else "index")
+                        query["next"] = next_url
+                    return redirect(f"{reverse('solicitud_soporte')}?{urlencode(query)}")
                 except Exception:
                     logging.getLogger(__name__).exception("No se pudo enviar una solicitud de soporte.")
-                    errores.append("No se pudo enviar la solicitud. Inténtalo de nuevo más tarde.")
+                    errores["general"].append("No se pudo enviar la solicitud. Inténtalo de nuevo más tarde.")
+
+    correo_solicitante = (request.user.email or "").strip()
+    try:
+        validate_email(correo_solicitante)
+        correo_es_valido = True
+    except ValidationError:
+        correo_es_valido = False
 
     return render(request, "soporte/solicitud_soporte.html", {
         "next_url": next_url,
         "asunto": asunto,
         "mensaje": mensaje,
-        "correo_solicitante": (request.user.email or "").strip(),
+        "correo_solicitante": correo_solicitante,
+        "correo_es_valido": correo_es_valido,
         "errores": errores,
+        "referencia_enviada": referencia_enviada,
     })
 
 

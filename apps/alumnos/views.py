@@ -1,6 +1,9 @@
 ﻿from django.contrib import messages
+from datetime import date
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
+from django.utils import timezone
 from apps.user.models import Usuario
 from apps.alumnos.models import Alumnos, AcudienteAlumno
 from apps.user.forms import EditarUsuarioForm
@@ -258,6 +261,7 @@ def listar_tareas_alumno(request):
                 "total_tareas": 0,
                 "tareas_entregadas": 0,
                 "tareas_pendientes": 0,
+                "tareas_por_vencer": 0,
             }
         )
 
@@ -303,6 +307,7 @@ def listar_tareas_alumno(request):
             tarea.entregada = False
             tarea.respuestas_count = 0
             tarea.total_preguntas = 0
+            tarea.progreso_porcentaje = 0
 
             tareas_pendientes += 1
 
@@ -329,6 +334,7 @@ def listar_tareas_alumno(request):
 
         tarea.respuestas_count = respuestas_count
         tarea.total_preguntas = total_preguntas
+        tarea.progreso_porcentaje = round(respuestas_count / total_preguntas * 100)
 
         # -------------------------------------------------
         # DETERMINAR ESTADO
@@ -345,6 +351,63 @@ def listar_tareas_alumno(request):
             tarea.entregada = False
 
             tareas_pendientes += 1
+
+    hoy = timezone.localdate()
+    for tarea in tareas:
+        tarea.dias_para_entrega = (
+            (tarea.fecha_entrega - hoy).days if tarea.fecha_entrega else None
+        )
+        tarea.esta_vencida = bool(
+            not tarea.entregada
+            and tarea.dias_para_entrega is not None
+            and tarea.dias_para_entrega < 0
+        )
+        tarea.vence_pronto = bool(
+            not tarea.entregada
+            and tarea.dias_para_entrega is not None
+            and 0 <= tarea.dias_para_entrega <= 3
+        )
+
+        if tarea.entregada:
+            tarea.estado_tarea = "delivered"
+            tarea.estado_etiqueta = "Entregada"
+            tarea.urgencia_orden = 4
+        elif tarea.esta_vencida:
+            tarea.estado_tarea = "overdue"
+            tarea.estado_etiqueta = "Vencida"
+            tarea.urgencia_orden = 0
+        elif tarea.dias_para_entrega == 0:
+            tarea.estado_tarea = "due-today"
+            tarea.estado_etiqueta = "Vence hoy"
+            tarea.urgencia_orden = 1
+        elif tarea.vence_pronto:
+            tarea.estado_tarea = "due-soon"
+            tarea.estado_etiqueta = "Vence pronto"
+            tarea.urgencia_orden = 1
+        elif tarea.dias_para_entrega is None:
+            tarea.estado_tarea = "no-date"
+            tarea.estado_etiqueta = "Sin fecha"
+            tarea.urgencia_orden = 3
+        else:
+            tarea.estado_tarea = "pending"
+            tarea.estado_etiqueta = "Pendiente"
+            tarea.urgencia_orden = 2
+
+    def prioridad_tarea(tarea):
+        dias = tarea.dias_para_entrega
+        fecha_creacion = tarea.fecha_creacion.toordinal() if tarea.fecha_creacion else 0
+        if tarea.esta_vencida:
+            return (0, abs(dias), -fecha_creacion)
+        if tarea.vence_pronto:
+            return (1, dias, -fecha_creacion)
+        if not tarea.entregada and dias is not None:
+            return (2, dias, -fecha_creacion)
+        if not tarea.entregada:
+            return (3, 0, -fecha_creacion)
+        return (4, 0, -fecha_creacion)
+
+    tareas.sort(key=prioridad_tarea)
+    tareas_por_vencer = sum(1 for tarea in tareas if tarea.vence_pronto)
 
     # =====================================================
     # CONTADORES
@@ -366,6 +429,7 @@ def listar_tareas_alumno(request):
             "total_tareas": total_tareas,
             "tareas_entregadas": tareas_entregadas,
             "tareas_pendientes": tareas_pendientes,
+            "tareas_por_vencer": tareas_por_vencer,
         }
     )
 
@@ -584,6 +648,16 @@ def responder_tarea(request, tarea_id):
             "respuesta": respuesta,
         })
 
+    total_preguntas = len(preguntas_data)
+    preguntas_respondidas = sum(
+        1 for item in preguntas_data if item["respuesta"]
+    )
+    preguntas_por_responder = max(total_preguntas - preguntas_respondidas, 0)
+    porcentaje_progreso = (
+        round(preguntas_respondidas / total_preguntas * 100)
+        if total_preguntas else 0
+    )
+
     # =====================================================
     # MOSTRAR PÁGINA
     # =====================================================
@@ -595,6 +669,10 @@ def responder_tarea(request, tarea_id):
             "tarea": tarea,
             "alumno": alumno,
             "preguntas": preguntas_data,
+            "total_preguntas": total_preguntas,
+            "preguntas_respondidas": preguntas_respondidas,
+            "preguntas_por_responder": preguntas_por_responder,
+            "porcentaje_progreso": porcentaje_progreso,
         }
     )
 

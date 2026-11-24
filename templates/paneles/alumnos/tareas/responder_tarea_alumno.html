@@ -11,7 +11,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'css/tareas/responder_tarea_alumno.css' %}?v=20261123-dark"
+    href="{% static 'css/tareas/responder_tarea_alumno.css' %}?v=20261123-task-progress"
 >
 
 
@@ -361,6 +361,23 @@
                     Responde las preguntas
                 </h2>
 
+                <div class="answer-progress-card" role="group" aria-label="Progreso de entrega">
+                    <div class="answer-progress-heading">
+                        <span>Progreso de la tarea</span>
+                        <strong>{{ preguntas_respondidas }} de {{ total_preguntas }} preguntas</strong>
+                    </div>
+                    <div class="answer-progress-track" role="progressbar" aria-label="Preguntas respondidas" aria-valuemin="0" aria-valuemax="{{ total_preguntas }}" aria-valuenow="{{ preguntas_respondidas }}">
+                        <span style="width:{{ porcentaje_progreso }}%"></span>
+                    </div>
+                    <small>
+                        {% if preguntas_por_responder %}
+                            Te faltan {{ preguntas_por_responder }} pregunta{% if preguntas_por_responder != 1 %}s{% endif %} por responder.
+                        {% else %}
+                            Ya respondiste todas las preguntas.
+                        {% endif %}
+                    </small>
+                </div>
+
                 <p>
                     Responde cada pregunta individualmente.
                     Una vez enviada una respuesta, no podrás
@@ -660,6 +677,7 @@
                                     <form
                                         method="POST"
                                         class="answer-form"
+                                        onsubmit="return confirm('¿Confirmas que quieres enviar esta respuesta? No podrás editarla después.');"
                                     >
 
                                         {% csrf_token %}

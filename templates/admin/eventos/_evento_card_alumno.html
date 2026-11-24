@@ -1,0 +1,71 @@
+<article
+    class="evento-card"
+    data-event-card
+    data-event-type="{{ evento.tipo }}"
+    data-event-search="{{ evento.titulo }} {{ evento.descripcion|default:'' }} {{ evento.get_tipo_display }}"
+>
+    {% if evento.imagen %}
+        <div class="evento-imagen-wrapper">
+            <img src="{{ evento.imagen.url }}" alt="{{ evento.titulo }}" class="evento-imagen" loading="lazy">
+            <div class="evento-fecha-badge" aria-label="{{ evento.fecha|date:'d/m/Y' }}">
+                <span class="evento-fecha-dia">{{ evento.fecha|date:"d" }}</span>
+                <span class="evento-fecha-mes">{{ evento.fecha|date:"M" }}</span>
+            </div>
+        </div>
+    {% else %}
+        <div class="evento-placeholder">
+            <i class="fa-regular fa-calendar-days" aria-hidden="true"></i>
+            <div class="evento-fecha-badge" aria-label="{{ evento.fecha|date:'d/m/Y' }}">
+                <span class="evento-fecha-dia">{{ evento.fecha|date:"d" }}</span>
+                <span class="evento-fecha-mes">{{ evento.fecha|date:"M" }}</span>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="evento-contenido">
+        <div class="evento-badges">
+            <span class="evento-tipo">{{ evento.get_tipo_display }}</span>
+            <span class="evento-publico">{{ evento.get_publico_display }}</span>
+        </div>
+        <h3 class="evento-titulo">{{ evento.titulo }}</h3>
+        <div class="evento-info">
+            <i class="fa-regular fa-calendar evento-info-icon" aria-hidden="true"></i>
+            <span>{{ evento.fecha|date:"d/m/Y" }}</span>
+        </div>
+        {% if evento.hora_inicio %}
+            <div class="evento-info">
+                <i class="fa-regular fa-clock evento-info-icon" aria-hidden="true"></i>
+                <span>{{ evento.hora_inicio|time:"H:i" }}{% if evento.hora_fin %} – {{ evento.hora_fin|time:"H:i" }}{% endif %}</span>
+            </div>
+        {% else %}
+            <div class="evento-info">
+                <i class="fa-regular fa-clock evento-info-icon" aria-hidden="true"></i>
+                <span>Todo el día</span>
+            </div>
+        {% endif %}
+
+        {% if proximo %}
+            <span class="evento-countdown{% if evento.en_curso %} is-live{% elif evento.es_hoy %} is-today{% endif %}">
+                {% if evento.en_curso %}En curso{% elif evento.es_hoy %}Hoy{% else %}En {{ evento.dias_restantes }} día{% if evento.dias_restantes != 1 %}s{% endif %}{% endif %}
+            </span>
+        {% else %}
+            <span class="evento-countdown is-past">Finalizado</span>
+        {% endif %}
+
+        {% if evento.descripcion %}
+            <div class="evento-divider"></div>
+            <p class="evento-descripcion">{{ evento.descripcion }}</p>
+        {% endif %}
+
+        <div class="evento-card-actions">
+            <a class="evento-detail-button" href="{% url 'detalle_evento' evento.id %}?origen=alumno">
+                <span>Ver detalles</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </a>
+            {% if evento.video %}
+                <a class="evento-video-button" href="{{ evento.video }}" target="_blank" rel="noopener noreferrer" aria-label="Ver video de {{ evento.titulo }}">
+                    <i class="fa-solid fa-play" aria-hidden="true"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</article>

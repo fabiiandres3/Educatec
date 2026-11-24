@@ -1173,3 +1173,127 @@ html[data-theme="dark"] .student-tasks-page .task-button { border-color:transpar
 html[data-theme="dark"] .student-tasks-page .task-button:hover { background:linear-gradient(135deg,#708af0,#526fe0); }
 html[data-theme="dark"] .student-tasks-page .delivered-button { border-color:#286148; background:#153426; color:#a8ebc1; box-shadow:none; }
 html[data-theme="dark"] .student-tasks-page .delivered-button:hover { background:#1b4934; color:#d2f9df; }
+
+/* Alumno: búsqueda, urgencia y progreso de tareas */
+.student-tasks-page .tasks-controls { gap: 16px; }
+.student-tasks-page .task-search { position: relative; display: flex; align-items: center; gap: 10px; width: min(100%, 340px); min-height: 44px; padding: 0 14px; border: 1px solid #dfe5ef; border-radius: 12px; background: #fff; color: #71809a; }
+.student-tasks-page .task-search:focus-within { border-color: #7188e8; box-shadow: 0 0 0 3px rgba(91,116,224,.13); }
+.student-tasks-page .task-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #1e2b43; font: inherit; font-size: 14px; }
+.student-tasks-page .task-search input::placeholder { color: #8995a9; }
+.student-tasks-page .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.student-tasks-page .task-status { display: inline-flex; align-items: center; gap: 7px; }
+.student-tasks-page .status-dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: currentColor; }
+.student-tasks-page .overdue-status { border: 1px solid #f0c6c7; background: #fff0f0; color: #ad3438; }
+.student-tasks-page .due-today-status { border: 1px solid #f2d5a3; background: #fff7e7; color: #96600b; }
+.student-tasks-page .due-soon-status { border: 1px solid #ead8a9; background: #fff9e9; color: #80621a; }
+.student-tasks-page .task-progress { height: 7px; overflow: hidden; margin-top: 10px; border-radius: 99px; background: #e9edf5; }
+.student-tasks-page .task-progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#627de8,#8498f0); transition: width .25s ease; }
+.student-tasks-page .overdue-message { color: #ad3438; }
+html[data-theme="dark"] .student-tasks-page .task-search { border-color: #35445d; background: #111d30; color: #aebbd0; }
+html[data-theme="dark"] .student-tasks-page .task-search input { color: #edf3ff; }
+html[data-theme="dark"] .student-tasks-page .task-search input::placeholder { color: #91a0b8; }
+html[data-theme="dark"] .student-tasks-page .task-progress { background: #29364d; }
+html[data-theme="dark"] .student-tasks-page .overdue-status { border-color: #71383d; background: #391f25; color: #ffb4b6; }
+html[data-theme="dark"] .student-tasks-page .due-today-status { border-color: #72572b; background: #342a19; color: #ffd58d; }
+html[data-theme="dark"] .student-tasks-page .due-soon-status { border-color: #65552d; background: #302a1a; color: #f3d88f; }
+html[data-theme="dark"] .student-tasks-page .overdue-message { color: #ffb4b6 !important; }
+@media (max-width: 700px) {
+    .student-tasks-page .task-search { width: 100%; }
+    .student-tasks-page .tasks-toolbar { flex-wrap: wrap; }
+}
+
+/* Evita que la información y la acción queden comprimidas en pantallas pequeñas. */
+@media (max-width: 600px) {
+    .student-tasks-page {
+        width: 100%;
+        max-width: 100%;
+        padding: 14px 10px 110px !important;
+        box-sizing: border-box;
+    }
+    .student-tasks-page .tasks-header,
+    .student-tasks-page .tasks-summary,
+    .student-tasks-page .tasks-controls,
+    .student-tasks-page .tasks-list,
+    .student-tasks-page .task-card { min-width: 0; max-width: 100%; }
+    .student-tasks-page .tasks-toolbar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+        gap: 6px;
+    }
+    .student-tasks-page .filter-button {
+        justify-content: center;
+        min-height: 42px;
+        padding: 7px 6px;
+        white-space: normal;
+        line-height: 1.2;
+    }
+    .student-tasks-page .task-card { display: block !important; width: 100%; }
+    .student-tasks-page .task-card-header,
+    .student-tasks-page .task-card-content,
+    .student-tasks-page .task-meta,
+    .student-tasks-page .task-card-footer {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .student-tasks-page .task-card-header {
+        display: flex !important;
+        align-items: center;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .student-tasks-page .task-class { flex: 1 1 130px; min-width: 0; }
+    .student-tasks-page .task-class > span { overflow-wrap: break-word; word-break: normal; }
+    .student-tasks-page .task-status { flex: 0 1 auto; max-width: 100%; white-space: normal; }
+    .student-tasks-page .task-card-content { display: block; min-width: 0; }
+    .student-tasks-page .task-card-content h2,
+    .student-tasks-page .task-card-content p { width: 100%; overflow-wrap: break-word; word-break: normal; }
+    .student-tasks-page .task-meta {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px;
+        padding: 14px 16px;
+    }
+    .student-tasks-page .meta-item {
+        display: grid !important;
+        grid-template-columns: 31px minmax(0, 1fr);
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        gap: 10px;
+    }
+    .student-tasks-page .meta-item > div:last-child { display: block; width: auto; min-width: 0; }
+    .student-tasks-page .meta-item strong { display: block; overflow-wrap: break-word; word-break: normal; }
+    .student-tasks-page .progress-meta .task-progress { width: 100%; max-width: 240px; }
+    .student-tasks-page .task-card-footer {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 16px 16px;
+    }
+    .student-tasks-page .pending-message,
+    .student-tasks-page .completed-message { min-width: 0; line-height: 1.45; }
+    .student-tasks-page .task-button {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        width: 100%;
+        min-height: 48px;
+        box-sizing: border-box;
+        font-size: 14px;
+        color: #fff !important;
+        opacity: 1 !important;
+        touch-action: manipulation;
+    }
+}
+
+@media (max-width: 380px) {
+    .student-tasks-page { padding-right: 8px !important; padding-left: 8px !important; }
+    .student-tasks-page .tasks-header { padding: 18px 14px; }
+    .student-tasks-page .task-card-header { padding-right: 13px; padding-left: 13px; }
+    .student-tasks-page .task-card-content { padding-right: 13px; padding-left: 13px; }
+    .student-tasks-page .task-meta,
+    .student-tasks-page .task-card-footer { padding-right: 13px; padding-left: 13px; }
+}

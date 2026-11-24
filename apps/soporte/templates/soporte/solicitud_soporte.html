@@ -7,8 +7,36 @@
     <title>Solicitar soporte | Educatec</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script>try{document.documentElement.dataset.theme=localStorage.getItem('educatec-theme')==='dark'?'dark':'light'}catch(e){}</script>
     <style>
         *{box-sizing:border-box}body{min-height:100vh;margin:0;display:grid;place-items:center;padding:28px;background:radial-gradient(circle at 10% 0,#e9efff 0,transparent 32%),radial-gradient(circle at 100% 100%,#e7f8f1 0,transparent 30%),#f4f6fb;color:#1c2940;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.support-wrap{width:min(100%,760px)}.support-back{display:inline-flex;align-items:center;gap:9px;margin:0 0 17px;color:#64718a;text-decoration:none;font-size:13px;font-weight:650}.support-back:hover{color:#526fe0}.support-card{overflow:hidden;border:1px solid #e7ebf3;border-radius:25px;background:#fff;box-shadow:0 24px 70px rgba(28,43,78,.1)}.support-head{padding:32px 36px 27px;background:linear-gradient(115deg,#f7f9ff,#edf2ff)}.support-icon{display:grid;place-items:center;width:50px;height:50px;margin-bottom:18px;border-radius:17px;background:#fff;color:#5c75dc;font-size:19px;box-shadow:0 7px 18px rgba(44,65,120,.09)}.support-kicker{margin:0 0 8px;color:#5a71d2;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.support-head h1{margin:0;color:#1d2940;font-size:clamp(25px,4vw,34px);font-weight:800;letter-spacing:-.04em}.support-head p{max-width:550px;margin:10px 0 0;color:#758198;font-size:14px;line-height:1.65}.support-form{padding:28px 36px 34px}.support-label{display:block;margin:0 0 8px;color:#344159;font-size:12px;font-weight:750}.support-control{width:100%;border:1px solid #e1e6ef;border-radius:12px;background:#fcfdff;color:#253149;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s}.support-control:focus{border-color:#94a7f4;box-shadow:0 0 0 4px rgba(86,114,232,.11)}input.support-control{height:46px;padding:0 14px}textarea.support-control{min-height:190px;padding:13px 14px;resize:vertical;line-height:1.6}.support-hint{margin-top:7px;color:#98a2b2;font-size:11px}.support-meta{display:flex;align-items:center;gap:9px;margin:17px 0 22px;padding:12px 14px;border:1px solid #e9edfa;border-radius:12px;background:#f8f9ff;color:#65728a;font-size:11px;line-height:1.5}.support-meta i{color:#647ae0}.support-actions{display:flex;justify-content:flex-end;gap:10px}.support-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:43px;padding:0 17px;border:0;border-radius:12px;background:#536fdf;color:#fff;text-decoration:none;font-size:12px;font-weight:750;box-shadow:0 7px 15px rgba(83,111,223,.2);transition:transform .2s,background .2s}.support-button:hover{transform:translateY(-1px);background:#405bc8;color:#fff}.support-cancel{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:0 15px;border:1px solid #e3e8f0;border-radius:12px;background:#fff;color:#65718a;text-decoration:none;font-size:12px;font-weight:700}.support-cancel:hover{background:#f8f9fc;color:#344159}.support-alert{margin:0 36px 18px;padding:12px 14px;border-radius:12px;background:#fff0f0;color:#4778bc;font-size:12px}.support-alert.success{background:#eaf8f1;color:#23805b}.support-errors{margin:0 36px 18px;padding:13px 16px;border-radius:12px;background:#fff2f1;color:#4a77b6;font-size:12px}.support-errors ul{margin:0;padding-left:18px}.support-footer{padding:15px 36px;border-top:1px solid #f0f2f6;color:#9aa4b4;font-size:10px;text-align:center}@media(max-width:560px){body{padding:15px}.support-card{border-radius:20px}.support-head{padding:25px 22px 22px}.support-form{padding:23px 22px 25px}.support-alert,.support-errors{margin-left:22px;margin-right:22px}.support-footer{padding:14px 20px}.support-actions{flex-direction:column-reverse}.support-actions>*{width:100%}}
+        html[data-theme="dark"] body{background:radial-gradient(circle at 10% 0,rgba(72,101,177,.2),transparent 34%),radial-gradient(circle at 100% 100%,rgba(28,112,91,.12),transparent 30%),#0b1423;color:#e5edf9;color-scheme:dark}
+        html[data-theme="dark"] .support-back{color:#aab9cf}html[data-theme="dark"] .support-back:hover{color:#cbd5ff}
+        html[data-theme="dark"] .support-card{border-color:rgba(167,190,238,.16);background:#111d30;box-shadow:0 24px 70px rgba(0,0,0,.32)}
+        html[data-theme="dark"] .support-head{background:radial-gradient(ellipse at 90% 0,rgba(103,137,231,.2),transparent 42%),linear-gradient(115deg,#172743,#142239)}
+        html[data-theme="dark"] .support-icon{background:#25385f;color:#cbd5ff;box-shadow:0 7px 18px rgba(0,0,0,.18)}
+        html[data-theme="dark"] .support-kicker{color:#aebdff}html[data-theme="dark"] .support-head h1{color:#edf3ff}html[data-theme="dark"] .support-head p{color:#adbbd2}
+        html[data-theme="dark"] .support-label{color:#d3def3}html[data-theme="dark"] .support-control{border-color:#40516c;background:#0c1728;color:#e5edf9;color-scheme:dark}html[data-theme="dark"] .support-control::placeholder{color:#8292aa}html[data-theme="dark"] .support-control:focus{border-color:#8095eb;box-shadow:0 0 0 4px rgba(89,145,224,.18)}
+        html[data-theme="dark"] .support-hint{color:#98a9c2}html[data-theme="dark"] .support-meta{border-color:rgba(129,151,255,.18);background:#172743;color:#bac8de}html[data-theme="dark"] .support-meta i{color:#b7c5ff}
+        html[data-theme="dark"] .support-button{background:linear-gradient(135deg,#607ce8,#4663ce);color:#fff}html[data-theme="dark"] .support-button:hover{background:#7189ef}
+        html[data-theme="dark"] .support-cancel{border-color:#40516c;background:#17243a;color:#c4d0e3}html[data-theme="dark"] .support-cancel:hover{background:#223554;color:#edf3ff}
+        html[data-theme="dark"] .support-alert{background:#3a2029;color:#ffb9c2}html[data-theme="dark"] .support-alert.success{background:#143a32;color:#8ce0bb}html[data-theme="dark"] .support-errors{background:#3a2029;color:#ffb9c2}
+        html[data-theme="dark"] .support-footer{border-top-color:rgba(167,190,238,.13);color:#8fa1ba}
+        .support-field-error{margin:7px 0 0;color:#bd3545;font-size:11px;font-weight:650;line-height:1.45}.support-field-error[hidden]{display:none!important}
+        .support-control[aria-invalid="true"]{border-color:#d84d5e;background:#fffafb}
+        .support-meta.has-error{border-color:#f0bcc2;background:#fff5f5;color:#a43d49}
+        .support-submit:disabled{cursor:wait;opacity:.78;transform:none;box-shadow:none}
+        .support-success{padding:36px;text-align:center}
+        .support-success-icon{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 16px;border-radius:19px;background:#e8f8f0;color:#21865f;font-size:23px}
+        .support-success h2{margin:0;color:#23314b;font-size:23px;font-weight:800;letter-spacing:-.03em}
+        .support-success p{max-width:490px;margin:10px auto;color:#748199;font-size:13px;line-height:1.6}
+        .support-reference{display:inline-block;margin:8px 0 13px;padding:10px 15px;border:1px dashed #aab8ed;border-radius:12px;background:#f4f6ff;color:#435bc8;font-size:18px;font-weight:850;letter-spacing:.12em}
+        .support-success .support-button{margin-top:10px}
+        html[data-theme="dark"] .support-field-error{color:#ff9ca8}html[data-theme="dark"] .support-control[aria-invalid="true"]{border-color:#b94a5b;background:#251923}
+        html[data-theme="dark"] .support-meta.has-error{border-color:#75414b;background:#321f2b;color:#ffb9c2}
+        html[data-theme="dark"] .support-success-icon{background:#143a32;color:#8ce0bb}html[data-theme="dark"] .support-success h2{color:#edf3ff}html[data-theme="dark"] .support-success p{color:#adbbd2}
+        html[data-theme="dark"] .support-reference{border-color:#5369b2;background:#1a2b49;color:#cbd5ff}
+        @media(max-width:560px){.support-success{padding:29px 22px}.support-success h2{font-size:21px}.support-reference{font-size:16px}input.support-control,textarea.support-control{font-size:16px}.support-button,.support-cancel{min-height:48px}}
     </style>
 </head>
 <body>
@@ -19,20 +47,78 @@
                 <span class="support-icon"><i class="fas fa-headset"></i></span>
                 <p class="support-kicker">Estamos para ayudarte</p>
                 <h1>Solicitar soporte</h1>
-                <p>Cuéntanos qué sucede. Enviaremos tu solicitud por correo a todos los administradores de Educatec para que puedan atenderla.</p>
+                <p>{% if referencia_enviada %}Tu solicitud fue enviada correctamente. Guarda el número de referencia para identificarla.{% else %}Cuéntanos qué sucede. Enviaremos tu solicitud por correo a todos los administradores de Educatec para que puedan atenderla.{% endif %}</p>
             </header>
-            {% if messages %}{% for message in messages %}<div class="support-alert {% if message.tags == 'success' %}success{% endif %}">{{ message }}</div>{% endfor %}{% endif %}
-            {% if errores %}<div class="support-errors"><ul>{% for error in errores %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
-            <form class="support-form" method="post" novalidate>
+            {% if referencia_enviada %}
+            <section class="support-success" role="status" aria-live="polite">
+                <span class="support-success-icon"><i class="fas fa-check" aria-hidden="true"></i></span>
+                <h2>Solicitud enviada</h2>
+                <p>Los administradores recibieron tu reporte. Si necesitas consultar con ellos, comparte esta referencia:</p>
+                <div class="support-reference" aria-label="Número de referencia">{{ referencia_enviada }}</div>
+                <p>Enviamos una copia a <strong>{{ correo_solicitante|default:"tu correo de contacto" }}</strong>.</p>
+                <a class="support-button" href="{{ next_url|default:'/' }}"><i class="fas fa-arrow-left" aria-hidden="true"></i> Volver al panel</a>
+            </section>
+            <footer class="support-footer">Guarda la referencia para que los administradores puedan localizar tu solicitud.</footer>
+            {% else %}
+            {% if errores.general %}<div class="support-errors" role="alert"><ul>{% for error in errores.general %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+            <form class="support-form" id="supportForm" method="post" novalidate>
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next_url }}">
-                <div class="mb-3"><label class="support-label" for="id_asunto">Asunto</label><input class="support-control" id="id_asunto" name="asunto" type="text" maxlength="120" minlength="4" value="{{ asunto }}" placeholder="Ej. No puedo acceder a mis calificaciones" required><div class="support-hint">Resume el motivo de tu solicitud.</div></div>
-                <div><label class="support-label" for="id_mensaje">¿En qué podemos ayudarte?</label><textarea class="support-control" id="id_mensaje" name="mensaje" minlength="10" maxlength="5000" placeholder="Describe lo que sucede y los pasos para reproducirlo…" required>{{ mensaje }}</textarea><div class="support-hint">Incluye los detalles necesarios para que podamos ayudarte.</div></div>
-                <div class="support-meta"><i class="fas fa-circle-info"></i><span>Usaremos {{ correo_solicitante }} como correo de contacto y te enviaremos una copia. Verifica que sea tu dirección correcta y que puedas recibir mensajes.</span></div>
-                <div class="support-actions"><a class="support-cancel" href="{{ next_url|default:'/' }}">Cancelar</a><button class="support-button" type="submit"><i class="fas fa-paper-plane"></i> Enviar solicitud</button></div>
+                <div class="mb-3"><label class="support-label" for="id_asunto">Asunto</label><input class="support-control" id="id_asunto" name="asunto" type="text" maxlength="120" minlength="4" value="{{ asunto }}" placeholder="Ej. No puedo acceder a mis calificaciones" aria-invalid="{% if errores.asunto %}true{% else %}false{% endif %}" aria-describedby="asuntoHint asuntoError" required><div class="support-hint" id="asuntoHint">Resume el motivo de tu solicitud (4 a 120 caracteres).</div><p class="support-field-error" id="asuntoError" role="alert" {% if not errores.asunto %}hidden{% endif %}>{{ errores.asunto }}</p></div>
+                <div><label class="support-label" for="id_mensaje">¿En qué podemos ayudarte?</label><textarea class="support-control" id="id_mensaje" name="mensaje" minlength="10" maxlength="5000" placeholder="Describe lo que sucede y los pasos para reproducirlo…" aria-invalid="{% if errores.mensaje %}true{% else %}false{% endif %}" aria-describedby="mensajeHint mensajeError" required>{{ mensaje }}</textarea><div class="support-hint" id="mensajeHint">Incluye detalles útiles (entre 10 y 5000 caracteres).</div><p class="support-field-error" id="mensajeError" role="alert" {% if not errores.mensaje %}hidden{% endif %}>{{ errores.mensaje }}</p></div>
+                <div class="support-meta{% if errores.correo %} has-error{% endif %}" id="supportEmail" tabindex="-1" data-email-valid="{% if correo_es_valido %}true{% else %}false{% endif %}" {% if errores.correo %}role="alert"{% endif %}><i class="fas {% if errores.correo %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}" aria-hidden="true"></i><span><strong>Correo de contacto:</strong> {{ correo_solicitante|default:"No registrado" }}. Enviaremos una copia allí. Verifica que puedas recibir mensajes.<span class="support-field-error" id="correoError" {% if not errores.correo %}hidden{% endif %}>{% if errores.correo %}{{ errores.correo }}{% endif %}</span></span></div>
+                <div class="support-actions"><a class="support-cancel" href="{{ next_url|default:'/' }}">Cancelar</a><button class="support-button support-submit" id="supportSubmit" type="submit"><i class="fas fa-paper-plane" aria-hidden="true"></i><span>Enviar solicitud</span></button></div>
             </form>
             <footer class="support-footer">Solicitud enviada de forma segura a los correos de los administradores.</footer>
+            {% endif %}
         </section>
     </main>
+{% if not referencia_enviada %}
+<script>
+document.getElementById("supportForm")?.addEventListener("submit", function (event) {
+    const button = document.getElementById("supportSubmit");
+    const subject = document.getElementById("id_asunto");
+    const message = document.getElementById("id_mensaje");
+    const emailMeta = document.getElementById("supportEmail");
+    const errors = [
+        [subject, "asuntoError", subject.value.trim().length < 4 ? "Escribe un asunto de al menos 4 caracteres." : subject.value.trim().length > 120 ? "El asunto no puede superar 120 caracteres." : ""],
+        [message, "mensajeError", message.value.trim().length < 10 ? "Describe el problema con al menos 10 caracteres." : message.value.trim().length > 5000 ? "El mensaje no puede superar 5000 caracteres." : ""]
+    ];
+    let firstInvalid = null;
+    errors.forEach(([field, errorId, text]) => {
+        const error = document.getElementById(errorId);
+        error.textContent = text;
+        error.hidden = !text;
+        field.setAttribute("aria-invalid", text ? "true" : "false");
+        field.classList.toggle("is-invalid", Boolean(text));
+        if (text && !firstInvalid) firstInvalid = field;
+    });
+    const emailError = document.getElementById("correoError");
+    if (emailMeta.dataset.emailValid !== "true") {
+        emailError.textContent = "Actualiza un correo válido en tu perfil antes de enviar la solicitud.";
+        emailError.hidden = false;
+        emailMeta.classList.add("has-error");
+        emailMeta.setAttribute("role", "alert");
+        if (!firstInvalid) firstInvalid = emailMeta;
+    } else {
+        emailError.textContent = "";
+        emailError.hidden = true;
+        emailMeta.classList.remove("has-error");
+        emailMeta.removeAttribute("role");
+    }
+    if (firstInvalid) {
+        event.preventDefault();
+        firstInvalid.focus?.();
+        firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+    }
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+    button.querySelector("i").className = "fas fa-spinner fa-spin";
+    button.querySelector("span").textContent = "Enviando solicitud…";
+});
+</script>
+{% endif %}
 </body>
 </html>

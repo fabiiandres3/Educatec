@@ -756,13 +756,59 @@ active
 .sin-eventos h4 { color:#29354c; font-weight:800; }
 .sin-eventos p { color:#8792a5; }
 
+.eventos-tools { display:grid; grid-template-columns:minmax(220px,1fr) minmax(170px,230px) auto; align-items:center; gap:10px; margin:0 0 18px; padding:12px; border:1px solid #e8edf5; border-radius:14px; background:#fbfcff; }
+.eventos-search { display:flex; align-items:center; gap:9px; min-width:0; min-height:42px; padding:0 12px; border:1px solid #dfe5ef; border-radius:10px; background:#fff; color:#71809a; }
+.eventos-search:focus-within { border-color:#8295ec; box-shadow:0 0 0 3px rgba(82,111,224,.12); }
+.eventos-search input { width:100%; min-width:0; border:0; outline:0; background:transparent; color:#34415a; font:inherit; font-size:12px; }
+.eventos-search input::placeholder { color:#8995a9; }
+.eventos-type-filter select { width:100%; min-height:42px; padding:0 11px; border:1px solid #dfe5ef; border-radius:10px; background:#fff; color:#34415a; font:inherit; font-size:12px; }
+.eventos-type-filter select:focus { outline:0; border-color:#8295ec; box-shadow:0 0 0 3px rgba(82,111,224,.12); }
+.eventos-results-count { color:#78849a; font-size:11px; font-weight:750; white-space:nowrap; }
+.evento-countdown { display:inline-flex; width:max-content; max-width:100%; margin:0 0 4px; padding:5px 9px; border-radius:999px; background:#eef1ff; color:#526fe0; font-size:10px; font-weight:800; }
+.evento-countdown.is-today,.evento-countdown.is-live { background:#e8f7ef; color:#218257; }
+.evento-countdown.is-past { background:#f0f2f6; color:#69758b; }
+.evento-card-actions { display:flex; align-items:center; gap:8px; margin-top:auto; padding-top:15px; }
+.evento-detail-button,.evento-video-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; border-radius:11px; font-size:11px; font-weight:800; text-decoration:none; }
+.evento-detail-button { flex:1; padding:0 13px; background:linear-gradient(135deg,#526fe0,#7187ed); color:#fff; box-shadow:0 6px 14px rgba(83,111,224,.16); }
+.evento-detail-button:hover { background:#435fcf; color:#fff; }
+.evento-video-button { flex:0 0 42px; width:42px; border:1px solid #e4eaf5; background:#f8f9ff; color:#526fe0; }
+.evento-video-button:hover { border-color:#dce4ff; background:#eef1ff; color:#435fcf; }
+.eventos-no-match { padding:25px 16px; border:1px dashed #dce3ee; border-radius:14px; color:#78849a; text-align:center; font-size:12px; }
+.eventos-no-match[hidden] { display:none !important; }
+.evento-card[hidden] { display:none !important; }
+.eventos-past-section { margin-top:22px; border:1px solid #e8edf5; border-radius:16px; background:#fafbfe; }
+.eventos-past-section summary { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:52px; padding:0 16px; color:#596780; font-size:12px; font-weight:800; cursor:pointer; list-style:none; }
+.eventos-past-section summary::-webkit-details-marker { display:none; }
+.eventos-past-section summary span { display:inline-flex; align-items:center; gap:9px; }
+.eventos-past-section summary i { color:#8290a5; }
+.eventos-past-section summary b { display:grid; min-width:24px; height:24px; place-items:center; border-radius:999px; background:#edf0f6; color:#69758b; font-size:10px; }
+.eventos-past-grid { padding:0 13px 13px; }
+html[data-theme="dark"] .eventos-tools { border-color:rgba(167,190,238,.16); background:#101b2d; }
+html[data-theme="dark"] .eventos-search,html[data-theme="dark"] .eventos-type-filter select { border-color:#40516c; background:#0c1728; color:#e5edf9; color-scheme:dark; }
+html[data-theme="dark"] .eventos-search input { color:#e5edf9; }
+html[data-theme="dark"] .eventos-search input::placeholder { color:#91a0b8; }
+html[data-theme="dark"] .eventos-results-count { color:#adbbd2; }
+html[data-theme="dark"] .evento-countdown { background:#253761; color:#d1dcff; }
+html[data-theme="dark"] .evento-countdown.is-today,html[data-theme="dark"] .evento-countdown.is-live { background:#173a2c; color:#a8ebc1; }
+html[data-theme="dark"] .evento-countdown.is-past { background:#263246; color:#c0ccdc; }
+html[data-theme="dark"] .evento-video-button { border-color:#344866; background:#182740; color:#cbd5ff; }
+html[data-theme="dark"] .evento-video-button:hover { border-color:#627bd0; background:#22365c; color:#fff; }
+html[data-theme="dark"] .eventos-no-match { border-color:rgba(167,190,238,.2); color:#adbbd2; }
+html[data-theme="dark"] .eventos-past-section { border-color:rgba(167,190,238,.16); background:#101b2d; }
+html[data-theme="dark"] .eventos-past-section summary { color:#c3d0e2; }
+html[data-theme="dark"] .eventos-past-section summary b { background:#263246; color:#c0ccdc; }
+html[data-theme="dark"] .evento-detail-button { color:#fff; }
+
 @media(max-width:700px) {
     .eventos-page { padding:16px 10px 32px; }
     .eventos-container { padding:18px; border-radius:18px; }
     .eventos-grid { grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr)); gap:13px; }
+    .eventos-tools { grid-template-columns:minmax(0,1fr); gap:8px; }
+    .eventos-results-count { justify-self:end; }
 }
 
 @media(max-width:480px) {
+    .eventos-page { padding-bottom:105px; }
     .eventos-hero { align-items:flex-start; padding:20px 17px; border-radius:20px; }
     .eventos-hero-content { align-items:flex-start; }
     .eventos-container { padding:15px 12px; }
@@ -770,6 +816,9 @@ active
     .eventos-grid { grid-template-columns:minmax(0,1fr); gap:13px; }
     .evento-imagen-wrapper,.evento-placeholder { height:185px; }
     .evento-contenido { padding:16px; }
+    .evento-card-actions { padding-top:12px; }
+    .evento-detail-button,.evento-video-button { min-height:46px; }
+    .eventos-past-grid { padding:0 10px 10px; }
 }
 
 @media(prefers-reduced-motion:reduce) {
@@ -891,200 +940,46 @@ html[data-theme="dark"] .sin-eventos p { color:#adbbd2; }
     </div>
 
 
-    <!-- =================================================
-         LISTADO DE EVENTOS
-    ================================================== -->
-
-    {% if eventos %}
-
-        <div class="eventos-grid">
-
-            {% for evento in eventos %}
-
-                <article class="evento-card">
-
-
-                    <!-- =====================================
-                         IMAGEN
-                    ====================================== -->
-
-                    {% if evento.imagen %}
-
-                        <div class="evento-imagen-wrapper">
-
-                            <img
-                                src="{{ evento.imagen.url }}"
-                                alt="{{ evento.titulo }}"
-                                class="evento-imagen"
-                            >
-
-                            <div class="evento-fecha-badge">
-
-                                <span class="evento-fecha-dia">
-                                    {{ evento.fecha|date:"d" }}
-                                </span>
-
-                                <span class="evento-fecha-mes">
-                                    {{ evento.fecha|date:"M" }}
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    {% else %}
-
-                        <div class="evento-placeholder">
-                            📅
-                        </div>
-
-                    {% endif %}
-
-
-                    <!-- =====================================
-                         CONTENIDO
-                    ====================================== -->
-
-                    <div class="evento-contenido">
-
-
-                        <!-- =================================
-                             BADGES
-                        ================================== -->
-
-                        <div class="evento-badges">
-
-                            {% if evento.tipo %}
-
-                                <span class="evento-tipo">
-                                    ● {{ evento.get_tipo_display }}
-                                </span>
-
-                            {% endif %}
-
-                            {% if evento.publico %}
-
-                                <span class="evento-publico">
-                                    {{ evento.get_publico_display }}
-                                </span>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <!-- =================================
-                             TÍTULO
-                        ================================== -->
-
-                        <div class="evento-titulo">
-
-                            {{ evento.titulo }}
-
-                        </div>
-
-
-                        <!-- =================================
-                             FECHA Y HORA
-                        ================================== -->
-
-                        <div class="evento-info">
-
-                            <span class="evento-info-icon">
-                                ◷
-                            </span>
-
-                            <span>
-
-                                {{ evento.fecha|date:"d/m/Y" }}
-
-                                {% if evento.hora %}
-
-                                    · {{ evento.hora|time:"H:i" }}
-
-                                {% endif %}
-
-                            </span>
-
-                        </div>
-
-
-                        <!-- =================================
-                             DESCRIPCIÓN
-                        ================================== -->
-
-                        {% if evento.descripcion %}
-
-                            <div class="evento-divider"></div>
-
-                            <div class="evento-descripcion">
-
-                                {{ evento.descripcion }}
-
-                            </div>
-
-                        {% endif %}
-
-
-                        <!-- =================================
-                             VIDEO
-                        ================================== -->
-
-                        {% if evento.video %}
-
-                            <div class="evento-video">
-
-                                <a
-                                    href="{{ evento.video }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-
-                                    <span>
-                                        ▶
-                                    </span>
-
-                                    Ver video del evento
-
-                                </a>
-
-                            </div>
-
-                        {% endif %}
-
-
-                    </div>
-
-                </article>
-
-            {% endfor %}
-
-        </div>
-
-
-    {% else %}
-
-
-        <!-- =================================================
-             SIN EVENTOS
-        ================================================== -->
-
-        <div class="sin-eventos">
-
-            <div class="sin-eventos-icon">
-                📅
+    <div class="eventos-tools" role="search" aria-label="Buscar y filtrar pr&oacute;ximos eventos">
+        <label class="eventos-search">
+            <span class="visually-hidden">Buscar eventos</span>
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input id="eventSearch" type="search" placeholder="Buscar evento" autocomplete="off">
+        </label>
+        <label class="eventos-type-filter">
+            <span class="visually-hidden">Filtrar por tipo de evento</span>
+            <select id="eventTypeFilter" aria-label="Filtrar por tipo de evento">
+                <option value="">Todos los tipos</option>
+                {% for tipo, etiqueta in tipos_evento %}
+                    <option value="{{ tipo }}">{{ etiqueta }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <span class="eventos-results-count" id="upcomingCount">{{ eventos_proximos|length }} pr&oacute;ximos</span>
+    </div>
+
+    <div class="eventos-grid" id="upcomingEventsGrid">
+        {% for evento in eventos_proximos %}
+            {% include "admin/eventos/_evento_card_alumno.html" with evento=evento proximo=True %}
+        {% empty %}
+            <div class="sin-eventos" id="upcomingEmpty">
+                <div class="sin-eventos-icon"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i></div>
+                <h4>No hay pr&oacute;ximos eventos</h4>
+                <p>Cuando se publique una nueva actividad para alumnos, aparecer&aacute; aqu&iacute;.</p>
             </div>
+        {% endfor %}
+    </div>
+    <div class="eventos-no-match" id="eventsNoMatch" hidden>No encontramos pr&oacute;ximos eventos con esos filtros.</div>
 
-            <h4>
-                No hay eventos disponibles
-            </h4>
-
-            <p>
-                Actualmente no hay eventos publicados para alumnos.
-            </p>
-
-        </div>
-
+    {% if eventos_pasados %}
+        <details class="eventos-past-section">
+            <summary><span><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> Eventos pasados</span><b>{{ eventos_pasados|length }}</b></summary>
+            <div class="eventos-grid eventos-past-grid">
+                {% for evento in eventos_pasados %}
+                    {% include "admin/eventos/_evento_card_alumno.html" with evento=evento proximo=False %}
+                {% endfor %}
+            </div>
+        </details>
     {% endif %}
 
 
@@ -1092,5 +987,32 @@ html[data-theme="dark"] .sin-eventos p { color:#adbbd2; }
 
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const cards = Array.from(document.querySelectorAll("#upcomingEventsGrid [data-event-card]"));
+    const search = document.getElementById("eventSearch");
+    const typeFilter = document.getElementById("eventTypeFilter");
+    const count = document.getElementById("upcomingCount");
+    const noMatch = document.getElementById("eventsNoMatch");
+    const normalize = value => String(value || "").toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    function filterEvents() {
+        const query = normalize(search.value.trim());
+        let visible = 0;
+        cards.forEach(function (card) {
+            const matches = (!query || normalize(card.dataset.eventSearch).includes(query))
+                && (!typeFilter.value || card.dataset.eventType === typeFilter.value);
+            card.hidden = !matches;
+            if (matches) visible += 1;
+        });
+        count.textContent = visible + (visible === 1 ? " próximo" : " próximos");
+        noMatch.hidden = visible > 0 || cards.length === 0;
+    }
+
+    search.addEventListener("input", filterEvents);
+    typeFilter.addEventListener("change", filterEvents);
+});
+</script>
 
 {% endblock %}

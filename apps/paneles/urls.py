@@ -133,6 +133,11 @@ urlpatterns = [
         views.horarios_alumnos,
         name="horarios_alumnos"
     ),
+    path(
+        "alumno/horarios/pdf/",
+        views.descargar_horario_alumno_pdf,
+        name="descargar_horario_alumno_pdf"
+    ),
 
     # =========================================================
     # ACUDIENTE

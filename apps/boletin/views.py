@@ -86,7 +86,26 @@ def mis_boletines(request):
         usuario_id=request.user.id,
         activo=True,
     )
-    periodo = get_object_or_404(Periodo, pk=request.GET["periodo"]) if request.GET.get("periodo") else None
+    periodos_todos = list(_periodos())
+    anios = sorted({p.anio for p in periodos_todos}, reverse=True)
+    periodo_solicitado = (
+        get_object_or_404(Periodo, pk=request.GET["periodo"])
+        if request.GET.get("periodo") else None
+    )
+    anio_solicitado = request.GET.get("anio")
+    if not anio_solicitado and periodo_solicitado:
+        anio_solicitado = str(periodo_solicitado.anio)
+    if not anio_solicitado and anios:
+        anio_solicitado = str(anios[0])
+    if anio_solicitado and not anio_solicitado.isdigit():
+        anio_solicitado = str(anios[0]) if anios else ""
+    periodos = [p for p in periodos_todos if not anio_solicitado or str(p.anio) == anio_solicitado]
+    periodo = (
+        periodo_solicitado
+        if periodo_solicitado and periodo_solicitado in periodos
+        else None
+    )
+    asignaciones = list(_asignaciones_curso(alumno.curso)) if alumno.curso else []
     # El alumno siempre debe poder consultar sus promedios académicos. La
     # publicación controla el estado de la observación, no la visibilidad de
     # las notas provenientes de Calificaciones.
@@ -97,8 +116,52 @@ def mis_boletines(request):
         )
         if periodo and alumno.curso else ([], None)
     )
+    for fila in filas:
+        if not fila["publicado"]:
+            fila["observacion"] = None
+    periodos_resumen = []
+    for periodo_item in periodos:
+        filas_periodo, promedio_periodo = (
+            construir_boletin(alumno, periodo_item, _asignaciones_curso(alumno.curso), solo_con_notas=True)
+            if alumno.curso else ([], None)
+        )
+        materias_calificadas = len(filas_periodo)
+        materias_pendientes = max(len(asignaciones) - materias_calificadas, 0)
+        observaciones_publicadas = sum(1 for fila in filas_periodo if fila["publicado"])
+        if not filas_periodo:
+            estado_periodo = "Sin calificaciones"
+            clase_estado = "empty"
+        elif observaciones_publicadas == len(filas_periodo):
+            estado_periodo = "Publicado"
+            clase_estado = "published"
+        else:
+            estado_periodo = "En preparación"
+            clase_estado = "pending"
+        periodos_resumen.append({
+            "periodo": periodo_item,
+            "promedio": promedio_periodo,
+            "materias_calificadas": materias_calificadas,
+            "materias_pendientes": materias_pendientes,
+            "observaciones_publicadas": observaciones_publicadas,
+            "estado": estado_periodo,
+            "clase_estado": clase_estado,
+        })
+    estado_periodo_seleccionado = next(
+        (item["estado"] for item in periodos_resumen if periodo and item["periodo"].pk == periodo.pk),
+        "Sin calificaciones",
+    )
     return render(request, "boletin/alumno_boletin.html", {
-        "alumno": alumno, "periodos": _periodos(), "periodo": periodo, "filas": filas, "promedio": promedio,
+        "alumno": alumno,
+        "periodos": periodos,
+        "periodos_resumen": periodos_resumen,
+        "anios": anios,
+        "anio_seleccionado": anio_solicitado,
+        "periodo": periodo,
+        "filas": filas,
+        "promedio": promedio,
+        "materias_calificadas": len(filas),
+        "materias_pendientes": max(len(asignaciones) - len(filas), 0),
+        "estado_periodo_seleccionado": estado_periodo_seleccionado,
     })
 
 
@@ -191,8 +254,13 @@ def descargar_boletin_pdf(request, alumno_id, periodo_id):
             autorizado=True,
         )
     periodo = get_object_or_404(Periodo, pk=periodo_id)
-    filas, promedio = construir_boletin(alumno, periodo, _asignaciones_curso(alumno.curso))
-    if es_acudiente:
+    filas, promedio = construir_boletin(
+        alumno,
+        periodo,
+        _asignaciones_curso(alumno.curso),
+        solo_con_notas=es_alumno,
+    )
+    if es_acudiente or es_alumno:
         for fila in filas:
             if not fila["publicado"]:
                 fila["observacion"] = None
