@@ -68,6 +68,9 @@
     if (!button.hasAttribute("onclick")) {
         button.addEventListener("click", function () {
             if (mobileQuery.matches) setMenuOpen(!sidebar.classList.contains("is-open"));
+            else if (supportsDesktopCollapse) {
+                setCollapsed(!document.body.classList.contains("sidebar-collapsed"));
+            }
         });
     }
 
