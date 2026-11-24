@@ -84,6 +84,18 @@ active
         box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
     }
 
+    .grades-tools { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:14px 18px; border-bottom:1px solid #edf0f6; background:#fbfcff; }
+    .grades-search { flex:1 1 220px; min-width:0; }
+    .grades-search input, .grades-filter-select { width:100%; min-height:42px; border:1px solid #dfe5ef; border-radius:11px; background:#fff; color:#34415a; font:inherit; font-size:12px; }
+    .grades-search input { padding:0 13px; }
+    .grades-filter-select { flex:0 1 175px; padding:0 11px; }
+    .grades-search input:focus, .grades-filter-select:focus { outline:0; border-color:#8295ec; box-shadow:0 0 0 3px rgba(82,111,224,.12); }
+    .grade-new-badge { display:inline-flex; margin-left:7px; padding:3px 7px; border-radius:999px; background:#e8f2ff; color:#3266bb; font-size:9px; font-weight:800; vertical-align:middle; }
+    .grade-pending-badge { display:inline-flex; padding:5px 9px; border-radius:999px; background:#fff4df; color:#91600e; font-size:10px; font-weight:800; }
+    .grades-no-results { padding:32px 18px; color:#78849a; text-align:center; font-size:13px; }
+    .tabla-calificaciones [data-grade-row][hidden] { display:none !important; }
+    .calificaciones-page .visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
     .estadistica-contenido {
         display: flex;
         align-items: center;
@@ -309,6 +321,7 @@ active
         margin: 0;
         font-size: 14px;
     }
+    .grades-no-results[hidden] { display:none !important; }
 
 
     /* =====================================================
@@ -343,6 +356,191 @@ active
         }
 
     }
+
+    /* Acabado alineado con las superficies y tarjetas del panel administrador. */
+    .calificaciones-page {
+        max-width: 1480px;
+        margin: 0 auto;
+        padding: 22px 14px 48px;
+        background: transparent;
+        color: #202c43;
+    }
+
+    .calificaciones-header {
+        position: relative;
+        overflow: hidden;
+        padding: 25px 29px;
+        border: 1px solid #e3e9f4;
+        border-radius: 23px;
+        background: radial-gradient(circle at 92% 8%,rgba(129,164,255,.18),transparent 30%),linear-gradient(120deg,#fff 0%,#f5f8ff 100%);
+        box-shadow: 0 14px 40px rgba(31,50,89,.06);
+    }
+
+    .calificaciones-header h1 { color: #18243b; font-size: clamp(26px,3vw,34px); letter-spacing: -.04em; }
+    .calificaciones-header p { color: #78849a; font-size: 13px; }
+
+    .alumno-info,
+    .estadistica-card,
+    .tabla-card {
+        border: 1px solid #e8edf5;
+        border-radius: 19px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(31,50,89,.05);
+    }
+
+    .alumno-info { padding: 22px 24px; }
+    .info-label { color: #8792a5; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .info-value { color: #29354c; font-size: 15px; overflow-wrap: anywhere; }
+    .estadisticas { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 15px; }
+    .estadistica-card { min-width: 0; padding: 19px 20px; transition: transform .2s ease,box-shadow .2s ease; }
+    .estadistica-card:hover { transform: translateY(-2px); box-shadow: 0 13px 27px rgba(31,50,89,.08); }
+    .estadistica-icono { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 14px; background: #eef1ff; color: #526fe0; }
+    .estadistica-titulo { color: #7c879c; font-size: 12px; }
+    .estadistica-numero { color: #202c43; font-size: 26px; }
+
+    .tabla-card { overflow: hidden; }
+    .tabla-header { flex-wrap: wrap; gap: 12px; padding: 20px 23px; border-bottom-color: #edf0f6; }
+    .tabla-header h2 { color: #202b41; font-size: 16px; }
+    .tabla-header p { color: #8792a5; font-size: 12px; }
+    .contador-notas { border-radius: 999px; background: #eef1ff; color: #526fe0; font-size: 11px; }
+    .tabla-calificaciones { min-width: 760px; }
+    .tabla-calificaciones thead { background: #fafbfe; }
+    .tabla-calificaciones th { padding: 13px 15px; color: #8792a5; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border-bottom-color: #edf0f6; }
+    .tabla-calificaciones td { padding: 14px 15px; color: #667187; font-size: 12px; border-bottom-color: #f0f2f6; }
+    .tabla-calificaciones tbody tr { transition: background .15s ease; }
+    .tabla-calificaciones tbody tr:hover { background: #fafbff; }
+    .actividad-nombre { color: #354158; }
+    .tipo-badge { border-radius: 999px; background: #f0f3fa; color: #64718a; font-size: 10px; }
+    .nota-badge { border-radius: 10px; background: #eef1ff; color: #526fe0; }
+    .estado-badge { border-radius: 999px; font-size: 10px; }
+    .grades-tools { border-color:#edf0f6; background:#fbfcff; }
+    .grade-new-badge { background:#e8f2ff; color:#3266bb; }
+
+    @media (max-width: 900px) {
+        .estadisticas { grid-template-columns: repeat(2,minmax(0,1fr)); }
+        .estadistica-card:last-child { grid-column:auto; }
+    }
+
+    @media (max-width: 600px) {
+        .calificaciones-page { padding: 16px 10px 30px; }
+        .calificaciones-header { padding: 20px 18px; border-radius: 20px; }
+        .alumno-info { padding: 18px; }
+        .estadisticas { gap: 10px; }
+        .estadistica-card { padding: 14px 12px; border-radius: 15px; }
+        .estadistica-contenido { gap: 10px; }
+        .estadistica-icono { flex-basis: 36px; width: 36px; height: 36px; margin-right: 0; font-size: 18px; }
+        .estadistica-numero { font-size: 22px; }
+        .estadistica-titulo { font-size: 10px; }
+        .tabla-header { align-items: flex-start; padding: 17px; }
+        .grades-tools { display:grid; grid-template-columns:minmax(0,1fr); padding:12px; }
+        .grades-filter-select { width:100%; }
+        .tabla-contenedor { -webkit-overflow-scrolling: touch; }
+        .tabla-calificaciones th,.tabla-calificaciones td { padding: 12px 11px; }
+        .tabla-calificaciones { min-width: 0; width: 100%; table-layout: fixed; }
+        .tabla-calificaciones thead { display: none; }
+        .tabla-calificaciones tbody tr:not(.grades-empty-row) {
+            display: grid;
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 2px 10px;
+            padding: 10px 13px;
+            border-bottom: 1px solid #edf0f6;
+        }
+        .tabla-calificaciones tbody tr:not(.grades-empty-row) td {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 0;
+            padding: 8px 3px;
+            border: 0;
+            text-align: left !important;
+            overflow-wrap: anywhere;
+        }
+        .tabla-calificaciones tbody tr:not(.grades-empty-row) td::before {
+            content: attr(data-label);
+            margin-bottom: 5px;
+            color: #8792a5;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+        .tabla-calificaciones tbody tr:not(.grades-empty-row) td:nth-child(2) { grid-column: 1 / -1; }
+        .tabla-card-vacia .tabla-contenedor { overflow: visible; }
+        .tabla-card-vacia .tabla-calificaciones { table-layout: auto; }
+        .tabla-calificaciones .grades-empty-row { display: block; }
+        .tabla-calificaciones .grades-empty-row .sin-datos {
+            display: block;
+            width: 100%;
+            padding: 38px 18px !important;
+            box-sizing: border-box;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+        .sin-datos h3 { font-size: 16px; line-height: 1.4; }
+        .sin-datos p { max-width: 34ch; margin: 0 auto; line-height: 1.55; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .estadistica-card { transition: none; }
+    }
+
+    /* Modo oscuro del módulo de calificaciones del alumno. */
+    html[data-theme="dark"] .calificaciones-page { color:#e8efff; background:transparent !important; }
+    html[data-theme="dark"] .calificaciones-header {
+        border-color:rgba(167,190,238,.17);
+        background:radial-gradient(ellipse at 86% 0%,rgba(103,137,231,.24),transparent 36%),linear-gradient(118deg,#101d36,#172b4f 64%,#1c3a66);
+        box-shadow:0 14px 36px rgba(0,0,0,.22);
+    }
+    html[data-theme="dark"] .calificaciones-header h1 { color:#edf3ff; }
+    html[data-theme="dark"] .calificaciones-header p { color:#b8c6dd; }
+    html[data-theme="dark"] .alumno-info,
+    html[data-theme="dark"] .estadistica-card,
+    html[data-theme="dark"] .tabla-card {
+        border:1px solid rgba(167,190,238,.16);
+        background:#111d30 !important;
+        color:#e5edf9;
+        box-shadow:0 10px 28px rgba(0,0,0,.2);
+    }
+    html[data-theme="dark"] .info-label,
+    html[data-theme="dark"] .estadistica-titulo,
+    html[data-theme="dark"] .tabla-header p { color:#aab9d0; }
+    html[data-theme="dark"] .info-value,
+    html[data-theme="dark"] .estadistica-numero,
+    html[data-theme="dark"] .tabla-header h2,
+    html[data-theme="dark"] .actividad-nombre { color:#e8efff; }
+    html[data-theme="dark"] .estadistica-icono { background:#25385f; color:#cbd7ff; }
+    html[data-theme="dark"] .tabla-header { border-bottom-color:rgba(167,190,238,.15); }
+    html[data-theme="dark"] .grades-tools { border-color:rgba(167,190,238,.14); background:#0e1a2b; }
+    html[data-theme="dark"] .grades-search input,html[data-theme="dark"] .grades-filter-select { border-color:#40516c; background:#0c1728; color:#e5edf9; color-scheme:dark; }
+    html[data-theme="dark"] .grades-no-results { color:#aab9d0; }
+    html[data-theme="dark"] .grade-new-badge { background:#1d355a; color:#b9d7ff; }
+    html[data-theme="dark"] .grade-pending-badge { background:#3a301a; color:#f5d58b; }
+    html[data-theme="dark"] .contador-notas { background:#273961; color:#dbe4ff; }
+    html[data-theme="dark"] .tabla-calificaciones thead { background:#172743; }
+    html[data-theme="dark"] .tabla-calificaciones th {
+        border-bottom-color:rgba(167,190,238,.18);
+        background:#172743;
+        color:#bccbe2;
+    }
+    html[data-theme="dark"] .tabla-calificaciones td {
+        border-bottom-color:rgba(167,190,238,.12);
+        background:#111d30;
+        color:#c4d0e2;
+    }
+    html[data-theme="dark"] .tabla-calificaciones tbody tr:hover td { background:#1a2a45; }
+    html[data-theme="dark"] .numero-fila,
+    html[data-theme="dark"] .actividad-descripcion { color:#97a8c1; }
+    html[data-theme="dark"] .tipo-badge { background:#202d44; color:#c3d0e4; }
+    html[data-theme="dark"] .nota-badge { background:#253761; color:#d1dcff; }
+    html[data-theme="dark"] .nota-aprobada,
+    html[data-theme="dark"] .estado-superior { background:#173a2c; color:#a8ebc1; }
+    html[data-theme="dark"] .nota-reprobada,
+    html[data-theme="dark"] .estado-bajo { background:#402329; color:#ffc2c8; }
+    html[data-theme="dark"] .estado-alto { background:#1d355a; color:#b9d7ff; }
+    html[data-theme="dark"] .estado-basico { background:#3a301a; color:#f5d58b; }
+    html[data-theme="dark"] .estado-sin { background:#263246; color:#c0ccdc; }
+    html[data-theme="dark"] .sin-datos h3 { color:#e5edf9; }
+    html[data-theme="dark"] .sin-datos p { color:#aab9d0; }
 
 </style>
 

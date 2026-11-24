@@ -850,4 +850,195 @@
 </div>
 
 
+
+<style>
+    /* Inicio del alumno: comparte el lenguaje visual del panel administrador. */
+    .alumno-dashboard { --alumno-ink:#202c43; --alumno-muted:#78849a; --alumno-line:#e8edf5; display:flex; flex-direction:column; color:var(--alumno-ink); min-width:0; }
+    .alumno-dashboard, .alumno-dashboard * { box-sizing:border-box; }
+    .alumno-dashboard .topbar { position:relative; overflow:hidden; align-items:center; gap:20px; padding:28px 30px; border:1px solid #e7edfb; border-radius:24px; background:radial-gradient(circle at 92% 8%,rgba(129,164,255,.18),transparent 30%),linear-gradient(120deg,#fff 0%,#f5f8ff 100%); box-shadow:0 14px 40px rgba(31,50,89,.06); }
+    .alumno-dashboard .welcome { min-width:0; }
+    .alumno-dashboard .profile { display:flex !important; min-width:0; gap:11px; }
+    .alumno-dashboard .user-area::after { display:none; }
+    .alumno-dashboard .profile-avatar { display:grid; place-items:center; flex:0 0 42px; width:42px; height:42px; border-radius:14px; background:linear-gradient(145deg,#526fe0,#82afef); color:#fff; font-size:12px; font-weight:800; }
+    .alumno-dashboard .profile strong { display:block; max-width:230px; overflow:hidden; color:#354158; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+    .alumno-dashboard .profile small { display:block; margin-top:3px; color:#8792a5; font-size:11px; }
+    .alumno-dashboard .welcome h2 { color:#18243b; font-size:clamp(23px,3vw,32px); font-weight:800; letter-spacing:-.04em; overflow-wrap:anywhere; }
+    .alumno-dashboard .welcome p { margin:8px 0 0; color:#758198; font-size:14px; }
+    .alumno-dashboard .stats { margin:18px 0 22px; gap:14px; }
+    .alumno-dashboard .stat-card { min-width:0; padding:19px; border:1px solid var(--alumno-line); border-radius:19px; background:#fff; box-shadow:0 8px 24px rgba(31,50,89,.045); transition:transform .2s,box-shadow .2s; }
+    .alumno-dashboard .stat-card:hover { transform:translateY(-3px); box-shadow:0 14px 30px rgba(31,50,89,.09); }
+    .alumno-dashboard .stat-card h3 { color:#202c43; font-size:28px; font-weight:800; letter-spacing:-.04em; }
+    .alumno-dashboard .stat-card p { margin-top:5px; color:#7c879c; font-size:12px; }
+    .alumno-dashboard .stat-icon { flex:0 0 44px; width:44px; height:44px; border-radius:14px; }
+    .alumno-dashboard .section-card { min-width:0; padding:21px; border:1px solid var(--alumno-line); border-radius:21px; background:#fff; box-shadow:0 9px 30px rgba(31,50,89,.05); }
+    .alumno-dashboard > .section-card { margin:0 0 22px; }
+    .alumno-dashboard .section-card h4 { color:#202b41; font-size:15px; font-weight:800; }
+    .alumno-dashboard .section-header { margin-bottom:13px; }
+    .alumno-dashboard .dashboard-grid { grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr); gap:18px; margin-top:0; }
+    .alumno-dashboard .main-column, .alumno-dashboard .side-column { min-width:0; }
+    .alumno-dashboard .task-card, .alumno-dashboard .subject-card, .alumno-dashboard .event-list li, .alumno-dashboard .achievement { border:1px solid #edf0f6; background:linear-gradient(145deg,#fff,#fbfcff); }
+    .alumno-dashboard .task-card { gap:12px; border-radius:14px; }
+    .alumno-dashboard .task-card h6 { color:#29354c; font-weight:750; }
+    .alumno-dashboard .pending-task-copy { min-width:0; }
+    .alumno-dashboard .pending-task-copy h6 { overflow-wrap:anywhere; }
+    .alumno-dashboard .pending-task-copy small { color:#8792a5; font-size:10px; }
+    .alumno-dashboard .pending-task-link { display:grid; flex:0 0 34px; place-items:center; width:34px; height:34px; border-radius:10px; background:#eef1ff; color:#526fe0; text-decoration:none; }
+    .alumno-dashboard .pending-task-link:hover { background:#526fe0; color:#fff; }
+    .alumno-dashboard .dashboard-empty-state { display:flex; align-items:center; gap:10px; margin-top:10px; padding:14px; border:1px solid #e7f3ec; border-radius:13px; background:#f5fbf7; color:#397154; font-size:12px; }
+    .alumno-dashboard .dashboard-empty-copy { color:#78849a; font-size:12px; }
+    .alumno-dashboard .subjects-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .alumno-dashboard .subject-card { min-width:0; border-radius:16px; }
+    .alumno-dashboard .subject-card h6 { overflow-wrap:anywhere; color:#29354c; font-weight:700; }
+    .alumno-dashboard .event-list li { gap:10px; border-radius:12px; color:#536078; overflow-wrap:anywhere; }
+    .alumno-dashboard .event-list li span { flex:0 0 auto; color:#354158; font-weight:700; }
+    .alumno-dashboard .achievement { border-radius:14px; }
+    .alumno-dashboard .section-card > div[style*="grid-template-columns"] { grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr)) !important; gap:14px !important; }
+    .alumno-dashboard .section-card > div[style*="grid-template-columns"] > div { min-width:0; border-radius:16px !important; }
+    .alumno-dashboard .section-card a[style*="background:#006eff"] { background:#526fe0 !important; border-radius:12px !important; }
+    .alumno-dashboard > .stats { order:2; }
+    .alumno-dashboard > .topbar { order:1; }
+    .alumno-dashboard > .dashboard-alerts { order:3; }
+    .alumno-dashboard > .dashboard-grid { order:4; width:100%; }
+    .alumno-dashboard > .dashboard-weekly-agenda { order:5; }
+    .alumno-dashboard > .dashboard-events-preview { order:6; }
+    .alumno-dashboard .dashboard-alerts { margin-bottom:18px; }
+    .alumno-dashboard .alerts-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:10px; }
+    .alumno-dashboard .dashboard-alert-item { display:flex; align-items:center; gap:11px; min-width:0; padding:12px; border:1px solid #e5eaf2; border-radius:13px; background:#f8faff; color:#34445f; text-decoration:none; }
+    .alumno-dashboard .dashboard-alert-item:hover { border-color:#b8c6f0; background:#f1f4ff; }
+    .alumno-dashboard .dashboard-alert-icon { display:grid; flex:0 0 34px; width:34px; height:34px; place-items:center; border-radius:11px; background:#e7edff; color:#4059c5; }
+    .alumno-dashboard .dashboard-alert-copy { display:grid; min-width:0; gap:3px; }
+    .alumno-dashboard .dashboard-alert-copy strong { color:#26344d; font-size:12px; overflow-wrap:anywhere; }
+    .alumno-dashboard .dashboard-alert-copy small { color:#687791; font-size:11px; line-height:1.4; }
+    .alumno-dashboard .dashboard-alert-item.alert-urgente { border-color:#f2d4c5; background:#fff8f4; }
+    .alumno-dashboard .dashboard-alert-item.alert-urgente .dashboard-alert-icon { background:#ffeadf; color:#a8431b; }
+    .alumno-dashboard .dashboard-alert-item.alert-calificacion { border-color:#d9e3fb; background:#f5f8ff; }
+    .alumno-dashboard .dashboard-alert-item.alert-horario { border-color:#d5e9df; background:#f3fbf6; }
+    .alumno-dashboard .dashboard-quick-links { display:flex; flex-wrap:wrap; gap:9px; margin-top:12px; }
+    .alumno-dashboard .dashboard-quick-link { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:42px; padding:0 12px; border:1px solid #dfe6f1; border-radius:10px; background:#fff; color:#4059c5; font-size:11px; font-weight:750; text-decoration:none; }
+    .alumno-dashboard .dashboard-quick-link:hover { border-color:#aebdf0; background:#f4f6ff; }
+    .alumno-dashboard .weekly-agenda-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:9px; overflow-x:auto; }
+    .alumno-dashboard .weekly-agenda-grid:focus-visible { outline:3px solid #526fe0; outline-offset:3px; }
+    .alumno-dashboard .agenda-day { min-width:0; min-height:150px; padding:11px; border:1px solid #e6ebf3; border-radius:13px; background:#f8f9fc; }
+    .alumno-dashboard .agenda-day.is-today { border-color:#8295ec; background:#f1f4ff; box-shadow:inset 0 0 0 1px rgba(82,111,224,.12); }
+    .alumno-dashboard .agenda-day.is-past { border-style:dashed; background:#f5f6fa; }
+    .alumno-dashboard .agenda-day-heading { display:flex; align-items:center; justify-content:space-between; gap:5px; margin-bottom:9px; color:#29354c; font-size:11px; font-weight:800; }
+    .alumno-dashboard .agenda-day-heading time { color:#78849a; font-size:10px; font-weight:650; white-space:nowrap; }
+    .alumno-dashboard .agenda-today-tag { color:#4059c5; font-size:9px; font-weight:800; text-transform:uppercase; }
+    .alumno-dashboard .agenda-items { display:grid; gap:7px; }
+    .alumno-dashboard .agenda-item { display:grid; gap:3px; padding:8px; border:1px solid #dfe6f1; border-left:3px solid #526fe0; border-radius:9px; background:#fff; color:#34445f; text-decoration:none; }
+    .alumno-dashboard .agenda-item:hover { border-color:#aebdf0; background:#f7f8ff; }
+    .alumno-dashboard .agenda-item.agenda-tarea { border-left-color:#e29a36; }
+    .alumno-dashboard .agenda-item.agenda-evento { border-left-color:#8b6ad9; }
+    .alumno-dashboard .agenda-item.agenda-horario { border-left-color:#3b9b73; }
+    .alumno-dashboard .agenda-item-time { color:#596982; font-size:9px; font-weight:800; }
+    .alumno-dashboard .agenda-item strong { color:#26344d; font-size:10px; line-height:1.35; overflow-wrap:anywhere; }
+    .alumno-dashboard .agenda-item small { color:#7a879b; font-size:9px; line-height:1.35; overflow-wrap:anywhere; }
+    .alumno-dashboard .agenda-empty { margin:0; color:#8995a8; font-size:10px; line-height:1.45; }
+    .alumno-dashboard .pending-task-link { display:inline-flex; align-items:center; justify-content:center; width:auto; min-height:42px; flex:0 0 auto; gap:6px; padding:0 10px; font-size:10px; font-weight:750; white-space:nowrap; }
+    .alumno-dashboard .task-due-badge { display:inline-flex; width:max-content; margin-top:4px; padding:3px 7px; border-radius:999px; background:#fff4e9; color:#9c541b; font-size:9px; font-weight:800; }
+    .alumno-dashboard .task-due-badge.is-overdue { background:#fff0ee; color:#a33f36; }
+    @media(max-width:1000px) { .alumno-dashboard .dashboard-grid { grid-template-columns:minmax(0,1fr); } .alumno-dashboard .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:640px) {
+        .alumno-dashboard .topbar { align-items:flex-start; flex-direction:column; gap:16px; margin-bottom:14px; padding:22px 18px; border-radius:20px; }
+        .alumno-dashboard .user-area { align-self:flex-start; justify-content:flex-start; }
+        .alumno-dashboard .stats { margin:0 0 20px; gap:12px; }
+        .alumno-dashboard .profile strong { max-width:min(55vw,230px); }
+        .alumno-dashboard .stat-card { gap:11px; min-height:76px; padding:15px 13px; border-radius:16px; }
+        .alumno-dashboard .stat-icon { flex-basis:36px; width:36px; height:36px; font-size:14px; }
+        .alumno-dashboard .stat-card h3 { font-size:23px; }
+        .alumno-dashboard .stat-card p { font-size:11px; }
+        .alumno-dashboard .section-card { padding:17px; border-radius:18px; }
+        .alumno-dashboard > .section-card { margin-bottom:18px; }
+        .alumno-dashboard .dashboard-grid { gap:14px; }
+        .alumno-dashboard .main-column .section-card { margin-bottom:14px; }
+        .alumno-dashboard .side-column .section-card { margin-bottom:14px; }
+        .alumno-dashboard .side-column .section-card:last-child { margin-bottom:0; }
+        .alumno-dashboard .section-card h4 { line-height:1.35; }
+        .alumno-dashboard .section-card > div[style*="justify-content:space-between"] { align-items:flex-start !important; flex-direction:column; }
+        .alumno-dashboard .section-card a[style*="background:#006eff"] { white-space:normal !important; }
+        .alumno-dashboard .section-card > div[style*="grid-template-columns"] { gap:12px !important; }
+        .alumno-dashboard .section-card > div[style*="grid-template-columns"] img { height:145px !important; }
+        .alumno-dashboard .section-card a[style*="background:#006eff"] { width:100%; justify-content:center; }
+        .alumno-dashboard .subjects-grid { grid-template-columns:minmax(0,1fr); }
+        .alumno-dashboard .weekly-agenda-grid { grid-auto-columns:minmax(76vw,1fr); grid-auto-flow:column; grid-template-columns:none; gap:10px; padding:0 0 7px; scroll-snap-type:x mandatory; }
+        .alumno-dashboard .agenda-day { min-height:140px; scroll-snap-align:start; }
+        .alumno-dashboard .dashboard-quick-link { flex:1 1 150px; }
+    }
+    @media(max-width:390px) {
+        .alumno-dashboard .topbar { margin-bottom:12px; padding:20px 15px; }
+        .alumno-dashboard .stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+        .alumno-dashboard .stat-card { min-height:74px; padding:13px 10px; }
+        .alumno-dashboard .stat-icon { flex-basis:32px; width:32px; height:32px; }
+        .alumno-dashboard .stat-card p { font-size:10px; line-height:1.3; }
+        .alumno-dashboard .section-card { padding:14px; }
+        .alumno-dashboard .profile strong { max-width:65vw; }
+    }
+    @media(prefers-reduced-motion:reduce) { .alumno-dashboard .stat-card { transition:none; } }
+
+    /* Modo oscuro del dashboard del alumno. */
+    html[data-theme="dark"] .alumno-dashboard { --alumno-ink:#e5edf9; --alumno-muted:#a8b5c9; --alumno-line:rgba(203,213,225,.15); color:#e5edf9; }
+    html[data-theme="dark"] .alumno-dashboard .topbar,
+    html[data-theme="dark"] .alumno-dashboard .stat-card,
+    html[data-theme="dark"] .alumno-dashboard .section-card {
+        border-color:rgba(203,213,225,.15) !important;
+        background:#0b1424 !important;
+        color:#e5edf9 !important;
+        box-shadow:0 12px 30px rgba(0,0,0,.2);
+    }
+    html[data-theme="dark"] .alumno-dashboard .topbar { background:radial-gradient(circle at 92% 8%,rgba(67,97,184,.2),transparent 30%),linear-gradient(120deg,#0b1424,#111e33) !important; }
+    html[data-theme="dark"] .alumno-dashboard .welcome h2,
+    html[data-theme="dark"] .alumno-dashboard .section-card h4,
+    html[data-theme="dark"] .alumno-dashboard .stat-card h3,
+    html[data-theme="dark"] .alumno-dashboard .task-card h6,
+    html[data-theme="dark"] .alumno-dashboard .subject-card h6,
+    html[data-theme="dark"] .alumno-dashboard .event-list li span,
+    html[data-theme="dark"] .alumno-dashboard .profile strong { color:#e5edf9 !important; }
+    html[data-theme="dark"] .alumno-dashboard .welcome p,
+    html[data-theme="dark"] .alumno-dashboard .stat-card p,
+    html[data-theme="dark"] .alumno-dashboard .pending-task-copy small,
+    html[data-theme="dark"] .alumno-dashboard .dashboard-empty-copy,
+    html[data-theme="dark"] .alumno-dashboard .profile small,
+    html[data-theme="dark"] .alumno-dashboard .event-list li { color:#a8b5c9 !important; }
+    html[data-theme="dark"] .alumno-dashboard .task-card,
+    html[data-theme="dark"] .alumno-dashboard .subject-card,
+    html[data-theme="dark"] .alumno-dashboard .event-list li,
+    html[data-theme="dark"] .alumno-dashboard .achievement {
+        border-color:rgba(203,213,225,.13) !important;
+        background:linear-gradient(145deg,#111d30,#0d1728) !important;
+        color:#dbe6f5 !important;
+    }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-empty-state { border-color:#28553f; background:#10291f; color:#b8e8ca; }
+    html[data-theme="dark"] .alumno-dashboard .pending-task-link { background:#202d50; color:#cbd5ff; }
+    html[data-theme="dark"] .alumno-dashboard .pending-task-link:hover { background:#526fe0; color:#fff; }
+    html[data-theme="dark"] .alumno-dashboard .section-card > div[style*="grid-template-columns"] > div { border-color:rgba(203,213,225,.15) !important; background:#111d30 !important; color:#e5edf9 !important; }
+    html[data-theme="dark"] .alumno-dashboard .section-card a[style*="background:#006eff"] { background:#526fe0 !important; color:#fff !important; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-item { border-color:rgba(167,190,238,.16); background:#142239; color:#e5edf9; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-item:hover { border-color:#6079c1; background:#1a2b49; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-icon { background:#25385f; color:#d1dcff; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-copy strong { color:#edf3ff; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-copy small { color:#adbbd2; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-item.alert-urgente { border-color:#714638; background:#35221e; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-item.alert-urgente .dashboard-alert-icon { background:#59352b; color:#ffd0bc; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-item.alert-calificacion { border-color:#34496f; background:#172640; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-alert-item.alert-horario { border-color:#285a46; background:#142b24; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-quick-link { border-color:#34445d; background:#142239; color:#cbd5ff; }
+    html[data-theme="dark"] .alumno-dashboard .dashboard-quick-link:hover { border-color:#6079c1; background:#1a2b49; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-day { border-color:rgba(167,190,238,.16); background:#0e1a2b; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-day.is-past { border-style:dashed; background:#101a2a; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-day.is-today { border-color:#7188e1; background:#1a2949; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-day-heading { color:#e5edf9; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-day-heading time,
+    html[data-theme="dark"] .alumno-dashboard .agenda-empty { color:#9eacc1; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-today-tag { color:#cbd5ff; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-item { border-color:#34445d; border-left-color:#8197ff; background:#15243b; color:#e5edf9; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-item:hover { border-color:#667fc0; background:#1d3151; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-item.agenda-tarea { border-left-color:#efb45e; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-item.agenda-evento { border-left-color:#b5a0f3; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-item.agenda-horario { border-left-color:#6fd0a0; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-item-time { color:#c3d0e2; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-item strong { color:#edf3ff; }
+    html[data-theme="dark"] .alumno-dashboard .agenda-item small { color:#a8b8cf; }
+    html[data-theme="dark"] .alumno-dashboard .task-due-badge { background:#392b1b; color:#ffd08f; }
+    html[data-theme="dark"] .alumno-dashboard .task-due-badge.is-overdue { background:#402329; color:#ffc2c8; }
+</style>
 {% endblock %}
