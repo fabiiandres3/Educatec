@@ -42,7 +42,7 @@
     }
   });
 
-  document.addEventListener("submit", function (event) {
+  document.addEventListener("submit", async function (event) {
     const form = event.target;
     if (!(form instanceof HTMLFormElement) || form.method.toLowerCase() !== "post") return;
     if (resumedForms.has(form)) {
@@ -50,13 +50,20 @@
       return;
     }
     event.preventDefault();
+    const confirmationMessage = form.dataset.csrfConfirm;
+    if (confirmationMessage) {
+      const confirmAction = window.educatecConfirm;
+      const confirmed = typeof confirmAction === "function"
+        ? await confirmAction(confirmationMessage)
+        : window.confirm(confirmationMessage);
+      if (!confirmed) return;
+    }
     const submitter = event.submitter;
-    refreshToken().then(function (token) {
-      if (!form.isConnected) return;
-      resumedForms.add(form);
-      if (submitter && submitter.form === form) form.requestSubmit(submitter);
-      else form.requestSubmit();
-    });
+    await refreshToken();
+    if (!form.isConnected) return;
+    resumedForms.add(form);
+    if (submitter && submitter.form === form) form.requestSubmit(submitter);
+    else form.requestSubmit();
   }, true);
 
   window.educatecRefreshCsrfToken = refreshToken;

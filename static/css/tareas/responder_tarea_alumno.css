@@ -1041,3 +1041,133 @@ html[data-theme="dark"] .answer-page .answer-progress-heading,
 html[data-theme="dark"] .answer-page .answer-progress-heading strong { color: #e5edf9 !important; }
 html[data-theme="dark"] .answer-page .answer-progress-card small { color: #bac7da !important; }
 html[data-theme="dark"] .answer-page .question-points { color: #dbe3ff !important; }
+
+
+/* Confirmacion de envio con el estilo de las notificaciones del panel. */
+.answer-page .answer-confirm-dialog[open] {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 0 13px;
+    width: min(440px, calc(100vw - 32px));
+    max-width: none;
+    padding: 22px 22px 18px;
+    color: #f8fafc;
+    background: #172033;
+    border: 1px solid rgba(82, 111, 224, .6);
+    border-left: 4px solid var(--answer-blue);
+    border-radius: 16px;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, .35);
+    animation: answer-confirm-in .2s ease-out both;
+}
+.answer-page .answer-confirm-dialog::backdrop {
+    background: rgba(8, 13, 24, .58);
+    backdrop-filter: blur(2px);
+}
+.answer-page .answer-confirm-icon {
+    grid-row: 1 / span 2;
+    padding-top: 2px;
+    color: var(--answer-blue);
+    font-size: 22px;
+}
+.answer-page .answer-confirm-copy h2 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 16px;
+    font-weight: 750;
+}
+.answer-page .answer-confirm-copy p {
+    margin: 6px 0 0;
+    color: #d4dbea;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.answer-page .answer-confirm-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 20px;
+}
+.answer-page .answer-confirm-actions button {
+    min-height: 38px;
+    padding: 0 15px;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .18s, border-color .18s, transform .18s;
+}
+.answer-page .answer-confirm-cancel {
+    color: #d4dbea;
+    background: #222d42;
+    border: 1px solid #46536a;
+}
+.answer-page .answer-confirm-cancel:hover {
+    background: #2c3950;
+}
+.answer-page .answer-confirm-submit {
+    color: #fff;
+    background: var(--answer-blue);
+    border: 1px solid var(--answer-blue);
+}
+.answer-page .answer-confirm-submit:hover {
+    background: var(--answer-blue-dark);
+    border-color: var(--answer-blue-dark);
+}
+.answer-page .answer-confirm-actions button:focus-visible {
+    outline: 3px solid rgba(147, 197, 253, .7);
+    outline-offset: 2px;
+}
+@keyframes answer-confirm-in {
+    from { opacity: 0; transform: translateY(8px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .answer-page .answer-confirm-dialog[open] { animation: none; }
+}
+
+
+/* Enlace de regreso con jerarquia secundaria y contraste claro. */
+.answer-page .back-section > a.back-button {
+    gap: 9px;
+    min-height: 40px;
+    padding: 0 15px;
+    border: 1px solid #4059c5;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--answer-blue), #4059c5);
+    box-shadow: 0 3px 9px rgba(52, 79, 193, .18);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+}
+.answer-page .back-section > a.back-button:hover {
+    transform: translateY(-1px);
+    border-color: #344fc1;
+    background: linear-gradient(135deg, #526fe0, #344fc1);
+    box-shadow: 0 5px 12px rgba(52, 79, 193, .24);
+    color: #fff;
+}
+.answer-page .back-section > a.back-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(52, 79, 193, .08);
+}
+.answer-page .back-section > a.back-button:focus-visible {
+    outline: 3px solid rgba(82, 111, 224, .3);
+    outline-offset: 3px;
+}
+html[data-theme="dark"] .answer-page .back-section > a.back-button {
+    border-color: #344fc1;
+    background: #344fc1;
+    box-shadow: none;
+    color: #fff;
+}
+html[data-theme="dark"] .answer-page .back-section > a.back-button:hover {
+    border-color: #526fe0;
+    background: #4059c5;
+    color: #fff;
+}

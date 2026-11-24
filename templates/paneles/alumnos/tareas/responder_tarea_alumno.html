@@ -11,7 +11,7 @@
 
 <link
     rel="stylesheet"
-    href="{% static 'css/tareas/responder_tarea_alumno.css' %}?v=20261123-answer-dark-meta"
+    href="{% static 'css/tareas/responder_tarea_alumno.css' %}?v=20261124-answer-back-button-white"
 >
 
 
@@ -143,40 +143,6 @@
         </div>
 
     </div>
-
-
-
-    <!-- =====================================================
-         MENSAJES DE DJANGO
-    ====================================================== -->
-
-    {% if messages %}
-
-        <div class="messages-container">
-
-            {% for message in messages %}
-
-                <div class="message message-{{ message.tags }}">
-
-                    {% if message.tags == "success" %}
-                        ✓
-                    {% elif message.tags == "error" %}
-                        !
-                    {% else %}
-                        ℹ
-                    {% endif %}
-
-                    <span>
-                        {{ message }}
-                    </span>
-
-                </div>
-
-            {% endfor %}
-
-        </div>
-
-    {% endif %}
 
 
 
@@ -677,7 +643,7 @@
                                     <form
                                         method="POST"
                                         class="answer-form"
-                                        onsubmit="return confirm('¿Confirmas que quieres enviar esta respuesta? No podrás editarla después.');"
+                                        data-csrf-confirm="¿Confirmas que quieres enviar esta respuesta? No podrás editarla después."
                                     >
 
                                         {% csrf_token %}
@@ -884,6 +850,51 @@
     </section>
 
 
+
+    <dialog
+        id="answerConfirmDialog"
+        class="answer-confirm-dialog"
+        aria-labelledby="answerConfirmTitle"
+        aria-describedby="answerConfirmMessage"
+    >
+        <span class="answer-confirm-icon" aria-hidden="true">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </span>
+        <div class="answer-confirm-copy">
+            <h2 id="answerConfirmTitle">Confirmar env&iacute;o</h2>
+            <p id="answerConfirmMessage">&iquest;Confirmas que quieres enviar esta respuesta? No podr&aacute;s editarla despu&eacute;s.</p>
+        </div>
+        <form method="dialog" class="answer-confirm-actions">
+            <button type="submit" value="cancel" class="answer-confirm-cancel">Cancelar</button>
+            <button type="submit" value="confirm" class="answer-confirm-submit">Enviar respuesta</button>
+        </form>
+    </dialog>
+
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+window.educatecConfirm = function (message) {
+    const dialog = document.getElementById("answerConfirmDialog");
+    if (!dialog || typeof dialog.showModal !== "function") {
+        return Promise.resolve(window.confirm(message));
+    }
+
+    const messageNode = document.getElementById("answerConfirmMessage");
+    messageNode.textContent = message;
+    dialog.returnValue = "";
+
+    return new Promise((resolve) => {
+        dialog.addEventListener(
+            "close",
+            () => resolve(dialog.returnValue === "confirm"),
+            { once: true }
+        );
+        dialog.showModal();
+        dialog.querySelector('[value="confirm"]')?.focus();
+    });
+};
+</script>
 {% endblock %}

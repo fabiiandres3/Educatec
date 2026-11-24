@@ -598,7 +598,7 @@ def responder_tarea(request, tarea_id):
 
         messages.success(
             request,
-            "✓ Respuesta enviada correctamente."
+            "Respuesta enviada correctamente."
         )
 
         return redirect(
