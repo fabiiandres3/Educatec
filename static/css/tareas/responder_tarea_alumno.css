@@ -934,6 +934,10 @@ html[data-theme="dark"] .answer-page .task-header-content {
     border: 1px solid rgba(203, 213, 225, .12);
     background: radial-gradient(circle at 90% 0%, rgba(91, 119, 212, .24), transparent 30%), linear-gradient(120deg, #111d33, #192f55 68%, #203c68);
 }
+html[data-theme="dark"] .answer-page .task-meta {
+    border-color: rgba(203, 213, 225, .12) !important;
+    background: #0b1424 !important;
+}
 html[data-theme="dark"] .answer-page .back-button,
 html[data-theme="dark"] .answer-page .meta-item,
 html[data-theme="dark"] .answer-page .question-top,
@@ -1001,3 +1005,39 @@ html[data-theme="dark"] .answer-page .answer-progress-card small { color: #bac7d
     .answer-page .answer-progress-card { padding: 14px; }
     .answer-page .answer-progress-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
 }
+
+/* Ajustes finales para móviles estrechos y zonas de controles flotantes. */
+@media (max-width: 700px) {
+    .answer-page { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
+    .answer-page .answer-field textarea { min-height: 132px; font-size: 16px; }
+    .answer-page .option-card { -webkit-tap-highlight-color: rgba(82,111,224,.12); }
+    .answer-page .file-item { min-height: 48px; }
+    .answer-page .video-item iframe,
+    .answer-page .video-item video { display: block; width: 100% !important; max-width: 100%; aspect-ratio: 16 / 9; height: auto !important; border: 0; border-radius: 12px; }
+    .answer-page .task-meta,
+    .answer-page .meta-item,
+    .answer-page .question-card,
+    .answer-page .question-content { min-width: 0; }
+}
+@media (max-width: 380px) {
+    .answer-page .task-header-content { padding: 20px 15px; }
+    .answer-page .task-header-content h1 { font-size: 22px; }
+    .answer-page .materials-section,
+    .answer-page .questions-section { padding: 15px 12px; }
+    .answer-page .question-content { padding: 15px 11px; }
+    .answer-page .question-content h3 { font-size: 15px; }
+    .answer-page .answer-progress-card { padding: 12px; }
+}
+
+/* Refuerza los tonos propios de esta vista frente a las reglas globales del tema. */
+html[data-theme="dark"] .answer-page .answer-field textarea {
+    border-color: #506078 !important;
+    background: #080f1c !important;
+    color: #f1f5fb !important;
+    color-scheme: dark;
+}
+html[data-theme="dark"] .answer-page .answer-field textarea::placeholder { color: #9baac0 !important; }
+html[data-theme="dark"] .answer-page .answer-progress-heading,
+html[data-theme="dark"] .answer-page .answer-progress-heading strong { color: #e5edf9 !important; }
+html[data-theme="dark"] .answer-page .answer-progress-card small { color: #bac7da !important; }
+html[data-theme="dark"] .answer-page .question-points { color: #dbe3ff !important; }
