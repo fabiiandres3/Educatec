@@ -1831,7 +1831,7 @@ def dashboard_acudiente(request):
         presentes = asistencia.get("presentes", 0)
         tardanzas = asistencia.get("tardanzas", 0)
         porcentaje_asistencia = (
-            round((presentes + tardanzas / total_asistencias) * 100, 1)
+            round(((presentes + tardanzas) / total_asistencias) * 100, 1)
             if total_asistencias else None
         )
 
@@ -1867,6 +1867,49 @@ def dashboard_acudiente(request):
             "alumnos_alerta": alumnos_alerta,
         },
     )
+
+@rol_requerido("acudiente")
+def horario_alumno_acudiente(request, alumno_id):
+    acudiente = get_object_or_404(
+        Acudiente,
+        usuario=request.user,
+        activo=True,
+    )
+    relacion = get_object_or_404(
+        AcudienteAlumno.objects.select_related(
+            "alumno__usuario",
+            "alumno__curso",
+            "alumno__clase",
+        ),
+        acudiente=acudiente,
+        alumno_id=alumno_id,
+        alumno__activo=True,
+        autorizado=True,
+    )
+    alumno = relacion.alumno
+    periodos = Periodo.objects.filter(activo=True).order_by("-anio", "-numero")
+    periodo_id = request.GET.get("periodo")
+    periodo = get_object_or_404(periodos, pk=periodo_id) if periodo_id else periodos.first()
+
+    horarios = Horario.objects.none()
+    if alumno.curso_id and periodo:
+        horarios = Horario.objects.filter(
+            curso_id=alumno.curso_id,
+            periodo=periodo,
+        )
+        if alumno.clase_id:
+            horarios = horarios.filter(Q(clase_id=alumno.clase_id) | Q(clase__isnull=True))
+        horarios = horarios.select_related(
+            "periodo", "docente__usuario", "curso", "clase"
+        ).order_by("dia", "hora_inicio")
+
+    return render(request, "paneles/acudientes/horario_alumno.html", {
+        "alumno": alumno,
+        "periodos": periodos,
+        "periodo": periodo,
+        "horarios": horarios,
+    })
+
 
 @rol_requerido("acudiente")
 def eventos_acudiente(request):
@@ -2008,10 +2051,7 @@ def detalle_alumno_acudiente(
     porcentaje_asistencia = (
 
         round(
-            (
-                presentes + tardanzas
-                / total
-            ) * 100,
+            ((presentes + tardanzas) / total) * 100,
             1
         )
 

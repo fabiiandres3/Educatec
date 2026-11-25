@@ -10,33 +10,6 @@
 
 {% block content %}
 
-<style>
-    .guardian-hero { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:28px; margin-bottom:22px; color:#fff; border-radius:20px; background:linear-gradient(120deg,#173b75,#2563eb); box-shadow:0 12px 28px rgba(37,99,235,.18); }
-    .guardian-hero h1 { font-size:clamp(24px,3vw,34px); font-weight:800; margin:0 0 6px; }
-    .guardian-hero p { margin:0; color:#eaf2ff; }
-    .guardian-hero-icon { width:62px; height:62px; display:grid; place-items:center; border-radius:18px; background:rgba(255,255,255,.16); font-size:28px; }
-    .guardian-stat-card { height:100%; padding:18px; background:#fff; border:1px solid #dbe3ee; border-radius:16px; box-shadow:0 5px 18px rgba(15,23,42,.045); }
-    .guardian-stat-label { color:#475569; font-size:13px; font-weight:600; }
-    .guardian-stat-value { color:#172033; font-size:26px; font-weight:800; margin-top:6px; }
-    .guardian-stat-icon { width:40px; height:40px; border-radius:12px; display:grid; place-items:center; background:#eff6ff; color:#1d4ed8; }
-    .section-heading { display:flex; align-items:end; justify-content:space-between; gap:16px; margin:30px 0 16px; }
-    .section-heading h2 { margin:0; color:#172033; font-size:22px; font-weight:750; }
-    .event-panel { background:#fff; border:1px solid #dbe3ee; border-radius:16px; padding:20px; margin-bottom:28px; box-shadow:0 5px 18px rgba(15,23,42,.045); }
-    .event-preview { display:flex; gap:15px; padding:14px 0; border-bottom:1px solid #e2e8f0; }
-    .event-preview:last-child { border-bottom:0; }
-    .event-date { flex:0 0 60px; height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:12px; background:#eff6ff; color:#1d4ed8; }
-    .event-date strong { font-size:21px; line-height:1; }
-    .event-date small { font-size:11px; text-transform:uppercase; font-weight:700; }
-    .event-preview h3 { margin:0 0 4px; font-size:16px; color:#172033; font-weight:700; }
-    .event-meta { color:#475569; font-size:13px; }
-    .student-card { border:1px solid #dbe3ee; box-shadow:0 6px 20px rgba(15,23,42,.05); transition:transform .18s ease, box-shadow .18s ease; }
-    .student-card:hover { transform:translateY(-2px); box-shadow:0 12px 26px rgba(15,23,42,.09); }
-    .student-card h4, .student-card strong { color:#172033; }
-    .student-card .stat { border:1px solid #e2e8f0; }
-    .student-card .stat small { color:#475569; font-weight:600; }
-    @media(max-width:575px) { .guardian-hero { padding:22px; } .guardian-hero-icon { display:none; } .section-heading { align-items:start; flex-direction:column; } }
-</style>
-
 {% comment %}Replaced by the guardian dashboard hero below.{% endcomment %}
 {% comment %}
 <div class="topbar">
@@ -73,6 +46,21 @@
     <div class="col-6 col-xl-3"><div class="guardian-stat-card"><div class="guardian-stat-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="guardian-stat-label mt-3">Requieren atención en asistencia</div><div class="guardian-stat-value">{{ alumnos_alerta }}</div></div></div>
 </div>
 
+<section class="guardian-quick-actions" aria-label="Acciones para acudientes">
+    <a class="guardian-action-card" href="{% url 'eventos_acudiente' %}">
+        <span class="guardian-action-icon"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i></span>
+        <span class="guardian-action-copy"><strong>Agenda escolar</strong><small>Revisa fechas y actividades del colegio</small></span>
+    </a>
+    <a class="guardian-action-card" href="{% url 'solicitud_soporte' %}?next={% url 'dashboard_acudiente' %}">
+        <span class="guardian-action-icon"><i class="fa-solid fa-headset" aria-hidden="true"></i></span>
+        <span class="guardian-action-copy"><strong>Contactar al colegio</strong><small>Envía una consulta o solicita acompañamiento</small></span>
+    </a>
+    <a class="guardian-action-card" href="{% url 'configuracion_cuenta' %}">
+        <span class="guardian-action-icon"><i class="fa-solid fa-address-card" aria-hidden="true"></i></span>
+        <span class="guardian-action-copy"><strong>Mis datos de contacto</strong><small>Mantén actualizado tu teléfono y correo</small></span>
+    </a>
+</section>
+
 <section class="event-panel">
     <div class="section-heading mt-0">
         <div><h2><i class="fa-regular fa-calendar me-2 text-primary"></i>Agenda del colegio</h2><p class="text-secondary mb-0 mt-1">Eventos publicados para acudientes y comunidad educativa.</p></div>
@@ -88,6 +76,7 @@
     {% endfor %}
 </section>
 
+<section id="guardian-students" class="guardian-students-section">
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
@@ -135,8 +124,7 @@
 
                         <span class="text-muted">
 
-                            Código:
-                            {{ alumno.codigo|default:"Sin código" }}
+                            Documento: {{ alumno.usuario.documento|default:"No registrado" }}
 
                         </span>
 
@@ -240,11 +228,7 @@
 
                             </h4>
 
-                            <small>
-
-                                Tareas
-
-                            </small>
+                            <small>Tareas activas</small>
 
                         </div>
 
@@ -259,6 +243,10 @@
                 >
                     <i class="fa-solid fa-file-lines me-1"></i>
                     Ver boletín académico
+                </a>
+
+                <a href="{% url 'horario_alumno_acudiente' alumno.id %}" class="btn btn-outline-primary w-100 mb-2">
+                    <i class="fa-regular fa-calendar-days me-1" aria-hidden="true"></i>Consultar horario escolar
                 </a>
 
                 <a
@@ -301,6 +289,10 @@
 
                 </p>
 
+                <a class="btn btn-outline-primary" href="{% url 'solicitud_soporte' %}?next={% url 'dashboard_acudiente' %}">
+                    <i class="fa-solid fa-headset me-1" aria-hidden="true"></i>Solicitar vinculación
+                </a>
+
             </div>
 
         </div>
@@ -308,5 +300,7 @@
     {% endfor %}
 
 </div>
+
+</section>
 
 {% endblock %}
