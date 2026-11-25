@@ -339,12 +339,52 @@
   .sidebar.is-open { transform:translateX(0); }
 }
 </style>
-    <link rel="stylesheet" href="{% static 'css/paneles/educatec_paneles.css' %}?v=panel-design-a13730d">
+    <link rel="stylesheet" href="{% static 'css/paneles/educatec_paneles.css' %}?v=dark-tareas-20261124">
+<style>
+/* Mantiene el control del menú junto al contenido en escritorio y como drawer en móvil. */
+.nav-toggle-button {
+    position: fixed !important;
+    top: 14px !important;
+    left: 206px !important;
+    z-index: 1200 !important;
+    display: grid !important;
+    place-items: center;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 11px !important;
+}
+body.sidebar-collapsed .nav-toggle-button { left: 94px !important; }
+.main-content > .topbar { padding-left: 70px !important; }
+@media (max-width: 768px) {
+    .nav-toggle-button { left: 14px !important; width: 44px !important; height: 44px !important; }
+    .main-content > .topbar { padding-left: 68px !important; }
+    .sidebar {
+        display: flex !important;
+        position: fixed !important;
+        inset: 0 auto 0 0;
+        z-index: 1100;
+        width: min(280px, 85vw);
+        height: 100dvh;
+        min-height: 100vh;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+    }
+    .sidebar.is-open { transform: translateX(0); }
+    .nav-menu-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1090;
+        background: rgba(15, 23, 42, .48);
+    }
+    body.nav-open .nav-menu-overlay { display: block; }
+}
+</style>
 </head>
 
 
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
-<button type="button" class="nav-toggle-button" aria-label="Abrir menú de navegación" aria-controls="panel-navigation" aria-expanded="false"><i class="fas fa-bars-staggered" aria-hidden="true"></i></button><div class="nav-menu-overlay" aria-hidden="true"></div>
+<button type="button" class="nav-toggle-button" aria-label="Contraer menú de navegación" aria-controls="panel-navigation" aria-expanded="true" title="Contraer o expandir menú" onclick="window.toggleAdminSidebar && window.toggleAdminSidebar()"><i class="fa-solid fa-bars-staggered" aria-hidden="true"></i></button><div class="nav-menu-overlay" aria-hidden="true"></div>
 
 <div class="wrapper">
 
@@ -560,13 +600,14 @@
             ================================================== -->
 
             <li class="logout-item">
-
-            <li id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Cerrar Sesión
+                <form method="post" action="{% url 'cerrar_sesion' %}">
+                    {% csrf_token %}
+                    <button class="logout-button" id="logoutBtn" type="submit">
+                        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                        <span>Cerrar sesión</span>
+                    </button>
+                </form>
             </li>
-
-        </li>
 
         </ul>
 
@@ -585,7 +626,7 @@
          CONTENIDO PRINCIPAL
     ====================================================== -->
 
-    <main class="content">
+    <main class="content main-content">
 
         {% block content %}
         {% endblock %}

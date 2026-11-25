@@ -156,4 +156,10 @@ urlpatterns = [
         name="detalle_alumno_acudiente"
     ),
 
+    path(
+        "acudiente/alumno/<int:alumno_id>/horario/",
+        views.horario_alumno_acudiente,
+        name="horario_alumno_acudiente"
+    ),
+
 ]

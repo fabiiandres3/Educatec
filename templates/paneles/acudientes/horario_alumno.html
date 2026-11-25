@@ -1,0 +1,75 @@
+{% extends "paneles/acudientes/base.html" %}
+
+{% block title %}Horario de {{ alumno.usuario.get_full_name }}{% endblock %}
+
+{% block content %}
+<section class="guardian-page-heading">
+    <div>
+        <a class="guardian-back-link" href="{% url 'detalle_alumno_acudiente' alumno.id %}">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver al estudiante
+        </a>
+        <h1><i class="fa-regular fa-calendar-days" aria-hidden="true"></i> Horario escolar</h1>
+        <p>{{ alumno.usuario.get_full_name|default:alumno.usuario.documento }} · {{ alumno.curso|default:"Sin curso asignado" }}</p>
+    </div>
+    {% if periodos %}
+    <form method="get" class="guardian-period-filter">
+        <label for="periodo">Período académico</label>
+        <select id="periodo" name="periodo" class="form-select" onchange="this.form.submit()">
+            {% for opcion in periodos %}
+            <option value="{{ opcion.id }}" {% if periodo.id == opcion.id %}selected{% endif %}>
+                Período {{ opcion.numero }} · {{ opcion.anio }}
+            </option>
+            {% endfor %}
+        </select>
+    </form>
+    {% endif %}
+</section>
+
+<section class="guardian-schedule-card">
+    {% if not alumno.curso_id %}
+        <div class="guardian-empty-state">
+            <i class="fa-solid fa-school" aria-hidden="true"></i>
+            <h2>Este estudiante aún no tiene un curso asignado</h2>
+            <p>Cuando el colegio asigne el curso, aquí aparecerá su horario.</p>
+        </div>
+    {% elif not periodo %}
+        <div class="guardian-empty-state">
+            <i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i>
+            <h2>No hay períodos académicos activos</h2>
+            <p>Consulta nuevamente cuando el colegio publique el período y el horario.</p>
+        </div>
+    {% elif horarios %}
+        <div class="guardian-schedule-summary">
+            <span><i class="fa-solid fa-book-open" aria-hidden="true"></i> {{ horarios|length }} bloques de clase</span>
+            <span>Actualizado desde el horario publicado por el colegio</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle guardian-schedule-table">
+                <thead>
+                    <tr><th>Día</th><th>Hora</th><th>Clase</th><th>Docente</th><th>Jornada</th></tr>
+                </thead>
+                <tbody>
+                    {% for bloque in horarios %}
+                    <tr>
+                        <td data-label="Día"><strong>{{ bloque.get_dia_display }}</strong></td>
+                        <td data-label="Hora">{{ bloque.hora_inicio|time:"H:i" }}–{{ bloque.hora_fin|time:"H:i" }}</td>
+                        <td data-label="Clase">{{ bloque.clase|default:"Actividad general" }}</td>
+                        <td data-label="Docente">{{ bloque.docente.usuario.get_full_name|default:bloque.docente.usuario.username }}</td>
+                        <td data-label="Jornada"><span class="guardian-shift-pill">{{ bloque.get_jornada_display }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="guardian-empty-state">
+            <i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i>
+            <h2>Aún no hay horario publicado</h2>
+            <p>El horario de este curso para el período seleccionado todavía no está disponible.</p>
+            <a class="btn btn-outline-primary" href="{% url 'solicitud_soporte' %}?next={% url 'horario_alumno_acudiente' alumno.id %}">
+                <i class="fa-solid fa-headset me-1" aria-hidden="true"></i>Consultar al colegio
+            </a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

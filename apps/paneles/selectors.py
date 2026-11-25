@@ -1,9 +1,63 @@
+from django.db.models import Count
+
 from apps.alumnos.models import Alumnos
 from apps.cursos.models import Cursos
 from apps.clases.models import Clases
 from apps.docentes.models import Docente
-from apps.tareas.models import Tareas, Calificacion
+from apps.tareas.models import Tareas, Calificacion, RespuestaAlumno
 from apps.asistencia.models import Asistencia
+
+
+def obtener_resumen_tareas_por_alumno(alumnos):
+    """Resume las tareas activas con la misma regla que usa el listado del alumno."""
+    alumnos = list(alumnos)
+    resumen = {
+        alumno.id: {"total": 0, "entregadas": 0, "pendientes": 0}
+        for alumno in alumnos
+    }
+    cursos_ids = {alumno.curso_id for alumno in alumnos if alumno.curso_id}
+    usuarios_ids = {alumno.usuario_id for alumno in alumnos}
+    if not cursos_ids or not usuarios_ids:
+        return resumen
+
+    tareas = list(
+        Tareas.objects.filter(curso_id__in=cursos_ids, activa=True)
+        .annotate(total_preguntas=Count("preguntas", distinct=True))
+        .values("id", "curso_id", "total_preguntas")
+    )
+    if not tareas:
+        return resumen
+
+    tareas_por_curso = {}
+    for tarea in tareas:
+        tareas_por_curso.setdefault(tarea["curso_id"], []).append(tarea)
+
+    respuestas_por_usuario_tarea = {
+        (fila["alumno_id"], fila["pregunta__tarea_id"]): fila["total"]
+        for fila in RespuestaAlumno.objects.filter(
+            alumno_id__in=usuarios_ids,
+            pregunta__tarea_id__in=[tarea["id"] for tarea in tareas],
+        )
+        .values("alumno_id", "pregunta__tarea_id")
+        .annotate(total=Count("pregunta_id", distinct=True))
+    }
+
+    for alumno in alumnos:
+        tareas_alumno = tareas_por_curso.get(alumno.curso_id, [])
+        entregadas = sum(
+            1
+            for tarea in tareas_alumno
+            if tarea["total_preguntas"] > 0
+            and respuestas_por_usuario_tarea.get((alumno.usuario_id, tarea["id"]), 0)
+            >= tarea["total_preguntas"]
+        )
+        total = len(tareas_alumno)
+        resumen[alumno.id] = {
+            "total": total,
+            "entregadas": entregadas,
+            "pendientes": total - entregadas,
+        }
+    return resumen
 
 def obtener_asistencia_por_curso_fecha(curso_id, fecha):
     return Asistencia.objects.filter(

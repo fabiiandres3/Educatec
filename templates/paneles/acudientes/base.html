@@ -240,104 +240,54 @@
   .sidebar.is-open { transform:translateX(0); }
 }
 </style>
-    <link rel="stylesheet" href="{% static 'css/paneles/educatec_paneles.css' %}?v=panel-nav-collapse-20261023">
+    <link rel="stylesheet" href="{% static 'css/paneles/educatec_paneles.css' %}?v=dark-tareas-20261124">
+    <link rel="stylesheet" href="{% static 'css/paneles/dashboard_acudientes.css' %}?v=guardian-layout-20261124">
 </head>
 
 
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
-<button type="button" class="nav-toggle-button" aria-label="Abrir menú de navegación" aria-controls="panel-navigation" aria-expanded="false"><i class="fas fa-bars-staggered" aria-hidden="true"></i></button><div class="nav-menu-overlay" aria-hidden="true"></div>
+<button type="button" class="nav-toggle-button" aria-label="Contraer menú de navegación" aria-controls="panel-navigation" aria-expanded="true" title="Contraer o expandir menú" onclick="window.toggleAdminSidebar && window.toggleAdminSidebar()"><i class="fa-solid fa-bars-staggered" aria-hidden="true"></i></button><div class="nav-menu-overlay" aria-hidden="true"></div>
 
-<div class="container-fluid">
-
-    <div class="row">
+<div class="guardian-layout">
 
         <!-- =================================================
              SIDEBAR
         ================================================== -->
 
-        <aside id="panel-navigation" class="col-lg-2 sidebar">
+        <aside id="panel-navigation" class="sidebar">
 
             <div class="logo">
-
-                <img src="{% static 'images/educatec-logo-transparent.png' %}" alt="" width="42" height="42" style="object-fit:cover;border-radius:9px">
-
-                Educatec
-
+                <img src="{% static 'images/educatec-logo-transparent.png' %}" alt="" width="42" height="42">
+                <span>Educatec</span>
             </div>
+            <p class="guardian-panel-label">Portal familiar</p>
 
-
-            <a
-                href="{% url 'dashboard_acudiente' %}"
-                class="menu-link {% if request.resolver_match.url_name == 'dashboard_acudiente' %}active{% endif %}"
-            >
-
-                <i class="fa-solid fa-house"></i>
-
-                Inicio
-
-            </a>
-
-            <a href="{% url 'eventos_acudiente' %}"
-               class="menu-link {% if request.resolver_match.url_name == 'eventos_acudiente' %}active{% endif %}">
-                <i class="fa-solid fa-calendar-days"></i>
-                Eventos
-            </a>
-
-
-            <div class="mt-4">
-
-                <a href="{% url 'configuracion_cuenta' %}" class="menu-link {% if request.resolver_match.url_name == 'configuracion_cuenta' %}active{% endif %}">
-                    <i class="fa-solid fa-gear"></i> Configuración de cuenta
+            <nav class="guardian-navigation" aria-label="Navegación del acudiente">
+                <a href="{% url 'dashboard_acudiente' %}" class="menu-link {% if request.resolver_match.url_name == 'dashboard_acudiente' %}active{% endif %}">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i><span>Inicio</span>
                 </a>
+                <a href="{% url 'dashboard_acudiente' %}#guardian-students" class="menu-link">
+                    <i class="fa-solid fa-user-graduate" aria-hidden="true"></i><span>Mis estudiantes</span>
+                </a>
+                <a href="{% url 'eventos_acudiente' %}" class="menu-link {% if request.resolver_match.url_name == 'eventos_acudiente' %}active{% endif %}">
+                    <i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span>Agenda escolar</span>
+                </a>
+                <a href="{% url 'solicitud_soporte' %}?next={% url 'dashboard_acudiente' %}" class="menu-link">
+                    <i class="fa-solid fa-headset" aria-hidden="true"></i><span>Contactar al colegio</span>
+                </a>
+                <a href="{% url 'configuracion_cuenta' %}" class="menu-link {% if request.resolver_match.url_name == 'configuracion_cuenta' %}active{% endif %}">
+                    <i class="fa-solid fa-gear" aria-hidden="true"></i><span>Mi cuenta</span>
+                </a>
+            </nav>
 
-            </div>
+            <div class="guardian-sidebar-spacer"></div>
 
-            <div class="mt-4">
-
-                <small class="text-muted px-3">
-
-                    CUENTA
-
-                </small>
-
-                <div class="mt-2">
-
-                    <span class="menu-link">
-
-                        <i class="fa-solid fa-user"></i>
-
-                        {{ request.user.get_full_name|default:request.user.documento }}
-
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="mt-4">
-
-                <form
-                    method="POST"
-                    action="{% url 'cerrar_sesion' %}"
-                >
-
-                    {% csrf_token %}
-
-                    <button
-                        type="submit"
-                        class="logout-button"
-                    >
-
-                        <i class="fa-solid fa-right-from-bracket"></i>
-
-                        Cerrar sesión
-
-                    </button>
-
-                </form>
-
-            </div>
+            <form method="POST" action="{% url 'cerrar_sesion' %}" class="guardian-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-button menu-link">
+                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Cerrar sesión</span>
+                </button>
+            </form>
 
             <div class="sidebar-account" aria-label="Cuenta de {{ request.user.get_full_name|default:request.user.documento }}">
                 <div class="sidebar-account-avatar" aria-hidden="true">{{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}</div>
@@ -354,7 +304,7 @@
              CONTENIDO
         ================================================== -->
 
-        <main class="col-lg-10 p-4">
+        <main class="main-content">
           <div class="portal-content">
 
             {% block content %}
@@ -362,8 +312,6 @@
           </div>
 
         </main>
-
-    </div>
 
 </div>
 
