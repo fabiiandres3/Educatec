@@ -70,14 +70,17 @@ def dashboard_docente(request):
         .prefetch_related("clase__cursos")
     )
 
+    cursos_unicos = {}
     asignaciones_calificaciones = []
     cursos_ids = set()
     for asignacion in asignaciones:
         if asignacion.curso_id:
+            cursos_unicos.setdefault(asignacion.curso_id, asignacion.curso)
             asignaciones_calificaciones.append(asignacion)
             cursos_ids.add(asignacion.curso_id)
         elif asignacion.clase_id:
             for curso in asignacion.clase.cursos.all():
+                cursos_unicos.setdefault(curso.id, curso)
                 asignaciones_calificaciones.append(SimpleNamespace(
                     docente=docente,
                     curso=curso,
@@ -137,6 +140,7 @@ def dashboard_docente(request):
         {
             "docente": docente,
             "asignaciones": asignaciones,
+            "cursos_asignados": sorted(cursos_unicos.values(), key=lambda curso: curso.nombre.lower()),
             "eventos": eventos,
             "total_alumnoss": total_alumnoss,
             "total_tareas": tareas_query.count(),
@@ -184,38 +188,34 @@ def cursos_docente(request):
         usuario=request.user
     )
 
-    asignaciones = (
+    asignaciones = list(
         AsignacionDocente.objects
         .filter(docente=docente)
+        .filter(curso__isnull=False)
         .select_related("curso")
-        .prefetch_related("curso__clases")
     )
 
-    total_alumnos = 0
-
+    cursos_por_id = {}
     for asignacion in asignaciones:
+        cursos_por_id.setdefault(asignacion.curso_id, (asignacion.curso, asignacion))
 
-        if asignacion.curso:
-
-            asignacion.total_alumno = contar_alumnos_curso(
-                asignacion.curso.id
-            )
-
-            total_alumnos += asignacion.total_alumno
-
-            asignacion.materias = asignacion.curso.clases.all()
-
-        else:
-
-            asignacion.total_alumno = 0
-            asignacion.materias = []
+    cursos_asignados = []
+    total_alumnos = 0
+    for curso, asignacion in sorted(cursos_por_id.values(), key=lambda item: item[0].nombre.lower()):
+        total_curso = contar_alumnos_curso(curso.id)
+        total_alumnos += total_curso
+        cursos_asignados.append(SimpleNamespace(
+            id=asignacion.id,
+            curso=curso,
+            total_alumno=total_curso,
+        ))
 
     return render(
         request,
         "paneles/docentes/cursos_docente.html",
         {
             "docente": docente,
-            "asignaciones": asignaciones,
+            "asignaciones": cursos_asignados,
             "total_alumnos": total_alumnos,
         }
     )

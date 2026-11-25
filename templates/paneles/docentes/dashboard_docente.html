@@ -435,25 +435,25 @@
 <div class="section-card">
 
     <h4>
-        Mis Grados
+        Mis Cursos
     </h4>
 
 
     <div class="grados">
 
-        {% for a in asignaciones %}
+        {% for curso in cursos_asignados %}
 
             <button
                 type="button"
                 class="grado {% if forloop.first %}active{% endif %}"
             >
-                {{ a.curso.nombre }} — {{ a.clase.titulo }}
+                {{ curso.nombre }}
             </button>
 
         {% empty %}
 
             <p style="color:#6b7280;">
-                No hay grados asignados aún.
+                No hay cursos asignados aún.
             </p>
 
         {% endfor %}

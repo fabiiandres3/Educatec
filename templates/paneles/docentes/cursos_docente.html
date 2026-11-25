@@ -1,13 +1,13 @@
 {% extends 'paneles/docentes/base.html' %}
-{% block title %}Mis Grados{% endblock %}
+{% block title %}Mis Cursos{% endblock %}
 {% block active_cursos %}active{% endblock %}
 
 {% block content %}
 
 <div class="topbar">
   <div class="welcome">
-    <h2>Mis Grados</h2>
-    <p>Grados y alumno a tu cargo</p>
+    <h2>Mis Cursos</h2>
+    <p>Cursos y alumnos a tu cargo</p>
   </div>
   <div class="user-area">
     <div class="notification">
@@ -29,7 +29,7 @@
   <div class="stat-card">
     <div class="icon blue"><i class="fa-solid fa-school"></i></div>
     <h3>{{ asignaciones|length }}</h3>
-    <p>Grados</p>
+    <p>Cursos</p>
   </div>
 
   <div class="stat-card">
@@ -44,23 +44,17 @@
     <p>Promedio</p>
   </div>
 
-  <div class="stat-card">
-    <div class="icon purple"><i class="fa-solid fa-book"></i></div>
-    <h3>{{ asignaciones|length }}</h3>
-    <p>Materias</p>
-  </div>
 </div>
 
 <div class="section-card">
-  <h4 style="margin:0 0 16px;">Grados Asignados</h4>
+  <h4 style="margin:0 0 16px;">Cursos Asignados</h4>
 
   <table>
     <thead>
       <tr>
-        <th>Grado</th>
-        <th>alumno</th>
+        <th>Curso</th>
+        <th>Alumnos</th>
         <th>Acciones</th>
-        <th>Materia</th>
       </tr>
     </thead>
 
@@ -95,27 +89,13 @@
 
     </td>
 
-    <td>
-
-      {% for materia in a.materias %}
-
-        {{ materia.titulo }}{% if not forloop.last %}, {% endif %}
-
-      {% endfor %}
-
-      {% if not a.materias %}
-        —
-      {% endif %}
-
-    </td>
-
   </tr>
 
   {% empty %}
 
   <tr>
-    <td colspan="4" style="text-align:center;color:#6b7280;padding:30px 0;">
-      No hay grados asignados.
+    <td colspan="3" style="text-align:center;color:#6b7280;padding:30px 0;">
+      No hay cursos asignados.
     </td>
   </tr>
 
