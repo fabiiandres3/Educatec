@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import redirect, render, get_object_or_404
 from .forms import EventoForm
@@ -113,14 +114,16 @@ def crear_evento(request):
                 f" Avisos en la bandeja: {avisos_creados}; correos enviados: {correos_enviados}."
                 if evento.publicado else ""
             )
+            mensaje = (
+                f"El evento '{evento.titulo}' "
+                f"se creó correctamente.{detalle}"
+            )
+            messages.success(request, mensaje)
 
             return JsonResponse({
                 "success": True,
                 "type": "success",
-                "message": (
-                    f"El evento '{evento.titulo}' "
-                    f"se creó correctamente.{detalle}"
-                ),
+                "message": mensaje,
                 "avisos_creados": avisos_creados,
                 "correos_enviados": correos_enviados,
             })
@@ -225,13 +228,13 @@ def editar_evento(
             if not estaba_publicado and evento.publicado:
                 notificar_evento(request, evento)
 
+            mensaje = f"El evento '{evento.titulo}' se actualizó correctamente."
+            messages.success(request, mensaje)
+
             return JsonResponse({
                 "success": True,
                 "type": "success",
-                "message": (
-                    f"El evento '{evento.titulo}' "
-                    "se actualizó correctamente."
-                )
+                "message": mensaje,
             })
 
         # =====================================================

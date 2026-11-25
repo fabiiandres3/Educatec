@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th>Alumno</th><th>Documento</th><th>Correo</th><th>Edad</th><th>Teléfono</th>
-          <th>Dirección</th><th>Curso</th><th>Ingreso</th><th>Estado</th>
+          <th>Dirección</th><th>Curso</th><th>Clase</th><th>Ingreso</th><th>Estado</th>
           <th class="th-acciones" style="display:none">Acciones</th>
         </tr>
       </thead>
@@ -23,6 +23,7 @@
             <td>{{ alumno.usuario.telefono|default:alumno.telefono|default:"Sin teléfono" }}</td>
             <td><span class="alumno-direccion">{{ alumno.usuario.direccion|default:alumno.direccion|default:"Sin dirección" }}</span></td>
             <td>{% if alumno.curso %}<span class="alumno-curso">{{ alumno.curso.nombre }}</span>{% else %}<span class="alumno-sin-curso">Sin curso</span>{% endif %}</td>
+            <td>{% if alumno.clase %}<span class="alumno-curso">{{ alumno.clase.titulo }}</span>{% else %}<span class="alumno-dato-vacio">Sin clase</span>{% endif %}</td>
             <td>{% if alumno.fecha_ingreso %}{{ alumno.fecha_ingreso|date:"d/m/Y" }}{% else %}<span class="alumno-dato-vacio">Sin dato</span>{% endif %}</td>
             <td>{% if alumno.activo %}<span class="alumno-estado activo"><i class="fa-solid fa-circle-check"></i> Activo</span>{% else %}<span class="alumno-estado inactivo"><i class="fa-solid fa-circle-xmark"></i> Inactivo</span>{% endif %}</td>
             <td class="td-acciones" style="display:none;white-space:nowrap">
@@ -31,9 +32,9 @@
             </td>
           </tr>
         {% empty %}
-          <tr><td colspan="10" class="alumnos-vacio">No hay alumnos registrados.</td></tr>
+          <tr><td colspan="11" class="alumnos-vacio">No hay alumnos registrados.</td></tr>
         {% endfor %}
-        <tr id="sinResultadosAlumnos" hidden><td colspan="10" class="alumnos-vacio"><i class="fa-solid fa-magnifying-glass"></i> No hay alumnos que coincidan con los filtros.</td></tr>
+        <tr id="sinResultadosAlumnos" hidden><td colspan="11" class="alumnos-vacio"><i class="fa-solid fa-magnifying-glass"></i> No hay alumnos que coincidan con los filtros.</td></tr>
       </tbody>
     </table>
   </div>

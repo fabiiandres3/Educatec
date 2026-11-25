@@ -67,6 +67,7 @@ py
 ### Windows
 
 ```bash
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 env\Scripts\activate
 ```
 

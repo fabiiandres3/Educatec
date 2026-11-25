@@ -11,8 +11,30 @@ from .forms import CursosForm
 from .models import Cursos
 
 
-from apps.clases.models import Clases
 from apps.user.decorators import rol_requerido
+
+
+def _alumnos_del_listado():
+    """Return every student profile, with the related data used by the table."""
+    return (
+        Alumnos.objects
+        .select_related("usuario", "curso", "clase")
+        .order_by(
+            "usuario__first_name",
+            "usuario__last_name",
+            "usuario__username",
+            "pk",
+        )
+    )
+
+
+def _cursos_del_listado():
+    return (
+        Cursos.objects
+        .annotate(cantidad_alumnos=Count("alumnos", distinct=True))
+        .order_by("nombre", "pk")
+    )
+
 
 # ==========================================
 # LISTAR CURSOS + ALUMNOS
@@ -22,15 +44,9 @@ from apps.user.decorators import rol_requerido
 @rol_requerido("administrador")
 def listar_cursos(request):
 
-    cursos = Cursos.objects.annotate(
-    cantidad_alumnos=Count("alumnos"))
-    cursos_filtro = Cursos.objects.order_by("nombre")
-
-    alumnos = Alumnos.objects.filter(usuario__rol__nombre__iexact="alumno").select_related(
-        "usuario",
-        "curso",
-        "clase"
-    ).order_by("usuario__first_name", "usuario__last_name", "usuario__username")
+    cursos = _cursos_del_listado()
+    cursos_filtro = cursos
+    alumnos = _alumnos_del_listado()
 
     return render(
         request,
@@ -51,18 +67,16 @@ def listar_cursos(request):
 @rol_requerido("administrador")
 def listar_alumnos(request):
 
-    cursos_filtro = Cursos.objects.order_by("nombre")
+    cursos = _cursos_del_listado()
+    cursos_filtro = cursos
 
-    alumnos = Alumnos.objects.filter(usuario__rol__nombre__iexact="alumno").select_related(
-        "usuario",
-        "curso",
-        "clase"
-    ).all()
+    alumnos = _alumnos_del_listado()
 
     return render(
         request,
         "admin/cursos/cursos.html",
         {
+            "cursos": cursos,
             "alumnos": alumnos,
             "cursos_filtro": cursos_filtro,
         }
@@ -180,18 +194,17 @@ def filtrar_alumnos(request):
 
     curso_id = request.GET.get("curso_id")
 
-    print("CURSO RECIBIDO:", curso_id)
+    alumnos = _alumnos_del_listado()
 
-    alumnos = Alumnos.objects.filter(usuario__rol__nombre__iexact="alumno").select_related(
-        "usuario",
-        "curso",
-        "clase"
-    ).all()
-
-    if curso_id:
-        alumnos = alumnos.filter(
-            curso_id=curso_id
-        )
+    if curso_id == "sin-curso":
+        alumnos = alumnos.filter(curso__isnull=True)
+    elif curso_id:
+        try:
+            curso_id = int(curso_id)
+        except (TypeError, ValueError):
+            alumnos = alumnos.none()
+        else:
+            alumnos = alumnos.filter(curso_id=curso_id)
 
     return render(
         request,

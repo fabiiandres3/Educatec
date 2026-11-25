@@ -72,6 +72,19 @@ Crear Evento
         resize: vertical;
     }
 
+    .image-picker {
+        border: 2px dashed #cbd5e1;
+        border-radius: 14px;
+        padding: 1rem;
+        background: #f8fafc;
+        transition: border-color .2s, background-color .2s;
+    }
+    .image-picker.is-dragging { border-color: #0d6efd; background: #eff6ff; }
+    .image-picker-preview { display: flex; align-items: center; gap: 1rem; }
+    .image-picker-preview[hidden], .image-picker-empty[hidden] { display: none; }
+    .image-picker-preview img { width: 112px; height: 84px; object-fit: cover; border-radius: 10px; }
+    .image-picker-empty { color: #64748b; }
+    .image-picker-status { min-height: 1.25rem; color: #64748b; font-size: .875rem; }
     .selector-meridiano {
         margin-top: 0.5rem;
     }
@@ -86,23 +99,50 @@ Crear Evento
     .btn-custom-primary:active {
         transform: scale(0.98);
     }
+
+    .btn-back-events {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        padding: .5rem .9rem;
+        border: 1px solid #dbeafe;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-weight: 600;
+        transition: background-color .2s, transform .2s, box-shadow .2s;
+    }
+    .btn-back-events:hover {
+        background: #dbeafe;
+        color: #1e40af;
+        box-shadow: 0 4px 12px rgba(29, 78, 216, .12);
+        transform: translateX(-2px);
+    }
+    .btn-back-events-icon {
+        display: inline-grid;
+        width: 1.7rem;
+        height: 1.7rem;
+        place-items: center;
+        border-radius: 50%;
+        background: #fff;
+    }
+    .btn-back-events-icon::before {
+        content: "";
+        width: .55rem;
+        height: .55rem;
+        border-left: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: translateX(2px) rotate(45deg);
+    }
 </style>
 
 <div class="container py-4">
 
     <!-- Navegación contextual (Breadcrumb) -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'listar_eventos' %}" class="text-decoration-none">Eventos</a></li>
-            <li class="breadcrumb-item active" aria-current="page">
-                {% if editar %}
-                    Editar Evento
-                {% else %}
-                    Nuevo Evento
-                {% endif %}
-            </li>
-        </ol>
-    </nav>
+    <a href="{% url 'listar_eventos' %}" class="btn-back-events text-decoration-none mb-3">
+        <span class="btn-back-events-icon" aria-hidden="true"></span>
+        <span>Volver a eventos</span>
+    </a>
 
     <div class="row justify-content-center">
 
@@ -138,16 +178,7 @@ Crear Evento
                     <hr class="my-4 text-secondary opacity-25">
 
                     <!-- Formulario -->
-                    {% if editar and evento.imagen %}
-                    <div class="alert alert-light border d-flex align-items-center gap-3 mb-4" role="status">
-                        <img src="{{ evento.imagen.url }}" alt="Imagen actual de {{ evento.titulo }}" style="width:84px;height:64px;object-fit:cover;border-radius:8px">
-                        <div>
-                            <strong>Imagen actual</strong>
-                            <p class="mb-0 small text-muted">Se conservará si no seleccionas una imagen nueva. Usa la opción para quitarla solo si deseas eliminarla.</p>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate data-original-image="{% if editar and evento.imagen %}{{ evento.imagen.url }}{% endif %}">
 
                         {% csrf_token %}
 
@@ -650,6 +681,128 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    const imagenInput = document.getElementById("id_imagen");
+    if (imagenInput) {
+        const parrafoImagen = imagenInput.closest("p");
+        const eliminarImagen = document.getElementById("id_eliminar_imagen");
+        const selector = document.createElement("div");
+        selector.className = "image-picker mt-2";
+        selector.innerHTML = `
+            <div class="image-picker-preview" hidden>
+                <img alt="Vista previa de la imagen del evento">
+                <div class="flex-grow-1">
+                    <strong class="image-picker-name">Imagen seleccionada</strong>
+                    <div class="image-picker-status" aria-live="polite"></div>
+                </div>
+            </div>
+            <div class="image-picker-empty" hidden>Este evento no tiene imagen. Puedes elegir una o arrastrarla aquí.</div>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                <button type="button" class="btn btn-outline-primary btn-sm image-picker-choose">Elegir o cambiar imagen</button>
+                <button type="button" class="btn btn-outline-danger btn-sm image-picker-remove" hidden>Quitar imagen</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm image-picker-undo" hidden>Deshacer</button>
+            </div>`;
+        imagenInput.accept = "image/*";
+        imagenInput.classList.add("visually-hidden");
+        imagenInput.setAttribute("aria-label", "Elegir imagen del evento");
+        parrafoImagen.appendChild(selector);
+        if (eliminarImagen && eliminarImagen.closest("p")) {
+            eliminarImagen.closest("p").classList.add("visually-hidden");
+        }
+
+        const preview = selector.querySelector(".image-picker-preview");
+        const previewImage = preview.querySelector("img");
+        const empty = selector.querySelector(".image-picker-empty");
+        const name = selector.querySelector(".image-picker-name");
+        const status = selector.querySelector(".image-picker-status");
+        const removeButton = selector.querySelector(".image-picker-remove");
+        const undoButton = selector.querySelector(".image-picker-undo");
+        let originalUrl = formulario.dataset.originalImage || "";
+        let objectUrl = "";
+
+        function showImage(url, label, message) {
+            previewImage.src = url;
+            name.textContent = label;
+            status.textContent = message || "";
+            preview.hidden = false;
+            empty.hidden = true;
+        }
+        function updatePicker() {
+            const selected = imagenInput.files && imagenInput.files[0];
+            if (selected) {
+                if (objectUrl) URL.revokeObjectURL(objectUrl);
+                objectUrl = URL.createObjectURL(selected);
+                if (eliminarImagen) eliminarImagen.checked = false;
+                showImage(objectUrl, selected.name, "La vista previa se actualiza sin recargar la página.");
+                removeButton.hidden = false;
+                undoButton.hidden = true;
+            } else if (eliminarImagen && eliminarImagen.checked) {
+                preview.hidden = true;
+                empty.hidden = false;
+                empty.textContent = "La imagen se quitará cuando guardes los cambios.";
+                removeButton.hidden = true;
+                undoButton.hidden = false;
+            } else if (originalUrl) {
+                showImage(originalUrl, "Imagen actual", "Elige otra imagen para reemplazarla.");
+                removeButton.hidden = false;
+                undoButton.hidden = true;
+            } else {
+                preview.hidden = true;
+                empty.hidden = false;
+                empty.textContent = "Aún no hay imagen. Elige una o arrástrala aquí.";
+                removeButton.hidden = true;
+                undoButton.hidden = true;
+            }
+        }
+        selector.querySelector(".image-picker-choose").addEventListener("click", () => imagenInput.click());
+        imagenInput.addEventListener("change", updatePicker);
+        removeButton.addEventListener("click", () => {
+            if (imagenInput.files && imagenInput.files.length) {
+                imagenInput.value = "";
+                if (eliminarImagen) eliminarImagen.checked = Boolean(originalUrl);
+            } else if (eliminarImagen) {
+                eliminarImagen.checked = true;
+            }
+            updatePicker();
+        });
+        undoButton.addEventListener("click", () => {
+            if (eliminarImagen) eliminarImagen.checked = false;
+            updatePicker();
+        });
+        selector.addEventListener("dragover", event => {
+            event.preventDefault();
+            selector.classList.add("is-dragging");
+        });
+        selector.addEventListener("dragleave", () => selector.classList.remove("is-dragging"));
+        selector.addEventListener("drop", event => {
+            event.preventDefault();
+            selector.classList.remove("is-dragging");
+            const file = event.dataTransfer.files && event.dataTransfer.files[0];
+            if (file && file.type.startsWith("image/")) {
+                const transfer = new DataTransfer();
+                transfer.items.add(file);
+                imagenInput.files = transfer.files;
+                imagenInput.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+        });
+        if (eliminarImagen) eliminarImagen.addEventListener("change", updatePicker);
+        formulario.addEventListener("evento-imagen-guardada", () => {
+            if (eliminarImagen && eliminarImagen.checked) {
+                originalUrl = "";
+                eliminarImagen.checked = false;
+                imagenInput.value = "";
+            } else if (imagenInput.files && imagenInput.files[0]) {
+                originalUrl = objectUrl;
+                imagenInput.value = "";
+            }
+            updatePicker();
+        });
+        formulario.addEventListener("reset", () => setTimeout(() => {
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+            objectUrl = "";
+            updatePicker();
+        }, 0));
+        updatePicker();
+    }
     formulario.addEventListener(
         "submit",
         async function (event) {
@@ -676,6 +829,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 Guardando...
             `;
 
+            let guardadoCorrectamente = false;
 
             try {
 
@@ -738,11 +892,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     resultado.success
                 ) {
 
-                    mostrarNotificacion(
-                        resultado.message,
-                        "exito"
-                    );
-
+                    guardadoCorrectamente = true;
+                    formulario.dispatchEvent(new Event("evento-imagen-guardada"));
 
                     /*
                      * SI ESTAMOS EDITANDO
@@ -811,6 +962,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 botonEnviar.innerHTML =
                     textoOriginal;
+
+                if (guardadoCorrectamente) {
+                    window.location.assign("{% url 'listar_eventos' %}");
+                }
 
             }
 

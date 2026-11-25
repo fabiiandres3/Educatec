@@ -6,6 +6,22 @@
 {% block content %}
 
 <style>
+    .eventos-flash-messages { display: grid; gap: 10px; margin-bottom: 18px; }
+    .eventos-flash-message {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 16px;
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
+        background: #f0fdf4;
+        color: #166534;
+        font-weight: 600;
+        box-shadow: 0 4px 14px rgba(22, 101, 52, .07);
+    }
+    .eventos-flash-message i { font-size: 18px; }
+    .eventos-flash-message.is-removing { opacity: 0; transform: translateY(-5px); transition: opacity .25s, transform .25s; }
+
     /* =========================================================
        CONTENEDOR
     ========================================================= */
@@ -493,6 +509,7 @@
     }
 
     .evento-modal {
+        box-sizing: border-box;
         width: 100%;
         max-width: 430px;
         background: white;
@@ -548,6 +565,9 @@
     }
 
     .modal-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         height: 40px;
         padding: 0 17px;
         border-radius: 9px;
@@ -555,6 +575,9 @@
         cursor: pointer;
         font-size: 13px;
         font-weight: 600;
+        line-height: 1;
+        text-decoration: none;
+        white-space: nowrap;
     }
 
     .modal-cancelar {
@@ -573,6 +596,18 @@
 
     .modal-confirmar:hover {
         background: #b91c1c;
+        color: #fff;
+    }
+
+    .modal-btn:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, .35);
+        outline-offset: 2px;
+    }
+
+    @media (max-width: 420px) {
+        .evento-modal { padding: 23px 20px; }
+        .modal-actions { flex-direction: column-reverse; }
+        .modal-btn { width: 100%; }
     }
 
     /* =========================================================
@@ -670,6 +705,17 @@
 
 
 <div class="eventos-page">
+
+    {% if messages %}
+    <div class="eventos-flash-messages" aria-live="polite">
+        {% for message in messages %}
+        <div class="eventos-flash-message" role="status">
+            <i class="fas fa-circle-check" aria-hidden="true"></i>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- =====================================================
          ENCABEZADO
@@ -985,11 +1031,15 @@
 <div
     class="modal-overlay"
     id="modalEliminar"
+    role="presentation"
     onclick="cerrarModalFuera(event)"
 >
 
     <div
         class="evento-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalEliminar"
         onclick="event.stopPropagation()"
     >
 
@@ -997,7 +1047,7 @@
             <i class="fas fa-trash-alt"></i>
         </div>
 
-        <h3>Eliminar evento</h3>
+        <h3 id="tituloModalEliminar">Eliminar evento</h3>
 
         <p>
             ¿Estás seguro de que deseas eliminar
@@ -1140,6 +1190,35 @@
     }
 
 
+    function mostrarAvisoEliminacion(mensaje) {
+        let contenedor = document.querySelector(".eventos-flash-messages");
+        if (!contenedor) {
+            contenedor = document.createElement("div");
+            contenedor.className = "eventos-flash-messages";
+            contenedor.setAttribute("aria-live", "polite");
+            document.querySelector(".eventos-page").prepend(contenedor);
+        }
+
+        const aviso = document.createElement("div");
+        aviso.className = "eventos-flash-message";
+        aviso.setAttribute("role", "status");
+
+        const icono = document.createElement("i");
+        icono.className = "fas fa-circle-check";
+        icono.setAttribute("aria-hidden", "true");
+
+        const texto = document.createElement("span");
+        texto.textContent = mensaje;
+        aviso.append(icono, texto);
+        contenedor.appendChild(aviso);
+
+        window.setTimeout(() => {
+            aviso.classList.add("is-removing");
+            window.setTimeout(() => aviso.remove(), 250);
+        }, 4500);
+    }
+
+
     document.getElementById("btnConfirmarEliminar").addEventListener(
         "click",
         async function (event) {
@@ -1181,6 +1260,9 @@
                 }
 
                 cerrarModalEliminar();
+                mostrarAvisoEliminacion(
+                    resultado.message || "El evento se eliminó correctamente."
+                );
 
             } catch (error) {
 
