@@ -5,6 +5,11 @@ from .models import Evento
 
 
 class EventoForm(forms.ModelForm):
+    eliminar_imagen = forms.BooleanField(
+        required=False,
+        label="Quitar imagen actual",
+        help_text="Marca esta opción solo si quieres quitar la imagen del evento.",
+    )
 
     class Meta:
         model = Evento
@@ -22,6 +27,10 @@ class EventoForm(forms.ModelForm):
         ]
 
         widgets = {
+
+            # Reemplazar un archivo no debe mostrar la casilla implícita
+            # de limpieza de ClearableFileInput; la eliminación es explícita.
+            "imagen": forms.FileInput(),
 
             "titulo": forms.TextInput(
                 attrs={
@@ -91,6 +100,9 @@ class EventoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         hoy = timezone.localdate()
+
+        if not self.instance.pk or not self.instance.imagen:
+            self.fields.pop("eliminar_imagen", None)
 
         # ==========================================
         # FECHA MÍNIMA

@@ -138,6 +138,15 @@ Crear Evento
                     <hr class="my-4 text-secondary opacity-25">
 
                     <!-- Formulario -->
+                    {% if editar and evento.imagen %}
+                    <div class="alert alert-light border d-flex align-items-center gap-3 mb-4" role="status">
+                        <img src="{{ evento.imagen.url }}" alt="Imagen actual de {{ evento.titulo }}" style="width:84px;height:64px;object-fit:cover;border-radius:8px">
+                        <div>
+                            <strong>Imagen actual</strong>
+                            <p class="mb-0 small text-muted">Se conservará si no seleccionas una imagen nueva. Usa la opción para quitarla solo si deseas eliminarla.</p>
+                        </div>
+                    </div>
+                    {% endif %}
                     <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
 
                         {% csrf_token %}

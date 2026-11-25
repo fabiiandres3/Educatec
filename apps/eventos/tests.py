@@ -42,6 +42,26 @@ class EventoImageStorageConfigTests(SimpleTestCase):
         with self.assertRaises(ImproperlyConfigured):
             build_event_image_storage_config({"SUPABASE_S3_ENDPOINT_URL": "https://example.invalid"})
 
+    def test_production_without_supabase_configuration_fails_closed(self):
+        with self.assertRaisesMessage(ImproperlyConfigured, "require Supabase Storage"):
+            build_event_image_storage_config({"DEBUG": "false"})
+
+    def test_supabase_endpoint_and_bucket_must_match_project_configuration(self):
+        env = {
+            "SUPABASE_S3_ENDPOINT_URL": "http://project-ref.storage.supabase.co/storage/v1/s3",
+            "SUPABASE_S3_REGION": "us-east-1",
+            "SUPABASE_S3_ACCESS_KEY_ID": "test-access-key",
+            "SUPABASE_S3_SECRET_ACCESS_KEY": "test-secret-key",
+            "SUPABASE_STORAGE_BUCKET": "educatec-media",
+        }
+        with self.assertRaisesMessage(ImproperlyConfigured, "HTTPS Supabase S3 endpoint"):
+            build_event_image_storage_config(env)
+
+        env["SUPABASE_S3_ENDPOINT_URL"] = "https://project-ref.storage.supabase.co/storage/v1/s3"
+        env["SUPABASE_STORAGE_BUCKET"] = "another-bucket"
+        with self.assertRaisesMessage(ImproperlyConfigured, "educatec-media"):
+            build_event_image_storage_config(env)
+
     def test_configured_storage_generates_signed_urls(self):
         storage = storages.create_storage(
             build_event_image_storage_config(

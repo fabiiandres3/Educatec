@@ -1,7 +1,42 @@
+import logging
+
+from django.db import transaction
 from django.shortcuts import redirect, render, get_object_or_404
 from .forms import EventoForm
 from .models import Evento
 from django.http import JsonResponse
+
+logger = logging.getLogger(__name__)
+
+
+def _schedule_image_delete(image_field, evento_id):
+    """Delete an old object after the database change commits."""
+    if not image_field or not image_field.name:
+        return
+
+    storage = image_field.storage
+    image_name = image_field.name
+
+    def delete_image():
+        try:
+            storage.delete(image_name)
+        except Exception:
+            logger.exception(
+                "Could not delete event image after database update (event_id=%s, object=%s)",
+                evento_id,
+                image_name,
+            )
+
+    transaction.on_commit(delete_image)
+
+
+def _image_save_error(evento_id):
+    logger.exception("Event save or image upload failed (event_id=%s)", evento_id)
+    return JsonResponse({
+        "success": False,
+        "type": "error",
+        "message": "No se pudo guardar la imagen del evento. Revisa la configuración de almacenamiento e inténtalo de nuevo.",
+    }, status=500)
 
 
 # ============================================================
@@ -64,8 +99,10 @@ def crear_evento(request):
         )
 
         if form.is_valid():
-
-            evento = form.save()
+            try:
+                evento = form.save()
+            except Exception:
+                return _image_save_error(None)
 
             return JsonResponse({
                 "success": True,
@@ -154,8 +191,22 @@ def editar_evento(
         )
 
         if form.is_valid():
+            imagen_anterior = evento.imagen if evento.imagen else None
+            try:
+                evento = form.save(commit=False)
+                if form.cleaned_data.get("eliminar_imagen") and not request.FILES.get("imagen"):
+                    evento.imagen = None
+                evento.save()
+                form.save_m2m()
+            except Exception:
+                return _image_save_error(evento.pk)
 
-            evento = form.save()
+            if (
+                imagen_anterior
+                and imagen_anterior.name
+                and imagen_anterior.name != (evento.imagen.name if evento.imagen else "")
+            ):
+                _schedule_image_delete(imagen_anterior, evento.pk)
 
             return JsonResponse({
                 "success": True,
@@ -219,7 +270,10 @@ def eliminar_evento(
     )
 
     titulo = evento.titulo
+    imagen = evento.imagen if evento.imagen else None
+    evento_id = evento.pk
     evento.delete()
+    _schedule_image_delete(imagen, evento_id)
 
     return JsonResponse({
         "success": True,
