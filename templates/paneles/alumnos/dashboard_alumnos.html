@@ -62,6 +62,7 @@
 
                 <small>
                     {% if alumno.curso_id %}{{ alumno.curso.nombre }}{% else %}Sin curso asignado{% endif %}
+                    {% if alumno.clases_asignadas %}<span aria-hidden="true"> · </span>{% for clase in alumno.clases_asignadas %}{{ clase.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
                 </small>
 
             </div>

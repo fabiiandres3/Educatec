@@ -1,12 +1,14 @@
 import json
+from collections import defaultdict
 from datetime import date, datetime
+from types import SimpleNamespace
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db import transaction
-from django.db.models import Avg, Count, F, Q
+from django.db.models import Count, F, Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -27,6 +29,11 @@ from apps.tareas.models import (
     ActividadCalificacion,
     CalificacionActividad,
 )
+from apps.calificaciones.services import (
+    calcular_promedio_calificaciones,
+    obtener_promedio_general_alumno,
+    obtener_libro_calificaciones,
+)
 from apps.alumnos.models import (
     Acudiente,
     AcudienteAlumno,
@@ -45,6 +52,7 @@ from .selectors import (
     obtener_materias,
     obtener_alumnos_por_curso,
     obtener_asistencia_por_curso_fecha,
+    obtener_resumen_tareas_por_alumno,
 )
 from .forms import CuentaPerfilForm
 
@@ -57,9 +65,27 @@ from .forms import CuentaPerfilForm
 def dashboard_docente(request):
     docente = Docente.objects.select_related("usuario").get(usuario=request.user)
     asignaciones = list(
-        AsignacionDocente.objects.filter(docente=docente).select_related("curso")
+        AsignacionDocente.objects.filter(docente=docente)
+        .select_related("curso", "clase")
+        .prefetch_related("clase__cursos")
     )
-    cursos_ids = {asignacion.curso_id for asignacion in asignaciones if asignacion.curso_id}
+
+    asignaciones_calificaciones = []
+    cursos_ids = set()
+    for asignacion in asignaciones:
+        if asignacion.curso_id:
+            asignaciones_calificaciones.append(asignacion)
+            cursos_ids.add(asignacion.curso_id)
+        elif asignacion.clase_id:
+            for curso in asignacion.clase.cursos.all():
+                asignaciones_calificaciones.append(SimpleNamespace(
+                    docente=docente,
+                    curso=curso,
+                    curso_id=curso.id,
+                    clase=asignacion.clase,
+                    clase_id=asignacion.clase_id,
+                ))
+                cursos_ids.add(curso.id)
 
     eventos = Evento.objects.filter(
         publicado=True,
@@ -73,30 +99,36 @@ def dashboard_docente(request):
     ).values("curso_id").annotate(total=Count("id"))
     total_alumnoss = sum(item["total"] for item in conteos_alumnos)
 
-    if cursos_ids:
-        tareas_recientes = list(
-            Tareas.objects.filter(
-                curso_id__in=cursos_ids,
-                clase__cursos__id=F("curso_id"),
-            )
-            .select_related("curso", "clase")
-            .distinct()
-            .order_by("-fecha_creacion", "-id")[:5]
-        )
-    else:
-        tareas_recientes = []
+    tarea_ids = set()
+    actividad_ids = set()
+    for asignacion in asignaciones_calificaciones:
+        _, tareas_asignacion, actividades_asignacion = obtener_libro_calificaciones(asignacion)
+        tarea_ids.update(tarea.id for tarea in tareas_asignacion)
+        actividad_ids.update(actividad.id for actividad in actividades_asignacion)
 
-    registros_hoy = Asistencia.objects.filter(
+    tareas_query = Tareas.objects.filter(id__in=tarea_ids).select_related("curso", "clase")
+    tareas_recientes = list(tareas_query.order_by("-fecha_creacion", "-id")[:5])
+    registros_calificacion = list(
+        Calificacion.objects.filter(tarea_id__in=tarea_ids, nota__isnull=False)
+    ) + list(
+        CalificacionActividad.objects.filter(
+            actividad_id__in=actividad_ids,
+            nota__isnull=False,
+        )
+    )
+    promedio_calificaciones = calcular_promedio_calificaciones(registros_calificacion)
+    promedio = float(promedio_calificaciones) if promedio_calificaciones is not None else "—"
+
+    registros_asistencia = Asistencia.objects.filter(
         curso_id__in=cursos_ids,
-        fecha=timezone.localdate(),
     ).aggregate(
         total=Count("id"),
         asistieron=Count("id", filter=Q(estado__in=["P", "T"])),
     )
-    total_registros_hoy = registros_hoy["total"]
+    total_registros = registros_asistencia["total"]
     porcentaje_asistencia = (
-        round(registros_hoy["asistieron"] / total_registros_hoy * 100, 1)
-        if total_registros_hoy else "\u2014"
+        round(registros_asistencia["asistieron"] / total_registros * 100, 1)
+        if total_registros else "\u2014"
     )
 
     return render(
@@ -107,9 +139,9 @@ def dashboard_docente(request):
             "asignaciones": asignaciones,
             "eventos": eventos,
             "total_alumnoss": total_alumnoss,
-            "total_tareas": len(tareas_recientes),
+            "total_tareas": tareas_query.count(),
             "porcentaje_asistencia": porcentaje_asistencia,
-            "promedio": "\u2014",
+            "promedio": promedio,
             "tareas_recientes": tareas_recientes,
         },
     )
@@ -1270,10 +1302,17 @@ def detalle_horario_docente(request, periodo_id, curso_id):
 def dashboard_alumnos(request):
 
     alumno = get_object_or_404(
-        Alumnos.objects.select_related("usuario", "curso"),
+        Alumnos.objects.select_related("usuario", "curso", "clase").prefetch_related("curso__clases"),
         usuario=request.user,
         activo=True,
     )
+    clases_asignadas = (
+        [alumno.clase]
+        if alumno.clase_id
+        else list(alumno.curso.clases.all()) if alumno.curso_id else []
+    )
+    alumno.clases_asignadas = clases_asignadas
+
     estadisticas_asistencia = Asistencia.objects.filter(alumno=alumno).aggregate(
         total=Count("id"),
         presentes=Count("id", filter=Q(estado="P")),
@@ -1289,6 +1328,43 @@ def dashboard_alumnos(request):
         if total_asistencias else None
     )
 
+    promedio_general = obtener_promedio_general_alumno(alumno)
+    resumen_tareas = obtener_resumen_tareas_por_alumno([alumno]).get(
+        alumno.id,
+        {"total": 0, "entregadas": 0, "pendientes": 0},
+    )
+
+    notas_por_materia = defaultdict(list)
+    calificaciones_tareas = Calificacion.objects.filter(
+        alumno_id=alumno.usuario_id,
+        nota__isnull=False,
+    ).select_related("tarea__clase", "tarea__curso")
+    calificaciones_actividades = CalificacionActividad.objects.filter(
+        alumno_id=alumno.usuario_id,
+        nota__isnull=False,
+    ).select_related("actividad__clase", "actividad__curso")
+    for calificacion in calificaciones_tareas:
+        tarea = calificacion.tarea
+        materia = (
+            tarea.clase.titulo if tarea.clase_id
+            else tarea.curso.nombre if tarea.curso_id
+            else "Sin materia"
+        )
+        notas_por_materia[materia].append(float(calificacion.nota))
+    for calificacion in calificaciones_actividades:
+        actividad = calificacion.actividad
+        materia = (
+            actividad.clase.titulo if actividad.clase_id
+            else actividad.curso.nombre if actividad.curso_id
+            else "Sin materia"
+        )
+        notas_por_materia[materia].append(float(calificacion.nota))
+    calificaciones = [
+        {"materia": materia, "promedio": round(sum(notas) / len(notas), 2)}
+        for materia, notas in sorted(notas_por_materia.items())
+        if notas
+    ]
+
     eventos = Evento.objects.filter(
         publicado=True,
         publico__in=["todos", "alumnos"],
@@ -1302,6 +1378,11 @@ def dashboard_alumnos(request):
             "eventos": eventos,
             "alumno": alumno,
             "porcentaje_asistencia": porcentaje_asistencia,
+            "promedio_general": float(promedio_general) if promedio_general is not None else None,
+            "tareas_pendientes": resumen_tareas["pendientes"],
+            "total_tareas": resumen_tareas["total"],
+            "calificaciones": calificaciones,
+            "total_logros": 0,
             "presentes": presentes,
             "tardanzas": tardanzas,
             "ausentes": ausentes,
@@ -1339,8 +1420,13 @@ def calificaciones_alumnos(request):
             "usuario",
             "curso",
             "clase"
-        ),
+        ).prefetch_related("curso__clases"),
         usuario=request.user
+    )
+    clases_asignadas = (
+        [alumno.clase]
+        if alumno.clase_id
+        else list(alumno.curso.clases.all()) if alumno.curso_id else []
     )
 
     # --------------------------------------------------------
@@ -1365,6 +1451,25 @@ def calificaciones_alumnos(request):
             "-id"
         )
     )
+    calificaciones = list(calificaciones)
+    calificaciones_actividades = CalificacionActividad.objects.filter(
+        alumno_id=alumno.usuario_id,
+        nota__isnull=False,
+    ).select_related("actividad__docente__usuario").order_by(
+        "-actividad__fecha", "-id"
+    )
+    for calificacion_actividad in calificaciones_actividades:
+        actividad = calificacion_actividad.actividad
+        calificaciones.append(SimpleNamespace(
+            tarea=SimpleNamespace(
+                titulo=actividad.nombre,
+                descripcion=actividad.descripcion,
+                docente=actividad.docente,
+                fecha_entrega=actividad.fecha,
+            ),
+            nota=calificacion_actividad.nota,
+            tipo=actividad.tipo or "Actividad",
+        ))
     
 
     # --------------------------------------------------------
@@ -1407,21 +1512,12 @@ def calificaciones_alumnos(request):
     # --------------------------------------------------------
 
     notas = [
-        float(fila["nota"])
-        for fila in filas
-        if fila["nota"] is not None
+        float(calificacion.nota)
+        for calificacion in calificaciones
+        if calificacion.nota is not None
     ]
 
-    if notas:
-
-        promedio = round(
-            sum(notas) / len(notas),
-            2
-        )
-
-    else:
-
-        promedio = None
+    promedio = obtener_promedio_general_alumno(alumno)
 
     # --------------------------------------------------------
     # ESTADO ACADÉMICO
@@ -1453,13 +1549,15 @@ def calificaciones_alumnos(request):
 
     total_calificaciones = len(notas)
 
-    total_tareas = calificaciones.count()
+    resumen_tareas = obtener_resumen_tareas_por_alumno([alumno]).get(
+        alumno.id,
+        {"total": 0, "entregadas": 0, "pendientes": 0},
+    )
+    total_tareas = resumen_tareas["total"]
 
     tareas_calificadas = total_calificaciones
 
-    tareas_pendientes = (
-        total_tareas - tareas_calificadas
-    )
+    tareas_pendientes = resumen_tareas["pendientes"]
 
     # --------------------------------------------------------
     # CONTEXTO
@@ -1472,6 +1570,8 @@ def calificaciones_alumnos(request):
         "curso": alumno.curso,
 
         "clase": alumno.clase,
+
+        "clases_asignadas": clases_asignadas,
 
         # Tabla actual
         "filas": filas,
@@ -1786,23 +1886,13 @@ def dashboard_acudiente(request):
             "alumno__curso",
             "alumno__clase",
         )
+        .prefetch_related("alumno__curso__clases")
         .order_by("alumno__usuario__first_name", "alumno__usuario__last_name")
     )
 
     alumnos_ids = [relacion.alumno_id for relacion in relaciones]
-    usuarios_ids = [relacion.alumno.usuario_id for relacion in relaciones]
-    cursos_ids = {
-        relacion.alumno.curso_id
-        for relacion in relaciones
-        if relacion.alumno.curso_id
-    }
-
-    promedios_por_alumno = dict(
-        Calificacion.objects.filter(alumno_id__in=usuarios_ids)
-        .values("alumno_id")
-        .annotate(promedio=Avg("nota"))
-        .values_list("alumno_id", "promedio")
-    )
+    alumnos_relacionados = [relacion.alumno for relacion in relaciones]
+    resumen_tareas_por_alumno = obtener_resumen_tareas_por_alumno(alumnos_relacionados)
     asistencia_por_alumno = {
         item["alumno_id"]: item
         for item in Asistencia.objects.filter(alumno_id__in=alumnos_ids)
@@ -1813,18 +1903,11 @@ def dashboard_acudiente(request):
             tardanzas=Count("id", filter=Q(estado="T")),
         )
     }
-    tareas_por_curso = dict(
-        Tareas.objects.filter(curso_id__in=cursos_ids, activa=True)
-        .values("curso_id")
-        .annotate(total=Count("id"))
-        .values_list("curso_id", "total")
-    )
-
     alumnos = []
     for relacion in relaciones:
         alumno = relacion.alumno
-        promedio = promedios_por_alumno.get(alumno.usuario_id)
-        promedio = round(float(promedio), 2) if promedio is not None else None
+        promedio = obtener_promedio_general_alumno(alumno)
+        promedio = float(promedio) if promedio is not None else None
 
         asistencia = asistencia_por_alumno.get(alumno.id, {})
         total_asistencias = asistencia.get("total", 0)
@@ -1837,7 +1920,14 @@ def dashboard_acudiente(request):
 
         alumno.promedio = promedio
         alumno.porcentaje_asistencia = porcentaje_asistencia
-        alumno.tareas_pendientes = tareas_por_curso.get(alumno.curso_id, 0)
+        alumno.tareas_pendientes = resumen_tareas_por_alumno.get(
+            alumno.id, {"pendientes": 0}
+        )["pendientes"]
+        alumno.clases_asignadas = (
+            [alumno.clase]
+            if alumno.clase_id
+            else list(alumno.curso.clases.all()) if alumno.curso_id else []
+        )
         alumno.parentesco = relacion.parentesco
         alumnos.append(alumno)
 
@@ -1961,47 +2051,45 @@ def detalle_alumno_acudiente(
             "alumno__usuario",
             "alumno__curso",
             "alumno__clase",
-        ),
+        ).prefetch_related("alumno__curso__clases"),
         acudiente=acudiente,
         alumno_id=alumno_id,
+        alumno__activo=True,
         autorizado=True
     )
 
     alumno = relacion.alumno
+    alumno.clases_asignadas = (
+        [alumno.clase]
+        if alumno.clase_id
+        else list(alumno.curso.clases.all()) if alumno.curso_id else []
+    )
 
     # -------------------------------------------------
     # CALIFICACIONES
     # -------------------------------------------------
 
-    calificaciones = (
+    calificaciones_tareas = (
         Calificacion.objects
-        .filter(
-            alumno=alumno.usuario
-        )
-        .select_related(
-            "tarea",
-            "tarea__curso",
-            "tarea__clase",
-        )
-        .order_by(
-            "-id"
-        )
+        .filter(alumno_id=alumno.usuario_id, nota__isnull=False)
+        .select_related("tarea", "tarea__curso", "tarea__clase")
+        .order_by("-id")
     )
-
-    notas = [
-        float(cal.nota)
-        for cal in calificaciones
-        if cal.nota is not None
+    calificaciones_actividades = (
+        CalificacionActividad.objects
+        .filter(alumno_id=alumno.usuario_id, nota__isnull=False)
+        .select_related("actividad", "actividad__curso", "actividad__clase")
+        .order_by("-actividad__fecha", "-id")
+    )
+    calificaciones = [
+        {"nombre": calificacion.tarea.titulo, "curso": calificacion.tarea.curso, "nota": calificacion.nota}
+        for calificacion in calificaciones_tareas
+    ] + [
+        {"nombre": calificacion.actividad.nombre, "curso": calificacion.actividad.curso, "nota": calificacion.nota}
+        for calificacion in calificaciones_actividades
     ]
-
-    promedio = (
-        round(
-            sum(notas) / len(notas),
-            2
-        )
-        if notas
-        else None
-    )
+    promedio = obtener_promedio_general_alumno(alumno)
+    promedio = float(promedio) if promedio is not None else None
 
     # -------------------------------------------------
     # ASISTENCIA
@@ -2031,14 +2119,6 @@ def detalle_alumno_acudiente(
     )
 
     tardanzas = asistencias.filter(estado="T").count()
-
-    tardanzas = (
-        asistencias
-        .filter(
-            estado="T"
-        )
-        .count()
-    )
 
     ausentes = (
         asistencias

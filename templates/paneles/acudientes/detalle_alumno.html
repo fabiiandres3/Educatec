@@ -60,6 +60,14 @@
 
                 {{ alumno.curso|default:"Sin curso" }}
 
+                {% if alumno.clases_asignadas %}
+                    <br>
+                    Clases / materias:
+                    {% for clase in alumno.clases_asignadas %}
+                        <span class="badge text-bg-light border me-1">{{ clase.titulo }}</span>
+                    {% endfor %}
+                {% endif %}
+
             </p>
 
         </div>
@@ -221,7 +229,7 @@
 
                             <th>
 
-                                Tarea
+                                Actividad
 
                             </th>
 
@@ -250,13 +258,13 @@
 
                                 <td>
 
-                                    {{ calificacion.tarea.titulo }}
+                                    {{ calificacion.nombre }}
 
                                 </td>
 
                                 <td>
 
-                                    {{ calificacion.tarea.curso|default:"—" }}
+                                    {{ calificacion.curso|default:"—" }}
 
                                 </td>
 

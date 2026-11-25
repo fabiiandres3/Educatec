@@ -147,11 +147,16 @@
 
                     <strong>
 
-                        Clase:
+                    Clases / materias:
 
                     </strong>
-
-                    {{ alumno.clase|default:"Sin clase asignada" }}
+                    {% if alumno.clases_asignadas %}
+                        {% for clase in alumno.clases_asignadas %}
+                            <span class="badge text-bg-light border me-1">{{ clase.titulo }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-secondary">Sin clases asignadas</span>
+                    {% endif %}
 
                     <br>
 
@@ -228,7 +233,7 @@
 
                             </h4>
 
-                            <small>Tareas activas</small>
+                            <small>Tareas pendientes</small>
 
                         </div>
 

@@ -417,8 +417,8 @@ active
 
                 <div class="info-value">
 
-                    {% if clase %}
-                        {{ clase }}
+                    {% if clases_asignadas %}
+                        {% for materia in clases_asignadas %}{{ materia.titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}
                     {% else %}
                         Sin clase asignada
                     {% endif %}
@@ -700,7 +700,7 @@ active
 
                             <span class="tipo-badge">
 
-                                Tarea
+                                {{ cal.tipo|default:"Tarea" }}
 
                             </span>
 
