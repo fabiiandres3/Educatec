@@ -1,11 +1,14 @@
 from decimal import Decimal, InvalidOperation
+from types import SimpleNamespace
 
 from django.contrib import messages
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 
 from apps.alumnos.models import Alumnos
 from apps.docentes.models import Docente
+from apps.cursos.models import Cursos
 from apps.tareas.models import (
     Tareas, Calificacion, ActividadCalificacion, CalificacionActividad,
 )
@@ -37,21 +40,56 @@ def calificaciones_docente(request):
     # ASIGNACIONES DEL DOCENTE
     # ============================================================
 
-    asignaciones = obtener_asignaciones_docente(docente)
+    asignaciones = list(
+        obtener_asignaciones_docente(docente)
+        .prefetch_related("clase__cursos")
+    )
+
+    cursos_por_id = {}
+    for asignacion in asignaciones:
+        if asignacion.curso_id:
+            cursos_por_id.setdefault(asignacion.curso_id, asignacion.curso)
+        elif asignacion.clase_id:
+            for curso in asignacion.clase.cursos.all():
+                cursos_por_id.setdefault(curso.id, curso)
+
+    cursos = sorted(cursos_por_id.values(), key=lambda curso: curso.nombre.lower())
 
     # ============================================================
     # ASIGNACIÓN SELECCIONADA
     # ============================================================
 
+    curso_id = request.GET.get("curso")
+
+    # Conserva los enlaces antiguos que todavía envían un ID de asignación.
     asignacion_id = request.GET.get("asignacion")
-
-    asignacion_actual = None
-
-    if asignacion_id:
-        asignacion_actual = get_object_or_404(
-            asignaciones,
-            id=asignacion_id
+    if not curso_id and asignacion_id:
+        asignacion_anterior = next(
+            (a for a in asignaciones if str(a.id) == str(asignacion_id)),
+            None,
         )
+        if asignacion_anterior:
+            if asignacion_anterior.curso_id:
+                curso_id = str(asignacion_anterior.curso_id)
+            elif asignacion_anterior.clase_id:
+                curso_id = next(
+                    (str(curso.id) for curso in asignacion_anterior.clase.cursos.all()),
+                    None,
+                )
+
+    curso_actual = cursos_por_id.get(int(curso_id)) if str(curso_id or "").isdigit() else None
+    asignacion_actual = (
+        SimpleNamespace(
+            id=curso_actual.id,
+            docente=docente,
+            curso=curso_actual,
+            curso_id=curso_actual.id,
+            clase=None,
+            clase_id=None,
+        )
+        if curso_actual
+        else None
+    )
 
     # ============================================================
     # DATOS INICIALES
@@ -65,17 +103,11 @@ def calificaciones_docente(request):
     # CURSO ACTUAL
     # ============================================================
 
-    curso_actual = (
-        asignacion_actual.curso
-        if asignacion_actual
-        else None
-    )
-
     # ============================================================
     # OBTENER CALIFICACIONES
     # ============================================================
 
-    if asignacion_actual:
+    if curso_actual:
 
         alumnos, tareas, actividades = obtener_libro_calificaciones(
             asignacion_actual
@@ -103,17 +135,11 @@ def calificaciones_docente(request):
 
         "docente": docente,
 
-        "asignaciones": asignaciones,
+        "cursos": cursos,
 
         "asignacion_actual": asignacion_actual,
 
         "curso_actual": curso_actual,
-
-        "clase_actual": (
-            asignacion_actual.clase
-            if asignacion_actual
-            else None
-        ),
 
         "tareas": tareas,
         "actividades": actividades,
@@ -469,7 +495,19 @@ def crear_actividad_calificacion(request):
     if request.method != "POST":
         return JsonResponse({"ok": False, "mensaje": "Método no permitido."}, status=405)
     docente = get_object_or_404(Docente, usuario=request.user)
-    asignacion = get_object_or_404(obtener_asignaciones_docente(docente), pk=request.POST.get("asignacion_id"))
+    curso_id = request.POST.get("curso_id")
+    if curso_id:
+        curso = get_object_or_404(Cursos, pk=curso_id)
+        tiene_acceso = obtener_asignaciones_docente(docente).filter(
+            Q(curso=curso) | Q(clase__cursos=curso)
+        ).exists()
+        if not tiene_acceso:
+            return JsonResponse({"ok": False, "mensaje": "No tienes acceso a este curso."}, status=403)
+        clase = None
+    else:
+        asignacion = get_object_or_404(obtener_asignaciones_docente(docente), pk=request.POST.get("asignacion_id"))
+        curso = asignacion.curso
+        clase = asignacion.clase
     nombre = (request.POST.get("nombre") or "").strip()
     fecha = parse_date(request.POST.get("fecha") or "")
     if not nombre:
@@ -480,7 +518,7 @@ def crear_actividad_calificacion(request):
     if request.POST.get("periodo_id"):
         periodo = get_object_or_404(Periodo, pk=request.POST["periodo_id"])
     actividad = ActividadCalificacion.objects.create(
-        docente=docente, curso=asignacion.curso, clase=asignacion.clase,
+        docente=docente, curso=curso, clase=clase,
         periodo=periodo, nombre=nombre, tipo=(request.POST.get("tipo") or "Actividad")[:50],
         descripcion=(request.POST.get("descripcion") or "").strip(),
         fecha=fecha or timezone.localdate(),

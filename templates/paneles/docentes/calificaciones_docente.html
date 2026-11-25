@@ -1318,15 +1318,15 @@
         <div>
 
             <div class="calx-assignment-label">
-                Seleccionar materia y curso
+                Seleccionar curso
             </div>
 
             <div class="calx-assignment-current">
 
-                {% if asignacion_actual %}
-                    {{ asignacion_actual.clase.titulo|default:"Sin materia" }} — {{ asignacion_actual.curso.nombre }}
+                {% if curso_actual %}
+                    {{ curso_actual.nombre }}
                 {% else %}
-                    Selecciona una materia y un curso
+                    Selecciona un curso
                 {% endif %}
 
             </div>
@@ -1339,7 +1339,7 @@
     <form method="GET">
 
         <select
-            name="asignacion"
+            name="curso"
             class="calx-select"
             onchange="this.form.submit()"
         >
@@ -1348,15 +1348,15 @@
                 Seleccionar curso
             </option>
 
-            {% for asignacion in asignaciones %}
+            {% for curso in cursos %}
 
                 <option
-                    value="{{ asignacion.id }}"
-                    {% if asignacion_actual and asignacion.id == asignacion_actual.id %}
+                    value="{{ curso.id }}"
+                    {% if curso_actual and curso.id == curso_actual.id %}
                         selected
                     {% endif %}
                 >
-                    {{ asignacion.clase.titulo|default:"Sin materia" }} — {{ asignacion.curso.nombre }}
+                    {{ curso.nombre }}
                 </option>
 
             {% empty %}
@@ -1374,7 +1374,7 @@
 </div>
 
 
-{% if asignacion_actual %}
+{% if curso_actual %}
 
     <!-- AQUÍ CONTINÚA TODO TU CONTENIDO ACTUAL -->
     <!-- estadísticas -->
@@ -1396,10 +1396,6 @@
 
             <div>
                 <h2>{{ curso_actual.nombre }}</h2>
-                <p>
-                    Materia:
-                    <strong>{{ clase_actual.titulo|default:"Sin materia" }}</strong>
-                </p>
             </div>
 
         </div>
@@ -2692,7 +2688,7 @@ function crearColumnaVisual(){
     const nombre = document.getElementById("nueva-columna-nombre").value.trim();
     if(!nombre){ mostrarToast("Escribe un nombre para la columna."); return; }
     const data = new FormData();
-    data.append("asignacion_id", "{{ asignacion_actual.id|default:'' }}");
+    data.append("curso_id", "{{ curso_actual.id|default:'' }}");
     data.append("nombre", nombre);
     data.append("tipo", tipoColumnaSeleccionado);
     data.append("fecha", document.getElementById("nueva-columna-fecha").value);
