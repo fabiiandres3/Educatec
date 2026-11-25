@@ -5,6 +5,8 @@ from apps.user import views
 
 urlpatterns = [
 
+    path("notificaciones/", views.notificaciones, name="notificaciones"),
+
     path("csrf/refresh/", views.refresh_csrf_token, name="refresh_csrf_token"),
 
     # =========================================================

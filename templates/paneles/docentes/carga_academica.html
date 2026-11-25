@@ -1,0 +1,58 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Carga académica docente{% endblock %}
+
+{% block content %}
+<main class="container-fluid py-4 px-3 px-lg-4">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+        <div>
+            <p class="text-primary text-uppercase fw-bold small mb-2">Administración académica</p>
+            <h1 class="h3 fw-bold mb-1">Carga académica docente</h1>
+            <p class="text-secondary mb-0">Cursos y materias asignados a cada docente.</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{% url 'listar_docentes' %}">
+            <i class="fa-solid fa-chalkboard-user me-2" aria-hidden="true"></i>Gestionar docentes
+        </a>
+    </div>
+
+    <section class="card border-0 shadow-sm" aria-label="Asignaciones docentes">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Docente</th>
+                        <th scope="col">Asignaciones</th>
+                        <th scope="col">Cursos y materias</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in filas %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">{{ fila.docente.usuario.get_full_name|default:fila.docente.usuario.username }}</div>
+                            <div class="small text-secondary">{{ fila.docente.usuario.email }}</div>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill text-bg-primary">{{ fila.total }} / {{ fila.max }}</span>
+                        </td>
+                        <td>
+                            {% for asignacion in fila.asignaciones %}
+                                <span class="badge text-bg-light border text-dark me-1 mb-1">
+                                    {{ asignacion.curso|default:"Sin curso" }}{% if asignacion.clase %} · {{ asignacion.clase }}{% endif %}
+                                </span>
+                            {% empty %}
+                                <span class="text-secondary">Sin asignaciones</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="py-5 text-center text-secondary" colspan="3">No hay docentes registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+{% endblock %}

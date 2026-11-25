@@ -8,13 +8,14 @@ from apps.clases.models import Clases
 from apps.cursos.models import Cursos
 from apps.docentes.models import AsignacionDocente, Docente
 from apps.tareas.models import Calificacion, Pregunta, RespuestaAlumno, Tareas
-from apps.user.models import Usuario
+from apps.user.models import Roles, Usuario
 
 from .services import obtener_libro_calificaciones
 
 
 class CalificacionesPorAsignacionTests(TestCase):
     def setUp(self):
+        self.rol_docente = Roles.objects.create(nombre="docente")
         self.curso = Cursos.objects.create(nombre="Curso compartido")
         self.matematicas = Clases.objects.create(titulo="Matemáticas")
         self.matematicas.cursos.add(self.curso)
@@ -28,6 +29,10 @@ class CalificacionesPorAsignacionTests(TestCase):
             usuario=Usuario.objects.create_user(username="ciencias", email="ciencias@example.com"),
             direccion="Dirección",
         )
+        self.docente_matematicas.usuario.rol = self.rol_docente
+        self.docente_matematicas.usuario.save(update_fields=["rol"])
+        self.docente_ciencias.usuario.rol = self.rol_docente
+        self.docente_ciencias.usuario.save(update_fields=["rol"])
         self.asignacion_matematicas = AsignacionDocente.objects.create(
             docente=self.docente_matematicas, curso=self.curso, clase=self.matematicas,
         )
@@ -72,6 +77,16 @@ class CalificacionesPorAsignacionTests(TestCase):
 
         self.assertEqual([tarea.id for tarea in tareas_mate], [tarea_mate.id])
         self.assertEqual([tarea.id for tarea in tareas_ciencias], [tarea_ciencias.id])
+
+    def test_alumno_no_puede_abrir_el_libro_del_docente(self):
+        rol_alumno, _ = Roles.objects.get_or_create(nombre="alumno")
+        self.alumno_usuario.rol = rol_alumno
+        self.alumno_usuario.save(update_fields=["rol"])
+        self.client.force_login(self.alumno_usuario)
+
+        response = self.client.get(reverse("calificaciones_docente"))
+
+        self.assertEqual(response.status_code, 302)
 
     def test_muestra_notas_de_tareas_heredadas_o_deshabilitadas(self):
         tarea_heredada = Tareas.objects.create(

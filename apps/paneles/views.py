@@ -150,6 +150,7 @@ def dashboard_docente(request):
 #                    EVENTOS DOCENTE
 # ============================================================
 
+@rol_requerido("docente")
 def eventos_docente(request):
 
     eventos = Evento.objects.filter(
@@ -174,6 +175,7 @@ def eventos_docente(request):
 # ============================================================
 
 
+@rol_requerido("docente")
 def cursos_docente(request):
 
     docente = Docente.objects.select_related(
@@ -222,6 +224,7 @@ def cursos_docente(request):
 #                    CALIFICACIONES DOCENTE
 # ============================================================
 
+@rol_requerido("docente")
 def calificaciones_docente(request):
 
     docente = Docente.objects.select_related(
@@ -962,6 +965,7 @@ def eliminar_asistencia(request):
 #                    CONFIGURACIÓN DOCENTE
 # ============================================================
 
+@rol_requerido("docente")
 def configuracion_docente(request):
     return _configuracion_cuenta(request)
 
@@ -1049,6 +1053,7 @@ def configuracion_docente(request):
 #                    CARGA ACADÉMICA
 # ============================================================
 
+@rol_requerido("administrador")
 def carga_academica(request):
 
     docentes = Docente.objects.select_related(
@@ -1088,6 +1093,7 @@ def carga_academica(request):
 #                    HORARIOS DOCENTE
 # ============================================================
 
+@rol_requerido("docente")
 def horarios_docente(request):
 
     # DOCENTE ACTUAL
@@ -1196,6 +1202,7 @@ def horarios_docente(request):
     )
 
 
+@rol_requerido("docente")
 def detalle_horario_docente(request, periodo_id, curso_id):
 
     # DOCENTE ACTUAL
@@ -1394,6 +1401,7 @@ def dashboard_alumnos(request):
 #                    MATERIAS ALUMNOS
 # ============================================================
 
+@rol_requerido("alumno")
 def materias_alumnos(request):
 
     return render(
@@ -1408,7 +1416,7 @@ def materias_alumnos(request):
 #                    CALIFICACIONES ALUMNOS
 # ============================================================
 
-@login_required
+@rol_requerido("alumno")
 def calificaciones_alumnos(request):
 
     # --------------------------------------------------------
@@ -1640,6 +1648,7 @@ def asistencia_alumnos(request):
 #                    LOGROS ALUMNOS
 # ============================================================
 
+@rol_requerido("alumno")
 def logros_alumnos(request):
 
     return render(
@@ -1652,6 +1661,7 @@ def logros_alumnos(request):
 #                    CONFIGURACIÓN ALUMNOS
 # ============================================================
 
+@rol_requerido("alumno")
 def configuracion_alumnos(request):
     return _configuracion_cuenta(request)
 
@@ -1779,7 +1789,7 @@ def configuracion_cuenta(request):
 #                    HORARIOS ALUMNOS
 # ============================================================
 
-@login_required
+@rol_requerido("alumno")
 def horarios_alumnos(request):
 
     alumno = get_object_or_404(

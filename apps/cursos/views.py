@@ -12,12 +12,14 @@ from .models import Cursos
 
 
 from apps.clases.models import Clases
+from apps.user.decorators import rol_requerido
 
 # ==========================================
 # LISTAR CURSOS + ALUMNOS
 # URL: /listar_cursos/
 # ==========================================
 
+@rol_requerido("administrador")
 def listar_cursos(request):
 
     cursos = Cursos.objects.annotate(
@@ -46,6 +48,7 @@ def listar_cursos(request):
 # URL: /listar_alumnos/
 # ==========================================
 
+@rol_requerido("administrador")
 def listar_alumnos(request):
 
     cursos_filtro = Cursos.objects.order_by("nombre")
@@ -70,6 +73,7 @@ def listar_alumnos(request):
 # CREAR CURSO
 # ==========================================
 
+@rol_requerido("administrador")
 def Crear_curso(request):
 
     if request.method == "POST":
@@ -101,6 +105,7 @@ def Crear_curso(request):
 # EDITAR CURSO
 # ==========================================
 
+@rol_requerido("administrador")
 def Editar_curso(request, curso_id):
 
     curso = get_object_or_404(Cursos, id=curso_id)
@@ -143,6 +148,7 @@ def Editar_curso(request, curso_id):
 # ELIMINAR CURSO
 # ==========================================
 
+@rol_requerido("administrador")
 def Eliminar_curso(request, curso_id):
 
     if request.method != "POST":
@@ -169,6 +175,7 @@ def Eliminar_curso(request, curso_id):
 # ==========================================
 
 
+@rol_requerido("administrador")
 def filtrar_alumnos(request):
 
     curso_id = request.GET.get("curso_id")
@@ -195,6 +202,7 @@ def filtrar_alumnos(request):
     )
 
 
+@rol_requerido("administrador")
 def asignar_alumno_curso(request, alumno_id, curso_id):
     alumno = get_object_or_404(
         Alumnos.objects.select_related("usuario__rol", "curso"),
@@ -225,6 +233,7 @@ def asignar_alumno_curso(request, alumno_id, curso_id):
     return redirect("listar_cursos")
 
 
+@rol_requerido("administrador")
 def cargar_alumnos_excel(request):
 
     if request.method != 'POST':

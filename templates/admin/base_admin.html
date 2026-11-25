@@ -439,6 +439,9 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
         <a href="{% url 'dashboard_administrador' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'dashboard_administrador' %}active{% endif %}">
             <i class="fas fa-gauge-high"></i> Dashboard
         </a>
+        <a href="{% url 'notificaciones' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'notificaciones' %}active{% endif %}">
+            <i class="fas fa-bell"></i> Notificaciones {% if notificaciones_sin_leer %}<span class="badge bg-danger ms-1">{{ notificaciones_sin_leer }}</span>{% endif %}
+        </a>
 
         <div class="nav-section mt-3">Gestión</div>
         <a href="{% url 'listar_usuarios' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_usuarios' %}active{% endif %}">
@@ -452,6 +455,9 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
         </a>
         <a href="{% url 'listar_docentes' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'listar_docentes' %}active{% endif %}">
             <i class="fas fa-chalkboard-user"></i> Docentes
+        </a>
+        <a href="{% url 'carga_academica' %}" class="nav-link-admin {% if request.resolver_match.url_name == 'carga_academica' %}active{% endif %}">
+            <i class="fas fa-chart-pie"></i> Carga académica
         </a>
         <div class="nav-section mt-3">Procesos</div>
 

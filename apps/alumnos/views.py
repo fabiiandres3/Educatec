@@ -83,6 +83,7 @@ def eliminar_relacion_acudiente(request, relacion_id):
 # Create your views here.
 
 
+@decorators.rol_requerido("administrador")
 def Listar_alumnos(request):
     alumnos = Alumnos.objects.filter(usuario__rol__nombre__iexact="alumno").select_related(
         "usuario__rol",
@@ -102,6 +103,7 @@ def Listar_alumnos(request):
     })
 
 
+@decorators.rol_requerido("administrador")
 def Editar_alumno(request, alumno_id):
 
     alumno = get_object_or_404(
@@ -209,6 +211,7 @@ def Editar_alumno(request, alumno_id):
     )
 
 
+@decorators.rol_requerido("administrador")
 def Eliminar_alumno(request, alumno_id):
     alumno = get_object_or_404(
         Alumnos,
@@ -232,6 +235,7 @@ def Eliminar_alumno(request, alumno_id):
 
 
 
+@decorators.rol_requerido("alumno")
 def listar_tareas_alumno(request):
 
     # =====================================================
@@ -376,6 +380,7 @@ def listar_tareas_alumno(request):
     )
 
 
+@decorators.rol_requerido("alumno")
 def responder_tarea(request, tarea_id):
 
     tarea = get_object_or_404(
@@ -406,6 +411,10 @@ def responder_tarea(request, tarea_id):
         Alumnos,
         usuario=request.user
     )
+
+    if not tarea.curso_id or tarea.curso_id != alumno.curso_id:
+        messages.error(request, "Esta tarea no pertenece a tu curso.")
+        return redirect("listar_tareas_alumno")
 
     preguntas = tarea.preguntas.prefetch_related(
         "opciones"

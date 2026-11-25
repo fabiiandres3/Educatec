@@ -128,6 +128,10 @@ body.sidebar-collapsed .nav-toggle-button { left: 94px !important; }
                 Inicio
             </li>
 
+            <li class="{% if request.resolver_match.url_name == 'notificaciones' %}active{% endif %}" onclick="window.location='{% url 'notificaciones' %}'">
+                <i class="fa-solid fa-bell"></i> Notificaciones{% if notificaciones_sin_leer %} <span class="badge bg-danger">{{ notificaciones_sin_leer }}</span>{% endif %}
+            </li>
+
 
             <!-- MIS GRADOS -->
             <li

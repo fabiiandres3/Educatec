@@ -85,3 +85,24 @@ class Usuario(AbstractUser):
 
     def __str__(self):
         return self.documento or self.username
+
+
+class Notificacion(models.Model):
+    usuario = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        related_name="notificaciones",
+    )
+    titulo = models.CharField(max_length=180)
+    mensaje = models.TextField()
+    url = models.CharField(max_length=500, blank=True)
+    tipo = models.CharField(max_length=30, default="general")
+    leida = models.BooleanField(default=False)
+    creada_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-creada_en"]
+        indexes = [models.Index(fields=["usuario", "leida"], name="user_notif_read_idx")]
+
+    def __str__(self):
+        return f"{self.titulo} - {self.usuario}"

@@ -176,7 +176,11 @@ def ver_boletin_administrador(request, alumno_id, periodo_id):
 @rol_requerido("administrador", "alumno", "acudiente")
 def descargar_boletin_pdf(request, alumno_id, periodo_id):
     alumno = get_object_or_404(Alumnos.objects.select_related("usuario", "curso"), pk=alumno_id)
-    rol = request.user.rol.nombre.lower().strip()
+    rol = (
+        "administrador"
+        if request.user.is_superuser
+        else request.user.rol.nombre.lower().strip()
+    )
     es_alumno = rol == "alumno"
     es_acudiente = rol == "acudiente"
     if es_alumno and alumno.usuario_id != request.user.id:

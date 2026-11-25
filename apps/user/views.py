@@ -22,7 +22,7 @@ from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 
-from apps.user.models import Usuario, Roles
+from apps.user.models import Usuario, Roles, Notificacion
 
 from apps.user.forms import RegistrarForm, LoginForm, EditarUsuarioForm
 
@@ -41,6 +41,33 @@ def refresh_csrf_token(request):
     response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response["Pragma"] = "no-cache"
     return response
+
+
+@login_required
+def notificaciones(request):
+    avisos = Notificacion.objects.filter(usuario=request.user)
+    if request.method == "POST":
+        if request.POST.get("accion") == "todas":
+            avisos.filter(leida=False).update(leida=True)
+        else:
+            notification_id = request.POST.get("notificacion_id", "")
+            if notification_id.isdigit():
+                avisos.filter(pk=int(notification_id), leida=False).update(leida=True)
+        return redirect("notificaciones")
+
+    rol = "administrador" if request.user.is_superuser else (
+        request.user.rol.nombre.lower().strip() if request.user.rol else ""
+    )
+    bases = {
+        "administrador": "admin/base_admin.html",
+        "docente": "paneles/docentes/base.html",
+        "alumno": "paneles/alumnos/base.html",
+        "acudiente": "paneles/acudientes/base.html",
+    }
+    return render(request, "notificaciones/lista.html", {
+        "notificaciones": avisos[:100],
+        "base_template": bases.get(rol, "paneles/alumnos/base.html"),
+    })
 
 
 # =========================================================

@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
 from apps.user.models import Usuario, Roles
+from apps.user.decorators import rol_requerido
 
 from apps.docentes.models import (
     Docente,
@@ -45,6 +46,7 @@ from decimal import Decimal, InvalidOperation
 # ADMINISTRADOR
 # ============================================================
 
+@rol_requerido("administrador")
 def Listar_docentes(request):
 
     docentes = list(Usuario.objects.filter(
@@ -81,6 +83,7 @@ def Listar_docentes(request):
     )
 
 
+@rol_requerido("administrador")
 def Editar_docente(request, docente_id):
     docente = get_object_or_404(
         Docente,
@@ -199,6 +202,7 @@ def Editar_docente(request, docente_id):
 # GUARDAR DATOS DEL DOCENTE VÍA AJAX (SIN RECARGAR)
 # ============================================================
 
+@rol_requerido("administrador")
 @require_POST
 def guardar_docente_ajax(request, docente_id):
 
@@ -268,6 +272,7 @@ def guardar_docente_ajax(request, docente_id):
 # ASIGNAR CURSO/MATERIA VÍA AJAX (SIN RECARGAR)
 # ============================================================
 
+@rol_requerido("administrador")
 @require_POST
 def asignar_curso_materia_ajax(request, docente_id):
 
@@ -474,6 +479,7 @@ def asignar_curso_materia_ajax(request, docente_id):
 # ELIMINAR ASIGNACIÓN VÍA AJAX (SIN RECARGAR)
 # ============================================================
 
+@rol_requerido("administrador")
 @require_POST
 def eliminar_asignacion_ajax(request, asignacion_id):
 
@@ -521,6 +527,7 @@ def eliminar_asignacion_ajax(request, asignacion_id):
 
 
 
+@rol_requerido("administrador")
 def Eliminar_asignacion_docente(
     request,
     asignacion_id
@@ -548,6 +555,7 @@ def Eliminar_asignacion_docente(
     )
 
 
+@rol_requerido("administrador")
 def Eliminar_docente(
     request,
     docente_id
@@ -581,6 +589,7 @@ def Eliminar_docente(
 # CREAR TAREA
 # ============================================================
 
+@rol_requerido("docente")
 def crear_tareas_docente(request):
 
     docente = get_object_or_404(
@@ -732,6 +741,13 @@ def crear_tareas_docente(request):
                     "La tarea fue creada correctamente."
                 )
 
+                from apps.tareas.views import notificar_alumnos_nueva_tarea
+                enviados, aviso_correo = notificar_alumnos_nueva_tarea(request, tarea)
+                if enviados:
+                    messages.info(request, f"Se enviÃ³ el aviso por correo a {enviados} alumno(s).")
+                if aviso_correo:
+                    messages.warning(request, aviso_correo)
+
                 return redirect(
                     "listar_tareas_docentes"
                 )
@@ -756,6 +772,7 @@ def crear_tareas_docente(request):
 # EDITAR TAREA
 # ============================================================
 
+@rol_requerido("docente")
 def editar_tarea_docente(
     request,
     tarea_id
@@ -1202,6 +1219,7 @@ def editar_tarea_docente(
 # ELIMINAR TAREA
 # ============================================================
 
+@rol_requerido("docente")
 def eliminar_tarea_docente(
     request,
     tarea_id
@@ -1260,6 +1278,7 @@ def eliminar_tarea_docente(
 # LISTAR TAREAS DEL DOCENTE
 # ============================================================
 
+@rol_requerido("docente")
 def listar_tareas(request):
 
     docente = get_object_or_404(
@@ -1433,6 +1452,8 @@ def listar_tareas(request):
 # HABILITAR / DESHABILITAR TAREA
 # ============================================================
 
+@rol_requerido("docente")
+@require_POST
 def habilitar_deshabilitar_tarea(
     request,
     tarea_id
@@ -1488,6 +1509,7 @@ def habilitar_deshabilitar_tarea(
 # RESPUESTAS DE ALUMNOS
 # ============================================================
 
+@rol_requerido("docente")
 def respuesta_alumnos(
     request,
     tarea_id
@@ -1576,6 +1598,8 @@ def respuesta_alumnos(
 # HABILITAR / DESHABILITAR TAREA PARA ALUMNO
 # ============================================================
 
+@rol_requerido("docente")
+@require_POST
 def habilitar_deshabilitar_tarea_alumno(
     request,
     tarea_id,
@@ -1594,9 +1618,17 @@ def habilitar_deshabilitar_tarea_alumno(
     )
 
     alumno = get_object_or_404(
-        Usuario,
-        id=alumno_id
+        Usuario.objects.filter(rol__nombre__iexact="alumno"),
+        id=alumno_id,
     )
+
+    if tarea.curso_id:
+        get_object_or_404(Alumnos, usuario=alumno, curso_id=tarea.curso_id)
+    elif not RespuestaAlumno.objects.filter(
+        alumno=alumno,
+        pregunta__tarea=tarea,
+    ).exists():
+        get_object_or_404(RespuestaAlumno, alumno=alumno, pregunta__tarea=tarea)
 
     tarea_alumno, creado = (
         TareaAlumno.objects.get_or_create(
@@ -1612,6 +1644,9 @@ def habilitar_deshabilitar_tarea_alumno(
     tarea_alumno.save()
 
     if tarea_alumno.activa:
+        if not creado:
+            from apps.tareas.views import notificar_alumno_tarea
+            notificar_alumno_tarea(request, tarea, alumno)
 
         messages.success(
             request,
@@ -1635,6 +1670,8 @@ def habilitar_deshabilitar_tarea_alumno(
 # REPETIR TAREA PARA ALUMNO
 # ============================================================
 
+@rol_requerido("docente")
+@require_POST
 def repetir_tarea_alumno(
     request,
     tarea_id,
@@ -1653,33 +1690,42 @@ def repetir_tarea_alumno(
     )
 
     alumno = get_object_or_404(
-        Usuario,
-        id=alumno_id
+        Usuario.objects.filter(rol__nombre__iexact="alumno"),
+        id=alumno_id,
+    )
+
+    if tarea.curso_id:
+        get_object_or_404(Alumnos, usuario=alumno, curso_id=tarea.curso_id)
+
+    # Do not reset arbitrary accounts or claim success when no answer exists.
+    get_object_or_404(
+        RespuestaAlumno,
+        alumno=alumno,
+        pregunta__tarea=tarea,
     )
 
     # =========================================================
     # ELIMINAR RESPUESTAS DEL ALUMNO
     # =========================================================
 
-    RespuestaAlumno.objects.filter(
-        alumno=alumno,
-        pregunta__tarea=tarea
-    ).delete()
+    with transaction.atomic():
+        RespuestaAlumno.objects.filter(
+            alumno=alumno,
+            pregunta__tarea=tarea
+        ).delete()
 
     # =========================================================
     # REACTIVAR TAREA
     # =========================================================
 
-    tarea_alumno, created = (
-        TareaAlumno.objects.get_or_create(
+        tarea_alumno, created = TareaAlumno.objects.get_or_create(
             tarea=tarea,
             alumno=alumno
         )
-    )
 
-    tarea_alumno.activa = True
+        tarea_alumno.activa = True
 
-    tarea_alumno.save()
+        tarea_alumno.save(update_fields=["activa"])
 
     messages.success(
         request,
@@ -1691,6 +1737,7 @@ def repetir_tarea_alumno(
         tarea_id=tarea.id
     )
 
+@rol_requerido("docente")
 def ver_respuestas(request, tarea_id, alumno_id):
 
     docente = get_object_or_404(
@@ -2152,8 +2199,6 @@ def ver_respuestas(request, tarea_id, alumno_id):
     )
 
 
+@rol_requerido("administrador")
 def calendario(request):
-    return render(
-            request,
-            "admin/horario/calendario.html"
-        )
+    return redirect("listar_horarios")

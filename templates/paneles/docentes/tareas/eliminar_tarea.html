@@ -1,0 +1,37 @@
+{% extends 'paneles/docentes/base.html' %}
+
+{% block title %}Eliminar tarea{% endblock %}
+
+{% block content %}
+<main class="container py-4" style="max-width: 760px;">
+    <a class="text-decoration-none" href="{% url 'listar_tareas_docentes' %}">
+        <i class="fa-solid fa-arrow-left me-2" aria-hidden="true"></i>Volver a mis tareas
+    </a>
+
+    <section class="card border-0 shadow-sm mt-4" aria-labelledby="delete-task-title">
+        <div class="card-body p-4 p-md-5">
+            <span class="badge text-bg-danger mb-3">Confirmación requerida</span>
+            <h1 id="delete-task-title" class="h3">Eliminar esta tarea</h1>
+            <p class="text-secondary mt-3">
+                Vas a eliminar <strong>{{ tarea.titulo }}</strong> y sus respuestas asociadas.
+                Esta acción no se puede deshacer.
+            </p>
+            <dl class="row small mb-4">
+                <dt class="col-sm-4">Curso</dt>
+                <dd class="col-sm-8">{{ tarea.curso|default:"Sin curso" }}</dd>
+                <dt class="col-sm-4">Materia</dt>
+                <dd class="col-sm-8">{{ tarea.clase|default:"Sin materia" }}</dd>
+            </dl>
+            <form method="post" action="{% url 'eliminar_tarea_docente' tarea.id %}">
+                {% csrf_token %}
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-danger" type="submit">
+                        <i class="fa-solid fa-trash me-2" aria-hidden="true"></i>Eliminar tarea
+                    </button>
+                    <a class="btn btn-outline-secondary" href="{% url 'listar_tareas_docentes' %}">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

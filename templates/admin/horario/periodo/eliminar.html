@@ -1,0 +1,32 @@
+{% extends "admin/dashboard.html" %}
+
+{% block title %}Eliminar período{% endblock %}
+
+{% block content %}
+<main class="container py-4" style="max-width: 760px;">
+    <a class="text-decoration-none" href="{% url 'listar_periodos' %}">
+        <i class="fa-solid fa-arrow-left me-2" aria-hidden="true"></i>Volver a períodos
+    </a>
+
+    <section class="card border-0 shadow-sm mt-4" aria-labelledby="delete-period-title">
+        <div class="card-body p-4 p-md-5">
+            <span class="badge text-bg-danger mb-3">Confirmación requerida</span>
+            <h1 id="delete-period-title" class="h3">Eliminar período académico</h1>
+            <p class="text-secondary mt-3">
+                Al eliminar <strong>{{ periodo }}</strong> también se borrarán sus horarios
+                y el contenido pedagógico asociado a sus boletines. Revisa esos datos antes
+                de continuar.
+            </p>
+            <form method="post" action="{% url 'eliminar_periodo' periodo.pk %}">
+                {% csrf_token %}
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-danger" type="submit">
+                        <i class="fa-solid fa-trash me-2" aria-hidden="true"></i>Eliminar período
+                    </button>
+                    <a class="btn btn-outline-secondary" href="{% url 'listar_periodos' %}">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

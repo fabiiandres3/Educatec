@@ -1,7 +1,6 @@
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 
@@ -11,6 +10,7 @@ from apps.tareas.models import (
     Tareas, Calificacion, ActividadCalificacion, CalificacionActividad,
 )
 from apps.horario.models import Periodo
+from apps.user.decorators import rol_requerido
 from django.utils.dateparse import parse_date
 from django.utils import timezone
 
@@ -25,7 +25,7 @@ from .services import (
 # CALIFICACIONES DEL DOCENTE
 # ============================================================
 
-@login_required
+@rol_requerido("docente")
 def calificaciones_docente(request):
 
     docente = get_object_or_404(
@@ -142,7 +142,7 @@ def calificaciones_docente(request):
 # EDITAR CALIFICACIÓN (CORREGIDA PARA SOPORTAR FETCH / AJAX)
 # ============================================================
 
-@login_required
+@rol_requerido("docente")
 def editar_calificacion(request, calificacion_id):
 
     # Detectar si la petición viene de un fetch/AJAX de JavaScript
@@ -248,7 +248,7 @@ def editar_calificacion(request, calificacion_id):
 # GUARDAR CALIFICACIÓN
 # ============================================================
 
-@login_required
+@rol_requerido("docente")
 def guardar_calificacion(request):
 
     if request.method != "POST":
@@ -388,7 +388,7 @@ def guardar_calificacion(request):
 # CALIFICACIONES DEL ALUMNO
 # ============================================================
 
-@login_required
+@rol_requerido("alumno")
 def calificaciones_alumnos(request):
 
 
@@ -464,7 +464,7 @@ def calificaciones_alumnos(request):
     )
 
 
-@login_required
+@rol_requerido("docente")
 def crear_actividad_calificacion(request):
     if request.method != "POST":
         return JsonResponse({"ok": False, "mensaje": "Método no permitido."}, status=405)
@@ -488,7 +488,7 @@ def crear_actividad_calificacion(request):
     return JsonResponse({"ok": True, "actividad_id": actividad.id})
 
 
-@login_required
+@rol_requerido("docente")
 def guardar_calificacion_actividad(request):
     if request.method != "POST":
         return JsonResponse({"ok": False, "mensaje": "Método no permitido."}, status=405)

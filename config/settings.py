@@ -53,6 +53,14 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = bool(RENDER_EXTERNAL_HOSTNAME) and not DEBUG
 SESSION_COOKIE_SECURE = bool(RENDER_EXTERNAL_HOSTNAME) and not DEBUG
 CSRF_COOKIE_SECURE = bool(RENDER_EXTERNAL_HOSTNAME) and not DEBUG
+# Enable HSTS only on Render's HTTPS hostname; keep it scoped to this host.
+SECURE_HSTS_SECONDS = (
+    int(os.environ.get("SECURE_HSTS_SECONDS", "31536000"))
+    if RENDER_EXTERNAL_HOSTNAME and not DEBUG
+    else 0
+)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 
 
 # =========================================================
@@ -233,8 +241,10 @@ if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
 MIDDLEWARE = [
 
     'django.middleware.security.SecurityMiddleware',
-
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    *(
+        ['whitenoise.middleware.WhiteNoiseMiddleware']
+        if not DEBUG else []
+    ),
 
     'django.contrib.sessions.middleware.SessionMiddleware',
 
@@ -292,6 +302,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
 
                 'django.contrib.messages.context_processors.messages',
+                'apps.user.context_processors.notificaciones_no_leidas',
 
             ],
 
@@ -447,7 +458,11 @@ STORAGES = {
     },
     "event_images": build_event_image_storage_config(os.environ),
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if not DEBUG
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
     },
 }
 

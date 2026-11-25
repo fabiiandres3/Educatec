@@ -6,6 +6,8 @@ from django.core.files.storage import Storage, storages
 
 logger = logging.getLogger(__name__)
 EVENT_IMAGE_BUCKET = "educatec-media"
+REMOTE_MEDIA_PREFIXES = ("eventos/", "durable/")
+NEW_UPLOAD_PREFIXES = ("cursos/", "imagenes/", "archivos/")
 
 SUPABASE_CONNECTION_VARIABLES = (
     "SUPABASE_S3_ENDPOINT_URL",
@@ -19,9 +21,9 @@ def build_event_image_storage_config(env):
     """Use local storage only for development; events are durable in production."""
     configured = any(env.get(name) for name in SUPABASE_CONNECTION_VARIABLES)
     if not configured:
-        is_production = bool(env.get("RENDER_EXTERNAL_HOSTNAME")) or env.get(
-            "DEBUG", "true"
-        ).lower() in {"0", "false", "no"}
+        debug_value = str(env.get("DEBUG", "true")).strip().lower()
+        debug_enabled = debug_value in {"1", "true", "yes"}
+        is_production = bool(env.get("RENDER_EXTERNAL_HOSTNAME")) or not debug_enabled
         if is_production:
             raise ImproperlyConfigured(
                 "Event images require Supabase Storage in production. Configure "
@@ -76,19 +78,26 @@ def build_event_image_storage_config(env):
 
 
 class EventoImageStorageRouter(Storage):
-    """Use Supabase only for Evento's eventos/ upload path."""
+    """Route persistent user uploads to Supabase and other media to local storage."""
 
     def _storage_for(self, name):
         normalized = str(name).replace("\\", "/").lstrip("/")
-        alias = "event_images" if normalized.startswith("eventos/") else "local_media"
+        alias = (
+            "event_images"
+            if normalized.startswith(REMOTE_MEDIA_PREFIXES)
+            else "local_media"
+        )
         return storages[alias]
 
     def _open(self, name, mode="rb"):
         return self._storage_for(name).open(name, mode)
 
     def _save(self, name, content):
+        normalized = str(name).replace("\\", "/").lstrip("/")
+        if normalized.startswith(NEW_UPLOAD_PREFIXES):
+            normalized = f"durable/{normalized}"
         try:
-            return self._storage_for(name).save(name, content)
+            return self._storage_for(normalized).save(normalized, content)
         except Exception:
             logger.exception("Failed to upload media object to configured storage: %s", name)
             raise
@@ -101,7 +110,11 @@ class EventoImageStorageRouter(Storage):
 
     def listdir(self, path):
         normalized = str(path).replace("\\", "/").lstrip("/")
-        alias = "event_images" if normalized == "eventos" or normalized.startswith("eventos/") else "local_media"
+        es_media_persistente = any(
+            normalized == prefijo.rstrip("/") or normalized.startswith(prefijo)
+            for prefijo in REMOTE_MEDIA_PREFIXES
+        )
+        alias = "event_images" if es_media_persistente else "local_media"
         return storages[alias].listdir(path)
 
     def size(self, name):

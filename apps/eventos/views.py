@@ -5,6 +5,8 @@ from django.shortcuts import redirect, render, get_object_or_404
 from .forms import EventoForm
 from .models import Evento
 from django.http import JsonResponse
+from apps.user.decorators import rol_requerido
+from .notifications import notificar_evento
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,7 @@ def _image_save_error(evento_id):
 # LISTAR EVENTOS - ADMIN
 # ============================================================
 
+@rol_requerido("administrador")
 def listar_eventos(request):
 
     eventos = (
@@ -69,6 +72,7 @@ def listar_eventos(request):
 # CREAR EVENTO
 # ============================================================
 
+@rol_requerido("administrador")
 def crear_evento(request):
 
     # =========================================================
@@ -104,13 +108,21 @@ def crear_evento(request):
             except Exception:
                 return _image_save_error(None)
 
+            avisos_creados, correos_enviados = notificar_evento(request, evento)
+            detalle = (
+                f" Avisos en la bandeja: {avisos_creados}; correos enviados: {correos_enviados}."
+                if evento.publicado else ""
+            )
+
             return JsonResponse({
                 "success": True,
                 "type": "success",
                 "message": (
                     f"El evento '{evento.titulo}' "
-                    "se creó correctamente."
-                )
+                    f"se creó correctamente.{detalle}"
+                ),
+                "avisos_creados": avisos_creados,
+                "correos_enviados": correos_enviados,
             })
 
         # =====================================================
@@ -148,6 +160,7 @@ def crear_evento(request):
 # EDITAR EVENTO
 # ============================================================
 
+@rol_requerido("administrador")
 def editar_evento(
     request,
     evento_id
@@ -192,6 +205,7 @@ def editar_evento(
 
         if form.is_valid():
             imagen_anterior = evento.imagen if evento.imagen else None
+            estaba_publicado = evento.publicado
             try:
                 evento = form.save(commit=False)
                 if form.cleaned_data.get("eliminar_imagen") and not request.FILES.get("imagen"):
@@ -207,6 +221,9 @@ def editar_evento(
                 and imagen_anterior.name != (evento.imagen.name if evento.imagen else "")
             ):
                 _schedule_image_delete(imagen_anterior, evento.pk)
+
+            if not estaba_publicado and evento.publicado:
+                notificar_evento(request, evento)
 
             return JsonResponse({
                 "success": True,
@@ -252,6 +269,7 @@ def editar_evento(
 # ELIMINAR EVENTO
 # ============================================================
 
+@rol_requerido("administrador")
 def eliminar_evento(
     request,
     evento_id
@@ -292,10 +310,31 @@ def detalle_evento(
     id
 ):
 
-    evento = get_object_or_404(
-        Evento,
-        id=id
-    )
+    if request.user.is_authenticated and (
+        request.user.is_superuser
+        or (
+            request.user.rol
+            and request.user.rol.nombre.strip().casefold() == "administrador"
+        )
+    ):
+        evento = get_object_or_404(Evento, id=id)
+    else:
+        audiencias = ["todos"]
+        if request.user.is_authenticated and request.user.rol:
+            audiencia_por_rol = {
+                "alumno": "alumnos",
+                "docente": "docentes",
+                "acudiente": "acudientes",
+            }
+            audiencia = audiencia_por_rol.get(
+                request.user.rol.nombre.strip().casefold()
+            )
+            if audiencia:
+                audiencias.append(audiencia)
+        evento = get_object_or_404(
+            Evento.objects.filter(publicado=True, publico__in=audiencias),
+            id=id,
+        )
 
     return render(
         request,
@@ -310,6 +349,7 @@ def detalle_evento(
 # LISTAR EVENTOS - ALUMNO
 # ============================================================
 
+@rol_requerido("alumno")
 def listar_eventos_alumno(request):
 
     eventos = (
@@ -337,6 +377,7 @@ def listar_eventos_alumno(request):
 # LISTAR EVENTOS - DOCENTE
 # ============================================================
 
+@rol_requerido("docente")
 def listar_eventos_docente(request):
 
     eventos = (

@@ -1,6 +1,5 @@
 from decimal import Decimal, InvalidOperation
 
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.db import transaction
@@ -8,6 +7,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.conf import settings
 from django.core.mail import send_mass_mail
+from apps.user.decorators import rol_requerido
 import logging
 
 from .models import (
@@ -30,6 +30,7 @@ from .services import (
 from apps.eventos.models import Evento
 from apps.docentes.models import Docente
 from apps.alumnos.models import Alumnos
+from apps.user.models import Notificacion
 
 
 logger = logging.getLogger(__name__)
@@ -45,19 +46,27 @@ def notificar_alumnos_nueva_tarea(request, tarea):
         activo=True,
         usuario__is_active=True,
         usuario__rol__nombre__iexact="alumno",
-    ).exclude(
-        usuario__email__isnull=True,
-    ).exclude(
-        usuario__email__exact="",
     ).select_related("usuario")
 
     correos_vistos = set()
     destinatarios = []
+    avisos = []
     for alumno in alumnos:
+        fecha = tarea.fecha_entrega.strftime("%d/%m/%Y") if tarea.fecha_entrega else "Sin fecha límite"
+        avisos.append(Notificacion(
+            usuario=alumno.usuario,
+            titulo="Nueva tarea asignada",
+            mensaje=f"{tarea.titulo} fue asignada a {tarea.curso.nombre}. Fecha de entrega: {fecha}.",
+            url=reverse("listar_tareas_alumno"),
+            tipo="tarea",
+        ))
         correo = (alumno.usuario.email or "").strip().lower()
         if correo and correo not in correos_vistos:
             correos_vistos.add(correo)
             destinatarios.append((alumno.usuario.first_name or alumno.usuario.username, correo))
+
+    if avisos:
+        Notificacion.objects.bulk_create(avisos)
 
     if not destinatarios:
         return 0, f"La tarea se creó, pero no hay alumnos activos con correo en {tarea.curso.nombre}."
@@ -90,10 +99,43 @@ def notificar_alumnos_nueva_tarea(request, tarea):
     return enviados, None
 
 
+def notificar_alumno_tarea(request, tarea, alumno):
+    """Notify one student when a teacher re-enables an individual task."""
+    url = request.build_absolute_uri(reverse("listar_tareas_alumno"))
+    fecha = tarea.fecha_entrega.strftime("%d/%m/%Y") if tarea.fecha_entrega else "Sin fecha límite"
+    Notificacion.objects.create(
+        usuario=alumno,
+        titulo="Tarea habilitada nuevamente",
+        mensaje=f"{tarea.titulo} está disponible. Fecha de entrega: {fecha}.",
+        url=url,
+        tipo="tarea",
+    )
+    if not alumno.email or not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+        return False
+    asunto = f"Tarea disponible en Educatec: {tarea.titulo}"
+    cuerpo = (
+        f"Hola {alumno.first_name or alumno.username},\n\n"
+        f"La tarea {tarea.titulo} está disponible nuevamente.\n"
+        f"Curso: {tarea.curso or 'Tu curso'}\nFecha de entrega: {fecha}\n\n"
+        f"Ingresa a Educatec: {url}"
+    )
+    try:
+        return send_mass_mail(((
+            asunto,
+            cuerpo,
+            settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER,
+            [alumno.email],
+        ),), fail_silently=False) > 0
+    except Exception:
+        logger.exception("No se pudo notificar la tarea %s al alumno %s", tarea.pk, alumno.pk)
+        return False
+
+
 # ============================================================
 # LISTAR TAREAS
 # ============================================================
 
+@rol_requerido("administrador")
 def Listar_tareas(request):
 
     tareas = Tareas.objects.select_related(
@@ -119,6 +161,7 @@ def Listar_tareas(request):
 # CREAR TAREA
 # ============================================================
 
+@rol_requerido("administrador")
 def Crear_tarea(request):
 
     eventos = Evento.objects.filter(
@@ -229,6 +272,7 @@ def Crear_tarea(request):
 # EDITAR TAREA
 # ============================================================
 
+@rol_requerido("administrador")
 def Editar_tarea(request, tarea_id):
 
     tarea = get_object_or_404(
@@ -323,6 +367,7 @@ def Editar_tarea(request, tarea_id):
 # ELIMINAR TAREA
 # ============================================================
 
+@rol_requerido("administrador")
 def Eliminar_tarea(request, tarea_id):
 
     tarea = get_object_or_404(
@@ -341,6 +386,7 @@ def Eliminar_tarea(request, tarea_id):
 # DETALLE DE TAREA
 # ============================================================
 
+@rol_requerido("administrador")
 def Detalle_tarea(request, tarea_id):
 
     tarea = get_object_or_404(
@@ -414,6 +460,7 @@ def Detalle_tarea(request, tarea_id):
 # DOCENTE - VER RESPUESTA DEL ESTUDIANTE
 # ============================================================
 
+@rol_requerido("docente")
 def Ver_respuesta(request, tarea_id, alumno_id):
 
     # ========================================================
@@ -422,7 +469,8 @@ def Ver_respuesta(request, tarea_id, alumno_id):
 
     tarea = get_object_or_404(
         Tareas,
-        id=tarea_id
+        id=tarea_id,
+        docente__usuario=request.user,
     )
 
     # ========================================================
@@ -434,6 +482,11 @@ def Ver_respuesta(request, tarea_id, alumno_id):
     alumno = get_object_or_404(
         Usuario,
         id=alumno_id
+    )
+    get_object_or_404(
+        RespuestaAlumno,
+        alumno=alumno,
+        pregunta__tarea=tarea,
     )
 
     # ========================================================
@@ -565,7 +618,7 @@ def Ver_respuesta(request, tarea_id, alumno_id):
 # DOCENTE - EVALUAR RESPUESTA
 # ============================================================
 
-@login_required
+@rol_requerido("docente")
 def Evaluar_respuesta(request, tarea_id):
 
     # ========================================================

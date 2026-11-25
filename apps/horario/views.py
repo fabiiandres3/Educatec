@@ -11,12 +11,14 @@ from .models import Periodo, Horario
 
 from apps.docentes.models import Docente, AsignacionDocente
 from apps.cursos.models import Cursos
+from apps.user.decorators import rol_requerido
 
 
 # ============================================================
 # PERIODOS
 # ============================================================
 
+@rol_requerido("administrador")
 def listar_periodos(request):
 
     periodos = (
@@ -34,6 +36,7 @@ def listar_periodos(request):
     )
 
 
+@rol_requerido("administrador")
 def crear_periodo(request):
 
     if request.method == "POST":
@@ -65,6 +68,7 @@ def crear_periodo(request):
     )
 
 
+@rol_requerido("administrador")
 def editar_periodo(request, pk):
 
     periodo = get_object_or_404(
@@ -107,6 +111,7 @@ def editar_periodo(request, pk):
     )
 
 
+@rol_requerido("administrador")
 def eliminar_periodo(request, pk):
 
     periodo = get_object_or_404(
@@ -138,6 +143,7 @@ def eliminar_periodo(request, pk):
 # LISTAR HORARIOS
 # ============================================================
 
+@rol_requerido("administrador")
 def listar_horarios(request):
 
     horarios = (
@@ -218,6 +224,7 @@ def listar_horarios(request):
 # CREAR HORARIO NORMAL
 # ============================================================
 
+@rol_requerido("administrador")
 def crear_horario(request):
 
     periodos = Periodo.objects.all()
@@ -268,6 +275,7 @@ def crear_horario(request):
 # EDITAR HORARIO NORMAL
 # ============================================================
 
+@rol_requerido("administrador")
 def editar_horario(request, periodo_id, curso_id):
 
     periodo = get_object_or_404(
@@ -640,6 +648,7 @@ def editar_horario(request, periodo_id, curso_id):
 # ELIMINAR HORARIO NORMAL
 # ============================================================
 
+@rol_requerido("administrador")
 def eliminar_horario(request, id):
 
     horario = get_object_or_404(
@@ -673,6 +682,7 @@ def eliminar_horario(request, id):
 # PLANIFICADOR VISUAL
 # ============================================================
 
+@rol_requerido("administrador")
 def listar_horario(request):
     # Ambas rutas de listado usan el mismo template. Delegar en la vista que
     # serializa ``horarios_data`` evita que el planificador reciba ``null`` y
@@ -684,6 +694,7 @@ def listar_horario(request):
 # CREAR HORARIO POR CURSO
 # ============================================================
 
+@rol_requerido("administrador")
 def crear_horario_curso(request, periodo_id, curso_id):
 
     periodo = get_object_or_404(
@@ -843,6 +854,7 @@ def crear_horario_curso(request, periodo_id, curso_id):
 # CREAR HORARIO CON ENFOQUE EN DOCENTE
 # ============================================================
 
+@rol_requerido("administrador")
 def crear_horario_docente(request, periodo_id, docente_id, curso_id):
     periodo = get_object_or_404(Periodo, pk=periodo_id)
     docente = get_object_or_404(Docente.objects.select_related("usuario"), pk=docente_id)
@@ -1005,6 +1017,7 @@ def validar_conflictos_horario(horario):
 # GUARDAR HORARIO DESDE EL PLANIFICADOR
 # ============================================================
 
+@rol_requerido("administrador")
 @require_POST
 def guardar_horario_ajax(request):
 
