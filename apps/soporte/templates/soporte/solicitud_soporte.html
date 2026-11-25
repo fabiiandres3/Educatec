@@ -19,7 +19,7 @@
                 <span class="support-icon"><i class="fas fa-headset"></i></span>
                 <p class="support-kicker">Estamos para ayudarte</p>
                 <h1>Solicitar soporte</h1>
-                <p>Cuéntanos qué sucede. Enviaremos tu solicitud por correo a todos los administradores de Educatec para que puedan atenderla.</p>
+                <p>Cuéntanos qué sucede. Tu reporte quedará disponible en la bandeja de soporte del administrador.</p>
             </header>
             {% if messages %}{% for message in messages %}<div class="support-alert {% if message.tags == 'success' %}success{% endif %}">{{ message }}</div>{% endfor %}{% endif %}
             {% if errores %}<div class="support-errors"><ul>{% for error in errores %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
@@ -28,10 +28,10 @@
                 <input type="hidden" name="next" value="{{ next_url }}">
                 <div class="mb-3"><label class="support-label" for="id_asunto">Asunto</label><input class="support-control" id="id_asunto" name="asunto" type="text" maxlength="120" minlength="4" value="{{ asunto }}" placeholder="Ej. No puedo acceder a mis calificaciones" required><div class="support-hint">Resume el motivo de tu solicitud.</div></div>
                 <div><label class="support-label" for="id_mensaje">¿En qué podemos ayudarte?</label><textarea class="support-control" id="id_mensaje" name="mensaje" minlength="10" maxlength="5000" placeholder="Describe lo que sucede y los pasos para reproducirlo…" required>{{ mensaje }}</textarea><div class="support-hint">Incluye los detalles necesarios para que podamos ayudarte.</div></div>
-                <div class="support-meta"><i class="fas fa-circle-info"></i><span>Usaremos {{ correo_solicitante }} como correo de contacto y te enviaremos una copia. Verifica que sea tu dirección correcta y que puedas recibir mensajes.</span></div>
+                <div class="support-meta"><i class="fas fa-circle-info"></i><span>Usaremos {{ correo_solicitante }} como correo de contacto para que el administrador pueda responderte.</span></div>
                 <div class="support-actions"><a class="support-cancel" href="{{ next_url|default:'/' }}">Cancelar</a><button class="support-button" type="submit"><i class="fas fa-paper-plane"></i> Enviar solicitud</button></div>
             </form>
-            <footer class="support-footer">Solicitud enviada de forma segura a los correos de los administradores.</footer>
+            <footer class="support-footer">Al enviar, volverás al panel y verás una confirmación.</footer>
         </section>
     </main>
 </body>

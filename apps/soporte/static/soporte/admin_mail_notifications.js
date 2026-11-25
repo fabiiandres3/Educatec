@@ -39,26 +39,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderEmails(data) {
         const count = Number(data.unread_count || 0);
-        if (gmailLink && data.gmail_url) {
-            gmailLink.href = data.gmail_url;
-            gmailLink.removeAttribute("aria-disabled");
+        if (gmailLink) {
+            if (data.gmail_url) {
+                gmailLink.href = data.gmail_url;
+                gmailLink.hidden = false;
+                gmailLink.removeAttribute("aria-disabled");
+            } else {
+                gmailLink.hidden = true;
+                gmailLink.setAttribute("aria-disabled", "true");
+            }
         }
         countBadge.textContent = count > 99 ? "99+" : String(count);
         countBadge.hidden = count === 0;
-        button.setAttribute("aria-label", count ? count + " correos sin leer" : "No hay correos sin leer");
-        if (summaryCount) summaryCount.textContent = count ? count + (count === 1 ? " mensaje" : " mensajes") : "Todo al día";
+        button.setAttribute("aria-label", count ? count + " solicitudes de soporte" : "No hay solicitudes de soporte");
+        if (summaryCount) summaryCount.textContent = count ? count + (count === 1 ? " solicitud" : " solicitudes") : "Sin solicitudes";
         status.classList.toggle("is-connected", Boolean(data.connected));
         status.classList.toggle("is-error", !data.connected);
         if (!data.connected) {
-            status.textContent = "No se pudo conectar con Gmail";
-            setEmpty("fa-plug-circle-xmark", "Revisa la conexión y que IMAP esté habilitado en el buzón configurado.");
-            if (gmailLink) { gmailLink.href = "#"; gmailLink.setAttribute("aria-disabled", "true"); }
+            status.textContent = "No se pudo cargar la bandeja";
+            setEmpty("fa-plug-circle-xmark", "Intenta actualizar la bandeja de soporte.");
             return;
         }
-        status.textContent = "Conectado a Gmail";
+        status.textContent = "Bandeja de soporte activa";
         const emails = Array.isArray(data.emails) ? data.emails : [];
         if (!emails.length) {
-            setEmpty("fa-circle-check", "No hay correos de soporte recientes en el buzón configurado.");
+            setEmpty("fa-circle-check", "No hay solicitudes de soporte todavía.");
             return;
         }
         list.replaceChildren();
@@ -83,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
             subject.textContent = email.subject || "Sin asunto";
             const note = document.createElement("div");
             note.className = "admin-email-item-note";
-            note.textContent = email.unread ? "No leído · Soporte Educatec" : "Soporte Educatec";
+            note.textContent = email.message || "Solicitud de soporte";
             if (email.unread) item.classList.add("admin-email-item--unread");
             copy.append(top, subject, note);
             item.append(avatar, copy);
@@ -100,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: { "X-Requested-With": "XMLHttpRequest" },
                 cache: "no-store"
             });
-            if (!response.ok) throw new Error("No se pudo consultar Gmail");
+            if (!response.ok) throw new Error("No se pudo consultar la bandeja de soporte");
             renderEmails(await response.json());
         } catch (error) {
             renderEmails({ connected: false, unread_count: 0, emails: [] });

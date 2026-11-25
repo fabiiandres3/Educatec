@@ -172,7 +172,6 @@
             color: #94a3b8;
             font-size: 14px;
         }
-        .nav-toggle-button { order: 1; }
         .admin-email-notification { order: 2; }
         .avatar-admin { order: 3; }
         .topbar-user-copy { order: 4; }
@@ -342,6 +341,7 @@
 }
 .nav-toggle-button { display:grid; place-items:center; flex:0 0 40px; width:40px; height:40px; border:1px solid #475569; border-radius:11px; background:#0f172a; color:#e2e8f0; font-size:16px; cursor:pointer; transition:background .18s ease,color .18s ease; }
 .nav-toggle-button:hover { background:#334155; color:#7dd3fc; }
+.admin-page-heading { display:flex; align-items:center; gap:12px; min-width:0; }
 body.sidebar-collapsed .sidebar { width:76px; }
 body.sidebar-collapsed .main-content { margin-left:76px; }
 body.sidebar-collapsed .sidebar-brand { padding:28px 24px; }
@@ -390,7 +390,8 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
 .admin-email-item span.admin-email-sender { overflow:hidden;color:#4a5870;font-size:11px;font-weight:700;text-overflow:ellipsis;white-space:nowrap; }
 .admin-email-item time { flex:0 0 auto;color:#9aa4b4;font-size:9px;white-space:nowrap; }
 .admin-email-item strong { display:block;overflow:hidden;color:#202c43;font-size:12px;font-weight:750;text-overflow:ellipsis;white-space:nowrap; }
-.admin-email-item-note { margin-top:6px;color:#8c97a9;font-size:10px; }
+.admin-email-item-note { max-height:140px;margin-top:6px;overflow:auto;color:#718096;font-size:11px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere; }
+.admin-email-open[hidden] { display:none !important; }
 .admin-email-empty { display:grid;justify-items:center;gap:8px;margin:0;padding:38px 24px;color:#8490a3;font-size:12px;line-height:1.5;text-align:center; }
 .admin-email-empty i { display:grid;place-items:center;width:48px;height:48px;border-radius:17px;background:#f1f4ff;color:#7386e2;font-size:19px; }
 .admin-email-open { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 21px;background:#fff;color:#536fda;font-size:11px;font-weight:750;text-decoration:none;transition:background .18s; }
@@ -416,6 +417,12 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
 }
 </style>
     <link rel="stylesheet" href="{% static 'css/paneles/educatec_paneles.css' %}?v=dark-tareas-20261124">
+<style>
+.main-content > .topbar { padding-left:16px !important; }
+@media (max-width:768px) {
+.main-content > .topbar { padding-left:68px !important; }
+}
+</style>
 </head>
 <body data-logout-url="{% url 'cerrar_sesion' %}" data-logout-success-url="{% url 'index' %}" data-csrf-token="{{ csrf_token }}">
 <div class="nav-menu-overlay" aria-hidden="true"></div>
@@ -501,11 +508,14 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
 <!-- MAIN -->
 <div class="main-content">
     <div class="topbar">
-        <h5>{% block page_title %}Dashboard{% endblock %}</h5>
+        <div class="admin-page-heading">
+            <button type="button" class="nav-toggle-button" aria-label="Contraer menú de navegación" aria-controls="panel-navigation" aria-expanded="true" title="Contraer o expandir menú" onclick="window.toggleAdminSidebar && window.toggleAdminSidebar()"><i class="fa-solid fa-bars-staggered" aria-hidden="true"></i></button>
+            <h5>{% block page_title %}Dashboard{% endblock %}</h5>
+        </div>
         <div class="topbar-user">
             {% if request.user.is_authenticated %}
             <div class="admin-email-notification">
-                <button type="button" class="admin-email-button" id="adminEmailButton" data-inbox-url="{% url 'notificaciones_correo_admin' %}" aria-label="Abrir bandeja de quejas de soporte" aria-expanded="false" aria-controls="adminEmailPanel" title="Bandeja de soporte">
+                <button type="button" class="admin-email-button" id="adminEmailButton" data-inbox-url="{% url 'notificaciones_correo_admin' %}" aria-label="Abrir bandeja de solicitudes de soporte" aria-expanded="false" aria-controls="adminEmailPanel" title="Bandeja de soporte">
                     <i class="fa-solid fa-headset" aria-hidden="true"></i>
                     <span class="admin-email-count" id="adminEmailCount" aria-live="polite" hidden></span>
                 </button>
@@ -513,20 +523,19 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
                     <header>
                         <div class="admin-email-brand">
                             <span class="admin-email-brand-icon"><i class="fas fa-headset" aria-hidden="true"></i></span>
-                            <span class="admin-email-title-copy"><strong id="adminEmailTitle">Bandeja de soporte</strong><small id="adminEmailStatus" aria-live="polite">Conectando con Gmail…</small></span>
+                            <span class="admin-email-title-copy"><strong id="adminEmailTitle">Bandeja de soporte</strong><small id="adminEmailStatus" aria-live="polite">Cargando solicitudes…</small></span>
                         </div>
                         <div class="admin-email-controls">
                             <button type="button" class="admin-email-refresh" id="adminEmailRefresh" aria-label="Actualizar bandeja" title="Actualizar"><i class="fas fa-rotate-right"></i></button>
                             <button type="button" id="adminEmailClose" aria-label="Cerrar bandeja" title="Cerrar"><i class="fas fa-xmark"></i></button>
                         </div>
                     </header>
-                    <div class="admin-email-summary"><span>Mensajes de soporte sin leer</span><strong id="adminEmailSummaryCount">Consultando…</strong></div>
+                    <div class="admin-email-summary"><span>Solicitudes recibidas</span><strong id="adminEmailSummaryCount">Consultando…</strong></div>
                     <div class="admin-email-list" id="adminEmailList" aria-live="polite"><p class="admin-email-empty"><i class="fas fa-envelope-open-text"></i>Estamos buscando mensajes nuevos…</p></div>
                     <a class="admin-email-open" id="adminEmailOpenGmail" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true"><span><span class="admin-email-open-icon"><i class="fas fa-inbox"></i></span>Abrir la bandeja en Gmail</span><i class="fas fa-arrow-up-right-from-square"></i></a>
                 </section>
             </div>
             {% endif %}
-            <button type="button" class="nav-toggle-button" aria-label="Contraer menú de navegación" aria-controls="panel-navigation" aria-expanded="true" title="Contraer o expandir menú" onclick="window.toggleAdminSidebar && window.toggleAdminSidebar()"><i class="fa-solid fa-bars-staggered" aria-hidden="true"></i></button>
             {% if request.user.documento or request.user.first_name or request.user.username %}
                 <div class="avatar-admin">
                     {{ request.user.first_name|default:request.user.username|first|upper }}{{ request.user.last_name|default:""|first|upper }}
@@ -551,6 +560,6 @@ body.sidebar-collapsed .sidebar-footer a i { flex:0 0 18px; color:#f87171; font-
 <script src="{% static 'js/paneles/notificaciones_toast.js' %}"></script>
 {% block extra_js %}{% endblock %}
 <script src="{% static 'js/paneles/nav_toggle.js' %}?v=panel-nav-collapse-20261023"></script>
-<script src="{% static 'soporte/admin_mail_notifications.js' %}?v=20261022-support6"></script>
+<script src="{% static 'soporte/admin_mail_notifications.js' %}?v=20261125-support8"></script>
 </body>
 </html>
